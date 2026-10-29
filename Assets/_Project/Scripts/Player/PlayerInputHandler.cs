@@ -39,6 +39,9 @@ namespace RiskOfMagic.Player
 
         private void Awake()
         {
+#if !ENABLE_INPUT_SYSTEM
+            Debug.LogError("[PlayerInputHandler] The Input System backend is disabled: set Project Settings > Player > Active Input Handling to 'Input System Package (New)' or 'Both'.", this);
+#endif
             map = new InputActionMap("Player");
 
             move = map.AddAction("Move", InputActionType.Value);

@@ -25,6 +25,7 @@ namespace RiskOfMagic.Player
         private Vector3 dashVelocity;
         private float dashEndTime = float.NegativeInfinity;
         private bool dashIgnoresGravity;
+        private bool warnedMissingConfig;
 
         public event Action Jumped;
         public event Action Landed;
@@ -77,8 +78,15 @@ namespace RiskOfMagic.Player
 
         private void Update()
         {
-            if (!IsSpawned || !IsOwner || config == null)
+            if (!IsSpawned || !IsOwner)
                 return;
+            if (config == null)
+            {
+                if (!warnedMissingConfig)
+                    Debug.LogError($"[PlayerMotor] No MovementConfig on {name} (character not applied? check Resources/GameCatalog).", this);
+                warnedMissingConfig = true;
+                return;
+            }
             Tick(Time.deltaTime);
         }
 
