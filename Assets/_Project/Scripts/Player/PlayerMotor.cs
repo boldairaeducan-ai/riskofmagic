@@ -22,6 +22,9 @@ namespace RiskOfMagic.Player
         private float lastGroundedTime = float.NegativeInfinity;
         private float lastJumpPressedTime = float.NegativeInfinity;
         private int jumpsUsed;
+        private Vector3 dashVelocity;
+        private float dashEndTime = float.NegativeInfinity;
+        private bool dashIgnoresGravity;
 
         public event Action Jumped;
         public event Action Landed;
@@ -30,6 +33,7 @@ namespace RiskOfMagic.Player
         public bool ControlEnabled { get; set; } = true;
         public bool IsGrounded { get; private set; }
         public bool IsSprinting { get; private set; }
+        public bool IsDashing => Time.time < dashEndTime;
         public Vector3 Velocity => velocity + externalVelocity;
         /// <summary>Multiplicative modifier for buffs, items, skills.</summary>
         public float SpeedMultiplier { get; set; } = 1f;
@@ -39,6 +43,17 @@ namespace RiskOfMagic.Player
         public void AddImpulse(Vector3 impulse) => externalVelocity += impulse;
 
         public void SetVerticalVelocity(float value) => velocity.y = value;
+
+        public void CancelSprint() => IsSprinting = false;
+
+        /// <summary>Overrides movement with a fixed velocity for a duration (rolls, charges).</summary>
+        public void Dash(Vector3 dashVelocityValue, float duration, bool ignoreGravity)
+        {
+            dashVelocity = dashVelocityValue;
+            dashEndTime = Time.time + duration;
+            dashIgnoresGravity = ignoreGravity;
+            velocity.y = dashVelocityValue.y;
+        }
 
         public void Teleport(Vector3 position, Quaternion rotation)
         {
@@ -119,6 +134,14 @@ namespace RiskOfMagic.Player
             velocity.z = horizontal.z;
 
             externalVelocity = Vector3.MoveTowards(externalVelocity, Vector3.zero, config.externalDrag * dt * Mathf.Max(1f, externalVelocity.magnitude));
+
+            if (IsDashing)
+            {
+                velocity.x = dashVelocity.x;
+                velocity.z = dashVelocity.z;
+                if (dashIgnoresGravity)
+                    velocity.y = dashVelocity.y;
+            }
 
             CollisionFlags flags = controller.Move((velocity + externalVelocity) * dt);
             if ((flags & CollisionFlags.Above) != 0 && velocity.y > 0f)

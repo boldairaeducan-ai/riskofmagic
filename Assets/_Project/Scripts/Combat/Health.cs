@@ -23,7 +23,7 @@ namespace RiskOfMagic.Combat
         public event Action<DamageInfo> Died;
         public event Action Revived;
 
-        public Health Health => this;
+        Health IDamageable.Health => this;
         public Team Team => team;
         public float Current => current.Value;
         public float Max => max.Value;

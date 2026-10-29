@@ -17,6 +17,7 @@ namespace RiskOfMagic.Player
         private InputAction jump;
         private InputAction sprint;
         private InputAction toggleCursor;
+        private InputAction interact;
         private InputAction[] skills;
 
         /// <summary>Exposed for a future rebinding UI.</summary>
@@ -30,6 +31,7 @@ namespace RiskOfMagic.Player
         public bool JumpPressed => jump.WasPressedThisFrame();
         public bool SprintPressed => sprint.WasPressedThisFrame();
         public bool ToggleCursorPressed => toggleCursor.WasPressedThisFrame();
+        public bool InteractPressed => interact.WasPressedThisFrame();
 
         public bool IsSkillHeld(SkillSlot slot) => skills[(int)slot].IsPressed();
         public bool WasSkillPressed(SkillSlot slot) => skills[(int)slot].WasPressedThisFrame();
@@ -53,6 +55,7 @@ namespace RiskOfMagic.Player
             jump = AddButton("Jump", "<Keyboard>/space", "<Gamepad>/buttonSouth");
             sprint = AddButton("Sprint", "<Keyboard>/leftCtrl", "<Gamepad>/leftStickPress");
             toggleCursor = AddButton("ToggleCursor", "<Keyboard>/escape", "<Gamepad>/start");
+            interact = AddButton("Interact", "<Keyboard>/e", "<Gamepad>/buttonWest");
 
             skills = new[]
             {

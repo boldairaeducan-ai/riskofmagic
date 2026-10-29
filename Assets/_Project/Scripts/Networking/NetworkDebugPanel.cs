@@ -1,3 +1,4 @@
+using RiskOfMagic.Core;
 using RiskOfMagic.Player;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace RiskOfMagic.Networking
 {
-    /// <summary>Prototype-only connection panel (Host / Client / Server) plus local HP readout.</summary>
+    /// <summary>Prototype-only connection panel (Host / Client / Server) and character picker.</summary>
     [RequireComponent(typeof(NetworkManager))]
     public class NetworkDebugPanel : MonoBehaviour
     {
@@ -18,7 +19,7 @@ namespace RiskOfMagic.Networking
 
         private void OnGUI()
         {
-            GUILayout.BeginArea(new Rect(10, 10, 260, 220), GUI.skin.box);
+            GUILayout.BeginArea(new Rect(10, 10, 260, 300), GUI.skin.box);
 
             if (!manager.IsClient && !manager.IsServer)
                 DrawConnect();
@@ -30,7 +31,9 @@ namespace RiskOfMagic.Networking
 
         private void DrawConnect()
         {
-            GUILayout.Label("Address");
+            DrawCharacterPicker();
+
+            GUILayout.Label("Adresse");
             address = GUILayout.TextField(address);
             GUILayout.Label("Port");
             if (ushort.TryParse(GUILayout.TextField(port.ToString()), out var parsed))
@@ -44,15 +47,34 @@ namespace RiskOfMagic.Networking
         private void DrawStatus()
         {
             string mode = manager.IsHost ? "Host" : manager.IsServer ? "Server" : "Client";
-            GUILayout.Label(manager.IsServer ? $"{mode} - clients: {manager.ConnectedClientsIds.Count}" : mode);
+            GUILayout.Label(manager.IsServer ? $"{mode} - clients : {manager.ConnectedClientsIds.Count}" : mode);
+            GUILayout.Label("Échap : libérer le curseur");
 
-            var local = PlayerAvatar.Local;
-            if (local != null)
-                GUILayout.Label($"HP: {local.Health.Current:0} / {local.Health.Max:0}");
-            GUILayout.Label("Esc: toggle cursor");
+            if (PlayerAvatar.Local != null && !PlayerAvatar.Local.Look.IsCursorLocked)
+                DrawCharacterPicker();
 
-            if (GUILayout.Button("Disconnect"))
+            if (GUILayout.Button("Déconnexion"))
                 manager.Shutdown();
+        }
+
+        private void DrawCharacterPicker()
+        {
+            var catalog = GameCatalog.Instance;
+            if (catalog == null)
+                return;
+
+            GUILayout.Label("Personnage");
+            var characters = catalog.Characters;
+            for (int i = 0; i < characters.Count; i++)
+            {
+                bool selected = PlayerAvatar.PreferredCharacterIndex == i;
+                if (GUILayout.Toggle(selected, characters[i].displayName, GUI.skin.button) && !selected)
+                {
+                    PlayerAvatar.PreferredCharacterIndex = i;
+                    if (PlayerAvatar.Local != null)
+                        PlayerAvatar.Local.RequestCharacter(i);
+                }
+            }
         }
 
         private void ApplyTransport()
