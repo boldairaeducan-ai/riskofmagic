@@ -1,17 +1,50 @@
+# ---------------------------------------------------------------- Unity generated
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
 /[Mm]emoryCaptures/
 /[Rr]ecordings/
+
+# Builds
+/[Bb]uild/
+/[Bb]uilds/
+/[Bb]uild-*/
+*.apk
+*.aab
+*.ipa
+*.app
+*.exe
+*.x86_64
+
+# Asset meta files must stay versioned, only ignore orphans of ignored folders
+/[Aa]ssets/AssetStoreTools*
+/[Aa]ssets/Plugins/Editor/JetBrains*
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Burst / IL2CPP debug info
+*_BurstDebugInformation_DoNotShip/
+*_BackUpThisFolder_ButDontShipItWithYourGame/
+
+# Crash reports, profiler captures
+sysinfo.txt
+crashlytics-build.properties
+
+# Exported packages
+*.unitypackage
+*.unitypackage.meta
+
+# ---------------------------------------------------------------- IDE
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
+*.tmp
 *.user
+*.userprefs
 *.pidb
 *.booproj
 *.svd
@@ -19,11 +52,23 @@
 *.mdb
 *.opendb
 *.VC.db
-*.apk
-*.aab
-*.unitypackage
 .vs/
 .vscode/
 .idea/
+.consulo/
+*.DotSettings.user
+
+# ---------------------------------------------------------------- Multiplayer testing
+# ParrelSync / Multiplayer Play Mode clones
+*_clone_*/
+
+# ---------------------------------------------------------------- OS
 .DS_Store
-crashlytics-build.properties
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
