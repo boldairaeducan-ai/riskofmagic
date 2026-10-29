@@ -4,6 +4,7 @@
     "references": [
         "RiskOfMagic.Runtime",
         "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
         "Unity.AI.Navigation"
     ],
     "includePlatforms": [

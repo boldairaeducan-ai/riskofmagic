@@ -3,6 +3,7 @@
     "rootNamespace": "RiskOfMagic",
     "references": [
         "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],
