@@ -617,8 +617,9 @@ namespace RiskOfMagic.Editor
             manager.NetworkConfig ??= new NetworkConfig();
             manager.NetworkConfig.NetworkTransport = transport;
             manager.NetworkConfig.PlayerPrefab = playerPrefab;
-            if (!manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Contains(prefabList))
-                manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Add(prefabList);
+            // Only our list: Netcode's auto-generated default list would register the same prefabs twice.
+            manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Clear();
+            manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Add(prefabList);
             var bootstrap = netGo.AddComponent<ServerBootstrap>();
             SetProperties(bootstrap, so =>
             {
@@ -847,7 +848,36 @@ namespace RiskOfMagic.Editor
         {
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
+            AssignStableNetworkHash(prefab, path);
             return prefab;
+        }
+
+        /// <summary>
+        /// Objects built in an unsaved scene get a GlobalObjectIdHash computed from that scene (0 or duplicates),
+        /// which Netcode rejects. Derive a stable, unique hash from the prefab GUID instead.
+        /// </summary>
+        private static void AssignStableNetworkHash(GameObject prefab, string path)
+        {
+            if (!prefab.TryGetComponent(out NetworkObject networkObject))
+                return;
+
+            uint hash = 2166136261u;
+            foreach (char c in AssetDatabase.AssetPathToGUID(path))
+                hash = (hash ^ c) * 16777619u;
+            if (hash == 0u)
+                hash = 1u;
+
+            var so = new SerializedObject(networkObject);
+            var property = so.FindProperty("GlobalObjectIdHash");
+            if (property == null)
+            {
+                Debug.LogWarning($"[Risk of Magic] Could not find GlobalObjectIdHash on {prefab.name}.");
+                return;
+            }
+            property.uintValue = hash;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(prefab);
+            AssetDatabase.SaveAssetIfDirty(prefab);
         }
 
         private static void SetProperties(Object target, System.Action<SerializedObject> edit)
