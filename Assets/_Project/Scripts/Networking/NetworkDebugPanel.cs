@@ -1,5 +1,6 @@
 using RiskOfMagic.Core;
 using RiskOfMagic.Player;
+using RiskOfMagic.Run;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
@@ -52,6 +53,15 @@ namespace RiskOfMagic.Networking
 
             if (PlayerAvatar.Local != null && !PlayerAvatar.Local.Look.IsCursorLocked)
                 DrawCharacterPicker();
+
+            if (manager.IsServer && GUILayout.Button("Forcer une vague"))
+            {
+                var director = FindFirstObjectByType<CombatDirector>();
+                if (director != null)
+                    director.ForceWave();
+                else
+                    Debug.LogError("[NetworkDebugPanel] No CombatDirector in the scene.");
+            }
 
             if (GUILayout.Button("Déconnexion"))
                 manager.Shutdown();

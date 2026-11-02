@@ -32,10 +32,14 @@ namespace RiskOfMagic.Run
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;
 
+        [Header("Debug")]
+        [SerializeField] private bool logDiagnostics = true;
+
         private readonly List<SpawnCard> candidates = new();
         private readonly List<PlayerAvatar> alivePlayers = new();
         private float credits;
         private float nextWaveTime;
+        private string lastDiagnostic;
 
         /// <summary>Server only.</summary>
         public event Action<EnemyActor> EnemySpawned;
@@ -51,6 +55,21 @@ namespace RiskOfMagic.Run
             }
             credits = startingCredits;
             nextWaveTime = Time.time + 2f;
+
+            if (cards.Count == 0)
+                Debug.LogError("[CombatDirector] No spawn cards assigned.", this);
+            if (NavMesh.CalculateTriangulation().vertices.Length == 0)
+                Debug.LogError("[CombatDirector] No NavMesh loaded in the scene: bake the NavMeshSurface on 'Level'.", this);
+            Diagnose($"Started with {startingCredits} credits and {cards.Count} cards.");
+        }
+
+        /// <summary>Server only. Debug helper.</summary>
+        public void ForceWave(float bonusCredits = 100f)
+        {
+            if (!IsServer)
+                return;
+            credits += bonusCredits;
+            nextWaveTime = 0f;
         }
 
         private void Update()
@@ -72,17 +91,35 @@ namespace RiskOfMagic.Run
         {
             var card = PickCard(coefficient);
             if (card == null)
+            {
+                Diagnose($"No affordable card (credits {credits:0}, coefficient {coefficient:0.00}).");
                 return;
+            }
 
             int level = RunDifficulty.CurrentEnemyLevel;
+            int spawned = 0;
             for (int i = 0; i < maxSpawnsPerWave && credits >= card.cost && EnemyActor.Active.Count < maxAliveEnemies; i++)
             {
                 if (!TryFindSpawnPosition(out var position, out var lookTarget))
+                {
+                    Diagnose("No NavMesh position found around the players (NavMesh baked? players on it?).");
                     break;
+                }
                 Vector3 facing = Vector3.ProjectOnPlane(lookTarget - position, Vector3.up);
                 Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
                 credits -= card.cost;
+                spawned++;
             }
+            if (spawned > 0)
+                Diagnose($"Spawned {spawned}x {card.name} (level {level}), {credits:0} credits left.");
+        }
+
+        private void Diagnose(string message)
+        {
+            if (!logDiagnostics || message == lastDiagnostic)
+                return;
+            lastDiagnostic = message;
+            Debug.Log($"[CombatDirector] {message}", this);
         }
 
         private SpawnCard PickCard(float coefficient)
