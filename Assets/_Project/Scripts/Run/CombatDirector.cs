@@ -58,9 +58,26 @@ namespace RiskOfMagic.Run
 
             if (cards.Count == 0)
                 Debug.LogError("[CombatDirector] No spawn cards assigned.", this);
+            ValidateCards();
             if (NavMesh.CalculateTriangulation().vertices.Length == 0)
                 Debug.LogError("[CombatDirector] No NavMesh loaded in the scene: bake the NavMeshSurface on 'Level'.", this);
             Diagnose($"Started with {startingCredits} credits and {cards.Count} cards.");
+        }
+
+        private void ValidateCards()
+        {
+            for (int i = 0; i < cards.Count; i++)
+            {
+                var card = cards[i];
+                if (card == null)
+                    Debug.LogError($"[CombatDirector] Card slot {i} is empty.", this);
+                else if (card.prefab == null)
+                    Debug.LogError($"[CombatDirector] {card.name} has no prefab.", card);
+                else if (card.weight <= 0f)
+                    Debug.LogWarning($"[CombatDirector] {card.name} has a weight of 0 and will never be picked.", card);
+                else
+                    Diagnose($"Card {card.name}: prefab {card.prefab.name}, cost {card.cost}, weight {card.weight}, min coefficient {card.minCoefficient}.");
+            }
         }
 
         /// <summary>Server only. Debug helper.</summary>
