@@ -94,6 +94,8 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = smallChest });
             prefabList.Add(new NetworkPrefab { Prefab = largeChest });
+            var shrine = BuildShrinePrefab();
+            prefabList.Add(new NetworkPrefab { Prefab = shrine });
             EditorUtility.SetDirty(prefabList);
 
             var cards = new List<SpawnCard>
@@ -102,8 +104,12 @@ namespace RiskOfMagic.Editor
                 Card("SpawnCard_SkeletonArcher", skeleton, 16, 0.7f, 0f)
             };
 
+            var gameSystems = BuildGameSystemsPrefab(cards, smallChest, largeChest, shrine);
+            prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
+            EditorUtility.SetDirty(prefabList);
+
             AssetDatabase.SaveAssets();
-            BuildScene(playerPrefab, prefabList, cards, smallChest, largeChest);
+            BuildScene(playerPrefab, prefabList, gameSystems);
             AssetDatabase.SaveAssets();
             Debug.Log("[Risk of Magic] Prototype built. Play → choose a character → Host.");
         }
@@ -582,8 +588,7 @@ namespace RiskOfMagic.Editor
 
         // ---------------------------------------------------------------- Scene
 
-        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, List<SpawnCard> cards,
-            GameObject smallChest, GameObject largeChest)
+        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, GameObject gameSystems)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 
@@ -605,35 +610,6 @@ namespace RiskOfMagic.Editor
                 point.AddComponent<PlayerSpawnPoint>();
             }
 
-            // Run systems (in-scene NetworkObject)
-            var systems = new GameObject("GameSystems");
-            systems.AddComponent<NetworkObject>();
-            systems.AddComponent<RunDifficulty>();
-            systems.AddComponent<ProjectileNetwork>();
-            systems.AddComponent<GoldRewarder>();
-            systems.AddComponent<VfxNetwork>();
-            var interactables = systems.AddComponent<InteractableSpawner>();
-            SetProperties(interactables, so =>
-            {
-                var list = so.FindProperty("entries");
-                list.arraySize = 2;
-                list.GetArrayElementAtIndex(0).FindPropertyRelative("prefab").objectReferenceValue = smallChest.GetComponent<NetworkObject>();
-                list.GetArrayElementAtIndex(0).FindPropertyRelative("count").intValue = 14;
-                list.GetArrayElementAtIndex(1).FindPropertyRelative("prefab").objectReferenceValue = largeChest.GetComponent<NetworkObject>();
-                list.GetArrayElementAtIndex(1).FindPropertyRelative("count").intValue = 3;
-            });
-            var director = systems.AddComponent<CombatDirector>();
-            SetProperties(director, so =>
-            {
-                var list = so.FindProperty("cards");
-                list.arraySize = cards.Count;
-                for (int i = 0; i < cards.Count; i++)
-                    list.GetArrayElementAtIndex(i).objectReferenceValue = cards[i];
-            });
-
-            Shrine(new Vector3(8f, 0f, 4f));
-            Shrine(new Vector3(-12f, 0f, 14f));
-
             var netGo = new GameObject("NetworkManager");
             var manager = netGo.AddComponent<NetworkManager>();
             var transport = netGo.AddComponent<UnityTransport>();
@@ -645,6 +621,13 @@ namespace RiskOfMagic.Editor
             netGo.AddComponent<NetworkDebugPanel>();
             netGo.AddComponent<DebugHud>();
             netGo.AddComponent<DamageNumbers>();
+            var bootstrap = netGo.AddComponent<ServerBootstrap>();
+            SetProperties(bootstrap, so =>
+            {
+                var list = so.FindProperty("serverPrefabs");
+                list.arraySize = 1;
+                list.GetArrayElementAtIndex(0).objectReferenceValue = gameSystems.GetComponent<NetworkObject>();
+            });
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
@@ -691,22 +674,61 @@ namespace RiskOfMagic.Editor
             }
         }
 
-        private static void Shrine(Vector3 position)
+        private static GameObject BuildShrinePrefab()
         {
-            var shrine = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            shrine.name = "HealingShrine";
-            shrine.transform.position = position + Vector3.up * 0.75f;
-            shrine.transform.localScale = new Vector3(1f, 1.5f, 1f);
-            shrine.GetComponent<Renderer>().sharedMaterial = Mat("M_Shrine", new Color(0.3f, 1f, 0.5f));
-            shrine.AddComponent<NetworkObject>();
-            var component = shrine.AddComponent<HealingShrine>();
-            SetProperties(component, so =>
+            var root = new GameObject("HealingShrine");
+            var body = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = Vector3.up * 0.75f;
+            body.transform.localScale = new Vector3(1f, 1.5f, 1f);
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_Shrine", new Color(0.3f, 1f, 0.5f));
+
+            root.AddComponent<NetworkObject>();
+            var shrine = root.AddComponent<HealingShrine>();
+            SetProperties(shrine, so =>
             {
                 so.FindProperty("displayName").stringValue = "Autel de soin";
                 so.FindProperty("baseCost").uintValue = 15;
                 so.FindProperty("maxUses").intValue = 3;
                 so.FindProperty("costMultiplierPerUse").floatValue = 1.5f;
             });
+            return SavePrefab(root, Prefabs + "/HealingShrine.prefab");
+        }
+
+        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, GameObject smallChest, GameObject largeChest, GameObject shrine)
+        {
+            var root = new GameObject("GameSystems");
+            root.AddComponent<NetworkObject>();
+            root.AddComponent<RunDifficulty>();
+            root.AddComponent<ProjectileNetwork>();
+            root.AddComponent<VfxNetwork>();
+            root.AddComponent<GoldRewarder>();
+
+            var director = root.AddComponent<CombatDirector>();
+            SetProperties(director, so =>
+            {
+                var list = so.FindProperty("cards");
+                list.arraySize = cards.Count;
+                for (int i = 0; i < cards.Count; i++)
+                    list.GetArrayElementAtIndex(i).objectReferenceValue = cards[i];
+            });
+
+            var interactables = root.AddComponent<InteractableSpawner>();
+            var entries = new (GameObject prefab, int count)[] { (smallChest, 14), (largeChest, 3), (shrine, 2) };
+            SetProperties(interactables, so =>
+            {
+                var list = so.FindProperty("entries");
+                list.arraySize = entries.Length;
+                for (int i = 0; i < entries.Length; i++)
+                {
+                    var element = list.GetArrayElementAtIndex(i);
+                    element.FindPropertyRelative("prefab").objectReferenceValue = entries[i].prefab.GetComponent<NetworkObject>();
+                    element.FindPropertyRelative("count").intValue = entries[i].count;
+                }
+            });
+
+            return SavePrefab(root, Prefabs + "/GameSystems.prefab");
         }
 
         // ---------------------------------------------------------------- Helpers
