@@ -62,7 +62,7 @@ namespace RiskOfMagic.Editor
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
         public static void Build()
         {
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() || !HudBuilder.EnsureTextMeshPro())
                 return;
 
             foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
@@ -108,8 +108,9 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
+            var hud = HudBuilder.GetOrBuild();
             AssetDatabase.SaveAssets();
-            BuildScene(playerPrefab, prefabList, gameSystems);
+            BuildScene(playerPrefab, prefabList, gameSystems, hud);
             AssetDatabase.SaveAssets();
             Debug.Log("[Risk of Magic] Prototype built. Play → choose a character → Host.");
         }
@@ -588,7 +589,7 @@ namespace RiskOfMagic.Editor
 
         // ---------------------------------------------------------------- Scene
 
-        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, GameObject gameSystems)
+        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, GameObject gameSystems, GameObject hud)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 
@@ -618,9 +619,6 @@ namespace RiskOfMagic.Editor
             manager.NetworkConfig.PlayerPrefab = playerPrefab;
             if (!manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Contains(prefabList))
                 manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Add(prefabList);
-            netGo.AddComponent<NetworkDebugPanel>();
-            netGo.AddComponent<DebugHud>();
-            netGo.AddComponent<DamageNumbers>();
             var bootstrap = netGo.AddComponent<ServerBootstrap>();
             SetProperties(bootstrap, so =>
             {
@@ -628,6 +626,9 @@ namespace RiskOfMagic.Editor
                 list.arraySize = 1;
                 list.GetArrayElementAtIndex(0).objectReferenceValue = gameSystems.GetComponent<NetworkObject>();
             });
+
+            PrefabUtility.InstantiatePrefab(hud);
+            new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);

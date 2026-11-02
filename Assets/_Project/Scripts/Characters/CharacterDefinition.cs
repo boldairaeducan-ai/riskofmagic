@@ -11,6 +11,7 @@ namespace RiskOfMagic.Characters
         public string displayName = "Character";
         [TextArea] public string description;
         public Color bodyColor = Color.white;
+        public Sprite portrait;
 
         [Header("Stats")]
         [Min(1f)] public float maxHealth = 110f;

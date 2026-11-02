@@ -40,6 +40,18 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 - **Items** — `ItemDefinition` SO (rarity, stacking stat modifiers, server proc hooks), `PlayerInventory` (replicated stacks, deferred proc dispatch), `ItemPickup`. Proc types: `HealOnHit`, `HealOnKill`, `ExplodeOnKill`, `ExplodeOnHit`, `ChainOnHit`, `ProjectileOnHit`. Item damage has `ProcCoefficient = 0` (no infinite chains).
 - **Economy** — `PlayerWallet` (gold), `GoldRewarder` (kill → gold, scaled by difficulty).
 - **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.
-- **Vfx / UI / Networking** — pooled effects + `VfxNetwork` (server-triggered effects), prototype IMGUI HUD (inventory, pickups), `DamageNumbers`, connection panel.
+- **Vfx / Networking** — pooled effects + `VfxNetwork` (server-triggered effects), `ServerBootstrap` (spawns `GameSystems`).
+- **UI** (uGUI + TextMeshPro) — `HUD.prefab` built by *Tools → Risk of Magic → Rebuild HUD Prefab*. `HudController` binds `HudWidget`s to the local player (health, gold, character, skills, charge, prompt, inventory, run info, death overlay), plus damage numbers, pickup labels, item notification and `ConnectionMenu`.
+
+## Plugging in UI art
+| What | Where |
+|---|---|
+| Fonts, panel/frame/bar/slot/button sprites, crosshair, gold icon, default icons, all colors, damage number colors/sizes | `Assets/_Project/UI/HudTheme.asset` (never overwritten by the tools) |
+| Skill icons | `icon` on each skill asset (`Configs/Skills`) |
+| Item icons | `icon` on each item asset (`Configs/Items`) |
+| Character portraits | `portrait` on each character asset (`Configs/Characters`) |
+| Layout | `Assets/_Project/UI/HUD.prefab` (edit freely; only *Rebuild HUD Prefab* overwrites it) |
+
+Sprites with borders are 9-sliced automatically. `ThemedImage` / `ThemedText` pull from the theme; remove them on an element to style it by hand. Empty icon slots show the name as placeholder text.
 
 Authority rules: movement = owner, health/damage/AI/gold/spawns = server. Damage always goes through `IDamageable.ApplyDamage` on the server.
