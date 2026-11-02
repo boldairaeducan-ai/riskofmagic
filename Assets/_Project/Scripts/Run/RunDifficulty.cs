@@ -18,7 +18,7 @@ namespace RiskOfMagic.Run
     public class RunDifficulty : NetworkBehaviour
     {
         [SerializeField] private DifficultyLevel startingDifficulty = DifficultyLevel.Normal;
-        [SerializeField] private float scalingPerMinute = 0.0506f;
+        [SerializeField] private float scalingPerMinute = 0.07f;
         [SerializeField] private float playerFactorPerPlayer = 0.3f;
         [SerializeField] private float stageMultiplier = 1.15f;
         [SerializeField] private float levelStep = 0.33f;

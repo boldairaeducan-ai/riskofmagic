@@ -18,16 +18,16 @@ namespace RiskOfMagic.Run
         [SerializeField] private List<SpawnCard> cards = new();
 
         [Header("Credits")]
-        [SerializeField] private float creditMultiplier = 1f;
-        [SerializeField] private float startingCredits = 60f;
+        [SerializeField] private float creditMultiplier = 1.8f;
+        [SerializeField] private float startingCredits = 100f;
 
         [Header("Waves")]
-        [SerializeField] private Vector2 waveInterval = new(4f, 10f);
-        [SerializeField, Min(1)] private int maxSpawnsPerWave = 6;
+        [SerializeField] private Vector2 waveInterval = new(2f, 6f);
+        [SerializeField, Min(1)] private int maxSpawnsPerWave = 8;
         [SerializeField, Min(1)] private int maxAliveEnemies = 40;
 
         [Header("Placement")]
-        [SerializeField] private float minSpawnDistance = 15f;
+        [SerializeField] private float minSpawnDistance = 12f;
         [SerializeField] private float maxSpawnDistance = 40f;
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;

@@ -149,92 +149,98 @@ namespace RiskOfMagic.Editor
         private static List<CharacterDefinition> BuildCharacters(ProjectileSet p, VfxSet vfx)
         {
             // Archer
-            var rapidShot = Skill<ProjectileSkill>("Archer_RapidShot", "Tir rapide", "Flèches en continu. 150% de dégâts.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.3f, attackSpeed: true);
+            var rapidShot = Skill<ProjectileSkill>("Archer_RapidShot", "Tir rapide", "Flèches en continu. 100% de dégâts.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.4f, attackSpeed: true);
             rapidShot.projectile = p.Arrow;
-            rapidShot.damageCoefficient = 1.5f;
+            rapidShot.damageCoefficient = 1.0f;
 
-            var piercing = Skill<ProjectileSkill>("Archer_PiercingArrow", "Flèche perforante", "Charger pour transpercer les ennemis. 200-700%.",
-                SkillActivationMode.Charge, cooldown: 4f, cast: 0.3f);
+            var piercing = Skill<ProjectileSkill>("Archer_PiercingArrow", "Flèche perforante", "Charger pour transpercer les ennemis. 150-500%.",
+                SkillActivationMode.Charge, cooldown: 6f, cast: 0.3f);
             piercing.projectile = p.PiercingArrow;
             piercing.maxChargeTime = 1.2f;
-            piercing.minChargeCoefficient = 2f;
-            piercing.maxChargeCoefficient = 7f;
+            piercing.minChargeCoefficient = 1.5f;
+            piercing.maxChargeCoefficient = 5f;
             piercing.minChargeScale = 1f;
             piercing.maxChargeScale = 1.6f;
 
             var roll = Skill<DashSkill>("Archer_Roll", "Roulade", "Esquive rapide dans la direction de déplacement.",
-                SkillActivationMode.Press, cooldown: 4f, cast: 0f);
+                SkillActivationMode.Press, cooldown: 5f, cast: 0f);
             roll.direction = DashDirection.MoveInput;
             roll.speed = 28f;
             roll.duration = 0.22f;
             roll.canCastWhileBusy = true;
             roll.keepsSprint = true;
 
-            var rain = Skill<AreaSkill>("Archer_ArrowRain", "Pluie de flèches", "Zone ciblée frappée 8 fois. 100% par impact.",
-                SkillActivationMode.Press, cooldown: 12f, cast: 0.4f);
+            var rain = Skill<AreaSkill>("Archer_ArrowRain", "Pluie de flèches", "Zone ciblée frappée 6 fois. 60% par impact.",
+                SkillActivationMode.Press, cooldown: 15f, cast: 0.4f);
             rain.center = AreaCenter.AimPoint;
             rain.maxRange = 50f;
-            rain.radius = 6f;
-            rain.damageCoefficient = 1f;
-            rain.ticks = 8;
+            rain.radius = 5f;
+            rain.damageCoefficient = 0.6f;
+            rain.ticks = 6;
             rain.tickInterval = 0.3f;
             rain.initialDelay = 0.4f;
             rain.tickVfx = vfx.Area;
 
             // Warrior
-            var combo = Skill<MeleeComboSkill>("Warrior_SwordCombo", "Combo d'épée", "Trois coups, le dernier frappe fort.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.4f, attackSpeed: true);
+            var combo = Skill<MeleeComboSkill>("Warrior_SwordCombo", "Combo d'épée", "Trois coups (100/100/200%), le dernier frappe fort.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.5f, attackSpeed: true);
             combo.swingVfx = vfx.Swing;
+            combo.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 1f, radius = 1.6f, reach = 1.6f, hitDelay = 0.1f },
+                new MeleeComboSkill.Step { damageCoefficient = 1f, radius = 1.6f, reach = 1.6f, hitDelay = 0.1f },
+                new MeleeComboSkill.Step { damageCoefficient = 2f, radius = 2.2f, reach = 1.8f, hitDelay = 0.15f, lunge = 6f }
+            };
 
-            var whirlwind = Skill<AreaSkill>("Warrior_Whirlwind", "Tourbillon", "3 coups circulaires. 140% chacun.",
-                SkillActivationMode.Press, cooldown: 5f, cast: 0.6f);
+            var whirlwind = Skill<AreaSkill>("Warrior_Whirlwind", "Tourbillon", "3 coups circulaires. 90% chacun.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0.6f);
             whirlwind.center = AreaCenter.Caster;
             whirlwind.radius = 4f;
             whirlwind.ticks = 3;
             whirlwind.tickInterval = 0.2f;
-            whirlwind.damageCoefficient = 1.4f;
+            whirlwind.damageCoefficient = 0.9f;
             whirlwind.tickVfx = vfx.Area;
 
-            var charge = Skill<DashSkill>("Warrior_Charge", "Charge", "Fonce en avant, 300% aux ennemis percutés.",
-                SkillActivationMode.Press, cooldown: 6f, cast: 0.3f);
+            var charge = Skill<DashSkill>("Warrior_Charge", "Charge", "Fonce en avant, 200% aux ennemis percutés.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
             charge.direction = DashDirection.AimFlat;
             charge.speed = 30f;
             charge.duration = 0.3f;
-            charge.damageCoefficient = 3f;
+            charge.damageCoefficient = 2f;
             charge.damageRadius = 1.8f;
 
-            var slam = Skill<AreaSkill>("Warrior_SeismicSlam", "Frappe sismique", "Bond puis onde de choc. 600%.",
-                SkillActivationMode.Press, cooldown: 12f, cast: 0.5f);
+            var slam = Skill<AreaSkill>("Warrior_SeismicSlam", "Frappe sismique", "Bond puis onde de choc. 400%.",
+                SkillActivationMode.Press, cooldown: 15f, cast: 0.5f);
             slam.center = AreaCenter.Caster;
-            slam.radius = 8f;
+            slam.radius = 7f;
             slam.ticks = 1;
             slam.initialDelay = 0.35f;
-            slam.damageCoefficient = 6f;
+            slam.damageCoefficient = 4f;
             slam.hitOncePerTarget = true;
             slam.casterUpwardVelocity = 6f;
             slam.tickVfx = vfx.Area;
 
             // Mage
-            var fireBolt = Skill<ProjectileSkill>("Mage_FireBolt", "Trait de feu", "4 charges. 220%, petite explosion.",
-                SkillActivationMode.Hold, cooldown: 1.2f, cast: 0.2f, attackSpeed: true);
-            fireBolt.maxStock = 4;
+            var fireBolt = Skill<ProjectileSkill>("Mage_FireBolt", "Trait de feu", "3 charges. 160%, petite explosion.",
+                SkillActivationMode.Hold, cooldown: 1.6f, cast: 0.2f, attackSpeed: true);
+            fireBolt.maxStock = 3;
             fireBolt.projectile = p.FireBolt;
             fireBolt.damageType = DamageType.Fire;
-            fireBolt.damageCoefficient = 2.2f;
+            fireBolt.damageCoefficient = 1.6f;
 
-            var frostOrb = Skill<ProjectileSkill>("Mage_FrostOrb", "Orbe de givre", "Charger un orbe explosif. 200-800%.",
-                SkillActivationMode.Charge, cooldown: 5f, cast: 0.3f);
+            var frostOrb = Skill<ProjectileSkill>("Mage_FrostOrb", "Orbe de givre", "Charger un orbe explosif. 150-500%.",
+                SkillActivationMode.Charge, cooldown: 7f, cast: 0.3f);
             frostOrb.projectile = p.FrostOrb;
             frostOrb.damageType = DamageType.Frost;
             frostOrb.maxChargeTime = 1.5f;
-            frostOrb.minChargeCoefficient = 2f;
-            frostOrb.maxChargeCoefficient = 8f;
+            frostOrb.minChargeCoefficient = 1.5f;
+            frostOrb.maxChargeCoefficient = 5f;
             frostOrb.minChargeScale = 1f;
             frostOrb.maxChargeScale = 2f;
 
             var blink = Skill<BlinkSkill>("Mage_Blink", "Transfert", "Téléportation dans la direction visée.",
-                SkillActivationMode.Press, cooldown: 5f, cast: 0.1f);
+                SkillActivationMode.Press, cooldown: 7f, cast: 0.1f);
             blink.distance = 14f;
             blink.canCastWhileBusy = true;
             blink.keepsSprint = true;
@@ -242,10 +248,10 @@ namespace RiskOfMagic.Editor
             blink.castVfxAnchor = VfxAnchor.Caster;
             blink.arrivalVfx = vfx.Blink;
 
-            var chain = Skill<ChainLightningSkill>("Mage_ChainLightning", "Chaîne d'éclairs", "Éclair rebondissant sur 5 ennemis. 500%.",
-                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
-            chain.damageCoefficient = 5f;
-            chain.maxBounces = 4;
+            var chain = Skill<ChainLightningSkill>("Mage_ChainLightning", "Chaîne d'éclairs", "Éclair rebondissant sur 4 ennemis. 300%.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
+            chain.damageCoefficient = 3f;
+            chain.maxBounces = 3;
             chain.boltVfx = vfx.Lightning;
 
             foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, fireBolt, frostOrb, blink, chain })
@@ -254,11 +260,11 @@ namespace RiskOfMagic.Editor
             return new List<CharacterDefinition>
             {
                 Character("Character_Archer", "Archer", "Agile, double saut, dégâts à distance.", new Color(0.3f, 0.75f, 0.35f),
-                    90f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
+                    80f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
                 Character("Character_Warrior", "Guerrier", "Robuste, combat au corps à corps.", new Color(0.8f, 0.3f, 0.25f),
-                    160f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
+                    130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Mage", "Mage", "Sorts élémentaires et mobilité magique.", new Color(0.35f, 0.45f, 0.95f),
-                    100f, Movement("Movement_Mage", 7f, 1), fireBolt, frostOrb, blink, chain)
+                    85f, Movement("Movement_Mage", 7f, 1), fireBolt, frostOrb, blink, chain)
             };
         }
 
@@ -292,7 +298,7 @@ namespace RiskOfMagic.Editor
             c.description = description;
             c.bodyColor = color;
             c.maxHealth = health;
-            c.baseDamage = 12f;
+            c.baseDamage = 10f;
             c.movement = movement;
             c.primary = primary;
             c.secondary = secondary;
@@ -359,14 +365,14 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildGhoul()
         {
-            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 60f, speed: 5f, gold: 8);
+            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 110f, speed: 6f, gold: 8);
             var root = EnemyBase("Enemy_Ghoul", def, new Color(0.75f, 0.2f, 0.2f), out _);
             var attack = root.AddComponent<EnemyMeleeAttack>();
             SetProperties(attack, so =>
             {
                 so.FindProperty("range").floatValue = 2f;
                 so.FindProperty("cooldown").floatValue = 1.5f;
-                so.FindProperty("damage").floatValue = 12f;
+                so.FindProperty("damage").floatValue = 14f;
             });
             FinishEnemy(root, attack);
             return SavePrefab(root, Prefabs + "/Enemy_Ghoul.prefab").GetComponent<EnemyActor>();
@@ -374,14 +380,14 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildSkeletonArcher(ProjectileDefinition bolt)
         {
-            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 45f, speed: 4f, gold: 12);
+            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 80f, speed: 4f, gold: 12);
             var root = EnemyBase("Enemy_SkeletonArcher", def, new Color(0.85f, 0.85f, 0.75f), out _);
             var attack = root.AddComponent<EnemyProjectileAttack>();
             SetProperties(attack, so =>
             {
                 so.FindProperty("range").floatValue = 22f;
-                so.FindProperty("cooldown").floatValue = 2.5f;
-                so.FindProperty("damage").floatValue = 10f;
+                so.FindProperty("cooldown").floatValue = 2f;
+                so.FindProperty("damage").floatValue = 12f;
                 so.FindProperty("projectile").objectReferenceValue = bolt;
             });
             FinishEnemy(root, attack);
