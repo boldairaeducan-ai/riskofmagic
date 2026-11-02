@@ -15,6 +15,8 @@ namespace RiskOfMagic.Combat
         public bool HasSource;
         public ulong SourceId;
         public bool IsCritical;
+        /// <summary>Scales item proc chances. 0 = can't trigger items (item damage itself).</summary>
+        public float ProcCoefficient;
         public Vector3 Point;
         public Vector3 Direction;
 
@@ -28,7 +30,8 @@ namespace RiskOfMagic.Combat
                 HasSource = source != null,
                 SourceId = source != null ? source.NetworkObjectId : 0,
                 Point = point,
-                Direction = direction
+                Direction = direction,
+                ProcCoefficient = 1f
             };
         }
 
@@ -48,6 +51,7 @@ namespace RiskOfMagic.Combat
             serializer.SerializeValue(ref HasSource);
             serializer.SerializeValue(ref SourceId);
             serializer.SerializeValue(ref IsCritical);
+            serializer.SerializeValue(ref ProcCoefficient);
             serializer.SerializeValue(ref Point);
             serializer.SerializeValue(ref Direction);
         }

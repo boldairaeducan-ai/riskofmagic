@@ -7,6 +7,8 @@ using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Interaction;
+using RiskOfMagic.Items;
+using RiskOfMagic.Items.Types;
 using RiskOfMagic.Networking;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
@@ -38,6 +40,7 @@ namespace RiskOfMagic.Editor
         private const string CharactersFolder = Configs + "/Characters";
         private const string ProjectilesFolder = Configs + "/Projectiles";
         private const string EnemiesFolder = Configs + "/Enemies";
+        private const string ItemsFolder = Configs + "/Items";
         private const string Prefabs = Root + "/Prefabs";
         private const string VfxFolder = Prefabs + "/Vfx";
         private const string Materials = Root + "/Materials";
@@ -47,13 +50,13 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt };
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile;
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -62,17 +65,22 @@ namespace RiskOfMagic.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
 
-            foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
+            foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
                 Directory.CreateDirectory(folder);
             AssetDatabase.Refresh();
 
             var vfx = BuildVfx();
             var projectiles = BuildProjectiles(vfx);
             var characters = BuildCharacters(projectiles, vfx);
+            var items = BuildItems(projectiles, vfx);
 
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
-            catalog.EditorSet(characters, projectiles.All);
+            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning });
             EditorUtility.SetDirty(catalog);
+
+            var pickup = BuildPickupPrefab();
+            var smallChest = BuildChestPrefab("Chest_Small", "Petit coffre", 25, 1f, new Vector3(79.2f, 19.8f, 1f), new Color(0.45f, 0.3f, 0.15f), pickup);
+            var largeChest = BuildChestPrefab("Chest_Large", "Grand coffre", 50, 1.4f, new Vector3(0f, 80f, 20f), new Color(0.85f, 0.65f, 0.2f), pickup);
 
             var playerPrefab = BuildPlayerPrefab();
             var ghoul = BuildGhoul();
@@ -83,6 +91,9 @@ namespace RiskOfMagic.Editor
             var prefabList = Asset<NetworkPrefabsList>(listPath);
             prefabList.Add(new NetworkPrefab { Prefab = ghoul.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = skeleton.gameObject });
+            prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
+            prefabList.Add(new NetworkPrefab { Prefab = smallChest });
+            prefabList.Add(new NetworkPrefab { Prefab = largeChest });
             EditorUtility.SetDirty(prefabList);
 
             var cards = new List<SpawnCard>
@@ -92,7 +103,7 @@ namespace RiskOfMagic.Editor
             };
 
             AssetDatabase.SaveAssets();
-            BuildScene(playerPrefab, prefabList, cards);
+            BuildScene(playerPrefab, prefabList, cards, smallChest, largeChest);
             AssetDatabase.SaveAssets();
             Debug.Log("[Risk of Magic] Prototype built. Play → choose a character → Host.");
         }
@@ -108,7 +119,8 @@ namespace RiskOfMagic.Editor
                 Area = EffectPrefab("VFX_Area", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.05f, 0f), new Color(1f, 0.6f, 0.2f), 0.25f),
                 Swing = EffectPrefab("VFX_Swing", PrimitiveType.Cylinder, new Vector3(1f, 0.01f, 1f), Vector3.zero, new Color(0.9f, 0.9f, 1f), 0.12f),
                 Blink = EffectPrefab("VFX_Blink", PrimitiveType.Sphere, Vector3.one * 1.2f, new Vector3(0f, 1f, 0f), new Color(0.7f, 0.4f, 1f), 0.3f),
-                Lightning = LinePrefab("VFX_Lightning", new Color(0.6f, 0.85f, 1f), 0.15f, 0.2f)
+                Lightning = LinePrefab("VFX_Lightning", new Color(0.6f, 0.85f, 1f), 0.15f, 0.2f),
+                Explosion = EffectPrefab("VFX_Explosion", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(1f, 0.5f, 0.15f), 0.2f)
             };
         }
 
@@ -120,7 +132,8 @@ namespace RiskOfMagic.Editor
                 PiercingArrow = ProjectileAsset("Projectile_PiercingArrow", new Color(1f, 0.85f, 0.2f), 0.25f, vfx.Impact),
                 FireBolt = ProjectileAsset("Projectile_FireBolt", new Color(1f, 0.45f, 0.1f), 0.35f, vfx.Impact),
                 FrostOrb = ProjectileAsset("Projectile_FrostOrb", new Color(0.5f, 0.85f, 1f), 0.5f, vfx.FrostBurst),
-                EnemyBolt = ProjectileAsset("Projectile_EnemyBolt", new Color(0.4f, 1f, 0.3f), 0.3f, vfx.Impact)
+                EnemyBolt = ProjectileAsset("Projectile_EnemyBolt", new Color(0.4f, 1f, 0.3f), 0.3f, vfx.Impact),
+                ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -128,6 +141,7 @@ namespace RiskOfMagic.Editor
             Configure(set.FireBolt, speed: 70f, gravity: 0f, lifetime: 2f, radius: 0.2f, explosion: 1.5f);
             Configure(set.FrostOrb, speed: 40f, gravity: 0f, lifetime: 1.5f, radius: 0.3f, explosion: 3f, explodeOnExpire: true);
             Configure(set.EnemyBolt, speed: 35f, gravity: 0f, lifetime: 3f, radius: 0.25f);
+            Configure(set.ArcaneMissile, speed: 50f, gravity: 0f, lifetime: 3f, radius: 0.3f);
             return set;
         }
 
@@ -308,6 +322,101 @@ namespace RiskOfMagic.Editor
             return c;
         }
 
+        // ---------------------------------------------------------------- Items & chests
+
+        private static List<ItemDefinition> BuildItems(ProjectileSet projectiles, VfxSet vfx)
+        {
+            var items = new List<ItemDefinition>
+            {
+                // Common
+                Item<ItemDefinition>("Item_Gauntlet", "Gantelet de vivacité", "+15% vitesse d'attaque.", ItemRarity.Common, Mod(StatType.AttackSpeed, 0.15f)),
+                Item<ItemDefinition>("Item_Boots", "Bottes de coursier", "+14% vitesse de déplacement.", ItemRarity.Common, Mod(StatType.MoveSpeed, 0.14f)),
+                Item<ItemDefinition>("Item_HawkEye", "Œil de faucon", "+10% chances de coup critique.", ItemRarity.Common, Mod(StatType.CritChance, 0.1f)),
+                Item<ItemDefinition>("Item_Whetstone", "Pierre à aiguiser", "+10% dégâts.", ItemRarity.Common, Mod(StatType.Damage, 0.1f)),
+                Item<ItemDefinition>("Item_DriedMeat", "Viande séchée", "+25 PV max.", ItemRarity.Common, Mod(StatType.MaxHealth, 25f)),
+                Item<ItemDefinition>("Item_GriffinFeather", "Plume de griffon", "+1 saut.", ItemRarity.Common, Mod(StatType.ExtraJumps, 1f)),
+                Item<ItemDefinition>("Item_LifeHerb", "Herbe de vie", "+1,6 PV/s.", ItemRarity.Common, Mod(StatType.HealthRegen, 1.6f)),
+                Item<HealOnHitItem>("Item_RunicLeech", "Sangsue runique", "Chaque coup soigne 1 PV (+1 par exemplaire).", ItemRarity.Common),
+                Item<HealOnKillItem>("Item_WolfFang", "Croc de loup", "Tuer un ennemi soigne 8 PV (+6 par exemplaire).", ItemRarity.Common),
+                // Rare
+                Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-10% temps de recharge des compétences.", ItemRarity.Rare, Mod(StatType.CooldownReduction, 0.1f)),
+                Item<ChainOnHitItem>("Item_StormOrb", "Orbe de tempête", "25% de chances : éclair sur 3 ennemis (+2), 80% des dégâts.", ItemRarity.Rare),
+                Item<ExplodeOnKillItem>("Item_FireOil", "Huile incendiaire", "Les ennemis tués explosent : 150% (+75%) dans 6 m (+1,5 m).", ItemRarity.Rare),
+                Item<ProjectileOnHitItem>("Item_EnchantedQuiver", "Carquois enchanté", "10% de chances : missile arcanique, 300% des dégâts (+300%).", ItemRarity.Rare),
+                // Legendary
+                Item<ExplodeOnHitItem>("Item_ChaosEye", "Œil du chaos", "Chaque coup explose : 60% des dégâts dans 4 m (+2,5 m).", ItemRarity.Legendary),
+                Item<ItemDefinition>("Item_DragonHeart", "Cœur de dragon", "+50% PV max, +4 PV/s.", ItemRarity.Legendary,
+                    Mod(StatType.MaxHealthPercent, 0.5f), Mod(StatType.HealthRegen, 4f))
+            };
+
+            foreach (var item in items)
+            {
+                switch (item)
+                {
+                    case ChainOnHitItem chain: chain.boltVfx = vfx.Lightning; break;
+                    case ExplodeOnKillItem onKill: onKill.explosionVfx = vfx.Explosion; break;
+                    case ExplodeOnHitItem onHit: onHit.explosionVfx = vfx.Explosion; break;
+                    case ProjectileOnHitItem quiver: quiver.projectile = projectiles.ArcaneMissile; break;
+                }
+                EditorUtility.SetDirty(item);
+            }
+            return items;
+        }
+
+        private static T Item<T>(string file, string displayName, string description, ItemRarity rarity, params StatModifier[] modifiers)
+            where T : ItemDefinition
+        {
+            var item = Asset<T>($"{ItemsFolder}/{file}.asset");
+            item.displayName = displayName;
+            item.description = description;
+            item.rarity = rarity;
+            item.modifiers = modifiers;
+            return item;
+        }
+
+        private static StatModifier Mod(StatType stat, float valuePerStack) => new() { stat = stat, valuePerStack = valuePerStack };
+
+        private static ItemPickup BuildPickupPrefab()
+        {
+            var root = new GameObject("ItemPickup");
+            root.AddComponent<NetworkObject>();
+            var visual = CreateVisual(PrimitiveType.Cube, "Visual", root.transform, new Vector3(0f, 0.8f, 0f), Vector3.one * 0.45f, Mat("M_Pickup", Color.white, unlit: true));
+            visual.transform.localRotation = Quaternion.Euler(45f, 0f, 45f);
+            var pickup = root.AddComponent<ItemPickup>();
+            SetProperties(pickup, so => so.FindProperty("floatingVisual").objectReferenceValue = visual.transform);
+            return SavePrefab(root, Prefabs + "/ItemPickup.prefab").GetComponent<ItemPickup>();
+        }
+
+        private static GameObject BuildChestPrefab(string file, string displayName, uint cost, float size, Vector3 weights, Color color, ItemPickup pickup)
+        {
+            var root = new GameObject(file);
+            var body = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = new Vector3(0f, 0.35f * size, 0f);
+            body.transform.localScale = new Vector3(1.2f, 0.7f, 0.8f) * size;
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_" + file, color);
+
+            var lid = CreateVisual(PrimitiveType.Cube, "Lid", root.transform, new Vector3(0f, 0.78f * size, 0f), new Vector3(1.25f, 0.15f, 0.85f) * size,
+                Mat("M_" + file + "_Lid", color * 0.7f));
+
+            root.AddComponent<NetworkObject>();
+            var chest = root.AddComponent<ChestInteractable>();
+            SetProperties(chest, so =>
+            {
+                so.FindProperty("displayName").stringValue = displayName;
+                so.FindProperty("baseCost").uintValue = cost;
+                so.FindProperty("maxUses").intValue = 1;
+                so.FindProperty("commonWeight").floatValue = weights.x;
+                so.FindProperty("rareWeight").floatValue = weights.y;
+                so.FindProperty("legendaryWeight").floatValue = weights.z;
+                so.FindProperty("pickupPrefab").objectReferenceValue = pickup;
+                so.FindProperty("dropOffset").vector3Value = new Vector3(0f, 0f, 1.4f * size);
+                so.FindProperty("closedVisual").objectReferenceValue = lid;
+            });
+            return SavePrefab(root, $"{Prefabs}/{file}.prefab");
+        }
+
         // ---------------------------------------------------------------- Player & enemies
 
         private static GameObject BuildPlayerPrefab()
@@ -328,6 +437,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<PlayerMotor>();
             root.AddComponent<CharacterStats>();
             root.AddComponent<PlayerWallet>();
+            root.AddComponent<PlayerInventory>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -472,7 +582,8 @@ namespace RiskOfMagic.Editor
 
         // ---------------------------------------------------------------- Scene
 
-        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, List<SpawnCard> cards)
+        private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, List<SpawnCard> cards,
+            GameObject smallChest, GameObject largeChest)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 
@@ -500,6 +611,17 @@ namespace RiskOfMagic.Editor
             systems.AddComponent<RunDifficulty>();
             systems.AddComponent<ProjectileNetwork>();
             systems.AddComponent<GoldRewarder>();
+            systems.AddComponent<VfxNetwork>();
+            var interactables = systems.AddComponent<InteractableSpawner>();
+            SetProperties(interactables, so =>
+            {
+                var list = so.FindProperty("entries");
+                list.arraySize = 2;
+                list.GetArrayElementAtIndex(0).FindPropertyRelative("prefab").objectReferenceValue = smallChest.GetComponent<NetworkObject>();
+                list.GetArrayElementAtIndex(0).FindPropertyRelative("count").intValue = 14;
+                list.GetArrayElementAtIndex(1).FindPropertyRelative("prefab").objectReferenceValue = largeChest.GetComponent<NetworkObject>();
+                list.GetArrayElementAtIndex(1).FindPropertyRelative("count").intValue = 3;
+            });
             var director = systems.AddComponent<CombatDirector>();
             SetProperties(director, so =>
             {
@@ -522,6 +644,7 @@ namespace RiskOfMagic.Editor
                 manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Add(prefabList);
             netGo.AddComponent<NetworkDebugPanel>();
             netGo.AddComponent<DebugHud>();
+            netGo.AddComponent<DamageNumbers>();
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);

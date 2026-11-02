@@ -37,8 +37,9 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 - **Player** — `PlayerAvatar` (root, replicated character choice), `PlayerMotor` (owner-simulated, dash), `PlayerLook`, `PlayerInputHandler`.
 - **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (NavMesh AI), `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyProjectileAttack`.
 - **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (credits → `SpawnCard` waves).
+- **Items** — `ItemDefinition` SO (rarity, stacking stat modifiers, server proc hooks), `PlayerInventory` (replicated stacks, deferred proc dispatch), `ItemPickup`. Proc types: `HealOnHit`, `HealOnKill`, `ExplodeOnKill`, `ExplodeOnHit`, `ChainOnHit`, `ProjectileOnHit`. Item damage has `ProcCoefficient = 0` (no infinite chains).
 - **Economy** — `PlayerWallet` (gold), `GoldRewarder` (kill → gold, scaled by difficulty).
-- **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `HealingShrine`.
-- **Vfx / UI / Networking** — pooled effects, prototype IMGUI HUD, connection panel.
+- **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.
+- **Vfx / UI / Networking** — pooled effects + `VfxNetwork` (server-triggered effects), prototype IMGUI HUD (inventory, pickups), `DamageNumbers`, connection panel.
 
 Authority rules: movement = owner, health/damage/AI/gold/spawns = server. Damage always goes through `IDamageable.ApplyDamage` on the server.

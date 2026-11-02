@@ -38,6 +38,8 @@ namespace RiskOfMagic.Player
         public Vector3 Velocity => velocity + externalVelocity;
         /// <summary>Multiplicative modifier for buffs, items, skills.</summary>
         public float SpeedMultiplier { get; set; } = 1f;
+        /// <summary>Added to MovementConfig.maxJumps (items).</summary>
+        public int ExtraJumps { get; set; }
 
         public void SetConfig(MovementConfig newConfig) => config = newConfig;
 
@@ -128,7 +130,7 @@ namespace RiskOfMagic.Player
             if (jumpPressed)
                 lastJumpPressedTime = Time.time;
 
-            if (Time.time - lastJumpPressedTime <= config.jumpBufferTime && jumpsUsed < config.maxJumps)
+            if (Time.time - lastJumpPressedTime <= config.jumpBufferTime && jumpsUsed < config.maxJumps + ExtraJumps)
             {
                 velocity.y = Mathf.Sqrt(2f * config.gravity * config.jumpHeight);
                 jumpsUsed++;

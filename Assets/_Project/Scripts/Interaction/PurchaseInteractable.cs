@@ -36,7 +36,16 @@ namespace RiskOfMagic.Interaction
         {
             if (IsServer)
                 RefreshCost();
+            uses.OnValueChanged += OnUsesChanged;
+            OnAvailabilityChanged(IsAvailable);
         }
+
+        public override void OnNetworkDespawn() => uses.OnValueChanged -= OnUsesChanged;
+
+        /// <summary>Every peer (open lid, grey out...).</summary>
+        protected virtual void OnAvailabilityChanged(bool available) { }
+
+        private void OnUsesChanged(int previous, int current) => OnAvailabilityChanged(IsAvailable);
 
         /// <summary>Server only.</summary>
         public void RefreshCost()

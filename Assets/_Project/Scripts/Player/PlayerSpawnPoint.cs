@@ -7,6 +7,8 @@ namespace RiskOfMagic.Player
     {
         private static readonly List<PlayerSpawnPoint> points = new();
 
+        public static IReadOnlyList<PlayerSpawnPoint> All => points;
+
         public static bool TryGet(int index, out Pose pose)
         {
             pose = default;

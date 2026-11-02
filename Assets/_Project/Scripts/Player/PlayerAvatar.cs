@@ -4,6 +4,7 @@ using RiskOfMagic.Characters;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
+using RiskOfMagic.Items;
 using RiskOfMagic.Skills;
 using Unity.Netcode;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace RiskOfMagic.Player
     /// </summary>
     [RequireComponent(typeof(Health), typeof(PlayerMotor), typeof(PlayerLook))]
     [RequireComponent(typeof(PlayerInputHandler), typeof(CharacterStats), typeof(PlayerWallet))]
+    [RequireComponent(typeof(PlayerInventory))]
     public class PlayerAvatar : NetworkBehaviour
     {
         private static readonly int ColorId = Shader.PropertyToID("_Color");
@@ -22,9 +24,11 @@ namespace RiskOfMagic.Player
         private static readonly List<PlayerAvatar> all = new();
 
         [SerializeField] private Renderer[] bodyRenderers = Array.Empty<Renderer>();
+        [SerializeField, Min(0.05f)] private float regenTickInterval = 0.25f;
 
         private readonly NetworkVariable<int> characterIndex = new();
         private MaterialPropertyBlock propertyBlock;
+        private float regenTimer;
 
         public static IReadOnlyList<PlayerAvatar> All => all;
         public static PlayerAvatar Local { get; private set; }
@@ -40,6 +44,7 @@ namespace RiskOfMagic.Player
         public PlayerInputHandler Input { get; private set; }
         public CharacterStats Stats { get; private set; }
         public PlayerWallet Wallet { get; private set; }
+        public PlayerInventory Inventory { get; private set; }
         public SkillController Skills { get; private set; }
         public CharacterDefinition Character { get; private set; }
         public int CharacterIndex => characterIndex.Value;
@@ -80,6 +85,7 @@ namespace RiskOfMagic.Player
             Input = GetComponent<PlayerInputHandler>();
             Stats = GetComponent<CharacterStats>();
             Wallet = GetComponent<PlayerWallet>();
+            Inventory = GetComponent<PlayerInventory>();
             Skills = GetComponent<SkillController>();
         }
 
@@ -89,6 +95,7 @@ namespace RiskOfMagic.Player
             Health.Died += OnDied;
             Health.Revived += OnRevived;
             characterIndex.OnValueChanged += OnCharacterIndexChanged;
+            Inventory.ItemsChanged += RecalculateStats;
             ApplyCharacter(characterIndex.Value);
 
             Input.enabled = IsOwner;
@@ -109,6 +116,7 @@ namespace RiskOfMagic.Player
             Health.Died -= OnDied;
             Health.Revived -= OnRevived;
             characterIndex.OnValueChanged -= OnCharacterIndexChanged;
+            Inventory.ItemsChanged -= RecalculateStats;
             if (Local == this)
                 Local = null;
         }
@@ -143,21 +151,42 @@ namespace RiskOfMagic.Player
                 return;
 
             Character = definition;
-            Stats.ApplyDefinition(definition);
             if (definition.movement != null)
                 Motor.SetConfig(definition.movement);
             if (Skills != null)
                 Skills.SetLoadout(definition);
-
-            if (IsServer)
-            {
-                Health.SetBaseMaxHealth(definition.maxHealth);
-                if (Health.IsSpawned)
-                    Health.SetMaxHealth(definition.maxHealth);
-            }
+            RecalculateStats();
 
             ApplyBodyColor(definition.bodyColor);
             CharacterChanged?.Invoke(definition);
+        }
+
+        /// <summary>Character base stats + items. Runs on every peer.</summary>
+        public void RecalculateStats()
+        {
+            if (Character == null)
+                return;
+
+            Stats.Recalculate(Character, Inventory);
+            Motor.SpeedMultiplier = Stats.MoveSpeedMultiplier;
+            Motor.ExtraJumps = Stats.ExtraJumps;
+
+            if (!IsServer)
+                return;
+            Health.SetBaseMaxHealth(Stats.MaxHealth);
+            if (Health.IsSpawned && !Mathf.Approximately(Health.Max, Stats.MaxHealth))
+                Health.SetMaxHealth(Stats.MaxHealth);
+        }
+
+        private void Update()
+        {
+            if (!IsServer || !IsSpawned || !IsAlive || Stats.HealthRegen <= 0f)
+                return;
+            regenTimer += Time.deltaTime;
+            if (regenTimer < regenTickInterval)
+                return;
+            Health.Heal(Stats.HealthRegen * regenTimer);
+            regenTimer = 0f;
         }
 
         private void ApplyBodyColor(Color color)

@@ -1,6 +1,7 @@
 using RiskOfMagic.Core;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Interaction;
+using RiskOfMagic.Items;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
 using RiskOfMagic.Skills;
@@ -13,8 +14,27 @@ namespace RiskOfMagic.UI
     {
         private static readonly string[] SlotKeys = { "LMB", "RMB", "Shift", "R" };
 
+        [SerializeField, Min(0f)] private float notificationDuration = 3f;
+        [SerializeField, Min(0f)] private float pickupLabelDistance = 20f;
+
         private GUIStyle centered;
         private GUIStyle box;
+        private GUIStyle small;
+        private string notification;
+        private Color notificationColor;
+        private float notificationEnd;
+
+        private void OnEnable() => PlayerInventory.LocalItemGained += OnLocalItemGained;
+        private void OnDisable() => PlayerInventory.LocalItemGained -= OnLocalItemGained;
+
+        private void OnLocalItemGained(ItemDefinition item, int count)
+        {
+            if (item == null)
+                return;
+            notification = $"{item.displayName} (x{count})\n{item.description}";
+            notificationColor = ItemDefinition.GetRarityColor(item.rarity);
+            notificationEnd = Time.time + notificationDuration;
+        }
 
         private void OnGUI()
         {
@@ -24,11 +44,67 @@ namespace RiskOfMagic.UI
 
             centered ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16 };
             box ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.MiddleCenter, fontSize = 12, wordWrap = true };
+            small ??= new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 13, fontStyle = FontStyle.Bold };
 
             DrawCrosshair(player);
             DrawVitals(player);
             DrawSkills(player);
             DrawRunInfo();
+            DrawInventory(player);
+            DrawPickupLabels(player);
+            DrawNotification();
+        }
+
+        private void DrawInventory(PlayerAvatar player)
+        {
+            var catalog = GameCatalog.Instance;
+            if (catalog == null)
+                return;
+
+            var previous = GUI.color;
+            float y = Screen.height - 30f;
+            for (int i = player.Inventory.SlotCount - 1; i >= 0; i--)
+            {
+                int count = player.Inventory.GetCountAt(i);
+                var item = count > 0 ? catalog.GetItem(i) : null;
+                if (item == null)
+                    continue;
+                GUI.color = ItemDefinition.GetRarityColor(item.rarity);
+                GUI.Label(new Rect(Screen.width - 260f, y, 250f, 22f), $"{item.displayName}  x{count}");
+                y -= 20f;
+            }
+            GUI.color = previous;
+        }
+
+        private void DrawPickupLabels(PlayerAvatar player)
+        {
+            var cam = player.Look.Camera;
+            if (cam == null)
+                return;
+
+            var previous = GUI.color;
+            foreach (var pickup in ItemPickup.Active)
+            {
+                var item = pickup.Item;
+                if (item == null)
+                    continue;
+                Vector3 screen = cam.WorldToScreenPoint(pickup.VisualPosition + Vector3.up * 0.8f);
+                if (screen.z <= 0f || screen.z > pickupLabelDistance)
+                    continue;
+                GUI.color = ItemDefinition.GetRarityColor(item.rarity);
+                GUI.Label(new Rect(screen.x - 100f, Screen.height - screen.y - 12f, 200f, 24f), item.displayName, small);
+            }
+            GUI.color = previous;
+        }
+
+        private void DrawNotification()
+        {
+            if (string.IsNullOrEmpty(notification) || Time.time > notificationEnd)
+                return;
+            var previous = GUI.color;
+            GUI.color = notificationColor;
+            GUI.Label(new Rect(Screen.width * 0.5f - 250f, 60f, 500f, 50f), notification, centered);
+            GUI.color = previous;
         }
 
         private void DrawCrosshair(PlayerAvatar player)

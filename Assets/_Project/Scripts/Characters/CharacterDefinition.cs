@@ -14,6 +14,7 @@ namespace RiskOfMagic.Characters
 
         [Header("Stats")]
         [Min(1f)] public float maxHealth = 110f;
+        [Min(0f), Tooltip("HP per second.")] public float healthRegen = 1f;
         [Min(0f)] public float baseDamage = 12f;
         [Min(0.1f)] public float attackSpeed = 1f;
         [Range(0f, 1f)] public float critChance = 0.01f;

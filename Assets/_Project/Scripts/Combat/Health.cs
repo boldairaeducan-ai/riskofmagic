@@ -23,6 +23,21 @@ namespace RiskOfMagic.Combat
         public event Action<DamageInfo> Died;
         public event Action Revived;
 
+        /// <summary>Server only: every damage instance (item procs, stats).</summary>
+        public static event Action<Health, DamageInfo> ServerDamaged;
+        /// <summary>Server only: every death.</summary>
+        public static event Action<Health, DamageInfo> ServerKilled;
+        /// <summary>Every peer: every damage instance (damage numbers, hit markers).</summary>
+        public static event Action<Health, DamageInfo> AnyDamaged;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            ServerDamaged = null;
+            ServerKilled = null;
+            AnyDamaged = null;
+        }
+
         Health IDamageable.Health => this;
         public Team Team => team;
         public float Current => current.Value;
@@ -59,14 +74,15 @@ namespace RiskOfMagic.Combat
             if (!allowFriendlyFire && team != Team.Neutral && info.SourceTeam == team)
                 return;
 
-            float previous = current.Value;
-            float next = Mathf.Max(0f, previous - info.Amount);
-            info.Amount = previous - next;
+            float next = Mathf.Max(0f, current.Value - info.Amount);
             current.Value = next;
 
+            ServerDamaged?.Invoke(this, info);
             DamagedRpc(info);
-            if (next <= 0f)
-                DiedRpc(info);
+            if (next > 0f)
+                return;
+            ServerKilled?.Invoke(this, info);
+            DiedRpc(info);
         }
 
         public void Heal(float amount)
@@ -94,7 +110,11 @@ namespace RiskOfMagic.Combat
         }
 
         [Rpc(SendTo.Everyone)]
-        private void DamagedRpc(DamageInfo info) => Damaged?.Invoke(info);
+        private void DamagedRpc(DamageInfo info)
+        {
+            Damaged?.Invoke(info);
+            AnyDamaged?.Invoke(this, info);
+        }
 
         [Rpc(SendTo.Everyone)]
         private void DiedRpc(DamageInfo info) => Died?.Invoke(info);
