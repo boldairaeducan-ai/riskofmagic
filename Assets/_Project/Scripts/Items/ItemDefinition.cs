@@ -8,8 +8,11 @@ namespace RiskOfMagic.Items
     public enum ItemRarity : byte
     {
         Common,
+        Uncommon,
         Rare,
-        Legendary
+        Legendary,
+        /// <summary>Only from boss rewards.</summary>
+        Boss
     }
 
     public enum StatType : byte
@@ -22,14 +25,20 @@ namespace RiskOfMagic.Items
         HealthRegen,
         CritChance,
         CooldownReduction,
-        ExtraJumps
+        ExtraJumps,
+        /// <summary>Flat damage removed from each hit taken (never below 1).</summary>
+        FlatDamageReduction,
+        /// <summary>Multiplicative per stack: 0.15 = -15%, then -15% of the rest...</summary>
+        DamageTakenReduction,
+        /// <summary>Extra charges on every skill except the primary.</summary>
+        BonusSkillCharges
     }
 
     [Serializable]
     public struct StatModifier
     {
         public StatType stat;
-        [Tooltip("Percent stats: 0.15 = +15%. CooldownReduction stacks multiplicatively. MaxHealth/HealthRegen/ExtraJumps are flat.")]
+        [Tooltip("Percent stats: 0.15 = +15%. CooldownReduction/DamageTakenReduction stack multiplicatively. MaxHealth, HealthRegen, ExtraJumps, FlatDamageReduction, BonusSkillCharges are flat.")]
         public float valuePerStack;
     }
 
@@ -52,17 +61,34 @@ namespace RiskOfMagic.Items
         /// <summary>Server only. Called a frame after the owner killed something.</summary>
         public virtual void OnKillServer(PlayerAvatar owner, in ProcEvent proc, int stacks) { }
 
+        /// <summary>Server only. Called right after the owner took damage.</summary>
+        public virtual void OnOwnerDamagedServer(PlayerAvatar owner, in DamageInfo info, int stacks) { }
+
+        /// <summary>Server only. Modify the damage the owner deals to <paramref name="victim"/>.</summary>
+        public virtual float ModifyOutgoingDamage(PlayerAvatar owner, Health victim, in DamageInfo info, float amount, int stacks) => amount;
+
+        /// <summary>Server only. Return true to survive a lethal hit (one stack is consumed by the inventory).</summary>
+        public virtual bool TryPreventDeath(PlayerAvatar owner, int stacks, out float healthFraction)
+        {
+            healthFraction = 0f;
+            return false;
+        }
+
         public static Color GetRarityColor(ItemRarity rarity) => rarity switch
         {
+            ItemRarity.Uncommon => new Color(0.4f, 0.85f, 0.35f),
             ItemRarity.Rare => new Color(0.35f, 0.6f, 1f),
-            ItemRarity.Legendary => new Color(1f, 0.75f, 0.2f),
+            ItemRarity.Legendary => new Color(1f, 0.6f, 0.15f),
+            ItemRarity.Boss => new Color(0.95f, 0.85f, 0.2f),
             _ => Color.white
         };
 
         public static string GetRarityName(ItemRarity rarity) => rarity switch
         {
+            ItemRarity.Uncommon => "Peu commun",
             ItemRarity.Rare => "Rare",
             ItemRarity.Legendary => "Légendaire",
+            ItemRarity.Boss => "Boss",
             _ => "Commun"
         };
 

@@ -30,13 +30,13 @@ namespace RiskOfMagic.UI
             pool.Begin();
             foreach (var pickup in ItemPickup.Active)
             {
-                var item = pickup.Item;
-                if (item == null || !ScreenProjection.TryProject(cam, space, pickup.VisualPosition + Vector3.up * heightOffset, maxDistance, out var position))
+                string text = pickup.DisplayName;
+                if (string.IsNullOrEmpty(text) || !ScreenProjection.TryProject(cam, space, pickup.VisualPosition + Vector3.up * heightOffset, maxDistance, out var position))
                     continue;
                 var label = pool.Next();
                 label.rectTransform.anchoredPosition = position;
-                label.text = item.displayName;
-                label.color = ItemDefinition.GetRarityColor(item.rarity);
+                label.text = text;
+                label.color = pickup.DisplayColor;
             }
             pool.End();
         }

@@ -6,6 +6,7 @@ using RiskOfMagic.Combat.Projectiles;
 using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
 using RiskOfMagic.Enemies;
+using RiskOfMagic.Equipment;
 using RiskOfMagic.Interaction;
 using RiskOfMagic.Items;
 using RiskOfMagic.Items.Types;
@@ -41,6 +42,7 @@ namespace RiskOfMagic.Editor
         private const string ProjectilesFolder = Configs + "/Projectiles";
         private const string EnemiesFolder = Configs + "/Enemies";
         private const string ItemsFolder = Configs + "/Items";
+        private const string EquipmentFolder = Configs + "/Equipment";
         private const string Prefabs = Root + "/Prefabs";
         private const string VfxFolder = Prefabs + "/Vfx";
         private const string Materials = Root + "/Materials";
@@ -50,7 +52,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave;
         }
 
         private sealed class ProjectileSet
@@ -66,7 +68,7 @@ namespace RiskOfMagic.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() || !HudBuilder.EnsureTextMeshPro())
                 return;
 
-            foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
+            foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, EquipmentFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
                 Directory.CreateDirectory(folder);
             AssetDatabase.Refresh();
 
@@ -74,14 +76,25 @@ namespace RiskOfMagic.Editor
             var projectiles = BuildProjectiles(vfx);
             var characters = BuildCharacters(projectiles, vfx);
             var items = BuildItems(projectiles, vfx);
+            var equipment = BuildEquipment(vfx);
+            var pickup = BuildPickupPrefab();
 
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
-            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst });
+            var replicatedEffects = new List<GameObject>
+            {
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave
+            };
+            catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             EditorUtility.SetDirty(catalog);
 
-            var pickup = BuildPickupPrefab();
-            var smallChest = BuildChestPrefab("Chest_Small", "Petit coffre", 25, 1f, new Vector3(79.2f, 19.8f, 1f), new Color(0.45f, 0.3f, 0.15f), pickup);
-            var largeChest = BuildChestPrefab("Chest_Large", "Grand coffre", 50, 1.4f, new Vector3(0f, 80f, 20f), new Color(0.85f, 0.65f, 0.2f), pickup);
+            var smallChest = BuildChestPrefab<ChestInteractable>("Chest_Small", "Petit coffre", 25, 1f, new RarityWeights(70f, 24f, 5f, 1f),
+                new Color(0.45f, 0.3f, 0.15f), pickup);
+            var largeChest = BuildChestPrefab<ChestInteractable>("Chest_Large", "Grand coffre", 50, 1.4f, new RarityWeights(0f, 60f, 32f, 8f),
+                new Color(0.85f, 0.65f, 0.2f), pickup);
+            var choiceChest = BuildChestPrefab<ChoiceChest>("Chest_Choice", "Coffre du choix", 40, 1.2f, new RarityWeights(70f, 24f, 5f, 1f),
+                new Color(0.45f, 0.25f, 0.6f), pickup);
+            var barrel = BuildEquipmentBarrelPrefab();
+            var merchant = BuildMerchantPrefab();
 
             var playerPrefab = BuildPlayerPrefab();
             var ghoul = BuildGhoul();
@@ -101,6 +114,9 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = smallChest });
             prefabList.Add(new NetworkPrefab { Prefab = largeChest });
+            prefabList.Add(new NetworkPrefab { Prefab = choiceChest });
+            prefabList.Add(new NetworkPrefab { Prefab = barrel });
+            prefabList.Add(new NetworkPrefab { Prefab = merchant });
             var shrine = BuildShrinePrefab();
             prefabList.Add(new NetworkPrefab { Prefab = shrine });
             EditorUtility.SetDirty(prefabList);
@@ -122,7 +138,10 @@ namespace RiskOfMagic.Editor
             var teleporter = BuildTeleporterPrefab(bossCards);
             prefabList.Add(new NetworkPrefab { Prefab = teleporter });
 
-            var gameSystems = BuildGameSystemsPrefab(cards, smallChest, largeChest, shrine, teleporter);
+            var gameSystems = BuildGameSystemsPrefab(cards, new[]
+            {
+                (smallChest, 12), (largeChest, 3), (choiceChest, 3), (barrel, 3), (shrine, 2), (merchant, 1)
+            }, teleporter);
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
@@ -151,6 +170,9 @@ namespace RiskOfMagic.Editor
                 ArcaneBurst = EffectPrefab("VFX_ArcaneBurst", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.05f, 0f), new Color(0.75f, 0.4f, 1f), 0.3f),
                 PoisonCloud = EffectPrefab("VFX_PoisonCloud", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.07f, 0f), new Color(0.45f, 0.85f, 0.25f), 0.45f),
                 PoisonBurst = EffectPrefab("VFX_PoisonBurst", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(0.5f, 1f, 0.3f), 0.25f),
+                CursePulse = EffectPrefab("VFX_CursePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.09f, 0f), new Color(0.55f, 0.2f, 0.6f), 0.4f),
+                RallyPulse = EffectPrefab("VFX_RallyPulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.1f, 0f), new Color(1f, 0.8f, 0.3f), 0.5f),
+                Shockwave = EffectPrefab("VFX_Shockwave", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.11f, 0f), new Color(0.9f, 0.85f, 0.75f), 0.3f),
                 TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
                 Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f)
             };
@@ -182,6 +204,8 @@ namespace RiskOfMagic.Editor
             Configure(set.ArcaneBolt, speed: 30f, gravity: 0f, lifetime: 3f, radius: 0.25f);
             set.ArcaneBolt.homingTurnRate = 420f;
             EditorUtility.SetDirty(set.ArcaneBolt);
+            set.ArcaneMissile.homingTurnRate = 300f;
+            EditorUtility.SetDirty(set.ArcaneMissile);
 
             set.Poison = Asset<DotEffect>(ProjectilesFolder + "/Dot_Poison.asset");
             set.Poison.damageType = DamageType.Poison;
@@ -424,52 +448,121 @@ namespace RiskOfMagic.Editor
 
         private static List<ItemDefinition> BuildItems(ProjectileSet projectiles, VfxSet vfx)
         {
+            // The item list is generated from scratch: remove assets from previous versions.
+            AssetDatabase.DeleteAsset(ItemsFolder);
+            Directory.CreateDirectory(ItemsFolder);
+            AssetDatabase.Refresh();
+
+            var bleed = Dot("Dot_Bleed", DamageType.Bleed, tickFraction: 0.4f, interval: 0.5f, duration: 3f, maxStacks: 20);
+            var burn = Dot("Dot_Burn", DamageType.Fire, tickFraction: 0.25f, interval: 0.5f, duration: 3f, maxStacks: 10);
+
+            // Common
+            var gauntlet = Item<ItemDefinition>("Item_Gauntlet", "Gantelet de célérité", "+15% vitesse d'attaque (+15%).", ItemRarity.Common, Mod(StatType.AttackSpeed, 0.15f));
+            var boots = Item<ItemDefinition>("Item_Boots", "Bottes du messager", "+14% vitesse de déplacement (+14%).", ItemRarity.Common, Mod(StatType.MoveSpeed, 0.14f));
+            var hawkEye = Item<ItemDefinition>("Item_HawkEye", "Œil de faucon", "+10% chances de coup critique (+10%).", ItemRarity.Common, Mod(StatType.CritChance, 0.1f));
+            var meat = Item<ItemDefinition>("Item_DriedMeat", "Viande séchée", "+25 PV max (+25).", ItemRarity.Common, Mod(StatType.MaxHealth, 25f));
+            var fang = Item<HealOnKillItem>("Item_WolfFang", "Croc de loup", "Tuer un ennemi soigne 8 PV (+6).", ItemRarity.Common);
+            fang.healFirstStack = 8f;
+            fang.healPerExtraStack = 6f;
+
+            // Uncommon
+            var oak = Item<ItemDefinition>("Item_OakShield", "Bouclier de chêne", "Chaque coup reçu est réduit de 5 (+5), jamais sous 1.", ItemRarity.Uncommon,
+                Mod(StatType.FlatDamageReduction, 5f));
+            var dagger = Item<DotOnHitItem>("Item_BarbedDagger", "Dague barbelée", "10% (+10%) de chances de faire saigner : 240% en 3 s.", ItemRarity.Uncommon);
+            dagger.dot = bleed;
+            dagger.chanceFirstStack = 0.1f;
+            dagger.chancePerExtraStack = 0.1f;
+            var fireOrb = Item<DotAreaOnKillItem>("Item_FireOrb", "Orbe de feu", "Un ennemi tué brûle les ennemis à 4 m (+4 m) : 150% en 3 s.", ItemRarity.Uncommon);
+            fireOrb.dot = burn;
+            fireOrb.radiusFirstStack = 4f;
+            fireOrb.radiusPerExtraStack = 4f;
+            fireOrb.vfx = vfx.Explosion;
+            var feather = Item<ItemDefinition>("Item_GriffinFeather", "Plume de griffon", "+1 saut (+1).", ItemRarity.Uncommon, Mod(StatType.ExtraJumps, 1f));
+            var executioner = Item<ExecutionerItem>("Item_ExecutionerBlade", "Lame du bourreau", "+20% (+20%) de dégâts contre les ennemis sous 30% de PV.", ItemRarity.Uncommon);
+
+            // Rare
+            var hourglass = Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-12% temps de recharge (multiplicatif).", ItemRarity.Rare, Mod(StatType.CooldownReduction, 0.12f));
+            var storm = Item<ChainOnHitItem>("Item_StormOrb", "Orbe de tempête", "25% de chances : éclair sur 3 ennemis (+2), 80% des dégâts.", ItemRarity.Rare);
+            storm.boltVfx = vfx.Lightning;
+            var oil = Item<ExplodeOnKillItem>("Item_FireOil", "Huile incendiaire", "Les ennemis tués explosent : 150% (+75%) dans 6 m (+1,5 m).", ItemRarity.Rare);
+            oil.explosionVfx = vfx.Explosion;
+            var quiver = Item<ProjectileOnHitItem>("Item_EnchantedQuiver", "Carquois enchanté", "10% de chances : missile chercheur, 300% des dégâts (+300%).", ItemRarity.Rare);
+            quiver.projectile = projectiles.ArcaneMissile;
+            var horn = Item<WarHornItem>("Item_WarHorn", "Cor de guerre",
+                "Chaque kill : +15% vitesse de déplacement et d'attaque, max 5 (+1). Tout est perdu en subissant des dégâts.", ItemRarity.Rare);
+
+            // Legendary
+            var chaosEye = Item<ExplodeOnHitItem>("Item_ChaosEye", "Œil du chaos", "Chaque coup explose : 60% des dégâts dans 4 m (+2,5 m).", ItemRarity.Legendary);
+            chaosEye.explosionVfx = vfx.Explosion;
+            var phoenix = Item<PhoenixFeatherItem>("Item_PhoenixFeather", "Plume de phénix", "À la mort, ressuscite avec 50% des PV. Consommée.", ItemRarity.Legendary);
+            var grimoire = Item<ItemDefinition>("Item_ForbiddenGrimoire", "Grimoire interdit", "+1 charge (+1) à toutes les compétences sauf la principale.",
+                ItemRarity.Legendary, Mod(StatType.BonusSkillCharges, 1f));
+
+            // Boss
+            var scale = Item<ItemDefinition>("Item_ColossusScale", "Écaille du colosse", "-15% de dégâts subis (dégressif).", ItemRarity.Boss,
+                Mod(StatType.DamageTakenReduction, 0.15f));
+            var bone = Item<ShockwaveEveryHitsItem>("Item_TitanBone", "Os de titan", "Toutes les 5 attaques : onde de choc de 300% (+150%) autour de soi.", ItemRarity.Boss);
+            bone.vfx = vfx.Shockwave;
+
             var items = new List<ItemDefinition>
             {
-                // Common
-                Item<ItemDefinition>("Item_Gauntlet", "Gantelet de vivacité", "+15% vitesse d'attaque.", ItemRarity.Common, Mod(StatType.AttackSpeed, 0.15f)),
-                Item<ItemDefinition>("Item_Boots", "Bottes de coursier", "+14% vitesse de déplacement.", ItemRarity.Common, Mod(StatType.MoveSpeed, 0.14f)),
-                Item<ItemDefinition>("Item_HawkEye", "Œil de faucon", "+10% chances de coup critique.", ItemRarity.Common, Mod(StatType.CritChance, 0.1f)),
-                Item<ItemDefinition>("Item_Whetstone", "Pierre à aiguiser", "+10% dégâts.", ItemRarity.Common, Mod(StatType.Damage, 0.1f)),
-                Item<ItemDefinition>("Item_DriedMeat", "Viande séchée", "+25 PV max.", ItemRarity.Common, Mod(StatType.MaxHealth, 25f)),
-                Item<ItemDefinition>("Item_GriffinFeather", "Plume de griffon", "+1 saut.", ItemRarity.Common, Mod(StatType.ExtraJumps, 1f)),
-                Item<ItemDefinition>("Item_LifeHerb", "Herbe de vie", "+1,6 PV/s.", ItemRarity.Common, Mod(StatType.HealthRegen, 1.6f)),
-                Item<HealOnHitItem>("Item_RunicLeech", "Sangsue runique", "Chaque coup soigne 1 PV (+1 par exemplaire).", ItemRarity.Common),
-                Item<HealOnKillItem>("Item_WolfFang", "Croc de loup", "Tuer un ennemi soigne 8 PV (+6 par exemplaire).", ItemRarity.Common),
-                // Rare
-                Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-10% temps de recharge des compétences.", ItemRarity.Rare, Mod(StatType.CooldownReduction, 0.1f)),
-                Item<ChainOnHitItem>("Item_StormOrb", "Orbe de tempête", "25% de chances : éclair sur 3 ennemis (+2), 80% des dégâts.", ItemRarity.Rare),
-                Item<ExplodeOnKillItem>("Item_FireOil", "Huile incendiaire", "Les ennemis tués explosent : 150% (+75%) dans 6 m (+1,5 m).", ItemRarity.Rare),
-                Item<ProjectileOnHitItem>("Item_EnchantedQuiver", "Carquois enchanté", "10% de chances : missile arcanique, 300% des dégâts (+300%).", ItemRarity.Rare),
-                // Legendary
-                Item<ExplodeOnHitItem>("Item_ChaosEye", "Œil du chaos", "Chaque coup explose : 60% des dégâts dans 4 m (+2,5 m).", ItemRarity.Legendary),
-                Item<ItemDefinition>("Item_DragonHeart", "Cœur de dragon", "+50% PV max, +4 PV/s.", ItemRarity.Legendary,
-                    Mod(StatType.MaxHealthPercent, 0.5f), Mod(StatType.HealthRegen, 4f))
+                gauntlet, boots, hawkEye, meat, fang,
+                oak, dagger, fireOrb, feather, executioner,
+                hourglass, storm, oil, quiver, horn,
+                chaosEye, phoenix, grimoire,
+                scale, bone
             };
-
             foreach (var item in items)
-            {
-                switch (item)
-                {
-                    case ChainOnHitItem chain: chain.boltVfx = vfx.Lightning; break;
-                    case ExplodeOnKillItem onKill: onKill.explosionVfx = vfx.Explosion; break;
-                    case ExplodeOnHitItem onHit: onHit.explosionVfx = vfx.Explosion; break;
-                    case ProjectileOnHitItem quiver: quiver.projectile = projectiles.ArcaneMissile; break;
-                }
                 EditorUtility.SetDirty(item);
-            }
             return items;
         }
 
-        private static T Item<T>(string file, string displayName, string description, ItemRarity rarity, params StatModifier[] modifiers)
-            where T : ItemDefinition
+        private static DotEffect Dot(string file, DamageType type, float tickFraction, float interval, float duration, int maxStacks)
         {
-            var item = Asset<T>($"{ItemsFolder}/{file}.asset");
-            item.displayName = displayName;
-            item.description = description;
-            item.rarity = rarity;
-            item.modifiers = modifiers;
-            return item;
+            var dot = Asset<DotEffect>($"{ItemsFolder}/{file}.asset");
+            dot.damageType = type;
+            dot.tickDamageFraction = tickFraction;
+            dot.tickInterval = interval;
+            dot.duration = duration;
+            dot.maxStacks = maxStacks;
+            EditorUtility.SetDirty(dot);
+            return dot;
+        }
+
+        private static List<EquipmentDefinition> BuildEquipment(VfxSet vfx)
+        {
+            var horn = Asset<RallyHornEquipment>($"{EquipmentFolder}/Equipment_RallyHorn.asset");
+            horn.displayName = "Corne de ralliement";
+            horn.description = "+40% vitesse d'attaque et de déplacement pendant 8 s, pour soi et les alliés à 25 m.";
+            horn.cooldown = 45f;
+            horn.radius = 25f;
+            horn.duration = 8f;
+            horn.vfx = vfx.RallyPulse;
+
+            var tome = Asset<CurseConeEquipment>($"{EquipmentFolder}/Equipment_DarkTome.asset");
+            tome.displayName = "Tome sombre";
+            tome.description = "Coûte 25% des PV max. Maudit les ennemis devant soi (20 m) pendant 8 s : -50% dégâts infligés, -10% vitesse, +30% dégâts subis.";
+            tome.cooldown = 30f;
+            tome.healthCost = 0.25f;
+            tome.range = 20f;
+            tome.coneAngle = 35f;
+            tome.curseDuration = 8f;
+            tome.vfx = vfx.CursePulse;
+
+            var stone = Asset<LightningStrikeEquipment>($"{EquipmentFolder}/Equipment_LightningStone.asset");
+            stone.displayName = "Pierre de foudre";
+            stone.description = "La foudre frappe 3 fois la zone visée : 500% chaque.";
+            stone.cooldown = 30f;
+            stone.strikes = 3;
+            stone.damageCoefficient = 5f;
+            stone.radius = 4f;
+            stone.boltVfx = vfx.Lightning;
+            stone.impactVfx = vfx.Explosion;
+
+            var all = new List<EquipmentDefinition> { horn, tome, stone };
+            foreach (var equipment in all)
+                EditorUtility.SetDirty(equipment);
+            return all;
         }
 
         private static StatModifier Mod(StatType stat, float valuePerStack) => new() { stat = stat, valuePerStack = valuePerStack };
@@ -480,12 +573,17 @@ namespace RiskOfMagic.Editor
             root.AddComponent<NetworkObject>();
             var visual = CreateVisual(PrimitiveType.Cube, "Visual", root.transform, new Vector3(0f, 0.8f, 0f), Vector3.one * 0.45f, Mat("M_Pickup", Color.white, unlit: true));
             visual.transform.localRotation = Quaternion.Euler(45f, 0f, 45f);
+            var trigger = root.AddComponent<SphereCollider>();
+            trigger.isTrigger = true; // equipment pickups are aimed at and taken with E
+            trigger.center = new Vector3(0f, 0.8f, 0f);
+            trigger.radius = 0.8f;
             var pickup = root.AddComponent<ItemPickup>();
             SetProperties(pickup, so => so.FindProperty("floatingVisual").objectReferenceValue = visual.transform);
             return SavePrefab(root, Prefabs + "/ItemPickup.prefab").GetComponent<ItemPickup>();
         }
 
-        private static GameObject BuildChestPrefab(string file, string displayName, uint cost, float size, Vector3 weights, Color color, ItemPickup pickup)
+        private static GameObject BuildChestPrefab<T>(string file, string displayName, uint cost, float size, RarityWeights weights, Color color, ItemPickup pickup)
+            where T : ChestInteractable
         {
             var root = new GameObject(file);
             var body = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -499,20 +597,68 @@ namespace RiskOfMagic.Editor
                 Mat("M_" + file + "_Lid", color * 0.7f));
 
             root.AddComponent<NetworkObject>();
-            var chest = root.AddComponent<ChestInteractable>();
+            var chest = root.AddComponent<T>();
             SetProperties(chest, so =>
             {
                 so.FindProperty("displayName").stringValue = displayName;
                 so.FindProperty("baseCost").uintValue = cost;
                 so.FindProperty("maxUses").intValue = 1;
-                so.FindProperty("commonWeight").floatValue = weights.x;
-                so.FindProperty("rareWeight").floatValue = weights.y;
-                so.FindProperty("legendaryWeight").floatValue = weights.z;
+                var rarity = so.FindProperty("rarityWeights");
+                rarity.FindPropertyRelative("common").floatValue = weights.common;
+                rarity.FindPropertyRelative("uncommon").floatValue = weights.uncommon;
+                rarity.FindPropertyRelative("rare").floatValue = weights.rare;
+                rarity.FindPropertyRelative("legendary").floatValue = weights.legendary;
                 so.FindProperty("pickupPrefab").objectReferenceValue = pickup;
                 so.FindProperty("dropOffset").vector3Value = new Vector3(0f, 0f, 1.4f * size);
                 so.FindProperty("closedVisual").objectReferenceValue = lid;
             });
             return SavePrefab(root, $"{Prefabs}/{file}.prefab");
+        }
+
+        private static GameObject BuildEquipmentBarrelPrefab()
+        {
+            var root = new GameObject("EquipmentBarrel");
+            var body = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = new Vector3(0f, 0.6f, 0f);
+            body.transform.localScale = new Vector3(0.9f, 0.6f, 0.9f);
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_EquipmentBarrel", new Color(0.8f, 0.45f, 0.2f));
+            var lid = CreateVisual(PrimitiveType.Cylinder, "Lid", root.transform, new Vector3(0f, 1.25f, 0f), new Vector3(0.95f, 0.06f, 0.95f),
+                Mat("M_EquipmentBarrel_Lid", new Color(0.45f, 0.3f, 0.15f)));
+
+            root.AddComponent<NetworkObject>();
+            var barrel = root.AddComponent<EquipmentBarrel>();
+            SetProperties(barrel, so =>
+            {
+                so.FindProperty("displayName").stringValue = "Baril d'équipement";
+                so.FindProperty("baseCost").uintValue = 35;
+                so.FindProperty("maxUses").intValue = 1;
+                so.FindProperty("closedVisual").objectReferenceValue = lid;
+            });
+            return SavePrefab(root, Prefabs + "/EquipmentBarrel.prefab");
+        }
+
+        private static GameObject BuildMerchantPrefab()
+        {
+            var root = new GameObject("Merchant");
+            var body = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = new Vector3(0f, 1f, 0f);
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_Merchant", new Color(0.35f, 0.25f, 0.5f));
+            CreateVisual(PrimitiveType.Cylinder, "Hat", root.transform, new Vector3(0f, 2.15f, 0f), new Vector3(0.9f, 0.08f, 0.9f), Mat("M_MerchantHat", new Color(0.2f, 0.15f, 0.1f)));
+            CreateVisual(PrimitiveType.Cylinder, "HatTop", root.transform, new Vector3(0f, 2.4f, 0f), new Vector3(0.5f, 0.25f, 0.5f), Mat("M_MerchantHat", new Color(0.2f, 0.15f, 0.1f)));
+            var stall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            stall.name = "Stall";
+            stall.transform.SetParent(root.transform, false);
+            stall.transform.localPosition = new Vector3(0f, 0.5f, 1.1f);
+            stall.transform.localScale = new Vector3(2.2f, 1f, 0.7f);
+            stall.GetComponent<Renderer>().sharedMaterial = Mat("M_MerchantStall", new Color(0.5f, 0.35f, 0.2f));
+
+            root.AddComponent<NetworkObject>();
+            root.AddComponent<Merchant>();
+            return SavePrefab(root, Prefabs + "/Merchant.prefab");
         }
 
         // ---------------------------------------------------------------- Player & enemies
@@ -536,6 +682,8 @@ namespace RiskOfMagic.Editor
             root.AddComponent<CharacterStats>();
             root.AddComponent<PlayerWallet>();
             root.AddComponent<PlayerInventory>();
+            root.AddComponent<StatusEffects>();
+            root.AddComponent<PlayerEquipment>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -833,6 +981,7 @@ namespace RiskOfMagic.Editor
             ConfigureTransform(root.AddComponent<NetworkTransform>());
 
             health = root.AddComponent<Health>();
+            root.AddComponent<StatusEffects>();
             SetProperties(health, so => so.FindProperty("team").enumValueIndex = (int)Team.Enemy);
             var actor = root.AddComponent<EnemyActor>();
             SetProperties(actor, so => so.FindProperty("definition").objectReferenceValue = def);
@@ -1012,8 +1161,7 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/HealingShrine.prefab");
         }
 
-        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, GameObject smallChest, GameObject largeChest, GameObject shrine,
-            GameObject teleporter)
+        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, (GameObject prefab, int count)[] entries, GameObject teleporter)
         {
             var root = new GameObject("GameSystems");
             root.AddComponent<NetworkObject>();
@@ -1032,7 +1180,6 @@ namespace RiskOfMagic.Editor
             });
 
             var interactables = root.AddComponent<InteractableSpawner>();
-            var entries = new (GameObject prefab, int count)[] { (smallChest, 14), (largeChest, 3), (shrine, 2) };
             SetProperties(interactables, so =>
             {
                 var list = so.FindProperty("entries");

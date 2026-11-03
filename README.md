@@ -52,9 +52,11 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 
 ## Tuning the director
 `Assets/_Project/Prefabs/GameSystems.prefab` → *Combat Director*: **Stage population** (credits, distance from spawns), **Waves** (interval, size, `wavesHuntPlayers`), **Placement** (`farSpawnDistance` = distance to the nearest player for normal waves; `minSpawnDistance` / `maxSpawnDistance` = ring around a player during the teleporter event, where waves also hunt). Defaults live in `CombatDirector.cs`; *Build Prototype Scene* regenerates the prefab with those defaults.
-- **Items** — `ItemDefinition` SO (rarity, stacking stat modifiers, server proc hooks), `PlayerInventory` (replicated stacks, deferred proc dispatch), `ItemPickup`. Proc types: `HealOnHit`, `HealOnKill`, `ExplodeOnKill`, `ExplodeOnHit`, `ChainOnHit`, `ProjectileOnHit`. Item damage has `ProcCoefficient = 0` (no infinite chains).
+- **Items** — `ItemDefinition` SO (rarity Common/Uncommon/Rare/Legendary/Boss, stacking stat modifiers, server hooks: on hit, on kill, on owner damaged, outgoing damage, prevent death), `PlayerInventory` (replicated stacks, deferred procs), `ItemPickup` (items auto-pickup, equipment with E), `RarityWeights`.
+- **Equipment** — `EquipmentDefinition` SO (key F, cooldown, server activation), `PlayerEquipment` (one slot, swapping drops the old one): Corne de ralliement, Tome sombre, Pierre de foudre.
+- **Status** — `StatusEffects` (replicated: Curse, Rally, Warhorn), `DotSystem` (Poison, Bleed, Burn), Health hooks (`IHealthHooks`, `IDamageDealerHooks`).
 - **Economy** — `PlayerWallet` (gold), `GoldRewarder` (kill → gold, scaled by difficulty).
-- **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.
+- **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `ChoiceChest` (pick 1 of 3), `EquipmentBarrel`, `Merchant` (shop + reroll), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.
 - **Vfx / Networking** — pooled effects + `VfxNetwork` (server-triggered effects), `ServerBootstrap` (spawns `GameSystems`).
 - **UI** (uGUI + TextMeshPro) — `HUD.prefab` built by *Tools → Risk of Magic → Rebuild HUD Prefab*. `HudController` binds `HudWidget`s to the local player (health, gold, character, skills, charge, prompt, inventory, run info, death overlay), plus damage numbers, pickup labels, item notification and `ConnectionMenu`.
 

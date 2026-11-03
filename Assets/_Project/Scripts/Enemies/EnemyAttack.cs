@@ -64,7 +64,7 @@ namespace RiskOfMagic.Enemies
         {
             yield return Perform(target);
             IsAttacking = false;
-            readyTime = Time.time + cooldown;
+            readyTime = Time.time + cooldown / Mathf.Max(0.1f, Actor.AttackSpeedMultiplier);
             routine = null;
         }
 

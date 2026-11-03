@@ -81,6 +81,7 @@ namespace RiskOfMagic.Editor
             BuildInteractionPrompt(gameplay);
             BuildCharacterPanel(gameplay);
             BuildSkillBar(gameplay);
+            BuildEquipmentSlot(gameplay);
             BuildInventory(gameplay);
             BuildRunInfo(gameplay);
             BuildObjective(gameplay);
@@ -89,6 +90,8 @@ namespace RiskOfMagic.Editor
 
             BuildDeathOverlay(rootRect);
             BuildGameOver(rootRect);
+            BuildChoiceMenu(rootRect);
+            BuildMerchantMenu(rootRect);
             BuildConnectionMenu(rootRect);
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -268,6 +271,140 @@ namespace RiskOfMagic.Editor
                 array.arraySize = slots.Length;
                 for (int i = 0; i < slots.Length; i++)
                     array.GetArrayElementAtIndex(i).objectReferenceValue = slots[i];
+            });
+        }
+
+        private static void BuildEquipmentSlot(RectTransform parent)
+        {
+            const float size = 100f;
+            // Right of the skill bar (4 x 100 + 3 x 12 wide, centered).
+            var slot = Rect("EquipmentSlot", parent, BottomCenter, BottomCenter, new Vector2(218f + 30f + size * 0.5f, 40f), new Vector2(size, size));
+            var group = slot.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            Themed(slot, HudSprite.SlotFrame, HudColor.Frame);
+            var icon = PlainImage(Stretch("Icon", slot, 6f));
+            var placeholder = Text(Stretch("Name", slot, 8f), null, "Équipement", 16f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
+            var overlay = Stretch("CooldownOverlay", slot, 6f);
+            Themed(overlay, HudSprite.CooldownOverlay, HudColor.CooldownOverlay);
+            var cooldown = Text(slot, "Cooldown", string.Empty, 36f, HudFont.Numbers, HudColor.Text, TextAlignmentOptions.Center);
+            Text(Rect("Key", slot, BottomCenter, TopCenter, new Vector2(0f, -4f), new Vector2(size, 24f)), null,
+                "F", 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.Center);
+
+            var widget = slot.gameObject.AddComponent<EquipmentSlotWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("icon").objectReferenceValue = icon;
+                so.FindProperty("placeholderName").objectReferenceValue = placeholder;
+                so.FindProperty("cooldownOverlay").objectReferenceValue = overlay;
+                so.FindProperty("cooldownLabel").objectReferenceValue = cooldown;
+            });
+        }
+
+        /// <summary>Card used by the choice and shop menus (laid out by a HorizontalLayoutGroup parent).</summary>
+        private static OfferCardWidget OfferCard(RectTransform parent, string name)
+        {
+            var card = Rect(name, parent, Center, Center, Vector2.zero, new Vector2(230f, 360f));
+            var element = card.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();
+            element.preferredWidth = 230f;
+            element.preferredHeight = 360f;
+            var frame = Themed(card, HudSprite.SlotFrame, HudColor.Frame, applyColor: false);
+
+            var iconRect = Rect("Icon", card, TopCenter, TopCenter, new Vector2(0f, -14f), new Vector2(110f, 110f));
+            var icon = PlainImage(iconRect);
+            var placeholder = Text(Stretch("Name", iconRect, 4f), null, "Objet", 15f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
+            var title = Text(Rect("Title", card, TopCenter, TopCenter, new Vector2(0f, -132f), new Vector2(210f, 34f)), null,
+                "Objet", 21f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Center);
+            var description = Text(Rect("Description", card, TopCenter, TopCenter, new Vector2(0f, -168f), new Vector2(206f, 120f)), null,
+                "Description", 15f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.Top);
+
+            var button = Button(card, "ActionButton", "Choisir", 0f);
+            PlaceButton(button, new Vector2(0f, 12f));
+            ((RectTransform)button.transform).sizeDelta = new Vector2(200f, 46f);
+            var buttonLabel = button.GetComponentInChildren<TextMeshProUGUI>();
+
+            var widget = card.gameObject.AddComponent<OfferCardWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("frame").objectReferenceValue = frame;
+                so.FindProperty("icon").objectReferenceValue = icon;
+                so.FindProperty("placeholderName").objectReferenceValue = placeholder;
+                so.FindProperty("titleLabel").objectReferenceValue = title;
+                so.FindProperty("descriptionLabel").objectReferenceValue = description;
+                so.FindProperty("button").objectReferenceValue = button;
+                so.FindProperty("buttonLabel").objectReferenceValue = buttonLabel;
+            });
+            return widget;
+        }
+
+        private static RectTransform CardRow(RectTransform parent, Vector2 position, Vector2 size)
+        {
+            var row = Rect("Cards", parent, Center, Center, position, size);
+            var layout = row.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            layout.spacing = 14f;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = layout.childControlHeight = false;
+            layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+            return row;
+        }
+
+        private static CanvasGroup MenuRoot(RectTransform parent, string name, Vector2 size, out RectTransform panel)
+        {
+            var screen = Stretch(name, parent);
+            var group = screen.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            group.interactable = false;
+            group.blocksRaycasts = false;
+            panel = Rect("Panel", screen, Center, Center, Vector2.zero, size);
+            Themed(panel, HudSprite.Panel, HudColor.Panel);
+            return group;
+        }
+
+        private static void BuildChoiceMenu(RectTransform parent)
+        {
+            var group = MenuRoot(parent, "ChoiceMenu", new Vector2(820f, 520f), out var panel);
+            Text(Rect("Title", panel, TopCenter, TopCenter, new Vector2(0f, -16f), new Vector2(780f, 44f)), null,
+                "Choisissez un objet", 32f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
+            var row = CardRow(panel, new Vector2(0f, 0f), new Vector2(780f, 360f));
+            var template = OfferCard(row, "CardTemplate");
+            var later = Button(panel, "LaterButton", "Plus tard", 0f);
+            PlaceButton(later, new Vector2(0f, 14f));
+
+            var widget = panel.parent.gameObject.AddComponent<ChoiceMenu>();
+            Props(widget, so =>
+            {
+                so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("cardTemplate").objectReferenceValue = template;
+                so.FindProperty("laterButton").objectReferenceValue = later;
+            });
+        }
+
+        private static void BuildMerchantMenu(RectTransform parent)
+        {
+            var group = MenuRoot(parent, "MerchantMenu", new Vector2(1340f, 560f), out var panel);
+            var title = Text(Rect("Title", panel, TopCenter, TopCenter, new Vector2(0f, -16f), new Vector2(800f, 44f)), null,
+                "Marchand", 32f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
+            var gold = Text(Rect("Gold", panel, TopRight, TopRight, new Vector2(-24f, -20f), new Vector2(260f, 36f)), null,
+                "Or : 0", 24f, HudFont.Numbers, HudColor.Gold, TextAlignmentOptions.Right);
+            var row = CardRow(panel, new Vector2(0f, 10f), new Vector2(1300f, 360f));
+            var template = OfferCard(row, "CardTemplate");
+
+            var reroll = Button(panel, "RerollButton", "Relancer", 0f);
+            PlaceButton(reroll, new Vector2(-140f, 16f));
+            var close = Button(panel, "CloseButton", "Fermer", 0f);
+            PlaceButton(close, new Vector2(140f, 16f));
+
+            var widget = panel.parent.gameObject.AddComponent<MerchantMenu>();
+            Props(widget, so =>
+            {
+                so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("titleLabel").objectReferenceValue = title;
+                so.FindProperty("goldLabel").objectReferenceValue = gold;
+                so.FindProperty("cardTemplate").objectReferenceValue = template;
+                so.FindProperty("rerollButton").objectReferenceValue = reroll;
+                so.FindProperty("rerollLabel").objectReferenceValue = reroll.GetComponentInChildren<TextMeshProUGUI>();
+                so.FindProperty("closeButton").objectReferenceValue = close;
             });
         }
 

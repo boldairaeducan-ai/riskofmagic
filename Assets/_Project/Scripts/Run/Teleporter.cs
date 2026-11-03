@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using RiskOfMagic.Enemies;
+using RiskOfMagic.Core;
 using RiskOfMagic.Interaction;
+using RiskOfMagic.Items;
 using RiskOfMagic.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -34,6 +36,10 @@ namespace RiskOfMagic.Run
         [SerializeField, Min(1)] private int bossCount = 1;
         [SerializeField] private Vector2 bossSpawnDistance = new(12f, 22f);
 
+        [Header("Boss reward (one item per player)")]
+        [SerializeField] private RarityWeights bossRewardWeights = new(0f, 65f, 28f, 7f);
+        [SerializeField, Range(0f, 1f), Tooltip("Chance to get a Boss item instead.")] private float bossItemChance = 0.1f;
+
         [Header("Event")]
         [SerializeField, Min(1f)] private float eventCreditMultiplier = 1.75f;
 
@@ -51,6 +57,7 @@ namespace RiskOfMagic.Run
         private readonly NetworkVariable<TeleporterState> state = new();
         private readonly NetworkVariable<float> charge = new();
         private readonly List<EnemyActor> bosses = new();
+        private bool bossRewardGiven;
         private MaterialPropertyBlock propertyBlock;
 
         public static Teleporter Instance { get; private set; }
@@ -121,6 +128,7 @@ namespace RiskOfMagic.Run
         private void SpawnBosses()
         {
             bosses.Clear();
+            bossRewardGiven = false;
             var director = CombatDirector.Instance;
             if (director == null || bossCards.Count == 0)
             {
@@ -173,6 +181,10 @@ namespace RiskOfMagic.Run
                     state.Value = TeleporterState.Charged;
             }
 
+            bool eventRunning = state.Value == TeleporterState.Charging || state.Value == TeleporterState.Charged;
+            if (eventRunning && bosses.Count > 0 && !bossRewardGiven && !AnyBossAlive())
+                GiveBossRewards();
+
             if (state.Value == TeleporterState.Charged && !AnyBossAlive())
                 Complete();
         }
@@ -182,6 +194,19 @@ namespace RiskOfMagic.Run
             state.Value = TeleporterState.Ready;
             if (CombatDirector.Instance != null)
                 CombatDirector.Instance.EventCreditMultiplier = 1f;
+        }
+
+        private void GiveBossRewards()
+        {
+            bossRewardGiven = true;
+            var catalog = GameCatalog.Instance;
+            foreach (var player in PlayerAvatar.All)
+            {
+                var rarity = Random.value < bossItemChance ? ItemRarity.Boss : bossRewardWeights.Roll();
+                var item = catalog.RollItem(rarity);
+                if (item != null)
+                    player.Inventory.AddItem(item);
+            }
         }
 
         public bool AnyLivingPlayerInside()

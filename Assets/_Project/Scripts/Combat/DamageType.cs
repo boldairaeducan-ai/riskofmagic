@@ -7,6 +7,7 @@ namespace RiskOfMagic.Combat
         Frost = 2,
         Lightning = 3,
         Arcane = 4,
-        Poison = 5
+        Poison = 5,
+        Bleed = 6
     }
 }

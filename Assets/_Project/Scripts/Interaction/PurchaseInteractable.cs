@@ -67,7 +67,7 @@ namespace RiskOfMagic.Interaction
             return player.Wallet.CanAfford(Cost) ? $"[E] {displayName} ({costText})" : $"{displayName} ({costText}) - pas assez d'or";
         }
 
-        public void Interact(PlayerAvatar player)
+        public virtual void Interact(PlayerAvatar player)
         {
             if (!IsServer || !CanInteract(player) || !player.Wallet.TrySpend(Cost))
                 return;

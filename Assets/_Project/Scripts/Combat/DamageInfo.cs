@@ -17,6 +17,8 @@ namespace RiskOfMagic.Combat
         public bool IsCritical;
         /// <summary>Scales item proc chances. 0 = can't trigger items (item damage itself).</summary>
         public float ProcCoefficient;
+        /// <summary>Skips every damage modifier (shields, armor, items): health costs, scripted damage.</summary>
+        public bool IgnoreModifiers;
         public Vector3 Point;
         public Vector3 Direction;
 
@@ -52,6 +54,7 @@ namespace RiskOfMagic.Combat
             serializer.SerializeValue(ref SourceId);
             serializer.SerializeValue(ref IsCritical);
             serializer.SerializeValue(ref ProcCoefficient);
+            serializer.SerializeValue(ref IgnoreModifiers);
             serializer.SerializeValue(ref Point);
             serializer.SerializeValue(ref Direction);
         }

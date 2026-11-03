@@ -4,6 +4,7 @@ using RiskOfMagic.Characters;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
+using RiskOfMagic.Equipment;
 using RiskOfMagic.Items;
 using RiskOfMagic.Skills;
 using Unity.Netcode;
@@ -45,6 +46,8 @@ namespace RiskOfMagic.Player
         public CharacterStats Stats { get; private set; }
         public PlayerWallet Wallet { get; private set; }
         public PlayerInventory Inventory { get; private set; }
+        public StatusEffects Status { get; private set; }
+        public PlayerEquipment Equipment { get; private set; }
         public SkillController Skills { get; private set; }
         public CharacterDefinition Character { get; private set; }
         public int CharacterIndex => characterIndex.Value;
@@ -57,6 +60,14 @@ namespace RiskOfMagic.Player
             all.Clear();
             Local = null;
             LocalPlayerSpawned = null;
+        }
+
+        public static PlayerAvatar FindByClient(ulong clientId)
+        {
+            foreach (var player in all)
+                if (player.OwnerClientId == clientId)
+                    return player;
+            return null;
         }
 
         public static PlayerAvatar FindClosestAlive(Vector3 position, float maxDistance)
@@ -86,6 +97,8 @@ namespace RiskOfMagic.Player
             Stats = GetComponent<CharacterStats>();
             Wallet = GetComponent<PlayerWallet>();
             Inventory = GetComponent<PlayerInventory>();
+            Status = GetComponent<StatusEffects>();
+            Equipment = GetComponent<PlayerEquipment>();
             Skills = GetComponent<SkillController>();
         }
 
@@ -96,6 +109,8 @@ namespace RiskOfMagic.Player
             Health.Revived += OnRevived;
             characterIndex.OnValueChanged += OnCharacterIndexChanged;
             Inventory.ItemsChanged += RecalculateStats;
+            if (Status != null)
+                Status.Changed += RecalculateStats;
             ApplyCharacter(characterIndex.Value);
 
             Input.enabled = IsOwner;
@@ -117,6 +132,8 @@ namespace RiskOfMagic.Player
             Health.Revived -= OnRevived;
             characterIndex.OnValueChanged -= OnCharacterIndexChanged;
             Inventory.ItemsChanged -= RecalculateStats;
+            if (Status != null)
+                Status.Changed -= RecalculateStats;
             if (Local == this)
                 Local = null;
         }
@@ -175,12 +192,16 @@ namespace RiskOfMagic.Player
             if (Character == null)
                 return;
 
-            Stats.Recalculate(Character, Inventory);
+            Stats.Recalculate(Character, Inventory, Status);
             Motor.SpeedMultiplier = Stats.MoveSpeedMultiplier;
             Motor.ExtraJumps = Stats.ExtraJumps;
+            if (Skills != null)
+                Skills.SetBonusCharges(Stats.BonusSkillCharges);
 
             if (!IsServer)
                 return;
+            Health.FlatDamageReduction = Stats.FlatDamageReduction;
+            Health.DamageTakenMultiplier = Stats.DamageTakenMultiplier;
             Health.SetBaseMaxHealth(Stats.MaxHealth);
             if (Health.IsSpawned && !Mathf.Approximately(Health.Max, Stats.MaxHealth))
                 Health.SetMaxHealth(Stats.MaxHealth);

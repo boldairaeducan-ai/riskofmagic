@@ -15,7 +15,9 @@ namespace RiskOfMagic.Skills
 
         public SkillDefinition Definition { get; }
         public int Stock { get; private set; }
-        public int MaxStock => Definition.maxStock;
+        public int MaxStock => Definition.maxStock + BonusStock;
+        /// <summary>Extra charges from items.</summary>
+        public int BonusStock { get; set; }
         public bool HasStock => Stock > 0;
         public int Step { get; set; }
         public float LastActivationTime { get; set; } = float.NegativeInfinity;

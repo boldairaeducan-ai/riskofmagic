@@ -68,6 +68,14 @@ namespace RiskOfMagic.Skills
             LoadoutChanged?.Invoke();
         }
 
+        /// <summary>Extra charges on every skill except the primary (items).</summary>
+        public void SetBonusCharges(int bonus)
+        {
+            for (int i = 1; i < SlotCount; i++)
+                if (slots[i] != null)
+                    slots[i].BonusStock = Mathf.Max(0, bonus);
+        }
+
         private void Update()
         {
             if (!IsSpawned)

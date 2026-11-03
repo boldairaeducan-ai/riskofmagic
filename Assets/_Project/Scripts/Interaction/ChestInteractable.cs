@@ -9,9 +9,7 @@ namespace RiskOfMagic.Interaction
     public class ChestInteractable : PurchaseInteractable
     {
         [Header("Loot")]
-        [SerializeField, Min(0f)] private float commonWeight = 79.2f;
-        [SerializeField, Min(0f)] private float rareWeight = 19.8f;
-        [SerializeField, Min(0f)] private float legendaryWeight = 1f;
+        [SerializeField] protected RarityWeights rarityWeights = new(70f, 24f, 5f, 1f);
         [SerializeField] private ItemPickup pickupPrefab;
         [SerializeField] private Vector3 dropOffset = new(0f, 0f, 1.8f);
 
@@ -20,13 +18,18 @@ namespace RiskOfMagic.Interaction
 
         protected override void OnPurchased(PlayerAvatar buyer)
         {
-            var item = GameCatalog.Instance.RollItem(RollRarity());
-            if (item == null || pickupPrefab == null)
+            var item = GameCatalog.Instance.RollItem(rarityWeights.Roll());
+            if (item == null)
             {
-                Debug.LogWarning($"[ChestInteractable] {name}: no item or pickup prefab.", this);
+                Debug.LogWarning($"[ChestInteractable] {name}: no item to drop.", this);
                 return;
             }
 
+            if (pickupPrefab == null)
+            {
+                ItemPickup.SpawnItem(item, transform.TransformPoint(dropOffset));
+                return;
+            }
             var pickup = Instantiate(pickupPrefab, transform.TransformPoint(dropOffset), Quaternion.identity);
             pickup.Initialize(item);
             pickup.NetworkObject.Spawn(true);
@@ -36,14 +39,6 @@ namespace RiskOfMagic.Interaction
         {
             if (closedVisual != null)
                 closedVisual.SetActive(available);
-        }
-
-        private ItemRarity RollRarity()
-        {
-            float roll = Random.value * (commonWeight + rareWeight + legendaryWeight);
-            if (roll < legendaryWeight)
-                return ItemRarity.Legendary;
-            return roll < legendaryWeight + rareWeight ? ItemRarity.Rare : ItemRarity.Common;
         }
     }
 }

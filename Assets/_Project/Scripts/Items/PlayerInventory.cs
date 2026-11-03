@@ -12,7 +12,7 @@ namespace RiskOfMagic.Items
     /// Replicated item stacks (index = GameCatalog item index). The server dispatches item procs,
     /// deferred to the next frame to avoid re-entrant damage chains.
     /// </summary>
-    public class PlayerInventory : NetworkBehaviour
+    public class PlayerInventory : NetworkBehaviour, IHealthHooks, IDamageDealerHooks
     {
         private readonly struct PendingProc
         {
@@ -32,6 +32,7 @@ namespace RiskOfMagic.Items
 
         private readonly List<PendingProc> pending = new();
         private readonly List<PendingProc> processing = new();
+        private readonly Dictionary<ItemDefinition, int> counters = new();
         private NetworkList<int> counts;
         private PlayerAvatar avatar;
 
@@ -93,6 +94,24 @@ namespace RiskOfMagic.Items
             counts[index] += amount;
         }
 
+        /// <summary>Server only.</summary>
+        public void RemoveItem(ItemDefinition item, int amount = 1)
+        {
+            if (!IsServer || item == null)
+                return;
+            int index = GameCatalog.Instance.IndexOf(item);
+            if (index >= 0 && index < counts.Count && counts[index] > 0)
+                counts[index] = Mathf.Max(0, counts[index] - amount);
+        }
+
+        /// <summary>Server-side per-item counter for items that need state (e.g. "every 5 hits").</summary>
+        public int IncrementCounter(ItemDefinition item)
+        {
+            counters.TryGetValue(item, out int value);
+            counters[item] = ++value;
+            return value;
+        }
+
         /// <summary>Server only (new run).</summary>
         public void Clear()
         {
@@ -101,6 +120,7 @@ namespace RiskOfMagic.Items
             for (int i = 0; i < counts.Count; i++)
                 if (counts[i] != 0)
                     counts[i] = 0;
+            counters.Clear();
         }
 
         private void OnListChanged(NetworkListEvent<int> change)
@@ -114,6 +134,9 @@ namespace RiskOfMagic.Items
 
         private void OnServerDamaged(Health victim, DamageInfo info)
         {
+            if (victim == avatar.Health)
+                ForEachItem((item, stacks) => item.OnOwnerDamagedServer(avatar, info, stacks));
+
             if (!IsFromMe(info) || info.ProcCoefficient <= 0f)
                 return;
             Vector3 position = info.Point != Vector3.zero ? info.Point : TargetFinder.Center(victim);
@@ -124,6 +147,51 @@ namespace RiskOfMagic.Items
         {
             if (IsFromMe(info))
                 pending.Add(new PendingProc(victim, info, TargetFinder.Center(victim), true));
+        }
+
+        // ---------------------------------------------------------------- Hooks (server)
+
+        public float ModifyOutgoingDamage(Health victim, in DamageInfo info, float amount)
+        {
+            var catalog = GameCatalog.Instance;
+            for (int i = 0; i < counts.Count; i++)
+            {
+                int stacks = counts[i];
+                var item = stacks > 0 ? catalog.GetItem(i) : null;
+                if (item != null)
+                    amount = item.ModifyOutgoingDamage(avatar, victim, info, amount, stacks);
+            }
+            return amount;
+        }
+
+        public float ModifyIncomingDamage(Health self, in DamageInfo info, float amount) => amount;
+
+        public bool TryPreventDeath(Health self, in DamageInfo info, out float healthFraction)
+        {
+            healthFraction = 0f;
+            var catalog = GameCatalog.Instance;
+            for (int i = 0; i < counts.Count; i++)
+            {
+                int stacks = counts[i];
+                var item = stacks > 0 ? catalog.GetItem(i) : null;
+                if (item == null || !item.TryPreventDeath(avatar, stacks, out healthFraction))
+                    continue;
+                RemoveItem(item);
+                return true;
+            }
+            return false;
+        }
+
+        private void ForEachItem(System.Action<ItemDefinition, int> action)
+        {
+            var catalog = GameCatalog.Instance;
+            for (int i = 0; i < counts.Count; i++)
+            {
+                int stacks = counts[i];
+                var item = stacks > 0 ? catalog.GetItem(i) : null;
+                if (item != null)
+                    action(item, stacks);
+            }
         }
 
         private void Update()

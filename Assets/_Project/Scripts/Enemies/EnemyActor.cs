@@ -27,6 +27,7 @@ namespace RiskOfMagic.Enemies
 
         [SerializeField] private Color frozenTint = new(0.45f, 0.75f, 1f);
         [SerializeField] private Color poisonedTint = new(0.35f, 0.85f, 0.25f);
+        [SerializeField] private Color cursedTint = new(0.55f, 0.25f, 0.6f);
 
         private readonly NetworkVariable<int> level = new(1);
         private readonly NetworkVariable<double> frozenUntil = new();
@@ -52,7 +53,11 @@ namespace RiskOfMagic.Enemies
             if (until > frozenUntil.Value)
                 frozenUntil.Value = until;
         }
-        public float DamageMultiplier => definition != null ? 1f + definition.damagePerLevel * (Level - 1) : 1f;
+        public StatusEffects Status { get; private set; }
+        public float DamageMultiplier => (definition != null ? 1f + definition.damagePerLevel * (Level - 1) : 1f)
+                                         * (Status != null ? Status.DamageDealtMultiplier : 1f);
+        public float MoveSpeedMultiplier => Status != null ? Status.MoveSpeedMultiplier : 1f;
+        public float AttackSpeedMultiplier => Status != null ? Status.AttackSpeedMultiplier : 1f;
 
         public uint GoldReward => definition != null
             ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * RunDifficulty.CurrentCoefficient))
@@ -70,6 +75,7 @@ namespace RiskOfMagic.Enemies
             Health = GetComponent<Health>();
             colliders = GetComponentsInChildren<Collider>(true);
             renderers = GetComponentsInChildren<Renderer>(true);
+            Status = GetComponent<StatusEffects>();
             if (definition == null)
                 Debug.LogError($"[EnemyActor] Missing EnemyDefinition on {name}.", this);
             Initialize(1);
@@ -104,6 +110,8 @@ namespace RiskOfMagic.Enemies
             {
                 if (IsFrozen)
                     tint = frozenTint;
+                else if (Status != null && Status.Has(StatusType.Curse))
+                    tint = cursedTint;
                 else if (Health.HasDot(DamageType.Poison))
                     tint = poisonedTint;
             }

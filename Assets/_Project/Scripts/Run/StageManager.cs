@@ -90,6 +90,8 @@ namespace RiskOfMagic.Run
             {
                 player.Inventory.Clear();
                 player.Wallet.ResetGold();
+                if (player.Equipment != null)
+                    player.Equipment.ClearEquipment();
             }
 
             ResetStage(fullHeal: true);

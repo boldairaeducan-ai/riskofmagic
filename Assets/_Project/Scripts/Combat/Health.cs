@@ -19,6 +19,7 @@ namespace RiskOfMagic.Combat
         private readonly NetworkVariable<double> shieldUntil = new();
         private readonly NetworkVariable<float> shieldReduction = new();
         private readonly NetworkVariable<int> dotMask = new();
+        private IHealthHooks[] hooks = Array.Empty<IHealthHooks>();
 
         /// <summary>(current, max)</summary>
         public event Action<float, float> HealthChanged;
@@ -46,6 +47,11 @@ namespace RiskOfMagic.Combat
         public float Current => current.Value;
         public float Max => max.Value;
         public float Normalized => max.Value > 0f ? current.Value / max.Value : 0f;
+
+        /// <summary>Server side, set by stats (items): multiplies incoming damage.</summary>
+        public float DamageTakenMultiplier { get; set; } = 1f;
+        /// <summary>Server side, set by stats (items): removed from each hit, never below 1.</summary>
+        public float FlatDamageReduction { get; set; }
         public bool IsAlive => current.Value > 0f;
         /// <summary>Bit per DamageType with an active damage over time (replicated, for visuals).</summary>
         public int DotMask => dotMask.Value;
@@ -70,6 +76,21 @@ namespace RiskOfMagic.Combat
             shieldReduction.Value = IsShielded ? Mathf.Max(shieldReduction.Value, reduction) : Mathf.Clamp01(reduction);
             if (until > shieldUntil.Value)
                 shieldUntil.Value = until;
+        }
+
+        private void Awake() => hooks = GetComponents<IHealthHooks>();
+
+        /// <summary>Server only. Health cost that ignores every modifier (can kill).</summary>
+        public void PayHealth(float amount)
+        {
+            ApplyDamage(new DamageInfo
+            {
+                Amount = amount,
+                Type = DamageType.Arcane,
+                SourceTeam = Team.Neutral,
+                IgnoreModifiers = true,
+                Point = transform.position + Vector3.up
+            });
         }
 
         /// <summary>Call before spawn (e.g. from Awake) to override the inspector value.</summary>
@@ -101,17 +122,52 @@ namespace RiskOfMagic.Combat
             if (!allowFriendlyFire && team != Team.Neutral && info.SourceTeam == team)
                 return;
 
-            if (IsShielded)
-                info.Amount *= 1f - shieldReduction.Value;
+            if (!info.IgnoreModifiers)
+                info.Amount = ModifyDamage(info);
+            if (info.Amount <= 0f)
+                return;
+
             float next = Mathf.Max(0f, current.Value - info.Amount);
+            bool deathPrevented = false;
+            if (next <= 0f)
+            {
+                foreach (var hook in hooks)
+                {
+                    if (!hook.TryPreventDeath(this, info, out float healthFraction))
+                        continue;
+                    next = Mathf.Max(1f, max.Value * Mathf.Clamp01(healthFraction));
+                    deathPrevented = true;
+                    break;
+                }
+            }
             current.Value = next;
 
             ServerDamaged?.Invoke(this, info);
             DamagedRpc(info);
             if (next > 0f)
+            {
+                if (deathPrevented)
+                    RevivedRpc();
                 return;
+            }
             ServerKilled?.Invoke(this, info);
             DiedRpc(info);
+        }
+
+        /// <summary>Attacker bonuses → shield → hooks (status, items) → stats multiplier → flat reduction (min 1).</summary>
+        private float ModifyDamage(in DamageInfo info)
+        {
+            float amount = info.Amount;
+            if (info.TryGetSource(out var source) && source.TryGetComponent(out IDamageDealerHooks dealer))
+                amount = dealer.ModifyOutgoingDamage(this, info, amount);
+            if (IsShielded)
+                amount *= 1f - shieldReduction.Value;
+            foreach (var hook in hooks)
+                amount = hook.ModifyIncomingDamage(this, info, amount);
+            amount *= DamageTakenMultiplier;
+            if (FlatDamageReduction > 0f && amount > 1f)
+                amount = Mathf.Max(1f, amount - FlatDamageReduction);
+            return amount;
         }
 
         public void Heal(float amount)

@@ -307,7 +307,7 @@ namespace RiskOfMagic.Enemies
             State = EnemyState.Idle;
             agent.isStopped = false;
             agent.stoppingDistance = 0.3f;
-            agent.speed = Definition != null ? Definition.moveSpeed * Definition.wanderSpeedMultiplier : 1.5f;
+            agent.speed = Definition != null ? Definition.moveSpeed * Definition.wanderSpeedMultiplier * actor.MoveSpeedMultiplier : 1.5f;
             if (Definition == null || Definition.wanderRadius <= 0f || agent.pathPending)
                 return;
 
@@ -367,7 +367,7 @@ namespace RiskOfMagic.Enemies
         {
             State = EnemyState.Retreat;
             agent.isStopped = false;
-            agent.speed = Definition.moveSpeed * 1.15f;
+            agent.speed = Definition.moveSpeed * 1.15f * actor.MoveSpeedMultiplier;
             agent.stoppingDistance = 0.3f;
             if (Time.time < nextRepath && agent.hasPath)
                 return true;
@@ -394,7 +394,7 @@ namespace RiskOfMagic.Enemies
         {
             State = EnemyState.Chase;
             agent.isStopped = false;
-            agent.speed = Definition != null ? Definition.moveSpeed : 4.5f;
+            agent.speed = (Definition != null ? Definition.moveSpeed : 4.5f) * actor.MoveSpeedMultiplier;
             agent.stoppingDistance = stoppingDistance >= 0f ? stoppingDistance : attack != null ? attack.Range * 0.8f : 1f;
 
             if (Time.time < nextRepath)
