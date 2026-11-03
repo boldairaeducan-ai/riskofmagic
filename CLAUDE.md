@@ -93,3 +93,8 @@ and colors from `HudTheme`; widgets only fill in game data (icons come from skil
 
 The user wants terse answers and asks to be consulted on design choices (they often answer with multiple-choice
 questions); propose values in tables and wait for validation on design-heavy features (items, classes).
+
+## Output style
+- Reply in unified diff form. No full-file rewrites unless asked.
+- No preamble, no trailing summary of what you just did.
+- For research questions, answer in 10 lines or fewer unless I ask for depth.
