@@ -12,8 +12,10 @@ namespace RiskOfMagic.Run
     /// <summary>
     /// Server-side RoR2-style director.
     /// Stage population: at the start of each stage, idle enemies are scattered across the StageBounds (exploration blockers).
-    /// Waves: credits earned over time (faster with difficulty, players and events) buy enemies spawned at a distance
-    /// from a living player, already hunting that player.
+    /// Waves: credits earned over time (faster with difficulty, players and events) buy enemies.
+    ///  - Normally: spawned anywhere in the StageBounds but far from every player, idle until they detect someone
+    ///    (cleared areas stay clear, no constant swarming).
+    ///  - During an event (teleporter): spawned around a player and hunting immediately (pressure).
     /// </summary>
     public class CombatDirector : NetworkBehaviour
     {
@@ -27,18 +29,21 @@ namespace RiskOfMagic.Run
         [SerializeField] private bool populateOnStart = true;
         [SerializeField, Min(0f), Tooltip("Credits spent on idle enemies at stage start (scaled by sqrt(difficulty coefficient)).")]
         private float stagePopulationCredits = 110f;
-        [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 30f;
+        [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 45f;
         [SerializeField, Min(0f)] private float populationMinSpacing = 6f;
 
         [Header("Waves")]
-        [SerializeField, Tooltip("Wave enemies know their anchor player immediately (pressure), instead of waiting for detection.")]
-        private bool wavesHuntPlayers = true;
-        [SerializeField] private Vector2 waveInterval = new(4f, 9f);
-        [SerializeField, Min(1)] private int maxSpawnsPerWave = 5;
-        [SerializeField, Min(1)] private int maxAliveEnemies = 30;
+        [SerializeField, Tooltip("Outside events, wave enemies know a player immediately instead of waiting for detection.")]
+        private bool wavesHuntPlayers;
+        [SerializeField] private Vector2 waveInterval = new(8f, 15f);
+        [SerializeField, Min(1)] private int maxSpawnsPerWave = 4;
+        [SerializeField, Min(1)] private int maxAliveEnemies = 22;
 
         [Header("Placement")]
-        [SerializeField, Tooltip("Wave spawn distance around a living player.")] private float minSpawnDistance = 25f;
+        [SerializeField, Tooltip("Normal waves: distance band to the NEAREST living player.")]
+        private Vector2 farSpawnDistance = new(45f, 90f);
+        [SerializeField, Tooltip("Event waves (teleporter): distance band around a random living player.")]
+        private float minSpawnDistance = 25f;
         [SerializeField] private float maxSpawnDistance = 50f;
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;
@@ -57,6 +62,7 @@ namespace RiskOfMagic.Run
 
         /// <summary>Server only. Extra credit income during events (teleporter).</summary>
         public float EventCreditMultiplier { get; set; } = 1f;
+        public bool IsEventActive => EventCreditMultiplier > 1f;
 
         /// <summary>Server only. No credits nor waves while paused (game over).</summary>
         public bool Paused { get; set; }
@@ -185,16 +191,30 @@ namespace RiskOfMagic.Run
 
             int level = RunDifficulty.CurrentEnemyLevel;
             int spawned = 0;
+            bool nearPlayers = IsEventActive;
+            bool hunt = wavesHuntPlayers || IsEventActive;
+            Vector3 groupCenter = default;
+
             for (int i = 0; i < maxSpawnsPerWave && credits >= card.cost && EnemyActor.Active.Count < maxAliveEnemies; i++)
             {
-                if (!TryFindSpawnPosition(out var position, out var anchorPlayer))
+                PlayerAvatar anchorPlayer;
+                Vector3 position;
+                bool found = nearPlayers
+                    ? TryFindSpawnPosition(out position, out anchorPlayer)
+                    : TryFindFarPosition(i == 0 ? (Vector3?)null : groupCenter, out position, out anchorPlayer);
+                if (!found)
                 {
-                    Diagnose("No NavMesh position found around the players (NavMesh baked? players on it?).");
+                    Diagnose(nearPlayers
+                        ? "No NavMesh position found around the players (NavMesh baked? players on it?)."
+                        : "No spawn position far enough from the players (map too small? check farSpawnDistance / StageBounds).");
                     break;
                 }
+                if (i == 0)
+                    groupCenter = position;
+
                 Vector3 facing = Vector3.ProjectOnPlane(anchorPlayer.transform.position - position, Vector3.up);
                 var enemy = Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
-                if (wavesHuntPlayers && enemy.TryGetComponent(out EnemyBrain brain))
+                if (hunt && enemy.TryGetComponent(out EnemyBrain brain))
                     brain.Alert(anchorPlayer, false);
                 credits -= card.cost;
                 spawned++;
@@ -257,6 +277,59 @@ namespace RiskOfMagic.Run
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Point in the StageBounds whose nearest living player is within farSpawnDistance.
+        /// Members of a wave spawn grouped around the first one (groupCenter).
+        /// </summary>
+        private bool TryFindFarPosition(Vector3? groupCenter, out Vector3 position, out PlayerAvatar nearestPlayer)
+        {
+            position = default;
+            nearestPlayer = null;
+            alivePlayers.Clear();
+            foreach (var player in PlayerAvatar.All)
+                if (player.IsAlive)
+                    alivePlayers.Add(player);
+            if (alivePlayers.Count == 0)
+                return false;
+
+            if (groupCenter.HasValue)
+            {
+                for (int i = 0; i < placementAttempts; i++)
+                {
+                    Vector2 offset = Random.insideUnitCircle * 6f;
+                    if (NavMesh.SamplePosition(groupCenter.Value + new Vector3(offset.x, 0f, offset.y), out var hit, navMeshSampleRadius, NavMesh.AllAreas)
+                        && IsFarFromPlayers(hit.position, out nearestPlayer))
+                    {
+                        position = hit.position;
+                        return true;
+                    }
+                }
+            }
+
+            var bounds = StageBounds.Instance;
+            if (bounds != null && bounds.TryGetRandomPoint(out position, 0f, p => IsFarFromPlayers(p, out _), placementAttempts * 4))
+                return IsFarFromPlayers(position, out nearestPlayer);
+            return false;
+        }
+
+        private bool IsFarFromPlayers(Vector3 position, out PlayerAvatar nearestPlayer)
+        {
+            nearestPlayer = null;
+            float nearestSqr = float.MaxValue;
+            foreach (var player in alivePlayers)
+            {
+                float sqr = (player.transform.position - position).sqrMagnitude;
+                if (sqr < nearestSqr)
+                {
+                    nearestSqr = sqr;
+                    nearestPlayer = player;
+                }
+            }
+            return nearestPlayer != null
+                   && nearestSqr >= farSpawnDistance.x * farSpawnDistance.x
+                   && nearestSqr <= farSpawnDistance.y * farSpawnDistance.y;
         }
 
         /// <summary>Server only. Also usable by shrines, bosses, events.</summary>
