@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using RiskOfMagic.Player;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 namespace RiskOfMagic.Run
 {
-    /// <summary>Server: scatters chests/shrines on the NavMesh when the stage starts.</summary>
+    /// <summary>Server: scatters chests/shrines inside the StageBounds. Respawned by the StageManager on each stage.</summary>
     public class InteractableSpawner : NetworkBehaviour
     {
         [Serializable]
@@ -19,27 +17,54 @@ namespace RiskOfMagic.Run
         }
 
         [SerializeField] private List<Entry> entries = new();
-        [SerializeField] private Vector3 areaCenter;
-        [SerializeField] private Vector2 areaSize = new(100f, 100f);
         [SerializeField, Min(0f)] private float minSpacing = 5f;
         [SerializeField, Min(0f)] private float playerSpawnClearance = 8f;
-        [SerializeField, Min(1)] private int attemptsPerObject = 30;
+        [SerializeField] private bool spawnOnStart = true;
 
         private readonly List<Vector3> placed = new();
+        private readonly List<NetworkObject> spawned = new();
 
         public override void OnNetworkSpawn()
         {
-            if (!IsServer)
-                return;
+            if (IsServer && spawnOnStart)
+                SpawnAll();
+        }
 
+        /// <summary>Server only.</summary>
+        public void Respawn()
+        {
+            DespawnAll();
+            SpawnAll();
+        }
+
+        /// <summary>Server only.</summary>
+        public void DespawnAll()
+        {
+            foreach (var networkObject in spawned)
+                if (networkObject != null && networkObject.IsSpawned)
+                    networkObject.Despawn();
+            spawned.Clear();
             placed.Clear();
+        }
+
+        /// <summary>Server only.</summary>
+        public void SpawnAll()
+        {
+            var bounds = StageBounds.Instance;
+            if (!IsServer || bounds == null)
+            {
+                if (bounds == null)
+                    Debug.LogError("[InteractableSpawner] No StageBounds in the scene.", this);
+                return;
+            }
+
             foreach (var entry in entries)
             {
                 if (entry.prefab == null)
                     continue;
                 for (int i = 0; i < entry.count; i++)
                 {
-                    if (!TryFindPosition(out var position))
+                    if (!bounds.TryGetRandomPoint(out var position, playerSpawnClearance, p => StageBounds.IsFarFrom(p, placed, minSpacing)))
                     {
                         Debug.LogWarning($"[InteractableSpawner] No room left for {entry.prefab.name}.", this);
                         break;
@@ -47,39 +72,9 @@ namespace RiskOfMagic.Run
                     placed.Add(position);
                     var instance = Instantiate(entry.prefab, position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
                     instance.Spawn(true);
+                    spawned.Add(instance);
                 }
             }
-        }
-
-        private bool TryFindPosition(out Vector3 position)
-        {
-            for (int attempt = 0; attempt < attemptsPerObject; attempt++)
-            {
-                var candidate = areaCenter + new Vector3(Random.Range(-0.5f, 0.5f) * areaSize.x, 0f, Random.Range(-0.5f, 0.5f) * areaSize.y);
-                if (!NavMesh.SamplePosition(candidate, out var hit, 3f, NavMesh.AllAreas) || !IsFree(hit.position))
-                    continue;
-                position = hit.position;
-                return true;
-            }
-            position = default;
-            return false;
-        }
-
-        private bool IsFree(Vector3 position)
-        {
-            foreach (var other in placed)
-                if ((other - position).sqrMagnitude < minSpacing * minSpacing)
-                    return false;
-            foreach (var spawn in PlayerSpawnPoint.All)
-                if ((spawn.transform.position - position).sqrMagnitude < playerSpawnClearance * playerSpawnClearance)
-                    return false;
-            return true;
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(areaCenter, new Vector3(areaSize.x, 1f, areaSize.y));
         }
     }
 }

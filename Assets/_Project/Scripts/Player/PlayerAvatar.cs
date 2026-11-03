@@ -135,6 +135,14 @@ namespace RiskOfMagic.Player
                 characterIndex.Value = index;
         }
 
+        /// <summary>Server → owner: move back to a spawn point (new stage). Movement is owner-authoritative.</summary>
+        [Rpc(SendTo.Owner)]
+        public void TeleportToSpawnRpc()
+        {
+            if (PlayerSpawnPoint.TryGet((int)OwnerClientId, out var pose))
+                Motor.Teleport(pose.position, pose.rotation);
+        }
+
         public void SetControlEnabled(bool value)
         {
             ControlEnabled = value;

@@ -91,6 +91,8 @@ namespace RiskOfMagic.Editor
             var prefabList = Asset<NetworkPrefabsList>(listPath);
             prefabList.Add(new NetworkPrefab { Prefab = ghoul.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = skeleton.gameObject });
+            var colossus = BuildBoss();
+            prefabList.Add(new NetworkPrefab { Prefab = colossus.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = smallChest });
             prefabList.Add(new NetworkPrefab { Prefab = largeChest });
@@ -104,7 +106,11 @@ namespace RiskOfMagic.Editor
                 Card("SpawnCard_SkeletonArcher", skeleton, 16, 0.7f, 0f)
             };
 
-            var gameSystems = BuildGameSystemsPrefab(cards, smallChest, largeChest, shrine);
+            var bossCards = new List<SpawnCard> { Card("SpawnCard_Boss_BoneColossus", colossus, 1, 1f, 0f) };
+            var teleporter = BuildTeleporterPrefab(bossCards);
+            prefabList.Add(new NetworkPrefab { Prefab = teleporter });
+
+            var gameSystems = BuildGameSystemsPrefab(cards, smallChest, largeChest, shrine, teleporter);
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
@@ -512,10 +518,84 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Enemy_SkeletonArcher.prefab").GetComponent<EnemyActor>();
         }
 
+        private static EnemyActor BuildBoss()
+        {
+            var def = EnemyDef("Boss_BoneColossus", "Colosse d'os", health: 1400f, speed: 5f, gold: 150, detection: 200f);
+            def.isBoss = true;
+            def.alertAlliesRadius = 0f;
+            def.despawnDelay = 3f;
+            EditorUtility.SetDirty(def);
+
+            var root = EnemyBase("Boss_BoneColossus", def, new Color(0.35f, 0.3f, 0.28f), out _);
+            root.transform.localScale = Vector3.one * 2.2f;
+            var attack = root.AddComponent<EnemyMeleeAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 4.5f;
+                so.FindProperty("cooldown").floatValue = 2.2f;
+                so.FindProperty("damage").floatValue = 35f;
+                so.FindProperty("windup").floatValue = 0.8f;
+                so.FindProperty("hitRadius").floatValue = 2.8f;
+                so.FindProperty("maxHeightDifference").floatValue = 5f;
+            });
+            FinishEnemy(root, attack);
+            return SavePrefab(root, Prefabs + "/Boss_BoneColossus.prefab").GetComponent<EnemyActor>();
+        }
+
+        private static GameObject BuildTeleporterPrefab(List<SpawnCard> bossCards)
+        {
+            var stone = Mat("M_TeleporterStone", new Color(0.25f, 0.23f, 0.28f));
+            var glow = Mat("M_TeleporterGlow", Color.white, unlit: true);
+
+            var root = new GameObject("Teleporter");
+            var pedestal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            pedestal.name = "Pedestal";
+            pedestal.transform.SetParent(root.transform, false);
+            pedestal.transform.localPosition = new Vector3(0f, 0.3f, 0f);
+            pedestal.transform.localScale = new Vector3(4f, 0.3f, 4f);
+            pedestal.GetComponent<Renderer>().sharedMaterial = stone;
+
+            var glowRenderers = new List<Renderer>();
+            for (int i = 0; i < 3; i++)
+            {
+                float angle = i * Mathf.PI * 2f / 3f;
+                var prong = CreateVisual(PrimitiveType.Cube, $"Prong_{i}", root.transform,
+                    new Vector3(Mathf.Cos(angle) * 1.5f, 1.4f, Mathf.Sin(angle) * 1.5f), new Vector3(0.35f, 2.2f, 0.35f), glow);
+                glowRenderers.Add(prong.GetComponent<Renderer>());
+            }
+            var core = CreateVisual(PrimitiveType.Sphere, "Core", root.transform, new Vector3(0f, 1.8f, 0f), Vector3.one * 0.8f, glow);
+            glowRenderers.Add(core.GetComponent<Renderer>());
+
+            var ringGo = new GameObject("RadiusRing");
+            ringGo.transform.SetParent(root.transform, false);
+            var ring = ringGo.AddComponent<LineRenderer>();
+            ring.widthMultiplier = 0.35f;
+            ring.sharedMaterial = LineMat();
+            ring.shadowCastingMode = ShadowCastingMode.Off;
+            ring.enabled = false;
+
+            root.AddComponent<NetworkObject>();
+            var teleporter = root.AddComponent<Teleporter>();
+            SetProperties(teleporter, so =>
+            {
+                var cards = so.FindProperty("bossCards");
+                cards.arraySize = bossCards.Count;
+                for (int i = 0; i < bossCards.Count; i++)
+                    cards.GetArrayElementAtIndex(i).objectReferenceValue = bossCards[i];
+                so.FindProperty("radiusRing").objectReferenceValue = ring;
+                var renderers = so.FindProperty("glowRenderers");
+                renderers.arraySize = glowRenderers.Count;
+                for (int i = 0; i < glowRenderers.Count; i++)
+                    renderers.GetArrayElementAtIndex(i).objectReferenceValue = glowRenderers[i];
+            });
+            return SavePrefab(root, Prefabs + "/Teleporter.prefab");
+        }
+
         private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold, float detection)
         {
             var def = Asset<EnemyDefinition>($"{EnemiesFolder}/{file}.asset");
             def.detectionRange = detection;
+            def.isBoss = false;
             def.displayName = displayName;
             def.maxHealth = health;
             def.moveSpeed = speed;
@@ -675,6 +755,7 @@ namespace RiskOfMagic.Editor
             foreach (var t in level.GetComponentsInChildren<Transform>())
                 GameObjectUtility.SetStaticEditorFlags(t.gameObject, StaticEditorFlags.BatchingStatic | StaticEditorFlags.ContributeGI);
 
+            level.AddComponent<StageBounds>();
             var surface = level.AddComponent<NavMeshSurface>();
             surface.collectObjects = CollectObjects.Children;
             surface.BuildNavMesh();
@@ -718,7 +799,8 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/HealingShrine.prefab");
         }
 
-        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, GameObject smallChest, GameObject largeChest, GameObject shrine)
+        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, GameObject smallChest, GameObject largeChest, GameObject shrine,
+            GameObject teleporter)
         {
             var root = new GameObject("GameSystems");
             root.AddComponent<NetworkObject>();
@@ -749,6 +831,9 @@ namespace RiskOfMagic.Editor
                     element.FindPropertyRelative("count").intValue = entries[i].count;
                 }
             });
+
+            var stages = root.AddComponent<StageManager>();
+            SetProperties(stages, so => so.FindProperty("teleporterPrefab").objectReferenceValue = teleporter.GetComponent<Teleporter>());
 
             return SavePrefab(root, Prefabs + "/GameSystems.prefab");
         }

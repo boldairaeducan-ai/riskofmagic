@@ -36,7 +36,10 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
   - **Types** — `ProjectileSkill`, `MeleeComboSkill`, `AreaSkill`, `DashSkill`, `BlinkSkill`, `ChainLightningSkill`. New skills = new asset; new behaviour = new subclass.
 - **Player** — `PlayerAvatar` (root, replicated character choice), `PlayerMotor` (owner-simulated, dash), `PlayerLook`, `PlayerInputHandler`.
 - **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (NavMesh AI), `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyProjectileAttack`.
-- **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (credits → `SpawnCard` waves).
+- **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (stage population of idle enemies + credit-based waves hunting players), `StageBounds` (playable volume, placed in each map), `Teleporter` (boss event, charge zone), `StageManager` (next stage: cleanup, revive, respawn).
+
+## Tuning the director
+`Assets/_Project/Prefabs/GameSystems.prefab` → *Combat Director*: **Stage population** (credits, distance from spawns), **Waves** (interval, size, `wavesHuntPlayers`), **Placement** (`minSpawnDistance` / `maxSpawnDistance`). Defaults live in `CombatDirector.cs`; *Build Prototype Scene* regenerates the prefab with those defaults.
 - **Items** — `ItemDefinition` SO (rarity, stacking stat modifiers, server proc hooks), `PlayerInventory` (replicated stacks, deferred proc dispatch), `ItemPickup`. Proc types: `HealOnHit`, `HealOnKill`, `ExplodeOnKill`, `ExplodeOnHit`, `ChainOnHit`, `ProjectileOnHit`. Item damage has `ProcCoefficient = 0` (no infinite chains).
 - **Economy** — `PlayerWallet` (gold), `GoldRewarder` (kill → gold, scaled by difficulty).
 - **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.

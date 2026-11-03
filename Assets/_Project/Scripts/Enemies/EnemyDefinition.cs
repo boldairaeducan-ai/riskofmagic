@@ -6,6 +6,7 @@ namespace RiskOfMagic.Enemies
     public class EnemyDefinition : ScriptableObject
     {
         public string displayName = "Enemy";
+        [Tooltip("Shown in the boss health bar, spawned by the teleporter event.")] public bool isBoss;
 
         [Header("Stats")]
         [Min(1f)] public float maxHealth = 50f;

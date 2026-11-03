@@ -10,8 +10,10 @@ using Random = UnityEngine.Random;
 namespace RiskOfMagic.Run
 {
     /// <summary>
-    /// Server-side RoR2-style director: earns credits over time (faster with difficulty and players)
-    /// and spends them on waves of spawn cards around living players.
+    /// Server-side RoR2-style director.
+    /// Stage population: at the start of each stage, idle enemies are scattered across the StageBounds (exploration blockers).
+    /// Waves: credits earned over time (faster with difficulty, players and events) buy enemies spawned at a distance
+    /// from a living player, already hunting that player.
     /// </summary>
     public class CombatDirector : NetworkBehaviour
     {
@@ -21,14 +23,23 @@ namespace RiskOfMagic.Run
         [SerializeField] private float creditMultiplier = 1.8f;
         [SerializeField] private float startingCredits = 100f;
 
+        [Header("Stage population")]
+        [SerializeField] private bool populateOnStart = true;
+        [SerializeField, Min(0f), Tooltip("Credits spent on idle enemies at stage start (scaled by sqrt(difficulty coefficient)).")]
+        private float stagePopulationCredits = 200f;
+        [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 30f;
+        [SerializeField, Min(0f)] private float populationMinSpacing = 6f;
+
         [Header("Waves")]
+        [SerializeField, Tooltip("Wave enemies know their anchor player immediately (pressure), instead of waiting for detection.")]
+        private bool wavesHuntPlayers = true;
         [SerializeField] private Vector2 waveInterval = new(2f, 6f);
         [SerializeField, Min(1)] private int maxSpawnsPerWave = 8;
         [SerializeField, Min(1)] private int maxAliveEnemies = 40;
 
         [Header("Placement")]
-        [SerializeField] private float minSpawnDistance = 12f;
-        [SerializeField] private float maxSpawnDistance = 28f;
+        [SerializeField, Tooltip("Wave spawn distance around a living player.")] private float minSpawnDistance = 25f;
+        [SerializeField] private float maxSpawnDistance = 50f;
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;
 
@@ -40,6 +51,12 @@ namespace RiskOfMagic.Run
         private float credits;
         private float nextWaveTime;
         private string lastDiagnostic;
+        private readonly List<Vector3> populationPoints = new();
+
+        public static CombatDirector Instance { get; private set; }
+
+        /// <summary>Server only. Extra credit income during events (teleporter).</summary>
+        public float EventCreditMultiplier { get; set; } = 1f;
 
         /// <summary>Server only.</summary>
         public event Action<EnemyActor> EnemySpawned;
@@ -48,13 +65,14 @@ namespace RiskOfMagic.Run
 
         public override void OnNetworkSpawn()
         {
+            Instance = this;
             if (!IsServer)
             {
                 enabled = false;
                 return;
             }
             credits = startingCredits;
-            nextWaveTime = Time.time + 2f;
+            nextWaveTime = Time.time + 5f;
 
             if (cards.Count == 0)
                 Debug.LogError("[CombatDirector] No spawn cards assigned.", this);
@@ -62,6 +80,54 @@ namespace RiskOfMagic.Run
             if (NavMesh.CalculateTriangulation().vertices.Length == 0)
                 Debug.LogError("[CombatDirector] No NavMesh loaded in the scene: bake the NavMeshSurface on 'Level'.", this);
             Diagnose($"Started with {startingCredits} credits and {cards.Count} cards.");
+            if (populateOnStart)
+                PopulateStage();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
+
+        /// <summary>Server only. Called by the StageManager when a new stage begins.</summary>
+        public void ResetForStage()
+        {
+            credits = startingCredits;
+            nextWaveTime = Time.time + 5f;
+            EventCreditMultiplier = 1f;
+            PopulateStage();
+        }
+
+        /// <summary>Server only. Scatters idle enemies across the map, away from player spawns.</summary>
+        public void PopulateStage()
+        {
+            var bounds = StageBounds.Instance;
+            if (!IsServer || bounds == null)
+            {
+                if (bounds == null)
+                    Debug.LogError("[CombatDirector] No StageBounds in the scene: stage population skipped.", this);
+                return;
+            }
+
+            float coefficient = RunDifficulty.CurrentCoefficient;
+            float budget = stagePopulationCredits * Mathf.Sqrt(coefficient);
+            int level = RunDifficulty.CurrentEnemyLevel;
+            int spawned = 0;
+            populationPoints.Clear();
+
+            while (EnemyActor.Active.Count < maxAliveEnemies)
+            {
+                var card = PickCard(budget, coefficient);
+                if (card == null || !bounds.TryGetRandomPoint(out var position, populationMinDistanceFromSpawns,
+                        p => StageBounds.IsFarFrom(p, populationPoints, populationMinSpacing)))
+                    break;
+                populationPoints.Add(position);
+                Spawn(card, position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f), level);
+                budget -= card.cost;
+                spawned++;
+            }
+            Diagnose($"Stage populated with {spawned} enemies.");
         }
 
         private void ValidateCards()
@@ -96,7 +162,7 @@ namespace RiskOfMagic.Run
 
             float coefficient = RunDifficulty.CurrentCoefficient;
             int players = PlayerAvatar.All.Count;
-            credits += creditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
+            credits += creditMultiplier * EventCreditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
 
             if (Time.time < nextWaveTime)
                 return;
@@ -106,7 +172,7 @@ namespace RiskOfMagic.Run
 
         private void SpawnWave(float coefficient)
         {
-            var card = PickCard(coefficient);
+            var card = PickCard(credits, coefficient);
             if (card == null)
             {
                 Diagnose($"No affordable card (credits {credits:0}, coefficient {coefficient:0.00}).");
@@ -117,13 +183,15 @@ namespace RiskOfMagic.Run
             int spawned = 0;
             for (int i = 0; i < maxSpawnsPerWave && credits >= card.cost && EnemyActor.Active.Count < maxAliveEnemies; i++)
             {
-                if (!TryFindSpawnPosition(out var position, out var lookTarget))
+                if (!TryFindSpawnPosition(out var position, out var anchorPlayer))
                 {
                     Diagnose("No NavMesh position found around the players (NavMesh baked? players on it?).");
                     break;
                 }
-                Vector3 facing = Vector3.ProjectOnPlane(lookTarget - position, Vector3.up);
-                Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
+                Vector3 facing = Vector3.ProjectOnPlane(anchorPlayer.transform.position - position, Vector3.up);
+                var enemy = Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
+                if (wavesHuntPlayers && enemy.TryGetComponent(out EnemyBrain brain))
+                    brain.Alert(anchorPlayer, false);
                 credits -= card.cost;
                 spawned++;
             }
@@ -139,13 +207,13 @@ namespace RiskOfMagic.Run
             Debug.Log($"[CombatDirector] {message}", this);
         }
 
-        private SpawnCard PickCard(float coefficient)
+        private SpawnCard PickCard(float budget, float coefficient)
         {
             candidates.Clear();
             float totalWeight = 0f;
             foreach (var card in cards)
             {
-                if (card == null || card.prefab == null || card.cost > credits || coefficient < card.minCoefficient || card.weight <= 0f)
+                if (card == null || card.prefab == null || card.cost > budget || coefficient < card.minCoefficient || card.weight <= 0f)
                     continue;
                 candidates.Add(card);
                 totalWeight += card.weight;
@@ -161,9 +229,10 @@ namespace RiskOfMagic.Run
             return candidates.Count > 0 ? candidates[^1] : null;
         }
 
-        private bool TryFindSpawnPosition(out Vector3 position, out Vector3 anchor)
+        private bool TryFindSpawnPosition(out Vector3 position, out PlayerAvatar anchorPlayer)
         {
-            position = anchor = default;
+            position = default;
+            anchorPlayer = null;
             alivePlayers.Clear();
             foreach (var player in PlayerAvatar.All)
                 if (player.IsAlive)
@@ -171,7 +240,8 @@ namespace RiskOfMagic.Run
             if (alivePlayers.Count == 0)
                 return false;
 
-            anchor = alivePlayers[Random.Range(0, alivePlayers.Count)].transform.position;
+            anchorPlayer = alivePlayers[Random.Range(0, alivePlayers.Count)];
+            Vector3 anchor = anchorPlayer.transform.position;
             for (int i = 0; i < placementAttempts; i++)
             {
                 Vector2 dir = Random.insideUnitCircle.normalized;

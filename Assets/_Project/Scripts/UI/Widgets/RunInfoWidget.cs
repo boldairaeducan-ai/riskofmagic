@@ -11,6 +11,7 @@ namespace RiskOfMagic.UI
 
         private int lastSeconds = -1;
         private int lastLevel = -1;
+        private int lastStage = -1;
 
         protected override void Tick()
         {
@@ -24,9 +25,11 @@ namespace RiskOfMagic.UI
             lastSeconds = seconds;
 
             int level = run.EnemyLevel;
-            if (level != lastLevel && detailsLabel != null)
-                detailsLabel.text = $"{DifficultyName(run.Difficulty)}  ·  Niveau ennemis {level}";
+            int stage = StageManager.Instance != null ? StageManager.Instance.StageNumber : 1;
+            if ((level != lastLevel || stage != lastStage) && detailsLabel != null)
+                detailsLabel.text = $"Étape {stage}  ·  {DifficultyName(run.Difficulty)}  ·  Niveau ennemis {level}";
             lastLevel = level;
+            lastStage = stage;
         }
 
         private static string DifficultyName(DifficultyLevel difficulty) => difficulty switch

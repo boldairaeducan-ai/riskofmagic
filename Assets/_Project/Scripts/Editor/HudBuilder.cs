@@ -82,6 +82,8 @@ namespace RiskOfMagic.Editor
             BuildSkillBar(gameplay);
             BuildInventory(gameplay);
             BuildRunInfo(gameplay);
+            BuildObjective(gameplay);
+            BuildBossBar(gameplay);
             BuildNotification(gameplay);
 
             BuildDeathOverlay(rootRect);
@@ -317,9 +319,58 @@ namespace RiskOfMagic.Editor
             });
         }
 
+        private static void BuildObjective(RectTransform parent)
+        {
+            var root = Rect("Objective", parent, TopCenter, TopCenter, new Vector2(0f, -20f), new Vector2(640f, 74f));
+            var label = Text(Rect("Label", root, TopCenter, TopCenter, Vector2.zero, new Vector2(640f, 56f)), null,
+                "Trouvez et activez le téléporteur", 24f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Top);
+
+            var bar = Rect("ChargeBar", root, BottomCenter, BottomCenter, Vector2.zero, new Vector2(420f, 12f));
+            var chargeGroup = bar.gameObject.AddComponent<CanvasGroup>();
+            chargeGroup.alpha = 0f;
+            Themed(bar, HudSprite.BarBackground, HudColor.BarBackground);
+            var fill = Stretch("Fill", bar);
+            Themed(fill, HudSprite.BarFill, HudColor.Accent);
+
+            var widget = root.gameObject.AddComponent<ObjectiveWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("label").objectReferenceValue = label;
+                so.FindProperty("chargeGroup").objectReferenceValue = chargeGroup;
+                so.FindProperty("chargeFill").objectReferenceValue = fill;
+            });
+        }
+
+        private static void BuildBossBar(RectTransform parent)
+        {
+            var root = Rect("BossBar", parent, TopCenter, TopCenter, new Vector2(0f, -112f), new Vector2(780f, 70f));
+            var group = root.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            var nameLabel = Text(Rect("Name", root, TopCenter, TopCenter, Vector2.zero, new Vector2(780f, 34f)), null,
+                "Boss", 26f, HudFont.Title, HudColor.Danger, TextAlignmentOptions.Center);
+
+            var bar = Rect("Bar", root, BottomCenter, BottomCenter, Vector2.zero, new Vector2(780f, 24f));
+            Themed(bar, HudSprite.BarBackground, HudColor.BarBackground);
+            var trail = Stretch("Trail", bar);
+            Themed(trail, HudSprite.BarFill, HudColor.HealthTrail);
+            var fill = Stretch("Fill", bar);
+            Themed(fill, HudSprite.BarFill, HudColor.Danger);
+
+            var widget = root.gameObject.AddComponent<BossBarWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("nameLabel").objectReferenceValue = nameLabel;
+                so.FindProperty("fill").objectReferenceValue = fill;
+                so.FindProperty("trail").objectReferenceValue = trail;
+            });
+        }
+
         private static void BuildNotification(RectTransform parent)
         {
-            var panel = Rect("ItemNotification", parent, TopCenter, TopCenter, new Vector2(0f, -120f), new Vector2(660f, 112f));
+            var panel = Rect("ItemNotification", parent, TopCenter, TopCenter, new Vector2(0f, -210f), new Vector2(660f, 112f));
             var group = panel.gameObject.AddComponent<CanvasGroup>();
             group.alpha = 0f;
             Themed(panel, HudSprite.Panel, HudColor.Panel);
