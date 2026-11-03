@@ -103,6 +103,16 @@ namespace RiskOfMagic.Player
                 BleedOut();
         }
 
+        /// <summary>Server only: back on their feet without healing (new stage / new run).</summary>
+        public void ForceStand()
+        {
+            if (!IsServer || !IsDowned)
+                return;
+            revivers.Clear();
+            reviveProgress.Value = 0f;
+            downed.Value = false;
+        }
+
         private void Revive()
         {
             revivers.Clear();

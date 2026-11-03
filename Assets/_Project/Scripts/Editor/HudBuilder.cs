@@ -88,6 +88,7 @@ namespace RiskOfMagic.Editor
             BuildBossBar(gameplay);
             BuildNotification(gameplay);
 
+            BuildDownedOverlay(rootRect);
             BuildDeathOverlay(rootRect);
             BuildGameOver(rootRect);
             BuildChoiceMenu(rootRect);
@@ -607,6 +608,35 @@ namespace RiskOfMagic.Editor
             template.fontStyle = FontStyles.Bold;
             var widget = layer.gameObject.AddComponent<PickupLabelsWidget>();
             Props(widget, so => so.FindProperty("template").objectReferenceValue = template);
+        }
+
+        private static void BuildDownedOverlay(RectTransform parent)
+        {
+            var overlay = Stretch("DownedOverlay", parent);
+            var group = overlay.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            group.blocksRaycasts = false;
+            var tint = Themed(overlay, null, HudColor.Overlay, applyColor: false);
+            tint.color = new Color(0.55f, 0f, 0f, 0.5f);
+            var label = Text(Rect("Label", overlay, Center, Center, new Vector2(0f, 120f), new Vector2(900f, 140f)), null,
+                "À TERRE", 60f, HudFont.Title, HudColor.Danger, TextAlignmentOptions.Center);
+
+            var revive = Rect("Revive", overlay, Center, Center, new Vector2(0f, 30f), new Vector2(420f, 16f));
+            var reviveGroup = revive.gameObject.AddComponent<CanvasGroup>();
+            reviveGroup.alpha = 0f;
+            Themed(revive, HudSprite.BarBackground, HudColor.BarBackground);
+            var fill = Stretch("Fill", revive);
+            Themed(fill, HudSprite.BarFill, HudColor.Health);
+
+            var widget = overlay.gameObject.AddComponent<DownedOverlayWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("label").objectReferenceValue = label;
+                so.FindProperty("reviveGroup").objectReferenceValue = reviveGroup;
+                so.FindProperty("reviveFill").objectReferenceValue = fill;
+            });
         }
 
         private static void BuildDeathOverlay(RectTransform parent)

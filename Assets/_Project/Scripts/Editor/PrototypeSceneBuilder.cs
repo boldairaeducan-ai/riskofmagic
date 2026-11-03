@@ -722,6 +722,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<PlayerInventory>();
             root.AddComponent<StatusEffects>();
             root.AddComponent<PlayerEquipment>();
+            root.AddComponent<PlayerDowned>(); // after PlayerInventory: Phoenix Feather prevents death first
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 

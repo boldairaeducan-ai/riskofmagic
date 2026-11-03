@@ -132,6 +132,8 @@ namespace RiskOfMagic.Run
 
             foreach (var player in PlayerAvatar.All)
             {
+                if (player.Downed != null)
+                    player.Downed.ForceStand();
                 if (!player.IsAlive)
                     player.Health.Revive(1f);
                 else if (fullHeal)
