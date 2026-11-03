@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Run;
 using Unity.Netcode;
@@ -95,6 +96,8 @@ namespace RiskOfMagic.Enemies
                 level.Value = pendingLevel;
             active.Add(this);
             Health.Died += OnDied;
+            if (definition != null)
+                AudioService.PlayAt(definition.spawnSound, transform.position);
         }
 
         public override void OnNetworkDespawn()

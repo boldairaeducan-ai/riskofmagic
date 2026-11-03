@@ -39,6 +39,7 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 | **Druide** | Dard empoisonné (poison cumulable) | Nuage toxique (zone ciblée) | Bond sylvestre (empoisonne au passage) | Floraison fatale (fait éclater les poisons) |
 
 ## Architecture (`Assets/_Project/Scripts`)
+- **Audio** — `SoundEvent` SO, `AudioConfig` (Resources), `AudioService` (pooled voices, music crossfade, volumes), `GameAudioEvents` (event → sound), `PlayerAudio`, `EffectSound`, `SceneMusic`, `UiSoundTrigger`.
 - **Core** — `GameCatalog` (Resources, network ids for characters/projectiles), `GameObjectPool`, `Team`, `SkillSlot`.
 - **Combat** — `Health` (server-authoritative, events on all peers), `DamageInfo`, `IDamageable`, `Hitbox`, `AreaDamage`.
   - **Projectiles** — `ProjectileDefinition` SO, `Projectile` (simulated on every peer, server copy deals damage), `ProjectileNetwork` (replication + owner prediction).
@@ -82,5 +83,25 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 | Layout | `Assets/_Project/UI/HUD.prefab` (edit freely; only *Rebuild HUD Prefab* overwrites it) |
 
 Sprites with borders are 9-sliced automatically. `ThemedImage` / `ThemedText` pull from the theme; remove them on an element to style it by hand. Empty icon slots show the name as placeholder text.
+
+## Plugging in audio
+Run **Tools → Risk of Magic → Create Audio Slots** (also run by *Build Prototype Scene*): it creates `Resources/AudioConfig.asset`
+and one empty `SoundEvent` per sound slot in `Assets/_Project/Audio/Sounds/<folder>/<owner>_<field>.asset`, linked to its owner.
+Slots are never overwritten: drop `AudioClip`s into them (several clips = random pick). Empty slots are silent.
+
+| What | Where |
+|---|---|
+| Mixer (optional, groups Effects/UI/Music + exposed `MusicVolume`/`EffectsVolume` in dB), UI click/hover, hit/crit/kill confirm, player hurt/downed/revived/death, gold, purchase, item pickup per rarity, teleporter, game over | `Resources/AudioConfig.asset` |
+| Music: main menu, stage, boss (teleporter event), game over | `AudioConfig` music tracks; a `SceneMusic` component in a map scene overrides the stage music |
+| Skill cast | `castSound` on each skill (`Configs/Skills`) |
+| Projectile fire / impact | `fireSound` / `impactSound` (`Configs/Projectiles`) |
+| Enemy spawn / attack windup / hurt / death | `Configs/Enemies` |
+| Footsteps, jump, landing | `Configs/Characters` |
+| Equipment activation | `activateSound` (`Configs/Equipment`) |
+| Explosions, lightning, pulses... | `EffectSound` on each VFX prefab (`Prefabs/Vfx`) |
+| Per-item pickup / per-interactable purchase overrides | optional `pickupSound` / `purchaseSound` (empty = AudioConfig default) |
+
+`SoundEvent`: clips, volume/pitch ranges, 2D/3D + distances, cooldown and max voices (anti-spam). Nothing is replicated:
+each peer plays sounds from events it already receives. Code: `AudioService.PlayAt / Play2D / SetOverrideMusic`.
 
 Authority rules: movement = owner, health/damage/AI/gold/spawns = server. Damage always goes through `IDamageable.ApplyDamage` on the server.

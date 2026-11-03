@@ -1,4 +1,5 @@
 using System;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Core;
@@ -160,6 +161,7 @@ namespace RiskOfMagic.Skills
             state.LastActivationTime = Time.time;
 
             definition.OnOwnerExecute(Context, activation);
+            AudioService.PlayAt(definition.castSound, transform.position);
             var effects = avatar.Look.Effects;
             if (effects != null)
             {
@@ -225,8 +227,11 @@ namespace RiskOfMagic.Skills
         [Rpc(SendTo.NotOwner)]
         private void ExecutedRpc(byte slotIndex, SkillActivation activation)
         {
-            if (slotIndex < SlotCount)
-                slots[slotIndex]?.Definition.OnRemoteExecute(Context, activation);
+            var definition = slotIndex < SlotCount ? slots[slotIndex]?.Definition : null;
+            if (definition == null)
+                return;
+            definition.OnRemoteExecute(Context, activation);
+            AudioService.PlayAt(definition.castSound, transform.position);
         }
 
         public override void OnNetworkDespawn() => StopAllCoroutines();

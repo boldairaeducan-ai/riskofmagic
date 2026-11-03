@@ -1,3 +1,4 @@
+using RiskOfMagic.Audio;
 using UnityEngine;
 
 namespace RiskOfMagic.Equipment
@@ -12,6 +13,7 @@ namespace RiskOfMagic.Equipment
         [TextArea] public string description;
         public Sprite icon;
         [Min(0.5f)] public float cooldown = 30f;
+        [Tooltip("Played at the user on every peer when the activation succeeds.")] public SoundEvent activateSound;
 
         /// <summary>Server only.</summary>
         public abstract bool Activate(PlayerEquipment user, Vector3 aimOrigin, Vector3 aimDirection);

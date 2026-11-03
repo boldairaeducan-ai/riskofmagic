@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -69,6 +70,11 @@ namespace RiskOfMagic.Enemies
         }
 
         [Rpc(SendTo.Everyone)]
-        private void AttackStartedRpc() => AttackStarted?.Invoke();
+        private void AttackStartedRpc()
+        {
+            if (Actor != null && Actor.Definition != null)
+                AudioService.PlayAt(Actor.Definition.attackSound, transform.position);
+            AttackStarted?.Invoke();
+        }
     }
 }

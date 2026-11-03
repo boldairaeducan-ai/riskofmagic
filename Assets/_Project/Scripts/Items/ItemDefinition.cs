@@ -1,4 +1,5 @@
 using System;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Player;
 using UnityEngine;
@@ -52,6 +53,7 @@ namespace RiskOfMagic.Items
         public string displayName = "Item";
         [TextArea] public string description;
         public ItemRarity rarity = ItemRarity.Common;
+        [SoundSlot(false, Optional = true), Tooltip("Empty = AudioConfig pickup sound of the rarity.")] public SoundEvent pickupSound;
         public Sprite icon;
         public StatModifier[] modifiers = Array.Empty<StatModifier>();
 

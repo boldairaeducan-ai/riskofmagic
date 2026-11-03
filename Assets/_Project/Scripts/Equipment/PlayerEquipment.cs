@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Core;
 using RiskOfMagic.Items;
 using RiskOfMagic.Player;
@@ -35,8 +36,17 @@ namespace RiskOfMagic.Equipment
 
         private void Awake() => Avatar = GetComponent<PlayerAvatar>();
 
-        public override void OnNetworkSpawn() => equipmentIndex.OnValueChanged += OnEquipmentChanged;
-        public override void OnNetworkDespawn() => equipmentIndex.OnValueChanged -= OnEquipmentChanged;
+        public override void OnNetworkSpawn()
+        {
+            equipmentIndex.OnValueChanged += OnEquipmentChanged;
+            readyAt.OnValueChanged += OnReadyAtChanged;
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            equipmentIndex.OnValueChanged -= OnEquipmentChanged;
+            readyAt.OnValueChanged -= OnReadyAtChanged;
+        }
 
         /// <summary>Server only. The previous equipment is dropped at the player's feet.</summary>
         public void SetEquipment(EquipmentDefinition definition)
@@ -85,5 +95,13 @@ namespace RiskOfMagic.Equipment
         }
 
         private void OnEquipmentChanged(int previous, int current) => Changed?.Invoke();
+
+        // readyAt only grows on a successful activation: free replicated cue for the sound.
+        private void OnReadyAtChanged(double previous, double current)
+        {
+            var equipment = Current;
+            if (current > previous && equipment != null)
+                AudioService.PlayAt(equipment.activateSound, transform.position);
+        }
     }
 }

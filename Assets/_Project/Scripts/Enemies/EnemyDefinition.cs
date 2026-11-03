@@ -1,3 +1,4 @@
+using RiskOfMagic.Audio;
 using UnityEngine;
 
 namespace RiskOfMagic.Enemies
@@ -45,5 +46,11 @@ namespace RiskOfMagic.Enemies
 
         [Header("Lifecycle")]
         [Min(0f)] public float despawnDelay = 2f;
+
+        [Header("Audio")]
+        public SoundEvent spawnSound;
+        [Tooltip("Attack start (windup), every peer.")] public SoundEvent attackSound;
+        [SoundSlot(Cooldown = 0.08f, MaxSimultaneous = 4)] public SoundEvent hurtSound;
+        [SoundSlot(MaxSimultaneous = 4)] public SoundEvent deathSound;
     }
 }

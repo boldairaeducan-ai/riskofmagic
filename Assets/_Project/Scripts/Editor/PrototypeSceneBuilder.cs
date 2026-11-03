@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Combat.Projectiles;
@@ -154,6 +155,7 @@ namespace RiskOfMagic.Editor
 
             var hud = HudBuilder.GetOrBuild();
             AssetDatabase.SaveAssets();
+            AudioSlots.CreateAll(); // re-links the persistent sound slots to the regenerated prefabs
             BuildScene(playerPrefab, prefabList, gameSystems, hud);
             MainMenuBuilder.BuildScene(prefabList, lobbyPrefab);
             AddSceneToBuildSettings(MainMenuBuilder.ScenePath); // first scene of the build
@@ -748,6 +750,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<PlayerEquipment>();
             root.AddComponent<PlayerDowned>(); // after PlayerInventory: Phoenix Feather prevents death first
             root.AddComponent<LocalCombatFeedback>();
+            root.AddComponent<PlayerAudio>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -1351,6 +1354,7 @@ namespace RiskOfMagic.Editor
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             var timed = root.AddComponent<TimedEffect>();
             SetProperties(timed, so => so.FindProperty("lifetime").floatValue = lifetime);
+            root.AddComponent<EffectSound>();
             return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
         }
 
@@ -1365,6 +1369,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<LineEffect>();
             var timed = root.AddComponent<TimedEffect>();
             SetProperties(timed, so => so.FindProperty("lifetime").floatValue = lifetime);
+            root.AddComponent<EffectSound>();
             return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
         }
 

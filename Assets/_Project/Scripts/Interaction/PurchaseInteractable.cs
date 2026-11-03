@@ -1,4 +1,5 @@
 using System;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
 using Unity.Netcode;
@@ -18,6 +19,7 @@ namespace RiskOfMagic.Interaction
         [SerializeField] private float costExponent = 1.25f;
         [SerializeField, Min(0), Tooltip("0 = infinite")] private int maxUses = 1;
         [SerializeField, Min(1f)] private float costMultiplierPerUse = 1f;
+        [SerializeField, SoundSlot(Optional = true), Tooltip("Empty = AudioConfig.purchase.")] private SoundEvent purchaseSound;
 
         private readonly NetworkVariable<uint> cost = new();
         private readonly NetworkVariable<int> uses = new();
@@ -84,6 +86,11 @@ namespace RiskOfMagic.Interaction
         protected virtual void OnPurchased(PlayerAvatar buyer) { }
 
         [Rpc(SendTo.Everyone)]
-        private void PurchasedRpc() => PurchasedFeedback?.Invoke();
+        private void PurchasedRpc()
+        {
+            var config = AudioService.Config;
+            AudioService.PlayAt(AudioService.Pick(purchaseSound, config != null ? config.purchase : null), transform.position);
+            PurchasedFeedback?.Invoke();
+        }
     }
 }

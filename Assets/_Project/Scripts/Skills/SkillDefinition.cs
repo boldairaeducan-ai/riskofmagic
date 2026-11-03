@@ -1,3 +1,4 @@
+using RiskOfMagic.Audio;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Vfx;
 using UnityEngine;
@@ -38,6 +39,7 @@ namespace RiskOfMagic.Skills
         public GameObject castVfx;
         public VfxAnchor castVfxAnchor = VfxAnchor.Caster;
         [Min(0f)] public float castVfxScale = 1f;
+        [Tooltip("Played at the caster on every peer.")] public SoundEvent castSound;
 
         [Header("Owner camera feedback")]
         [Tooltip("Field of view change (degrees) on cast: positive widens (dashes), negative narrows.")] public float ownerFovKick;

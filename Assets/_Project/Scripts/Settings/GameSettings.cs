@@ -25,7 +25,7 @@ namespace RiskOfMagic.Settings
         public static int FrameRateLimit { get; set; }
         public static float FieldOfView { get; set; } = 80f;
 
-        // Audio (0..1). Music/effects are exposed for the future audio mixer.
+        // Audio (0..1). Music/effects are applied by AudioService (source volumes or AudioConfig mixer).
         public static float MasterVolume { get; set; } = 1f;
         public static float MusicVolume { get; set; } = 0.8f;
         public static float EffectsVolume { get; set; } = 1f;

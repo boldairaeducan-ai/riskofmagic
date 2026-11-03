@@ -1,3 +1,4 @@
+using RiskOfMagic.Audio;
 using RiskOfMagic.Core;
 using RiskOfMagic.Player;
 using RiskOfMagic.Skills;
@@ -20,6 +21,11 @@ namespace RiskOfMagic.Characters
         [Min(0.1f)] public float attackSpeed = 1f;
         [Range(0f, 1f)] public float critChance = 0.01f;
         public MovementConfig movement;
+
+        [Header("Audio")]
+        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepSound;
+        public SoundEvent jumpSound;
+        public SoundEvent landSound;
 
         [Header("Skills")]
         public SkillDefinition primary;

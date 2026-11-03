@@ -1,3 +1,4 @@
+using RiskOfMagic.Audio;
 using UnityEngine;
 
 namespace RiskOfMagic.Combat.Projectiles
@@ -9,6 +10,10 @@ namespace RiskOfMagic.Combat.Projectiles
         [Header("Visuals")]
         public GameObject visualPrefab;
         public GameObject impactVfx;
+
+        [Header("Audio")]
+        public SoundEvent fireSound;
+        public SoundEvent impactSound;
 
         [Header("Motion")]
         [Min(0f)] public float speed = 60f;

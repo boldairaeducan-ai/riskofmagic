@@ -86,6 +86,11 @@ the teleporter event), `InteractableSpawner`, `StageManager` (teleporter, next s
 → `GameFlow.StartGame` loads `Prototype` through `NetworkSceneManager`. `PersistentNetworkManager` keeps one
 NetworkManager across scenes; `NetworkConfig.PlayerPrefab` is null and `GameBootstrap` spawns player objects.
 
+**Audio.** Local only, never replicated: `GameAudioEvents` maps replicated events (Health, wallet, inventory, teleporter,
+game over) to sounds; definitions carry `SoundEvent` slots played where their feedback already runs. Slot assets are
+generated empty by `Editor/AudioSlots.cs` (never overwritten, re-linked after each build); `AudioService.Pick` treats a
+clip-less slot as unset.
+
 **UI.** `HudController` binds every `HudWidget` to the local player. `ThemedImage` / `ThemedText` pull sprites, fonts
 and colors from `HudTheme`; widgets only fill in game data (icons come from skill/item/equipment/character assets).
 

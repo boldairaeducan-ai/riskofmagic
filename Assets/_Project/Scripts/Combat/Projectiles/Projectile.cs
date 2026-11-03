@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RiskOfMagic.Audio;
 using RiskOfMagic.Core;
 using RiskOfMagic.Vfx;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace RiskOfMagic.Combat.Projectiles
                 projectile = go.AddComponent<Projectile>();
             projectile.Init(definition, direction, scale, damage, authoritative, ignoreRoot, speedOverride);
             projectile.homingTarget = homingTarget;
+            AudioService.PlayAt(definition.fireSound, origin);
             return projectile;
         }
 
@@ -139,6 +141,7 @@ namespace RiskOfMagic.Combat.Projectiles
                 AreaDamage.Apply(point, definition.explosionRadius * scale, info, definition.hitMask, damaged, definition.dot);
             }
             VfxUtility.Spawn(definition.impactVfx, point, Quaternion.identity, scale);
+            AudioService.PlayAt(definition.impactSound, point);
             Release();
         }
 
