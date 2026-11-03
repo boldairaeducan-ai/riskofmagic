@@ -93,6 +93,16 @@ namespace RiskOfMagic.Items
             counts[index] += amount;
         }
 
+        /// <summary>Server only (new run).</summary>
+        public void Clear()
+        {
+            if (!IsServer)
+                return;
+            for (int i = 0; i < counts.Count; i++)
+                if (counts[i] != 0)
+                    counts[i] = 0;
+        }
+
         private void OnListChanged(NetworkListEvent<int> change)
         {
             if (IsOwner && change.Type == NetworkListEvent<int>.EventType.Value && change.Value > change.PreviousValue)

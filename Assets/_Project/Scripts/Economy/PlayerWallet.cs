@@ -25,6 +25,13 @@ namespace RiskOfMagic.Economy
                 gold.Value = (uint)Math.Min((ulong)gold.Value + amount, uint.MaxValue);
         }
 
+        /// <summary>Server only (new run).</summary>
+        public void ResetGold()
+        {
+            if (IsServer)
+                gold.Value = 0;
+        }
+
         /// <summary>Server only.</summary>
         public bool TrySpend(uint amount)
         {

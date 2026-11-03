@@ -65,6 +65,15 @@ namespace RiskOfMagic.Run
                 Instance = null;
         }
 
+        /// <summary>Server only: restarts the run clock and stage count.</summary>
+        public void ResetRun()
+        {
+            if (!IsServer)
+                return;
+            runStartTime.Value = NetworkManager.ServerTime.Time;
+            stagesCompleted.Value = 0;
+        }
+
         /// <summary>Server only.</summary>
         public void CompleteStage()
         {

@@ -58,6 +58,9 @@ namespace RiskOfMagic.Run
         /// <summary>Server only. Extra credit income during events (teleporter).</summary>
         public float EventCreditMultiplier { get; set; } = 1f;
 
+        /// <summary>Server only. No credits nor waves while paused (game over).</summary>
+        public bool Paused { get; set; }
+
         /// <summary>Server only.</summary>
         public event Action<EnemyActor> EnemySpawned;
 
@@ -96,6 +99,7 @@ namespace RiskOfMagic.Run
             credits = startingCredits;
             nextWaveTime = Time.time + 5f;
             EventCreditMultiplier = 1f;
+            Paused = false;
             PopulateStage();
         }
 
@@ -157,7 +161,7 @@ namespace RiskOfMagic.Run
 
         private void Update()
         {
-            if (!IsSpawned || PlayerAvatar.All.Count == 0)
+            if (!IsSpawned || Paused || PlayerAvatar.All.Count == 0)
                 return;
 
             float coefficient = RunDifficulty.CurrentCoefficient;
