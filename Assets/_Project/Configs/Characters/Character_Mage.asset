@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Mage
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Mage
+  description: "Sorts \xE9l\xE9mentaires et mobilit\xE9 magique."
+  bodyColor: {r: 0.35, g: 0.45, b: 0.95, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 85
+  healthRegen: 0
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: ecff304366862624dad2f71eaa9b67d4, type: 2}
+  primary: {fileID: 11400000, guid: 00b270e63e2abf34cb67967be7b1de6d, type: 2}
+  secondary: {fileID: 11400000, guid: 18011e18742c5fb4eb61e57e47599bfe, type: 2}
+  utility: {fileID: 11400000, guid: 337bdd68a5ccea74fae37d08e5e72695, type: 2}
+  special: {fileID: 11400000, guid: 599eddd46d6a13e4987ea703a5502316, type: 2}

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420740f0496bad149a4cff15f164af66, type: 3}
+  m_Name: Item_StormOrb
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ChainOnHitItem
+  displayName: "Orbe de temp\xEAte"
+  description: "25% de chances : \xE9clair sur 3 ennemis (+2), 80% des d\xE9g\xE2ts."
+  rarity: 1
+  icon: {fileID: 0}
+  modifiers: []
+  damageType: 3
+  chance: 0.25
+  damageFraction: 0.8
+  targetsFirstStack: 3
+  targetsPerExtraStack: 2
+  bounceRadius: 15
+  boltVfx: {fileID: 5370805351732007781, guid: 544f549c20707744d88094a830b7f408, type: 3}

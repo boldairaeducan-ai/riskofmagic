@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Warrior
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Guerrier
+  description: "Robuste, combat au corps \xE0 corps."
+  bodyColor: {r: 0.8, g: 0.3, b: 0.25, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 130
+  healthRegen: 1
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: e4824072f6dbb434da834a937166b5f1, type: 2}
+  primary: {fileID: 11400000, guid: 03a9ad3be52384943bd47db3e9f13bf8, type: 2}
+  secondary: {fileID: 11400000, guid: 781cedd5c0bb424459f9e191d52fe3f4, type: 2}
+  utility: {fileID: 11400000, guid: e25d9e608b6b5c54b84abe0ae2440496, type: 2}
+  special: {fileID: 11400000, guid: 18c23bc1a7785e748882861dba0996d0, type: 2}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05856fd3755879149964f7274f8cd77e, type: 3}
+  m_Name: Item_ChaosEye
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ExplodeOnHitItem
+  displayName: "\u0152il du chaos"
+  description: "Chaque coup explose : 60% des d\xE9g\xE2ts dans 4 m (+2,5 m)."
+  rarity: 2
+  icon: {fileID: 0}
+  modifiers: []
+  damageType: 4
+  damageFraction: 0.6
+  radiusFirstStack: 4
+  radiusPerExtraStack: 2.5
+  explosionVfx: {fileID: 4948897298884925427, guid: e5b9a7946e378d84baf4c778dc1edc29, type: 3}

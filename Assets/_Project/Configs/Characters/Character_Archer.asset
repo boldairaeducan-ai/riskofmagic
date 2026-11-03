@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Archer
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Archer
+  description: "Agile, double saut, d\xE9g\xE2ts \xE0 distance."
+  bodyColor: {r: 0.3, g: 0.75, b: 0.35, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 80
+  healthRegen: 0
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: 7e2a1c53f1bf3df4c916c0a24bfc1c3b, type: 2}
+  primary: {fileID: 11400000, guid: eef9a9239cc7a0e4eaa6136cba5a5a20, type: 2}
+  secondary: {fileID: 11400000, guid: 928d3af6b44694141a37fe79e250c84d, type: 2}
+  utility: {fileID: 11400000, guid: 258495c326fa6654682304eb47cdcd25, type: 2}
+  special: {fileID: 11400000, guid: a60f608480e6eb14594667016a60c361, type: 2}

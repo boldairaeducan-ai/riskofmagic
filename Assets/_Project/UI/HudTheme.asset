@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eb3f01424910b1448da4f481e7b93f7, type: 3}
+  m_Name: HudTheme
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.UI.HudTheme
+  bodyFont: {fileID: 0}
+  titleFont: {fileID: 0}
+  numberFont: {fileID: 0}
+  panel: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  frame: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  barBackground: {fileID: 0}
+  barFill: {fileID: 0}
+  slotFrame: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  cooldownOverlay: {fileID: 0}
+  crosshair: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  button: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  inputField: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  goldIcon: {fileID: 0}
+  defaultSkillIcon: {fileID: 0}
+  defaultItemIcon: {fileID: 0}
+  defaultPortrait: {fileID: 0}
+  lockOnMarker: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  panelColor: {r: 0.05, g: 0.05, b: 0.08, a: 0.75}
+  frameColor: {r: 0.75, g: 0.65, b: 0.45, a: 1}
+  textColor: {r: 0.95, g: 0.93, b: 0.88, a: 1}
+  textMutedColor: {r: 0.7, g: 0.68, b: 0.62, a: 1}
+  accentColor: {r: 0.95, g: 0.75, b: 0.3, a: 1}
+  barBackgroundColor: {r: 0, g: 0, b: 0, a: 0.6}
+  healthColor: {r: 0.35, g: 0.8, b: 0.35, a: 1}
+  healthLowColor: {r: 0.9, g: 0.25, b: 0.2, a: 1}
+  healthTrailColor: {r: 1, g: 0.9, b: 0.6, a: 0.8}
+  goldColor: {r: 1, g: 0.8, b: 0.25, a: 1}
+  cooldownOverlayColor: {r: 0, g: 0, b: 0, a: 0.7}
+  chargeColor: {r: 0.55, g: 0.85, b: 1, a: 1}
+  buttonColor: {r: 0.2, g: 0.18, b: 0.15, a: 0.95}
+  buttonSelectedColor: {r: 0.55, g: 0.4, b: 0.15, a: 1}
+  dangerColor: {r: 0.85, g: 0.15, b: 0.15, a: 1}
+  iconColor: {r: 1, g: 1, b: 1, a: 1}
+  overlayColor: {r: 0.3, g: 0, b: 0, a: 0.45}
+  lockOnColor: {r: 0.8, g: 0.5, b: 1, a: 0.9}
+  damagePhysical: {r: 1, g: 1, b: 1, a: 1}
+  damageFire: {r: 1, g: 0.55, b: 0.2, a: 1}
+  damageFrost: {r: 0.55, g: 0.9, b: 1, a: 1}
+  damageLightning: {r: 0.75, g: 0.85, b: 1, a: 1}
+  damageArcane: {r: 0.8, g: 0.5, b: 1, a: 1}
+  damagePoison: {r: 0.5, g: 1, b: 0.4, a: 1}
+  damageCritical: {r: 1, g: 0.85, b: 0.2, a: 1}
+  damageTaken: {r: 1, g: 0.25, b: 0.25, a: 1}
+  damageFontSize: 34
+  criticalFontSize: 46

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d7a3c03b77fcb94fa27cbfd0c6f2e2e, type: 3}
+  m_Name: Druid_ToxicCloud
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
+  displayName: Nuage toxique
+  description: "Nuage cibl\xE9 pendant 5 s : 30% par tick + poison."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 8
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  center: 1
+  maxRange: 35
+  radius: 5
+  followCaster: 1
+  damageType: 5
+  damageCoefficient: 0.3
+  ticks: 10
+  initialDelay: 0
+  tickInterval: 0.5
+  hitOncePerTarget: 0
+  dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  knockbackDistance: 0
+  knockbackDuration: 0.25
+  casterUpwardVelocity: 0
+  tickVfx: {fileID: 2897291182143897075, guid: c7edfe009a162bf4b8b6e430e374139a, type: 3}

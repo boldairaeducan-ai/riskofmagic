@@ -1,0 +1,199 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8667597431422398606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 843425689091649939}
+  - component: {fileID: 2533952681968839970}
+  - component: {fileID: 5108065214356122841}
+  - component: {fileID: 6856650816945856236}
+  - component: {fileID: 6466195770445134337}
+  - component: {fileID: 6627725977397102660}
+  - component: {fileID: 8806006982948455940}
+  - component: {fileID: 6124626132261673463}
+  - component: {fileID: 8096844443945818259}
+  m_Layer: 0
+  m_Name: GameSystems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &843425689091649939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2533952681968839970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2707483160
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &5108065214356122841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1490593ee32cdf947aed2ced4bdb43f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.RunDifficulty
+  ShowTopMostFoldoutHeaderGroup: 1
+  startingDifficulty: 2
+  scalingPerMinute: 0.07
+  playerFactorPerPlayer: 0.3
+  stageMultiplier: 1.15
+  levelStep: 0.33
+  maxEnemyLevel: 99
+--- !u!114 &6856650816945856236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60051f1a29f1e446b5b83f330ab2f5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileNetwork
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6466195770445134337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67398d699b6cf994fab1b65f842f3878, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Vfx.VfxNetwork
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &6627725977397102660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1181a11f77b9449478ba7d5f7cbe43e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Economy.GoldRewarder
+  distribution: 2
+--- !u!114 &8806006982948455940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cf2983bfd8131248958c72af1525121, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.CombatDirector
+  ShowTopMostFoldoutHeaderGroup: 1
+  cards:
+  - {fileID: 11400000, guid: 717186fed1171934fa850a74d440b86a, type: 2}
+  - {fileID: 11400000, guid: 383ab157cda000c41bc6a9ff97347dac, type: 2}
+  - {fileID: 11400000, guid: f76b001995dd2ef43bf3e208053f3b74, type: 2}
+  - {fileID: 11400000, guid: ae69e23cd95055d4a80db1384e1d90cf, type: 2}
+  - {fileID: 11400000, guid: 0a7a968fcf320524ebb8aa8632576822, type: 2}
+  - {fileID: 11400000, guid: d70e7606a620f0f4d9b0daf27038fbee, type: 2}
+  creditMultiplier: 1
+  startingCredits: 40
+  populateOnStart: 1
+  stagePopulationCredits: 110
+  populationMinDistanceFromSpawns: 45
+  populationMinSpacing: 6
+  wavesHuntPlayers: 0
+  waveInterval: {x: 8, y: 15}
+  maxSpawnsPerWave: 4
+  maxAliveEnemies: 22
+  farSpawnDistance: {x: 45, y: 90}
+  minSpawnDistance: 25
+  maxSpawnDistance: 50
+  navMeshSampleRadius: 6
+  placementAttempts: 8
+  logDiagnostics: 1
+--- !u!114 &6124626132261673463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abfbb97b3f505064a8a943e20d16fd83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.InteractableSpawner
+  ShowTopMostFoldoutHeaderGroup: 1
+  entries:
+  - prefab: {fileID: 8849738563638384940, guid: 01bf8b4f247d510449fa1d26f860f0df, type: 3}
+    count: 14
+  - prefab: {fileID: 7388858619262182687, guid: 73b058d5325002341824be49678c6dbf, type: 3}
+    count: 3
+  - prefab: {fileID: 6134713598374761138, guid: 94201e769f5429d44aaf8f8c45d98ad0, type: 3}
+    count: 2
+  minSpacing: 5
+  playerSpawnClearance: 8
+  spawnOnStart: 1
+--- !u!114 &8096844443945818259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667597431422398606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38d45dfdd3aae784dba8415d7368ce5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.StageManager
+  ShowTopMostFoldoutHeaderGroup: 1
+  teleporterPrefab: {fileID: 5016159213148139374, guid: 34c8bc16614829046953a86d5715734f, type: 3}
+  teleporterMinDistanceFromSpawns: 45

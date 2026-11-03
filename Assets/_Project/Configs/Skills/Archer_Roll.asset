@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 303d0f0be29690b4d98df26fc786a340, type: 3}
+  m_Name: Archer_Roll
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DashSkill
+  displayName: Roulade
+  description: "Esquive rapide dans la direction de d\xE9placement."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 5
+  maxStock: 1
+  castDuration: 0
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 1
+  keepsSprint: 1
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  direction: 0
+  speed: 28
+  duration: 0.22
+  ignoreGravity: 1
+  upwardVelocity: 0
+  damageCoefficient: 0
+  damageRadius: 1.6
+  damageType: 0
+  damageTickInterval: 0.05
+  dot: {fileID: 0}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efa37077b41a09b48924f625fc508787, type: 3}
+  m_Name: Arcanist_TimeLock
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ConeControlSkill
+  displayName: Blocage temporel
+  description: Fige les ennemis devant soi pendant 4 s.
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 14
+  maxStock: 1
+  castDuration: 0.4
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 2879532697692771564, guid: e9a883eaab3c9054599387630e531897, type: 3}
+  castVfxAnchor: 1
+  castVfxScale: 20
+  range: 20
+  coneAngle: 35
+  freezeDuration: 4
+  damageCoefficient: 0
+  damageType: 4

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Arcanist
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Arcaniste
+  description: "Projectiles chercheurs, contr\xF4le et protection."
+  bodyColor: {r: 0.6, g: 0.35, b: 0.95, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 90
+  healthRegen: 0
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: 25e4e214fd461f04abfc21ef0d710c46, type: 2}
+  primary: {fileID: 11400000, guid: e69a279191d32844eb90b32f8b47d1a5, type: 2}
+  secondary: {fileID: 11400000, guid: 34e636b38b8dc554f99b2775b2e5d3a4, type: 2}
+  utility: {fileID: 11400000, guid: 8232638cb73cc144ea70e302d9e00a22, type: 2}
+  special: {fileID: 11400000, guid: 4f6575d561244be4ca928cc9a300b061, type: 2}

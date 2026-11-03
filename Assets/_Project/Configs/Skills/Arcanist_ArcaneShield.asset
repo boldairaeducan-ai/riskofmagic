@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 135e08cb6927b2f47bc8903abef3a97a, type: 3}
+  m_Name: Arcanist_ArcaneShield
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ShieldSkill
+  displayName: Bouclier arcanique
+  description: "Bloque 95% des d\xE9g\xE2ts pendant 3 s."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 10
+  maxStock: 1
+  castDuration: 0
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 1
+  keepsSprint: 1
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  damageReduction: 0.95
+  duration: 3
