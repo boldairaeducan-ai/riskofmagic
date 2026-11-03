@@ -14,6 +14,9 @@ namespace RiskOfMagic.Enemies
         [Min(0f)] public float acceleration = 20f;
         [Min(0f)] public float angularSpeed = 540f;
 
+        [Range(0f, 1f), Tooltip("Reduces knockback distance and freeze duration (0 = full effect, 1 = immune).")]
+        public float controlResistance;
+
         [Header("Level scaling (per level above 1)")]
         [Min(0f)] public float healthPerLevel = 0.3f;
         [Min(0f)] public float damagePerLevel = 0.2f;

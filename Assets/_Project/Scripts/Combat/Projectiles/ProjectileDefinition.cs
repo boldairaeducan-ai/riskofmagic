@@ -15,6 +15,7 @@ namespace RiskOfMagic.Combat.Projectiles
         public float gravity;
         [Min(0.05f)] public float lifetime = 3f;
         [Min(0f)] public float radius = 0.15f;
+        [Min(0f), Tooltip("Degrees per second toward the homing target (0 = no homing).")] public float homingTurnRate;
 
         [Header("Hits")]
         [Min(0)] public int pierceCount;

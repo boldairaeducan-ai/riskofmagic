@@ -16,6 +16,8 @@ namespace RiskOfMagic.Combat
 
         private readonly NetworkVariable<float> current = new();
         private readonly NetworkVariable<float> max = new();
+        private readonly NetworkVariable<double> shieldUntil = new();
+        private readonly NetworkVariable<float> shieldReduction = new();
 
         /// <summary>(current, max)</summary>
         public event Action<float, float> HealthChanged;
@@ -44,6 +46,19 @@ namespace RiskOfMagic.Combat
         public float Max => max.Value;
         public float Normalized => max.Value > 0f ? current.Value / max.Value : 0f;
         public bool IsAlive => current.Value > 0f;
+        public bool IsShielded => IsSpawned && NetworkManager.ServerTime.Time < shieldUntil.Value;
+        public float ShieldTimeRemaining => IsShielded ? (float)(shieldUntil.Value - NetworkManager.ServerTime.Time) : 0f;
+
+        /// <summary>Server only. Reduces incoming damage by <paramref name="reduction"/> (0.95 = -95%) for a duration.</summary>
+        public void AddShield(float reduction, float duration)
+        {
+            if (!AssertServer())
+                return;
+            double until = NetworkManager.ServerTime.Time + duration;
+            shieldReduction.Value = IsShielded ? Mathf.Max(shieldReduction.Value, reduction) : Mathf.Clamp01(reduction);
+            if (until > shieldUntil.Value)
+                shieldUntil.Value = until;
+        }
 
         /// <summary>Call before spawn (e.g. from Awake) to override the inspector value.</summary>
         public void SetBaseMaxHealth(float value) => baseMaxHealth = Mathf.Max(1f, value);
@@ -74,6 +89,8 @@ namespace RiskOfMagic.Combat
             if (!allowFriendlyFire && team != Team.Neutral && info.SourceTeam == team)
                 return;
 
+            if (IsShielded)
+                info.Amount *= 1f - shieldReduction.Value;
             float next = Mathf.Max(0f, current.Value - info.Amount);
             current.Value = next;
 

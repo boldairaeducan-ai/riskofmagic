@@ -29,12 +29,23 @@ namespace RiskOfMagic.UI
             SetFill(fill, ratio);
             if (fillImage != null && theme != null)
                 fillImage.color = ratio <= lowHealthThreshold ? theme.healthLowColor : theme.healthColor;
-            if (label != null)
-                label.text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}";
+            UpdateLabel(current, max);
+        }
+
+        private void UpdateLabel(float current, float max)
+        {
+            if (label == null)
+                return;
+            string text = $"{Mathf.CeilToInt(current)} / {Mathf.CeilToInt(max)}";
+            if (Player != null && Player.Health.IsShielded)
+                text += $"  <size=80%>· Bouclier {Player.Health.ShieldTimeRemaining:0.0}s</size>";
+            if (label.text != text)
+                label.text = text;
         }
 
         protected override void Tick()
         {
+            UpdateLabel(Player.Health.Current, Player.Health.Max);
             float ratio = Player.Health.Normalized;
             trailRatio = trailRatio > ratio ? Mathf.MoveTowards(trailRatio, ratio, trailSpeed * Time.deltaTime) : ratio;
             SetFill(trail, trailRatio);

@@ -32,6 +32,21 @@ namespace RiskOfMagic.Combat
             return best;
         }
 
+        /// <summary>Every living Health of another team in the sphere (each once).</summary>
+        public static void FindHostiles(Vector3 center, float radius, Team team, List<Health> results, int mask = Physics.DefaultRaycastLayers)
+        {
+            results.Clear();
+            int count = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
+            {
+                if (!CombatUtility.TryGetDamageable(buffer[i], out var target))
+                    continue;
+                var health = target.Health;
+                if (health != null && health.IsAlive && health.Team != team && !results.Contains(health))
+                    results.Add(health);
+            }
+        }
+
         public static Vector3 Center(Health health) => health.transform.position + Vector3.up;
     }
 }

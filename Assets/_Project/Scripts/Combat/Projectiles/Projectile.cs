@@ -24,9 +24,10 @@ namespace RiskOfMagic.Combat.Projectiles
         private float scale;
         private int pierced;
         private TrailRenderer[] trails;
+        private Transform homingTarget;
 
         public static Projectile Launch(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale,
-            DamageInfo damage, bool authoritative, Transform ignoreRoot, float speedOverride = -1f)
+            DamageInfo damage, bool authoritative, Transform ignoreRoot, float speedOverride = -1f, Transform homingTarget = null)
         {
             if (definition == null || definition.visualPrefab == null)
             {
@@ -39,6 +40,7 @@ namespace RiskOfMagic.Combat.Projectiles
             if (!go.TryGetComponent(out Projectile projectile))
                 projectile = go.AddComponent<Projectile>();
             projectile.Init(definition, direction, scale, damage, authoritative, ignoreRoot, speedOverride);
+            projectile.homingTarget = homingTarget;
             return projectile;
         }
 
@@ -74,6 +76,11 @@ namespace RiskOfMagic.Combat.Projectiles
             }
 
             velocity += Vector3.down * (definition.gravity * dt);
+            if (homingTarget != null && definition.homingTurnRate > 0f)
+            {
+                Vector3 desired = homingTarget.position + Vector3.up - transform.position;
+                velocity = Vector3.RotateTowards(velocity, desired.normalized * velocity.magnitude, definition.homingTurnRate * Mathf.Deg2Rad * dt, 0f);
+            }
             Vector3 step = velocity * dt;
             float distance = step.magnitude;
             if (distance < 0.00001f)

@@ -24,10 +24,11 @@ namespace RiskOfMagic.Combat.Projectiles
 
         /// <summary>Server only.</summary>
         public static void FireServer(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale,
-            DamageInfo damage, NetworkObject shooter, ulong predictedByClient = NoClient, float speedOverride = -1f)
+            DamageInfo damage, NetworkObject shooter, ulong predictedByClient = NoClient, float speedOverride = -1f, NetworkObject homingTarget = null)
         {
             Transform ignore = shooter != null ? shooter.transform : null;
-            Projectile.Launch(definition, origin, direction, scale, damage, true, ignore, speedOverride);
+            Transform target = homingTarget != null ? homingTarget.transform : null;
+            Projectile.Launch(definition, origin, direction, scale, damage, true, ignore, speedOverride, target);
 
             if (Instance == null || !Instance.IsSpawned)
                 return;
@@ -38,27 +39,30 @@ namespace RiskOfMagic.Combat.Projectiles
                 return;
             }
             Instance.SpawnVisualRpc((ushort)index, origin, direction, scale, damage.SourceTeam,
-                shooter != null ? shooter.NetworkObjectId : ulong.MaxValue, predictedByClient, speedOverride);
+                shooter != null ? shooter.NetworkObjectId : ulong.MaxValue, predictedByClient, speedOverride,
+                homingTarget != null ? homingTarget.NetworkObjectId : ulong.MaxValue);
         }
 
         /// <summary>Local, damage-less copy used for client-side prediction.</summary>
         public static void LaunchVisual(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale, Team team, Transform ignore,
-            float speedOverride = -1f)
+            float speedOverride = -1f, Transform homingTarget = null)
         {
-            Projectile.Launch(definition, origin, direction, scale, new DamageInfo { SourceTeam = team }, false, ignore, speedOverride);
+            Projectile.Launch(definition, origin, direction, scale, new DamageInfo { SourceTeam = team }, false, ignore, speedOverride, homingTarget);
         }
 
         [Rpc(SendTo.NotServer)]
         private void SpawnVisualRpc(ushort projectileIndex, Vector3 origin, Vector3 direction, float scale, Team team, ulong shooterId, ulong predictedByClient,
-            float speedOverride)
+            float speedOverride, ulong homingTargetId)
         {
             if (NetworkManager.LocalClientId == predictedByClient)
                 return;
             var definition = GameCatalog.Instance.GetProjectile(projectileIndex);
             if (definition == null)
                 return;
-            Transform ignore = NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(shooterId, out var shooter) ? shooter.transform : null;
-            LaunchVisual(definition, origin, direction, scale, team, ignore, speedOverride);
+            var spawned = NetworkManager.SpawnManager.SpawnedObjects;
+            Transform ignore = spawned.TryGetValue(shooterId, out var shooter) ? shooter.transform : null;
+            Transform target = spawned.TryGetValue(homingTargetId, out var homing) ? homing.transform : null;
+            LaunchVisual(definition, origin, direction, scale, team, ignore, speedOverride, target);
         }
     }
 }

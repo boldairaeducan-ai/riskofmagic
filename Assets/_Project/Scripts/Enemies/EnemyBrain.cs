@@ -15,6 +15,8 @@ namespace RiskOfMagic.Enemies
         Hold,
         Retreat,
         Dodge,
+        Stunned,
+        Frozen,
         Leap,
         Dead
     }
@@ -54,6 +56,7 @@ namespace RiskOfMagic.Enemies
         private EnemyLeap leap;
         private EnemyDodge dodge;
         private float flankAngle;
+        private Coroutine pushRoutine;
         private NavMeshPath path;
         private Vector3 home;
         private Vector3 targetNavPoint;
@@ -109,6 +112,58 @@ namespace RiskOfMagic.Enemies
             actor.Health.Damaged -= OnDamaged;
         }
 
+        /// <summary>Server only. Knockback along the NavMesh, interrupting the current attack.</summary>
+        public void Push(Vector3 displacement, float duration = 0.25f)
+        {
+            if (!IsServer || State == EnemyState.Dead || (leap != null && leap.IsLeaping) || !agent.enabled || !agent.isOnNavMesh)
+                return;
+            float resistance = Definition != null ? Definition.controlResistance : 0f;
+            displacement.y = 0f;
+            displacement *= 1f - resistance;
+            if (displacement.sqrMagnitude < 0.01f)
+                return;
+
+            if (attack != null)
+                attack.Cancel();
+            if (dodge != null)
+                dodge.Cancel();
+            if (pushRoutine != null)
+                StopCoroutine(pushRoutine);
+            pushRoutine = StartCoroutine(PushRoutine(displacement, duration));
+        }
+
+        private System.Collections.IEnumerator PushRoutine(Vector3 displacement, float duration)
+        {
+            agent.isStopped = true;
+            Vector3 moved = Vector3.zero;
+            for (float t = 0f; t < 1f;)
+            {
+                t = Mathf.Min(1f, t + Time.deltaTime / duration);
+                Vector3 step = displacement * (1f - (1f - t) * (1f - t)) - moved; // ease out
+                if (agent.enabled && agent.isOnNavMesh)
+                    agent.Move(step);
+                moved += step;
+                yield return null;
+            }
+            pushRoutine = null;
+        }
+
+        private void HoldStill(EnemyState state)
+        {
+            State = state;
+            if (attack != null && attack.IsAttacking)
+                attack.Cancel();
+            if (dodge != null)
+                dodge.Cancel();
+            if (leap != null && leap.IsLeaping)
+                leap.Cancel();
+            if (agent.enabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+            }
+        }
+
         /// <summary>Server only. Makes this enemy (and optionally its allies) chase the player from now on.</summary>
         public void Alert(PlayerAvatar player, bool propagate = true)
         {
@@ -131,6 +186,16 @@ namespace RiskOfMagic.Enemies
         {
             if (!IsSpawned || State == EnemyState.Dead)
                 return;
+            if (actor.IsFrozen)
+            {
+                HoldStill(EnemyState.Frozen);
+                return;
+            }
+            if (pushRoutine != null)
+            {
+                State = EnemyState.Stunned;
+                return;
+            }
             if (leap != null && leap.IsLeaping)
             {
                 State = EnemyState.Leap;
@@ -412,6 +477,9 @@ namespace RiskOfMagic.Enemies
                 leap.Cancel();
             if (dodge != null)
                 dodge.Cancel();
+            if (pushRoutine != null)
+                StopCoroutine(pushRoutine);
+            pushRoutine = null;
             if (agent.enabled && agent.isOnNavMesh)
                 agent.ResetPath();
             agent.enabled = false;

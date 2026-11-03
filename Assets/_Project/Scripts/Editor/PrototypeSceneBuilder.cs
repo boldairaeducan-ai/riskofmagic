@@ -50,13 +50,13 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb };
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt;
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -147,6 +147,8 @@ namespace RiskOfMagic.Editor
                 Explosion = EffectPrefab("VFX_Explosion", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(1f, 0.5f, 0.15f), 0.2f),
                 FireBurst = EffectPrefab("VFX_FireBurst", PrimitiveType.Sphere, Vector3.one * 6f, Vector3.zero, new Color(1f, 0.45f, 0.1f), 0.25f),
                 // Ground marker of artillery impacts: lives for windup + flight.
+                ArcaneBurst = EffectPrefab("VFX_ArcaneBurst", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.05f, 0f), new Color(0.75f, 0.4f, 1f), 0.3f),
+                TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
                 Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f)
             };
         }
@@ -161,7 +163,8 @@ namespace RiskOfMagic.Editor
                 FrostOrb = ProjectileAsset("Projectile_FrostOrb", new Color(0.5f, 0.85f, 1f), 0.5f, vfx.FrostBurst),
                 EnemyBolt = ProjectileAsset("Projectile_EnemyBolt", new Color(0.4f, 1f, 0.3f), 0.3f, vfx.Impact),
                 ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact),
-                Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst)
+                Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst),
+                ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -172,6 +175,9 @@ namespace RiskOfMagic.Editor
             Configure(set.ArcaneMissile, speed: 50f, gravity: 0f, lifetime: 3f, radius: 0.3f);
             // Speed is overridden by the artillery attack to hit its target point.
             Configure(set.Firebomb, speed: 20f, gravity: 20f, lifetime: 4f, radius: 0.35f, explosion: 3f, explodeOnExpire: true);
+            Configure(set.ArcaneBolt, speed: 30f, gravity: 0f, lifetime: 3f, radius: 0.25f);
+            set.ArcaneBolt.homingTurnRate = 420f;
+            EditorUtility.SetDirty(set.ArcaneBolt);
             return set;
         }
 
@@ -185,6 +191,7 @@ namespace RiskOfMagic.Editor
             p.pierceCount = pierce;
             p.explosionRadius = explosion;
             p.explodeOnExpire = explodeOnExpire;
+            p.homingTurnRate = 0f;
             EditorUtility.SetDirty(p);
         }
 
@@ -265,40 +272,42 @@ namespace RiskOfMagic.Editor
             slam.casterUpwardVelocity = 6f;
             slam.tickVfx = vfx.Area;
 
-            // Mage
-            var fireBolt = Skill<ProjectileSkill>("Mage_FireBolt", "Trait de feu", "3 charges. 160%, petite explosion.",
-                SkillActivationMode.Hold, cooldown: 1.6f, cast: 0.2f, attackSpeed: true);
-            fireBolt.maxStock = 3;
-            fireBolt.projectile = p.FireBolt;
-            fireBolt.damageType = DamageType.Fire;
-            fireBolt.damageCoefficient = 1.6f;
+            // Arcanist
+            var volley = Skill<HomingVolleySkill>("Arcanist_ArcaneVolley", "Projectile magique",
+                "Charger pour acquérir jusqu'à 6 cibles (un ennemi peut être ciblé plusieurs fois). 110% par projectile.",
+                SkillActivationMode.Charge, cooldown: 0f, cast: 0.25f, attackSpeed: true);
+            volley.projectile = p.ArcaneBolt;
+            volley.maxTargets = 6;
+            volley.maxChargeTime = 1.5f;
+            volley.damageCoefficient = 1.1f;
 
-            var frostOrb = Skill<ProjectileSkill>("Mage_FrostOrb", "Orbe de givre", "Charger un orbe explosif. 150-500%.",
-                SkillActivationMode.Charge, cooldown: 7f, cast: 0.3f);
-            frostOrb.projectile = p.FrostOrb;
-            frostOrb.damageType = DamageType.Frost;
-            frostOrb.maxChargeTime = 1.5f;
-            frostOrb.minChargeCoefficient = 1.5f;
-            frostOrb.maxChargeCoefficient = 5f;
-            frostOrb.minChargeScale = 1f;
-            frostOrb.maxChargeScale = 2f;
+            var burst = Skill<AreaSkill>("Arcanist_ArcaneBurst", "Explosion arcanique", "Explosion autour de soi : 200%, repousse les ennemis.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0.3f);
+            burst.center = AreaCenter.Caster;
+            burst.radius = 6f;
+            burst.ticks = 1;
+            burst.damageCoefficient = 2f;
+            burst.damageType = DamageType.Arcane;
+            burst.knockbackDistance = 7f;
+            burst.tickVfx = vfx.ArcaneBurst;
 
-            var blink = Skill<BlinkSkill>("Mage_Blink", "Transfert", "Téléportation dans la direction visée.",
-                SkillActivationMode.Press, cooldown: 7f, cast: 0.1f);
-            blink.distance = 14f;
-            blink.canCastWhileBusy = true;
-            blink.keepsSprint = true;
-            blink.castVfx = vfx.Blink;
-            blink.castVfxAnchor = VfxAnchor.Caster;
-            blink.arrivalVfx = vfx.Blink;
+            var shield = Skill<ShieldSkill>("Arcanist_ArcaneShield", "Bouclier arcanique", "Bloque 95% des dégâts pendant 3 s.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0f);
+            shield.damageReduction = 0.95f;
+            shield.duration = 3f;
+            shield.canCastWhileBusy = true;
+            shield.keepsSprint = true;
 
-            var chain = Skill<ChainLightningSkill>("Mage_ChainLightning", "Chaîne d'éclairs", "Éclair rebondissant sur 4 ennemis. 300%.",
-                SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
-            chain.damageCoefficient = 3f;
-            chain.maxBounces = 3;
-            chain.boltVfx = vfx.Lightning;
+            var timeLock = Skill<ConeControlSkill>("Arcanist_TimeLock", "Blocage temporel", "Fige les ennemis devant soi pendant 4 s.",
+                SkillActivationMode.Press, cooldown: 14f, cast: 0.4f);
+            timeLock.range = 20f;
+            timeLock.coneAngle = 35f;
+            timeLock.freezeDuration = 4f;
+            timeLock.castVfx = vfx.TimePulse;
+            timeLock.castVfxAnchor = VfxAnchor.Caster;
+            timeLock.castVfxScale = 20f;
 
-            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, fireBolt, frostOrb, blink, chain })
+            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock })
                 EditorUtility.SetDirty(skill);
 
             return new List<CharacterDefinition>
@@ -307,8 +316,8 @@ namespace RiskOfMagic.Editor
                     80f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
                 Character("Character_Warrior", "Guerrier", "Robuste, combat au corps à corps.", new Color(0.8f, 0.3f, 0.25f),
                     130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
-                Character("Character_Mage", "Mage", "Sorts élémentaires et mobilité magique.", new Color(0.35f, 0.45f, 0.95f),
-                    85f, Movement("Movement_Mage", 7f, 1), fireBolt, frostOrb, blink, chain)
+                Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
+                    90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock)
             };
         }
 
@@ -490,6 +499,13 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("playerCamera").objectReferenceValue = cam;
             });
 
+            var bubble = CreateVisual(PrimitiveType.Sphere, "ShieldBubble", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(1.6f, 2.2f, 1.6f),
+                Mat("M_ShieldBubble", new Color(0.7f, 0.45f, 1f), unlit: true));
+            bubble.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            bubble.SetActive(false);
+            var shieldVisual = root.AddComponent<HealthShieldVisual>();
+            SetProperties(shieldVisual, so => so.FindProperty("visual").objectReferenceValue = bubble);
+
             var avatar = root.AddComponent<PlayerAvatar>();
             SetProperties(avatar, so =>
             {
@@ -584,6 +600,7 @@ namespace RiskOfMagic.Editor
         private static EnemyActor BuildOgre()
         {
             var def = EnemyDef("Enemy_Ogre", "Ogre", health: 240f, speed: 4.5f, gold: 24, detection: 30f);
+            def.controlResistance = 0.4f;
             var root = EnemyBase("Enemy_Ogre", def, new Color(0.4f, 0.5f, 0.25f), out _);
             root.transform.localScale = Vector3.one * 1.5f;
             var attack = root.AddComponent<EnemyLungeAttack>();
@@ -648,6 +665,7 @@ namespace RiskOfMagic.Editor
         {
             var def = EnemyDef("Boss_BoneColossus", "Colosse d'os", health: 1400f, speed: 5f, gold: 150, detection: 200f);
             def.isBoss = true;
+            def.controlResistance = 0.6f;
             def.alertAlliesRadius = 0f;
             def.despawnDelay = 3f;
             EditorUtility.SetDirty(def);
@@ -729,6 +747,7 @@ namespace RiskOfMagic.Editor
             def.retreatDistance = 8f;
             def.alertAlliesRadius = 10f;
             def.wanderRadius = 6f;
+            def.controlResistance = 0f;
             def.displayName = displayName;
             def.maxHealth = health;
             def.moveSpeed = speed;

@@ -30,6 +30,10 @@ namespace RiskOfMagic.Skills.Types
         [Min(0f)] public float tickInterval = 0.2f;
         public bool hitOncePerTarget;
 
+        [Header("Knockback (enemies)")]
+        [Min(0f), Tooltip("Distance enemies are pushed away from the center on each tick.")] public float knockbackDistance;
+        [Min(0.05f)] public float knockbackDuration = 0.25f;
+
         [Header("Caster")]
         [Min(0f)] public float casterUpwardVelocity;
 
@@ -81,9 +85,28 @@ namespace RiskOfMagic.Skills.Types
             {
                 if (center == AreaCenter.Caster && !context.Avatar.IsAlive)
                     yield break;
-                context.DamageArea(GetCenter(context, target) + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit);
+                Vector3 center = GetCenter(context, target);
+                context.DamageArea(center + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit);
+                if (knockbackDistance > 0f)
+                    Knockback(context, center);
                 if (i < ticks - 1)
                     yield return new WaitForSeconds(tickInterval);
+            }
+        }
+
+        private static readonly List<Health> pushed = new();
+
+        private void Knockback(SkillContext context, Vector3 center)
+        {
+            TargetFinder.FindHostiles(center + Vector3.up * 0.5f, radius, context.Team, pushed, context.HitMask);
+            foreach (var health in pushed)
+            {
+                if (!health.TryGetComponent(out RiskOfMagic.Enemies.EnemyBrain brain))
+                    continue;
+                Vector3 away = health.transform.position - center;
+                away.y = 0f;
+                away = away.sqrMagnitude > 0.01f ? away.normalized : context.Transform.forward;
+                brain.Push(away * knockbackDistance, knockbackDuration);
             }
         }
 
