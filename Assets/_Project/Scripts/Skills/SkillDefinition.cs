@@ -40,7 +40,7 @@ namespace RiskOfMagic.Skills
         [Min(0f)] public float castVfxScale = 1f;
 
         [Header("Owner camera feedback")]
-        [Min(0f), Tooltip("Field of view widening (degrees) on cast, e.g. dashes.")] public float ownerFovKick;
+        [Tooltip("Field of view change (degrees) on cast: positive widens (dashes), negative narrows.")] public float ownerFovKick;
         [Min(0f)] public float ownerFovKickDuration = 0.25f;
         [Range(0f, 1f), Tooltip("Camera shake on cast, e.g. slams.")] public float ownerCameraTrauma;
 

@@ -163,7 +163,7 @@ namespace RiskOfMagic.Skills
             var effects = avatar.Look.Effects;
             if (effects != null)
             {
-                if (definition.ownerFovKick > 0f)
+                if (definition.ownerFovKick != 0f)
                     effects.KickFov(definition.ownerFovKick, definition.ownerFovKickDuration);
                 if (definition.ownerCameraTrauma > 0f)
                     effects.AddTrauma(definition.ownerCameraTrauma);
