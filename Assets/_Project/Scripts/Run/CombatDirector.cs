@@ -20,22 +20,22 @@ namespace RiskOfMagic.Run
         [SerializeField] private List<SpawnCard> cards = new();
 
         [Header("Credits")]
-        [SerializeField] private float creditMultiplier = 1.8f;
-        [SerializeField] private float startingCredits = 100f;
+        [SerializeField] private float creditMultiplier = 1f;
+        [SerializeField] private float startingCredits = 40f;
 
         [Header("Stage population")]
         [SerializeField] private bool populateOnStart = true;
         [SerializeField, Min(0f), Tooltip("Credits spent on idle enemies at stage start (scaled by sqrt(difficulty coefficient)).")]
-        private float stagePopulationCredits = 200f;
+        private float stagePopulationCredits = 110f;
         [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 30f;
         [SerializeField, Min(0f)] private float populationMinSpacing = 6f;
 
         [Header("Waves")]
         [SerializeField, Tooltip("Wave enemies know their anchor player immediately (pressure), instead of waiting for detection.")]
         private bool wavesHuntPlayers = true;
-        [SerializeField] private Vector2 waveInterval = new(2f, 6f);
-        [SerializeField, Min(1)] private int maxSpawnsPerWave = 8;
-        [SerializeField, Min(1)] private int maxAliveEnemies = 40;
+        [SerializeField] private Vector2 waveInterval = new(4f, 9f);
+        [SerializeField, Min(1)] private int maxSpawnsPerWave = 5;
+        [SerializeField, Min(1)] private int maxAliveEnemies = 30;
 
         [Header("Placement")]
         [SerializeField, Tooltip("Wave spawn distance around a living player.")] private float minSpawnDistance = 25f;

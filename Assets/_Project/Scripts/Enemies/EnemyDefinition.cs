@@ -25,6 +25,14 @@ namespace RiskOfMagic.Enemies
         [Min(0f), Tooltip("Allies within this radius are alerted when this enemy detects or is hit by a player.")]
         public float alertAlliesRadius = 10f;
 
+        [Header("Movement")]
+        public EnemyMovementStyle movementStyle = EnemyMovementStyle.Direct;
+        [Min(0f), Tooltip("Flank: distance from the player of the approach point.")] public float flankRadius = 6f;
+        [Tooltip("Flank: angle (degrees) from the player's facing of the approach point, randomized per enemy and side.")]
+        public Vector2 flankAngle = new(100f, 160f);
+        [Tooltip("Kite: preferred distance band to the target.")] public Vector2 kiteRange = new(10f, 24f);
+        [Min(0f), Tooltip("Kite: how far to back off when the target gets too close.")] public float retreatDistance = 8f;
+
         [Header("Idle")]
         [Min(0f)] public float wanderRadius = 6f;
         [Range(0f, 1f)] public float wanderSpeedMultiplier = 0.4f;

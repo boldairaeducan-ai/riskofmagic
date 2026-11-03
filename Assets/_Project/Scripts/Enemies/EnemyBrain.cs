@@ -12,6 +12,9 @@ namespace RiskOfMagic.Enemies
         Idle,
         Chase,
         Attack,
+        Hold,
+        Retreat,
+        Dodge,
         Leap,
         Dead
     }
@@ -22,6 +25,8 @@ namespace RiskOfMagic.Enemies
     /// an ally become known for good; the closest known living player is chased.
     /// Navigation: NavMesh path when complete; otherwise walk as close as possible and leap (EnemyLeap) onto the
     /// NavMesh area under the target (platforms, gaps).
+    /// Movement style (EnemyDefinition): Direct, Flank (approach from the target's sides/back) or Kite (keep a
+    /// distance band, back off when approached, stand still to attack). Optional EnemyDodge sidesteps.
     /// </summary>
     [RequireComponent(typeof(EnemyActor), typeof(NavMeshAgent))]
     public class EnemyBrain : NetworkBehaviour
@@ -47,6 +52,8 @@ namespace RiskOfMagic.Enemies
         private EnemyActor actor;
         private NavMeshAgent agent;
         private EnemyLeap leap;
+        private EnemyDodge dodge;
+        private float flankAngle;
         private NavMeshPath path;
         private Vector3 home;
         private Vector3 targetNavPoint;
@@ -66,6 +73,7 @@ namespace RiskOfMagic.Enemies
             actor = GetComponent<EnemyActor>();
             agent = GetComponent<NavMeshAgent>();
             leap = GetComponent<EnemyLeap>();
+            dodge = GetComponent<EnemyDodge>();
             if (attack == null)
                 attack = GetComponent<EnemyAttack>();
             agent.enabled = false; // enabled on the server once spawned
@@ -86,6 +94,8 @@ namespace RiskOfMagic.Enemies
             else
                 Debug.LogWarning($"[EnemyBrain] {name} spawned off the NavMesh.", this);
             home = transform.position;
+            if (Definition != null)
+                flankAngle = Random.Range(Definition.flankAngle.x, Definition.flankAngle.y) * (Random.value < 0.5f ? -1f : 1f);
 
             actor.Health.Died += OnDied;
             actor.Health.Damaged += OnDamaged;
@@ -126,6 +136,11 @@ namespace RiskOfMagic.Enemies
                 State = EnemyState.Leap;
                 return;
             }
+            if (dodge != null && dodge.IsDodging)
+            {
+                State = EnemyState.Dodge;
+                return;
+            }
             if (!agent.enabled || !agent.isOnNavMesh)
                 return;
 
@@ -137,11 +152,30 @@ namespace RiskOfMagic.Enemies
             }
 
             if (Target == null)
+            {
                 Wander();
-            else if (attack != null && (attack.IsAttacking || attack.IsInRange(Target.transform)))
+                return;
+            }
+
+            bool attacking = attack != null && attack.IsAttacking;
+            if (attacking)
+            {
+                Attack();
+                return;
+            }
+            if (dodge != null && dodge.CheckAimedAt(Target))
+            {
+                State = EnemyState.Dodge;
+                return;
+            }
+
+            var style = Definition != null ? Definition.movementStyle : EnemyMovementStyle.Direct;
+            if (style == EnemyMovementStyle.Kite)
+                Kite();
+            else if (attack != null && attack.IsInRange(Target.transform))
                 Attack();
             else
-                Chase();
+                Chase(style == EnemyMovementStyle.Flank);
         }
 
         // ---------------------------------------------------------------- Perception
@@ -193,8 +227,12 @@ namespace RiskOfMagic.Enemies
 
         private void OnDamaged(DamageInfo info)
         {
-            if (info.TryGetSource(out var source) && source.TryGetComponent(out PlayerAvatar player))
-                Alert(player);
+            if (!info.TryGetSource(out var source) || !source.TryGetComponent(out PlayerAvatar player))
+                return;
+            Alert(player);
+            bool busy = (attack != null && attack.IsAttacking) || (leap != null && leap.IsLeaping);
+            if (dodge != null && !busy && actor.Health.IsAlive)
+                dodge.OnHit(player.transform.position);
         }
 
         // ---------------------------------------------------------------- Behaviours
@@ -234,21 +272,103 @@ namespace RiskOfMagic.Enemies
                 attack.TryBegin(Target);
         }
 
-        private void Chase()
+        private void Kite()
+        {
+            Vector2 band = Definition.kiteRange;
+            Vector3 offset = Target.transform.position - transform.position;
+            offset.y = 0f;
+            float distance = offset.magnitude;
+
+            if (distance < band.x && TryRetreat())
+                return;
+            if (attack != null && attack.IsInRange(Target.transform))
+            {
+                Attack();
+                return;
+            }
+            if (distance > band.y || attack == null)
+            {
+                Chase(false, band.y * 0.85f);
+                return;
+            }
+
+            // In the band but the attack is not possible (cooldown, too close for it): hold and watch.
+            State = EnemyState.Hold;
+            agent.isStopped = true;
+            FaceTarget();
+        }
+
+        private bool TryRetreat()
+        {
+            State = EnemyState.Retreat;
+            agent.isStopped = false;
+            agent.speed = Definition.moveSpeed * 1.15f;
+            agent.stoppingDistance = 0.3f;
+            if (Time.time < nextRepath && agent.hasPath)
+                return true;
+            nextRepath = Time.time + repathInterval;
+
+            Vector3 away = transform.position - Target.transform.position;
+            away.y = 0f;
+            away = away.sqrMagnitude > 0.01f ? away.normalized : -transform.forward;
+            foreach (float angle in RetreatAngles)
+            {
+                Vector3 candidate = transform.position + Quaternion.Euler(0f, angle, 0f) * away * Definition.retreatDistance;
+                if (!NavMesh.SamplePosition(candidate, out var hit, 2f, NavMesh.AllAreas) || !agent.CalculatePath(hit.position, path)
+                    || path.status != NavMeshPathStatus.PathComplete)
+                    continue;
+                agent.SetPath(path);
+                return true;
+            }
+            return false; // cornered: fight
+        }
+
+        private static readonly float[] RetreatAngles = { 0f, 35f, -35f, 70f, -70f, 110f, -110f };
+
+        private void Chase(bool flank, float stoppingDistance = -1f)
         {
             State = EnemyState.Chase;
             agent.isStopped = false;
             agent.speed = Definition != null ? Definition.moveSpeed : 4.5f;
-            agent.stoppingDistance = attack != null ? attack.Range * 0.8f : 1f;
+            agent.stoppingDistance = stoppingDistance >= 0f ? stoppingDistance : attack != null ? attack.Range * 0.8f : 1f;
 
             if (Time.time < nextRepath)
                 return;
             nextRepath = Time.time + repathInterval;
+            if (flank && TryFlankPath())
+                return;
             UpdatePath();
 
             // Target unreachable by walking: leap onto its NavMesh area once in range.
             if (!pathComplete && targetOnNavMesh && leap != null && leap.TryLeap(targetNavPoint))
                 State = EnemyState.Leap;
+        }
+
+        /// <summary>Paths to a point on the target's side/back while still far enough; false = go direct.</summary>
+        private bool TryFlankPath()
+        {
+            float radius = Definition.flankRadius;
+            Vector3 toTarget = Target.transform.position - transform.position;
+            toTarget.y = 0f;
+            if (toTarget.magnitude < radius + 1.5f)
+                return false; // close enough: commit
+
+            Vector3 facing = Target.transform.forward;
+            facing.y = 0f;
+            if (facing.sqrMagnitude < 0.01f)
+                return false;
+            Vector3 point = Target.transform.position + Quaternion.Euler(0f, flankAngle, 0f) * facing.normalized * radius;
+            if (!NavMesh.SamplePosition(point, out var hit, 2f, NavMesh.AllAreas) || !agent.CalculatePath(hit.position, path)
+                || path.status != NavMeshPathStatus.PathComplete)
+                return false;
+
+            // Already at the flank point: commit to the attack.
+            if ((hit.position - transform.position).sqrMagnitude < 2f * 2f)
+                return false;
+            agent.stoppingDistance = 0.5f;
+            agent.SetPath(path);
+            pathComplete = true;
+            return true;
         }
 
         private void UpdatePath()
@@ -290,6 +410,8 @@ namespace RiskOfMagic.Enemies
                 attack.Cancel();
             if (leap != null)
                 leap.Cancel();
+            if (dodge != null)
+                dodge.Cancel();
             if (agent.enabled && agent.isOnNavMesh)
                 agent.ResetPath();
             agent.enabled = false;

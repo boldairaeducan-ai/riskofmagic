@@ -26,7 +26,7 @@ namespace RiskOfMagic.Combat.Projectiles
         private TrailRenderer[] trails;
 
         public static Projectile Launch(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale,
-            DamageInfo damage, bool authoritative, Transform ignoreRoot)
+            DamageInfo damage, bool authoritative, Transform ignoreRoot, float speedOverride = -1f)
         {
             if (definition == null || definition.visualPrefab == null)
             {
@@ -38,18 +38,18 @@ namespace RiskOfMagic.Combat.Projectiles
             var go = GameObjectPool.Spawn(definition.visualPrefab, origin, Quaternion.LookRotation(direction));
             if (!go.TryGetComponent(out Projectile projectile))
                 projectile = go.AddComponent<Projectile>();
-            projectile.Init(definition, direction, scale, damage, authoritative, ignoreRoot);
+            projectile.Init(definition, direction, scale, damage, authoritative, ignoreRoot, speedOverride);
             return projectile;
         }
 
-        private void Init(ProjectileDefinition def, Vector3 direction, float newScale, DamageInfo info, bool isAuthoritative, Transform ignore)
+        private void Init(ProjectileDefinition def, Vector3 direction, float newScale, DamageInfo info, bool isAuthoritative, Transform ignore, float speedOverride)
         {
             definition = def;
             damage = info;
             authoritative = isAuthoritative;
             ignoreRoot = ignore;
             scale = newScale;
-            velocity = direction * def.speed;
+            velocity = direction * (speedOverride > 0f ? speedOverride : def.speed);
             age = 0f;
             pierced = 0;
             damaged.Clear();

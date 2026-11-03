@@ -35,7 +35,18 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 - **Skills** — `SkillDefinition` SO base (owner → server → remote pipeline), `SkillController` (stocks, cooldowns, charge, validation).
   - **Types** — `ProjectileSkill`, `MeleeComboSkill`, `AreaSkill`, `DashSkill`, `BlinkSkill`, `ChainLightningSkill`. New skills = new asset; new behaviour = new subclass.
 - **Player** — `PlayerAvatar` (root, replicated character choice), `PlayerMotor` (owner-simulated, dash), `PlayerLook`, `PlayerInputHandler`.
-- **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (NavMesh AI), `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyProjectileAttack`.
+- **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (detection, persistent aggro, movement styles Direct / Flank / Kite, leaps), `EnemyDodge` (sidesteps when hit or aimed at), `EnemyLeap`, `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyLungeAttack` (bound, charge) / `EnemyArtilleryAttack` (telegraphed lob) / `EnemyProjectileAttack`.
+
+## Bestiary
+| Enemy | Style | Attack | Notes |
+|---|---|---|---|
+| Goule | Direct | Melee | Occasional dodge |
+| Loup spectral | Flank | Bound (7 m) | Fast, cheap, comes in packs |
+| Lame d'ombre | Flank (behind) | Fast melee | Dodges a lot |
+| Ogre | Direct | Charge (12 m) | Tank, from difficulty 1.25 |
+| Pyromancien | Kite | Lobbed fire bomb, ground marker | Backs off when approached |
+| Squelette archer | Kite | Arrows | Rare, from difficulty 1.6 |
+| Colosse d'os | Direct | Heavy melee | Teleporter boss |
 - **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (stage population of idle enemies + credit-based waves hunting players), `StageBounds` (playable volume, placed in each map), `Teleporter` (boss event, charge zone), `StageManager` (next stage: cleanup, revive, respawn).
 
 ## Tuning the director

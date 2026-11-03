@@ -50,13 +50,13 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile };
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb;
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -75,7 +75,7 @@ namespace RiskOfMagic.Editor
             var items = BuildItems(projectiles, vfx);
 
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
-            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning });
+            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning, vfx.Telegraph });
             EditorUtility.SetDirty(catalog);
 
             var pickup = BuildPickupPrefab();
@@ -84,13 +84,17 @@ namespace RiskOfMagic.Editor
 
             var playerPrefab = BuildPlayerPrefab();
             var ghoul = BuildGhoul();
+            var wolf = BuildWolf();
+            var assassin = BuildAssassin();
+            var ogre = BuildOgre();
+            var pyromancer = BuildPyromancer(projectiles.Firebomb, vfx.Telegraph);
             var skeleton = BuildSkeletonArcher(projectiles.EnemyBolt);
 
             string listPath = Configs + "/NetworkPrefabs.asset";
             AssetDatabase.DeleteAsset(listPath);
             var prefabList = Asset<NetworkPrefabsList>(listPath);
-            prefabList.Add(new NetworkPrefab { Prefab = ghoul.gameObject });
-            prefabList.Add(new NetworkPrefab { Prefab = skeleton.gameObject });
+            foreach (var enemy in new[] { ghoul, wolf, assassin, ogre, pyromancer, skeleton })
+                prefabList.Add(new NetworkPrefab { Prefab = enemy.gameObject });
             var colossus = BuildBoss();
             prefabList.Add(new NetworkPrefab { Prefab = colossus.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
@@ -103,7 +107,12 @@ namespace RiskOfMagic.Editor
             var cards = new List<SpawnCard>
             {
                 Card("SpawnCard_Ghoul", ghoul, 10, 1f, 0f),
-                Card("SpawnCard_SkeletonArcher", skeleton, 16, 0.7f, 0f)
+                Card("SpawnCard_Wolf", wolf, 7, 1f, 0f),
+                Card("SpawnCard_Assassin", assassin, 14, 0.6f, 0f),
+                Card("SpawnCard_Pyromancer", pyromancer, 16, 0.5f, 0f),
+                Card("SpawnCard_Ogre", ogre, 28, 0.4f, 1.25f),
+                // Projectiles are hard to read in first person: archers stay rare and late.
+                Card("SpawnCard_SkeletonArcher", skeleton, 20, 0.15f, 1.6f)
             };
 
             var bossCards = new List<SpawnCard> { Card("SpawnCard_Boss_BoneColossus", colossus, 1, 1f, 0f) };
@@ -133,7 +142,10 @@ namespace RiskOfMagic.Editor
                 Swing = EffectPrefab("VFX_Swing", PrimitiveType.Cylinder, new Vector3(1f, 0.01f, 1f), Vector3.zero, new Color(0.9f, 0.9f, 1f), 0.12f),
                 Blink = EffectPrefab("VFX_Blink", PrimitiveType.Sphere, Vector3.one * 1.2f, new Vector3(0f, 1f, 0f), new Color(0.7f, 0.4f, 1f), 0.3f),
                 Lightning = LinePrefab("VFX_Lightning", new Color(0.6f, 0.85f, 1f), 0.15f, 0.2f),
-                Explosion = EffectPrefab("VFX_Explosion", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(1f, 0.5f, 0.15f), 0.2f)
+                Explosion = EffectPrefab("VFX_Explosion", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(1f, 0.5f, 0.15f), 0.2f),
+                FireBurst = EffectPrefab("VFX_FireBurst", PrimitiveType.Sphere, Vector3.one * 6f, Vector3.zero, new Color(1f, 0.45f, 0.1f), 0.25f),
+                // Ground marker of artillery impacts: lives for windup + flight.
+                Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f)
             };
         }
 
@@ -146,7 +158,8 @@ namespace RiskOfMagic.Editor
                 FireBolt = ProjectileAsset("Projectile_FireBolt", new Color(1f, 0.45f, 0.1f), 0.35f, vfx.Impact),
                 FrostOrb = ProjectileAsset("Projectile_FrostOrb", new Color(0.5f, 0.85f, 1f), 0.5f, vfx.FrostBurst),
                 EnemyBolt = ProjectileAsset("Projectile_EnemyBolt", new Color(0.4f, 1f, 0.3f), 0.3f, vfx.Impact),
-                ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact)
+                ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact),
+                Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -155,6 +168,8 @@ namespace RiskOfMagic.Editor
             Configure(set.FrostOrb, speed: 40f, gravity: 0f, lifetime: 1.5f, radius: 0.3f, explosion: 3f, explodeOnExpire: true);
             Configure(set.EnemyBolt, speed: 35f, gravity: 0f, lifetime: 3f, radius: 0.25f);
             Configure(set.ArcaneMissile, speed: 50f, gravity: 0f, lifetime: 3f, radius: 0.3f);
+            // Speed is overridden by the artillery attack to hit its target point.
+            Configure(set.Firebomb, speed: 20f, gravity: 20f, lifetime: 4f, radius: 0.35f, explosion: 3f, explodeOnExpire: true);
             return set;
         }
 
@@ -488,22 +503,131 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildGhoul()
         {
-            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 110f, speed: 6f, gold: 8, detection: 30f);
+            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 70f, speed: 6f, gold: 8, detection: 30f);
             var root = EnemyBase("Enemy_Ghoul", def, new Color(0.75f, 0.2f, 0.2f), out _);
             var attack = root.AddComponent<EnemyMeleeAttack>();
             SetProperties(attack, so =>
             {
                 so.FindProperty("range").floatValue = 2f;
                 so.FindProperty("cooldown").floatValue = 1.5f;
-                so.FindProperty("damage").floatValue = 14f;
+                so.FindProperty("damage").floatValue = 12f;
+            });
+            FinishEnemy(root, attack, dodge: so =>
+            {
+                so.FindProperty("chanceOnHit").floatValue = 0.2f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.1f;
+            });
+            return SavePrefab(root, Prefabs + "/Enemy_Ghoul.prefab").GetComponent<EnemyActor>();
+        }
+
+        /// <summary>Fast pack hunter: flanks, then bounds at the player from mid range.</summary>
+        private static EnemyActor BuildWolf()
+        {
+            var def = EnemyDef("Enemy_Wolf", "Loup spectral", health: 40f, speed: 9f, gold: 6, detection: 35f);
+            def.movementStyle = EnemyMovementStyle.Flank;
+            def.flankRadius = 7f;
+            def.flankAngle = new Vector2(90f, 160f);
+            def.wanderRadius = 10f;
+            var root = EnemyBase("Enemy_Wolf", def, new Color(0.45f, 0.55f, 0.75f), out _);
+            root.transform.localScale = Vector3.one * 0.8f;
+            var attack = root.AddComponent<EnemyLungeAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 7f;
+                so.FindProperty("cooldown").floatValue = 1.8f;
+                so.FindProperty("damage").floatValue = 9f;
+                so.FindProperty("windup").floatValue = 0.4f;
+                so.FindProperty("dashSpeed").floatValue = 20f;
+                so.FindProperty("dashDuration").floatValue = 0.35f;
+                so.FindProperty("recovery").floatValue = 0.5f;
+            });
+            FinishEnemy(root, attack, dodge: so =>
+            {
+                so.FindProperty("chanceOnHit").floatValue = 0.15f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.2f;
+                so.FindProperty("distance").floatValue = 5f;
+            });
+            return SavePrefab(root, Prefabs + "/Enemy_Wolf.prefab").GetComponent<EnemyActor>();
+        }
+
+        /// <summary>Gets behind the player and sidesteps a lot: forces the player to turn around.</summary>
+        private static EnemyActor BuildAssassin()
+        {
+            var def = EnemyDef("Enemy_Assassin", "Lame d'ombre", health: 50f, speed: 7.5f, gold: 10, detection: 30f);
+            def.movementStyle = EnemyMovementStyle.Flank;
+            def.flankRadius = 5f;
+            def.flankAngle = new Vector2(140f, 180f);
+            var root = EnemyBase("Enemy_Assassin", def, new Color(0.25f, 0.15f, 0.35f), out _);
+            var attack = root.AddComponent<EnemyMeleeAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 2f;
+                so.FindProperty("cooldown").floatValue = 0.9f;
+                so.FindProperty("damage").floatValue = 9f;
+                so.FindProperty("windup").floatValue = 0.3f;
+                so.FindProperty("recovery").floatValue = 0.25f;
+            });
+            FinishEnemy(root, attack, dodge: so =>
+            {
+                so.FindProperty("chanceOnHit").floatValue = 0.5f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.45f;
+                so.FindProperty("cooldown").floatValue = 1.6f;
+                so.FindProperty("distance").floatValue = 5f;
+                so.FindProperty("backwardBias").floatValue = 0f;
+            });
+            return SavePrefab(root, Prefabs + "/Enemy_Assassin.prefab").GetComponent<EnemyActor>();
+        }
+
+        /// <summary>Slow tank with a long telegraphed charge.</summary>
+        private static EnemyActor BuildOgre()
+        {
+            var def = EnemyDef("Enemy_Ogre", "Ogre", health: 240f, speed: 4.5f, gold: 24, detection: 30f);
+            var root = EnemyBase("Enemy_Ogre", def, new Color(0.4f, 0.5f, 0.25f), out _);
+            root.transform.localScale = Vector3.one * 1.5f;
+            var attack = root.AddComponent<EnemyLungeAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 12f;
+                so.FindProperty("cooldown").floatValue = 4f;
+                so.FindProperty("damage").floatValue = 26f;
+                so.FindProperty("windup").floatValue = 0.9f;
+                so.FindProperty("dashSpeed").floatValue = 16f;
+                so.FindProperty("dashDuration").floatValue = 0.7f;
+                so.FindProperty("recovery").floatValue = 1f;
+                so.FindProperty("hitRadius").floatValue = 1.8f;
+                so.FindProperty("maxHeightDifference").floatValue = 3f;
             });
             FinishEnemy(root, attack);
-            return SavePrefab(root, Prefabs + "/Enemy_Ghoul.prefab").GetComponent<EnemyActor>();
+            return SavePrefab(root, Prefabs + "/Enemy_Ogre.prefab").GetComponent<EnemyActor>();
+        }
+
+        /// <summary>Artillery: keeps its distance, stops to lob telegraphed fire bombs.</summary>
+        private static EnemyActor BuildPyromancer(ProjectileDefinition firebomb, GameObject telegraph)
+        {
+            var def = EnemyDef("Enemy_Pyromancer", "Pyromancien", health: 55f, speed: 5f, gold: 12, detection: 40f);
+            def.movementStyle = EnemyMovementStyle.Kite;
+            def.kiteRange = new Vector2(11f, 24f);
+            def.retreatDistance = 8f;
+            var root = EnemyBase("Enemy_Pyromancer", def, new Color(0.95f, 0.5f, 0.15f), out _);
+            var attack = root.AddComponent<EnemyArtilleryAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 28f;
+                so.FindProperty("cooldown").floatValue = 3f;
+                so.FindProperty("damage").floatValue = 16f;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
+                so.FindProperty("projectile").objectReferenceValue = firebomb;
+                so.FindProperty("telegraphVfx").objectReferenceValue = telegraph;
+            });
+            FinishEnemy(root, attack);
+            return SavePrefab(root, Prefabs + "/Enemy_Pyromancer.prefab").GetComponent<EnemyActor>();
         }
 
         private static EnemyActor BuildSkeletonArcher(ProjectileDefinition bolt)
         {
-            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 80f, speed: 4f, gold: 12, detection: 35f);
+            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 60f, speed: 4f, gold: 14, detection: 35f);
+            def.movementStyle = EnemyMovementStyle.Kite;
+            def.kiteRange = new Vector2(10f, 20f);
             var root = EnemyBase("Enemy_SkeletonArcher", def, new Color(0.85f, 0.85f, 0.75f), out _);
             var attack = root.AddComponent<EnemyProjectileAttack>();
             SetProperties(attack, so =>
@@ -596,6 +720,13 @@ namespace RiskOfMagic.Editor
             var def = Asset<EnemyDefinition>($"{EnemiesFolder}/{file}.asset");
             def.detectionRange = detection;
             def.isBoss = false;
+            def.movementStyle = EnemyMovementStyle.Direct;
+            def.flankRadius = 6f;
+            def.flankAngle = new Vector2(100f, 160f);
+            def.kiteRange = new Vector2(10f, 24f);
+            def.retreatDistance = 8f;
+            def.alertAlliesRadius = 10f;
+            def.wanderRadius = 6f;
             def.displayName = displayName;
             def.maxHealth = health;
             def.moveSpeed = speed;
@@ -645,8 +776,10 @@ namespace RiskOfMagic.Editor
             return root;
         }
 
-        private static void FinishEnemy(GameObject root, EnemyAttack attack)
+        private static void FinishEnemy(GameObject root, EnemyAttack attack, System.Action<SerializedObject> dodge = null)
         {
+            if (dodge != null)
+                SetProperties(root.AddComponent<EnemyDodge>(), dodge);
             root.AddComponent<EnemyLeap>();
             var brain = root.AddComponent<EnemyBrain>();
             SetProperties(brain, so => so.FindProperty("attack").objectReferenceValue = attack);

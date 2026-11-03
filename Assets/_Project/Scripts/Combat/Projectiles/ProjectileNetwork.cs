@@ -24,10 +24,10 @@ namespace RiskOfMagic.Combat.Projectiles
 
         /// <summary>Server only.</summary>
         public static void FireServer(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale,
-            DamageInfo damage, NetworkObject shooter, ulong predictedByClient = NoClient)
+            DamageInfo damage, NetworkObject shooter, ulong predictedByClient = NoClient, float speedOverride = -1f)
         {
             Transform ignore = shooter != null ? shooter.transform : null;
-            Projectile.Launch(definition, origin, direction, scale, damage, true, ignore);
+            Projectile.Launch(definition, origin, direction, scale, damage, true, ignore, speedOverride);
 
             if (Instance == null || !Instance.IsSpawned)
                 return;
@@ -38,17 +38,19 @@ namespace RiskOfMagic.Combat.Projectiles
                 return;
             }
             Instance.SpawnVisualRpc((ushort)index, origin, direction, scale, damage.SourceTeam,
-                shooter != null ? shooter.NetworkObjectId : ulong.MaxValue, predictedByClient);
+                shooter != null ? shooter.NetworkObjectId : ulong.MaxValue, predictedByClient, speedOverride);
         }
 
         /// <summary>Local, damage-less copy used for client-side prediction.</summary>
-        public static void LaunchVisual(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale, Team team, Transform ignore)
+        public static void LaunchVisual(ProjectileDefinition definition, Vector3 origin, Vector3 direction, float scale, Team team, Transform ignore,
+            float speedOverride = -1f)
         {
-            Projectile.Launch(definition, origin, direction, scale, new DamageInfo { SourceTeam = team }, false, ignore);
+            Projectile.Launch(definition, origin, direction, scale, new DamageInfo { SourceTeam = team }, false, ignore, speedOverride);
         }
 
         [Rpc(SendTo.NotServer)]
-        private void SpawnVisualRpc(ushort projectileIndex, Vector3 origin, Vector3 direction, float scale, Team team, ulong shooterId, ulong predictedByClient)
+        private void SpawnVisualRpc(ushort projectileIndex, Vector3 origin, Vector3 direction, float scale, Team team, ulong shooterId, ulong predictedByClient,
+            float speedOverride)
         {
             if (NetworkManager.LocalClientId == predictedByClient)
                 return;
@@ -56,7 +58,7 @@ namespace RiskOfMagic.Combat.Projectiles
             if (definition == null)
                 return;
             Transform ignore = NetworkManager.SpawnManager.SpawnedObjects.TryGetValue(shooterId, out var shooter) ? shooter.transform : null;
-            LaunchVisual(definition, origin, direction, scale, team, ignore);
+            LaunchVisual(definition, origin, direction, scale, team, ignore, speedOverride);
         }
     }
 }
