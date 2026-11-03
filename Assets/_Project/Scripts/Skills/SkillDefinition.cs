@@ -39,6 +39,9 @@ namespace RiskOfMagic.Skills
         public VfxAnchor castVfxAnchor = VfxAnchor.Caster;
         [Min(0f)] public float castVfxScale = 1f;
 
+        /// <summary>Max reach in meters (0 = melee/unlimited). Used by the crosshair "out of range" feedback.</summary>
+        public virtual float MaxRange => 0f;
+
         public float GetCastDuration(CharacterStats stats)
             => scalesWithAttackSpeed ? castDuration / Mathf.Max(0.01f, stats.AttackSpeed) : castDuration;
 

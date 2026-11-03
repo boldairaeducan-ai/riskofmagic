@@ -22,6 +22,8 @@ namespace RiskOfMagic.Skills.Types
         [Min(0.1f)] public float minChargeScale = 1f;
         [Min(0.1f)] public float maxChargeScale = 1f;
 
+        public override float MaxRange => projectile != null ? projectile.maxRange : 0f;
+
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
         {
             Vector3 muzzle = context.Look.CameraPivot.TransformPoint(muzzleOffset);

@@ -216,6 +216,18 @@ namespace RiskOfMagic.Editor
             EditorUtility.SetDirty(set.Poison);
 
             Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
+
+            // Strict max ranges (m) for ranged attacks.
+            set.Arrow.maxRange = 70f;
+            set.PiercingArrow.maxRange = 90f;
+            set.ArcaneBolt.maxRange = 60f; // homing curves: a bit above the 45 m lock range
+            set.ArcaneMissile.maxRange = 60f;
+            set.EnemyBolt.maxRange = 40f;
+            set.FireBolt.maxRange = 60f;
+            set.FrostOrb.maxRange = 50f;
+            set.PoisonDart.maxRange = 50f;
+            foreach (var projectile in set.All)
+                EditorUtility.SetDirty(projectile);
             set.PoisonDart.dot = set.Poison;
             return set;
         }
@@ -231,6 +243,7 @@ namespace RiskOfMagic.Editor
             p.explosionRadius = explosion;
             p.explodeOnExpire = explodeOnExpire;
             p.homingTurnRate = 0f;
+            p.maxRange = 0f;
             p.dot = null;
             EditorUtility.SetDirty(p);
         }
@@ -348,12 +361,19 @@ namespace RiskOfMagic.Editor
             timeLock.castVfxScale = 20f;
 
             // Druid (poison, damage over time)
-            var dart = Skill<ProjectileSkill>("Druid_PoisonDart", "Dard empoisonné",
-                "Dards rapides : 70% + poison (8 ticks de 25%, cumulable 10 fois).",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.3f, attackSpeed: true);
-            dart.projectile = p.PoisonDart;
-            dart.damageType = DamageType.Poison;
-            dart.damageCoefficient = 0.7f;
+            var claws = Skill<MeleeComboSkill>("Druid_ToxicClaws", "Griffes toxiques",
+                "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne (8 ticks de 25%, cumulable 10 fois).",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
+            claws.damageType = DamageType.Poison;
+            claws.dot = p.Poison;
+            claws.swingVfx = vfx.Swing;
+            claws.comboResetTime = 0.8f;
+            claws.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 0.8f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f },
+                new MeleeComboSkill.Step { damageCoefficient = 0.8f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f },
+                new MeleeComboSkill.Step { damageCoefficient = 1.4f, radius = 1.9f, reach = 1.7f, hitDelay = 0.12f, lunge = 4f }
+            };
 
             var cloud = Skill<AreaSkill>("Druid_ToxicCloud", "Nuage toxique", "Nuage ciblé pendant 5 s : 30% par tick + poison.",
                 SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
@@ -388,7 +408,7 @@ namespace RiskOfMagic.Editor
             bloom.damageMultiplier = 1.5f;
             bloom.burstVfx = vfx.PoisonBurst;
 
-            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, dart, cloud, leap, bloom })
+            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, claws, cloud, leap, bloom })
                 EditorUtility.SetDirty(skill);
 
             return new List<CharacterDefinition>
@@ -399,8 +419,8 @@ namespace RiskOfMagic.Editor
                     130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
                     90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock),
-                Character("Character_Druid", "Druide", "Poisons cumulables et dégâts sur la durée.", new Color(0.25f, 0.55f, 0.2f),
-                    100f, Movement("Movement_Druid", 7.2f, 1), dart, cloud, leap, bloom)
+                Character("Character_Druid", "Druide", "Corps à corps empoisonné, poisons cumulables.", new Color(0.25f, 0.55f, 0.2f),
+                    100f, Movement("Movement_Druid", 7.2f, 1), claws, cloud, leap, bloom)
             };
         }
 

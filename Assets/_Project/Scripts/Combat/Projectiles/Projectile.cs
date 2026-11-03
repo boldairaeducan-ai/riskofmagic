@@ -21,6 +21,7 @@ namespace RiskOfMagic.Combat.Projectiles
         private Transform ignoreRoot;
         private Vector3 velocity;
         private float age;
+        private float travelled;
         private float scale;
         private int pierced;
         private TrailRenderer[] trails;
@@ -53,6 +54,7 @@ namespace RiskOfMagic.Combat.Projectiles
             scale = newScale;
             velocity = direction * (speedOverride > 0f ? speedOverride : def.speed);
             age = 0f;
+            travelled = 0f;
             pierced = 0;
             damaged.Clear();
             transform.localScale = def.visualPrefab.transform.localScale * newScale;
@@ -66,7 +68,7 @@ namespace RiskOfMagic.Combat.Projectiles
         {
             float dt = Time.deltaTime;
             age += dt;
-            if (age >= definition.lifetime)
+            if (age >= definition.lifetime || (definition.maxRange > 0f && travelled >= definition.maxRange))
             {
                 if (definition.explodeOnExpire)
                     Impact(transform.position);
@@ -125,6 +127,7 @@ namespace RiskOfMagic.Combat.Projectiles
             }
 
             transform.position = position + step;
+            travelled += distance;
             transform.rotation = Quaternion.LookRotation(velocity);
         }
 

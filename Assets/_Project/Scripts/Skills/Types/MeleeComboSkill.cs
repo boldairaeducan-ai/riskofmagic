@@ -28,6 +28,7 @@ namespace RiskOfMagic.Skills.Types
             new() { damageCoefficient = 2.6f, radius = 2.2f, reach = 1.8f, hitDelay = 0.15f, lunge = 6f }
         };
         [Min(0f)] public float comboResetTime = 0.9f;
+        [Tooltip("Optional damage over time applied by every hit.")] public DotEffect dot;
         public GameObject swingVfx;
 
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
@@ -61,7 +62,7 @@ namespace RiskOfMagic.Skills.Types
             if (!context.Avatar.IsAlive)
                 yield break;
             Vector3 center = context.Look.CameraPivot.position + direction * step.reach;
-            context.DamageArea(center, step.radius, step.damageCoefficient, damageType);
+            context.DamageArea(center, step.radius, step.damageCoefficient, damageType, null, dot);
         }
 
         private Step GetStep(in SkillActivation activation) => steps[Mathf.Min(activation.Step, steps.Length - 1)];

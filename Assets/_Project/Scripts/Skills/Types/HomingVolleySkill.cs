@@ -30,6 +30,8 @@ namespace RiskOfMagic.Skills.Types
         private static readonly List<Health> candidates = new();
         private static readonly List<Health> resolved = new();
 
+        public override float MaxRange => targetRange;
+
         public int GetMissileCount(float charge) => 1 + Mathf.RoundToInt(Mathf.Clamp01(charge) * (maxTargets - 1));
 
         /// <summary>Enemy currently closest to the crosshair (owner or server), or null.</summary>
@@ -92,7 +94,7 @@ namespace RiskOfMagic.Skills.Types
             if (ids == null)
                 return;
             var spawned = NetworkManager.Singleton.SpawnManager.SpawnedObjects;
-            float maxRange = targetRange * 1.5f; // latency slack
+            float maxRange = targetRange * 1.15f; // small latency slack, locks beyond range are refused
             for (int i = 0; i < ids.Length && i < count; i++)
             {
                 if (!spawned.TryGetValue(ids[i], out var networkObject) || !networkObject.TryGetComponent(out Health health))

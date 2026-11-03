@@ -133,8 +133,21 @@ namespace RiskOfMagic.Editor
 
         private static void BuildCrosshair(RectTransform parent)
         {
-            var crosshair = Rect("Crosshair", parent, Center, Center, Vector2.zero, new Vector2(14f, 14f));
-            Themed(crosshair, HudSprite.Crosshair, HudColor.Text);
+            var root = Stretch("CrosshairRoot", parent);
+            var crosshair = Rect("Crosshair", root, Center, Center, Vector2.zero, new Vector2(14f, 14f));
+            var image = Themed(crosshair, HudSprite.Crosshair, HudColor.Text, applyColor: false);
+            image.color = theme.textColor;
+            var label = Text(Rect("OutOfRange", root, Center, Center, new Vector2(0f, 26f), new Vector2(300f, 26f)), null,
+                "Hors de portée", 18f, HudFont.Body, HudColor.Danger, TextAlignmentOptions.Center);
+            label.gameObject.SetActive(false);
+
+            var widget = root.gameObject.AddComponent<CrosshairWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("crosshair").objectReferenceValue = image;
+                so.FindProperty("outOfRangeLabel").objectReferenceValue = label;
+            });
         }
 
         private static void BuildChargeBar(RectTransform parent)

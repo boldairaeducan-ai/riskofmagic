@@ -14,6 +14,7 @@ namespace RiskOfMagic.Combat.Projectiles
         [Min(0f)] public float speed = 60f;
         public float gravity;
         [Min(0.05f)] public float lifetime = 3f;
+        [Min(0f), Tooltip("Max travelled distance (m) before vanishing/exploding. 0 = lifetime only.")] public float maxRange;
         [Min(0f)] public float radius = 0.15f;
         [Min(0f), Tooltip("Degrees per second toward the homing target (0 = no homing).")] public float homingTurnRate;
 
