@@ -53,7 +53,21 @@ namespace RiskOfMagic.UI
             AddListener(disconnectButton, Disconnect);
             AddListener(forceWaveButton, ForceWave);
 
-            BuildCharacterButtons();
+            if (RiskOfMagic.Flow.GameFlow.LaunchedFromMenu)
+                HideCharacterSection(); // chosen in the lobby
+            else
+                BuildCharacterButtons();
+        }
+
+        private void HideCharacterSection()
+        {
+            if (characterButtonTemplate == null)
+                return;
+            var row = characterButtonTemplate.transform.parent;
+            row.gameObject.SetActive(false);
+            var header = row.parent != null ? row.parent.Find("CharacterHeader") : null;
+            if (header != null)
+                header.gameObject.SetActive(false);
         }
 
         private static void AddListener(UnityEngine.UI.Button button, UnityEngine.Events.UnityAction action)
@@ -131,7 +145,11 @@ namespace RiskOfMagic.UI
             var manager = NetworkManager.Singleton;
             bool connected = manager != null && manager.IsListening;
             bool cursorFree = Cursor.lockState != CursorLockMode.Locked;
-            bool visible = !connected || cursorFree;
+            // From the main menu: only on Esc once the local player exists (not while the game scene is loading).
+            bool fromMenu = RiskOfMagic.Flow.GameFlow.LaunchedFromMenu;
+            bool visible = fromMenu
+                ? connected && cursorFree && PlayerAvatar.Local != null
+                : !connected || cursorFree;
 
             if (group != null)
             {

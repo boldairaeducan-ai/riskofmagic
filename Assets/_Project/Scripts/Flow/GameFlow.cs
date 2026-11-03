@@ -15,6 +15,9 @@ namespace RiskOfMagic.Flow
         /// <summary>Shown once by the main menu (e.g. "connection lost").</summary>
         public static string PendingMessage { get; set; }
 
+        /// <summary>The session was started from the main menu (character chosen in the lobby, no debug connection UI).</summary>
+        public static bool LaunchedFromMenu { get; set; }
+
         /// <summary>True while we are disconnecting on purpose (no "connection lost" message).</summary>
         public static bool IsLeaving { get; private set; }
 
@@ -23,6 +26,7 @@ namespace RiskOfMagic.Flow
         {
             PendingMessage = null;
             IsLeaving = false;
+            LaunchedFromMenu = false;
         }
 
         /// <summary>Server only: load the game scene for every connected player.</summary>
@@ -64,6 +68,7 @@ namespace RiskOfMagic.Flow
                 if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening)
                     NetworkManager.Singleton.Shutdown();
                 RunSettings.Reset();
+                LaunchedFromMenu = false;
             }
             finally
             {

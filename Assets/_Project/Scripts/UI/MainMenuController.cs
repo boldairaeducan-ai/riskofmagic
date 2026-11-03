@@ -94,7 +94,10 @@ namespace RiskOfMagic.UI
             if (busy || manager == null || manager.IsListening)
                 return;
             if (manager.StartHost())
+            {
+                GameFlow.LaunchedFromMenu = true;
                 OnHosting();
+            }
             else
                 SetStatus("Impossible de démarrer la partie solo.");
         }
@@ -107,6 +110,7 @@ namespace RiskOfMagic.UI
             try
             {
                 await OnlineSessions.Service.HostAsync(maxPlayers);
+                GameFlow.LaunchedFromMenu = true;
                 OnHosting();
                 SetStatus(string.Empty);
             }
@@ -130,6 +134,7 @@ namespace RiskOfMagic.UI
             try
             {
                 await OnlineSessions.Service.JoinAsync(code);
+                GameFlow.LaunchedFromMenu = true;
                 ShowLobby(true);
                 SetStatus(string.Empty);
             }
