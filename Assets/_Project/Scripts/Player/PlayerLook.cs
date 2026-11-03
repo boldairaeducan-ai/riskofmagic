@@ -1,3 +1,4 @@
+using RiskOfMagic.Feedback;
 using RiskOfMagic.Settings;
 using UnityEngine;
 
@@ -27,6 +28,8 @@ namespace RiskOfMagic.Player
 
         public Transform CameraPivot => cameraPivot;
         public Camera Camera => playerCamera;
+        /// <summary>Shake and FOV kicks (local player only; null if the camera has no CameraEffects).</summary>
+        public CameraEffects Effects { get; private set; }
         public float Pitch => pitch;
         public bool IsCursorLocked => Cursor.lockState == CursorLockMode.Locked;
         public Ray AimRay => new(cameraPivot.position, cameraPivot.forward);
@@ -45,6 +48,8 @@ namespace RiskOfMagic.Player
                 playerCamera = GetComponentInChildren<Camera>(true);
             if (cameraPivot == null && playerCamera != null)
                 cameraPivot = playerCamera.transform.parent;
+            if (playerCamera != null)
+                Effects = playerCamera.GetComponent<CameraEffects>();
         }
 
         public void SetLocal(bool local)
@@ -91,7 +96,9 @@ namespace RiskOfMagic.Player
 
         private void ApplySettings()
         {
-            if (playerCamera != null)
+            if (Effects != null)
+                Effects.BaseFieldOfView = GameSettings.FieldOfView;
+            else if (playerCamera != null)
                 playerCamera.fieldOfView = GameSettings.FieldOfView;
         }
 

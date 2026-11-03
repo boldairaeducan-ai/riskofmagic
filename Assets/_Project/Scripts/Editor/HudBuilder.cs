@@ -76,7 +76,10 @@ namespace RiskOfMagic.Editor
             gameplayGroup.blocksRaycasts = false;
             Props(controller, so => so.FindProperty("gameplayGroup").objectReferenceValue = gameplayGroup);
 
+            BuildShieldOverlay(gameplay);
             BuildCrosshair(gameplay);
+            BuildHitMarker(gameplay);
+            BuildDamageDirection(gameplay);
             BuildChargeBar(gameplay);
             BuildInteractionPrompt(gameplay);
             BuildCharacterPanel(gameplay);
@@ -151,6 +154,67 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("crosshair").objectReferenceValue = image;
                 so.FindProperty("outOfRangeLabel").objectReferenceValue = label;
+            });
+        }
+
+        private static void BuildHitMarker(RectTransform parent)
+        {
+            var root = Rect("HitMarker", parent, Center, Center, Vector2.zero, new Vector2(40f, 40f));
+            var group = root.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            var bars = new UnityEngine.UI.Graphic[4];
+            for (int i = 0; i < 4; i++)
+            {
+                float angle = 45f + 90f * i;
+                var arm = Rect($"Arm_{i}", root, Center, Center, Vector2.zero, Vector2.zero);
+                arm.localEulerAngles = new Vector3(0f, 0f, angle);
+                var bar = Rect("Bar", arm, Center, new Vector2(0.5f, 0f), new Vector2(0f, 9f), new Vector2(3f, 11f));
+                var image = bar.gameObject.AddComponent<UnityEngine.UI.Image>();
+                image.raycastTarget = false;
+                bars[i] = image;
+            }
+
+            var widget = root.gameObject.AddComponent<HitMarkerWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("group").objectReferenceValue = group;
+                var array = so.FindProperty("bars");
+                array.arraySize = bars.Length;
+                for (int i = 0; i < bars.Length; i++)
+                    array.GetArrayElementAtIndex(i).objectReferenceValue = bars[i];
+            });
+        }
+
+        private static void BuildDamageDirection(RectTransform parent)
+        {
+            var layer = Stretch("DamageDirection", parent);
+            var template = Rect("IndicatorTemplate", layer, Center, Center, Vector2.zero, Vector2.zero);
+            template.gameObject.AddComponent<CanvasGroup>();
+            var arc = Rect("Arc", template, Center, new Vector2(0.5f, 0f), new Vector2(0f, 150f), new Vector2(130f, 14f));
+            Themed(arc, HudSprite.BarFill, HudColor.Danger);
+
+            var widget = layer.gameObject.AddComponent<DamageDirectionWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("template").objectReferenceValue = template;
+            });
+        }
+
+        private static void BuildShieldOverlay(RectTransform parent)
+        {
+            var overlay = Stretch("ShieldOverlay", parent);
+            var group = overlay.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            var tint = Themed(overlay, null, HudColor.LockOn, applyColor: false);
+            tint.color = new Color(0.6f, 0.35f, 1f, 0.18f);
+
+            var widget = overlay.gameObject.AddComponent<ShieldOverlayWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("group").objectReferenceValue = group;
             });
         }
 

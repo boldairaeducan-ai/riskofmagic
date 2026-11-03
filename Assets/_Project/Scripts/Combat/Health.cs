@@ -33,6 +33,8 @@ namespace RiskOfMagic.Combat
         public static event Action<Health, DamageInfo> ServerKilled;
         /// <summary>Every peer: every damage instance (damage numbers, hit markers).</summary>
         public static event Action<Health, DamageInfo> AnyDamaged;
+        /// <summary>Every peer: every death (kill markers...).</summary>
+        public static event Action<Health, DamageInfo> AnyDied;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
@@ -40,6 +42,7 @@ namespace RiskOfMagic.Combat
             ServerDamaged = null;
             ServerKilled = null;
             AnyDamaged = null;
+            AnyDied = null;
         }
 
         Health IDamageable.Health => this;
@@ -202,7 +205,11 @@ namespace RiskOfMagic.Combat
         }
 
         [Rpc(SendTo.Everyone)]
-        private void DiedRpc(DamageInfo info) => Died?.Invoke(info);
+        private void DiedRpc(DamageInfo info)
+        {
+            Died?.Invoke(info);
+            AnyDied?.Invoke(this, info);
+        }
 
         [Rpc(SendTo.Everyone)]
         private void RevivedRpc() => Revived?.Invoke();

@@ -160,6 +160,14 @@ namespace RiskOfMagic.Skills
             state.LastActivationTime = Time.time;
 
             definition.OnOwnerExecute(Context, activation);
+            var effects = avatar.Look.Effects;
+            if (effects != null)
+            {
+                if (definition.ownerFovKick > 0f)
+                    effects.KickFov(definition.ownerFovKick, definition.ownerFovKickDuration);
+                if (definition.ownerCameraTrauma > 0f)
+                    effects.AddTrauma(definition.ownerCameraTrauma);
+            }
             SkillActivated?.Invoke(slot);
 
             if (IsServer)

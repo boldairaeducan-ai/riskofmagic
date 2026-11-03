@@ -7,6 +7,7 @@ using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Equipment;
+using RiskOfMagic.Feedback;
 using RiskOfMagic.Flow;
 using RiskOfMagic.Interaction;
 using RiskOfMagic.Items;
@@ -53,7 +54,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse;
         }
 
         private sealed class ProjectileSet
@@ -177,6 +178,9 @@ namespace RiskOfMagic.Editor
                 ArcaneBurst = EffectPrefab("VFX_ArcaneBurst", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.05f, 0f), new Color(0.75f, 0.4f, 1f), 0.3f),
                 PoisonCloud = EffectPrefab("VFX_PoisonCloud", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.07f, 0f), new Color(0.45f, 0.85f, 0.25f), 0.45f),
                 PoisonBurst = EffectPrefab("VFX_PoisonBurst", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(0.5f, 1f, 0.3f), 0.25f),
+                // Ghost left behind by dashes (stretched along the dash direction).
+                DashBurst = EffectPrefab("VFX_DashBurst", PrimitiveType.Cube, new Vector3(0.7f, 1.6f, 2.4f), new Vector3(0f, 0.9f, -1.2f), new Color(0.75f, 0.9f, 1f), 0.2f),
+                ShieldPulse = EffectPrefab("VFX_ShieldPulse", PrimitiveType.Sphere, Vector3.one * 3f, new Vector3(0f, 0.9f, 0f), new Color(0.7f, 0.45f, 1f), 0.25f),
                 CursePulse = EffectPrefab("VFX_CursePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.09f, 0f), new Color(0.55f, 0.2f, 0.6f), 0.4f),
                 RallyPulse = EffectPrefab("VFX_RallyPulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.1f, 0f), new Color(1f, 0.8f, 0.3f), 0.5f),
                 Shockwave = EffectPrefab("VFX_Shockwave", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.11f, 0f), new Color(0.9f, 0.85f, 0.75f), 0.3f),
@@ -281,6 +285,9 @@ namespace RiskOfMagic.Editor
             roll.duration = 0.22f;
             roll.canCastWhileBusy = true;
             roll.keepsSprint = true;
+            roll.castVfx = vfx.DashBurst;
+            roll.ownerFovKick = 10f;
+            roll.ownerFovKickDuration = 0.3f;
 
             var rain = Skill<AreaSkill>("Archer_ArrowRain", "Pluie de flèches", "Zone ciblée frappée 6 fois. 60% par impact.",
                 SkillActivationMode.Press, cooldown: 15f, cast: 0.4f);
@@ -312,6 +319,7 @@ namespace RiskOfMagic.Editor
             whirlwind.tickInterval = 0.2f;
             whirlwind.damageCoefficient = 0.9f;
             whirlwind.tickVfx = vfx.Area;
+            whirlwind.ownerCameraTrauma = 0.1f;
 
             var charge = Skill<DashSkill>("Warrior_Charge", "Charge", "Fonce en avant, 200% aux ennemis percutés.",
                 SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
@@ -320,6 +328,10 @@ namespace RiskOfMagic.Editor
             charge.duration = 0.3f;
             charge.damageCoefficient = 2f;
             charge.damageRadius = 1.8f;
+            charge.castVfx = vfx.DashBurst;
+            charge.ownerFovKick = 12f;
+            charge.ownerFovKickDuration = 0.4f;
+            charge.ownerCameraTrauma = 0.15f;
 
             var slam = Skill<AreaSkill>("Warrior_SeismicSlam", "Frappe sismique", "Bond puis onde de choc. 400%.",
                 SkillActivationMode.Press, cooldown: 15f, cast: 0.5f);
@@ -331,6 +343,7 @@ namespace RiskOfMagic.Editor
             slam.hitOncePerTarget = true;
             slam.casterUpwardVelocity = 6f;
             slam.tickVfx = vfx.Area;
+            slam.ownerCameraTrauma = 0.45f;
 
             // Arcanist
             var volley = Skill<HomingVolleySkill>("Arcanist_ArcaneVolley", "Projectile magique",
@@ -350,6 +363,7 @@ namespace RiskOfMagic.Editor
             burst.damageType = DamageType.Arcane;
             burst.knockbackDistance = 7f;
             burst.tickVfx = vfx.ArcaneBurst;
+            burst.ownerCameraTrauma = 0.25f;
 
             var shield = Skill<ShieldSkill>("Arcanist_ArcaneShield", "Bouclier arcanique", "Bloque 95% des dégâts pendant 3 s.",
                 SkillActivationMode.Press, cooldown: 10f, cast: 0f);
@@ -357,6 +371,10 @@ namespace RiskOfMagic.Editor
             shield.duration = 3f;
             shield.canCastWhileBusy = true;
             shield.keepsSprint = true;
+            shield.castVfx = vfx.ShieldPulse;
+            shield.castVfxAnchor = VfxAnchor.Caster;
+            shield.ownerFovKick = -4f;
+            shield.ownerFovKickDuration = 0.2f;
 
             var timeLock = Skill<ConeControlSkill>("Arcanist_TimeLock", "Blocage temporel", "Fige les ennemis devant soi pendant 4 s.",
                 SkillActivationMode.Press, cooldown: 14f, cast: 0.4f);
@@ -366,6 +384,7 @@ namespace RiskOfMagic.Editor
             timeLock.castVfx = vfx.TimePulse;
             timeLock.castVfxAnchor = VfxAnchor.Caster;
             timeLock.castVfxScale = 20f;
+            timeLock.ownerCameraTrauma = 0.15f;
 
             // Druid (poison, damage over time)
             var claws = Skill<MeleeComboSkill>("Druid_ToxicClaws", "Griffes toxiques",
@@ -406,6 +425,9 @@ namespace RiskOfMagic.Editor
             leap.damageType = DamageType.Poison;
             leap.dot = p.Poison;
             leap.keepsSprint = true;
+            leap.castVfx = vfx.DashBurst;
+            leap.ownerFovKick = 10f;
+            leap.ownerFovKickDuration = 0.4f;
 
             var bloom = Skill<DetonateDotsSkill>("Druid_FatalBloom", "Floraison fatale",
                 "Fait éclater tous les poisons à 25 m : 150% des dégâts de poison restants, instantanément.",
@@ -723,6 +745,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<StatusEffects>();
             root.AddComponent<PlayerEquipment>();
             root.AddComponent<PlayerDowned>(); // after PlayerInventory: Phoenix Feather prevents death first
+            root.AddComponent<LocalCombatFeedback>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -737,6 +760,7 @@ namespace RiskOfMagic.Editor
             cam.depth = 10f;
             cam.enabled = false;
             camGo.AddComponent<AudioListener>().enabled = false;
+            camGo.AddComponent<CameraEffects>();
 
             var look = root.AddComponent<PlayerLook>();
             SetProperties(look, so =>

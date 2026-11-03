@@ -99,6 +99,8 @@ namespace RiskOfMagic.UI
 
             AddHeader("Interface");
             AddToggle("Chiffres de dégâts", () => GameSettings.ShowDamageNumbers, v => GameSettings.ShowDamageNumbers = v);
+            AddToggle("Marqueurs de touche", () => GameSettings.ShowHitMarkers, v => GameSettings.ShowHitMarkers = v);
+            AddRange("Tremblements de caméra", 0f, 1f, 0.1f, () => GameSettings.CameraShake, v => GameSettings.CameraShake = v, Percent);
         }
 
         private static string Percent(float value) => $"{Mathf.RoundToInt(value * 100f)}%";
