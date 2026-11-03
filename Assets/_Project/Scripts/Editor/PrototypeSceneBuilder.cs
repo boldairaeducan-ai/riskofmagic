@@ -12,6 +12,7 @@ using RiskOfMagic.Flow;
 using RiskOfMagic.Interaction;
 using RiskOfMagic.Items;
 using RiskOfMagic.Items.Types;
+using RiskOfMagic.Maps;
 using RiskOfMagic.Networking;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
@@ -87,6 +88,7 @@ namespace RiskOfMagic.Editor
                 vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
+            catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
             EditorUtility.SetDirty(catalog);
 
             var smallChest = BuildChestPrefab<ChestInteractable>("Chest_Small", "Petit coffre", 25, 1f, new RarityWeights(70f, 24f, 5f, 1f),
@@ -1182,12 +1184,46 @@ namespace RiskOfMagic.Editor
             Platform(level, "Plateau_B", new Vector3(32f, 0.75f, 22f), new Vector3(10f, 1.5f, 10f), platformMat);
             Platform(level, "Step", new Vector3(-14f, 0.6f, 8f), new Vector3(4f, 1.2f, 4f), platformMat);
             Platform(level, "FloatingPlatform", new Vector3(-14f, 2.6f, 15f), new Vector3(7f, 0.5f, 7f), platformMat);
+
+            // Layout variants (one child picked per group and per stage).
+            var bridges = new GameObject("Variants_GapCrossing");
+            bridges.transform.SetParent(level.transform);
+            bridges.AddComponent<LayoutVariantGroup>();
+            var bridge = new GameObject("Bridge");
+            bridge.transform.SetParent(bridges.transform);
+            Platform(bridge, "Deck", new Vector3(25f, 1.35f, 22f), new Vector3(4.5f, 0.3f, 3f), platformMat);
+            var ramp = new GameObject("Ramp");
+            ramp.transform.SetParent(bridges.transform);
+            Platform(ramp, "RampBlock", new Vector3(18f, 0.4f, 15f), new Vector3(4f, 0.8f, 4f), platformMat);
+
+            var rocks = new GameObject("Variants_RockCluster");
+            rocks.transform.SetParent(level.transform);
+            SetProperties(rocks.AddComponent<LayoutVariantGroup>(), so => so.FindProperty("allowNone").boolValue = true);
+            var clusterWest = new GameObject("West");
+            clusterWest.transform.SetParent(rocks.transform);
+            Platform(clusterWest, "RockA", new Vector3(-32f, 2f, -20f), new Vector3(6f, 4f, 6f), rockMat);
+            Platform(clusterWest, "RockB", new Vector3(-27f, 1.2f, -14f), new Vector3(4f, 2.4f, 5f), rockMat);
+            var clusterNorth = new GameObject("North");
+            clusterNorth.transform.SetParent(rocks.transform);
+            Platform(clusterNorth, "RockA", new Vector3(2f, 2f, 38f), new Vector3(8f, 4f, 4f), rockMat);
+            Platform(clusterNorth, "RockB", new Vector3(10f, 1.5f, 34f), new Vector3(4f, 3f, 4f), rockMat);
+
+            // Candidate spots: teleporter and merchant are placed on one of these (chests stay random).
+            var spots = new GameObject("SpawnSpots");
+            spots.transform.SetParent(level.transform);
+            foreach (var position in new[] { new Vector3(-40f, 0f, -40f), new Vector3(40f, 0f, -38f), new Vector3(-38f, 0f, 42f), new Vector3(42f, 0f, 40f) })
+                Spot(spots, SpawnSpotType.Teleporter, position);
+            foreach (var position in new[] { new Vector3(-20f, 0f, 5f), new Vector3(22f, 0f, -12f), new Vector3(0f, 0f, 25f) })
+                Spot(spots, SpawnSpotType.Merchant, position);
             foreach (var t in level.GetComponentsInChildren<Transform>())
                 GameObjectUtility.SetStaticEditorFlags(t.gameObject, StaticEditorFlags.BatchingStatic | StaticEditorFlags.ContributeGI);
 
             level.AddComponent<StageBounds>();
+            level.AddComponent<MapLayout>();
+            level.AddComponent<MapLayoutClientSync>();
             var surface = level.AddComponent<NavMeshSurface>();
             surface.collectObjects = CollectObjects.Children;
+            surface.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders; // rebaked at runtime per layout
             surface.BuildNavMesh();
             if (surface.navMeshData != null)
             {
@@ -1195,6 +1231,14 @@ namespace RiskOfMagic.Editor
                 AssetDatabase.DeleteAsset(navPath);
                 AssetDatabase.CreateAsset(surface.navMeshData, navPath);
             }
+        }
+
+        private static void Spot(GameObject parent, SpawnSpotType type, Vector3 position)
+        {
+            var spot = new GameObject($"Spot_{type}");
+            spot.transform.SetParent(parent.transform);
+            spot.transform.position = position;
+            SetProperties(spot.AddComponent<SpawnSpot>(), so => so.FindProperty("type").enumValueIndex = (int)type);
         }
 
         private static void Platform(GameObject level, string name, Vector3 position, Vector3 size, Material material)
@@ -1257,6 +1301,9 @@ namespace RiskOfMagic.Editor
                     var element = list.GetArrayElementAtIndex(i);
                     element.FindPropertyRelative("prefab").objectReferenceValue = entries[i].prefab.GetComponent<NetworkObject>();
                     element.FindPropertyRelative("count").intValue = entries[i].count;
+                    bool isMerchant = entries[i].prefab.GetComponent<Merchant>() != null;
+                    element.FindPropertyRelative("useSpawnSpots").boolValue = isMerchant;
+                    element.FindPropertyRelative("spotType").enumValueIndex = (int)SpawnSpotType.Merchant;
                 }
             });
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using RiskOfMagic.Maps;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -14,12 +15,15 @@ namespace RiskOfMagic.Run
         {
             public NetworkObject prefab;
             [Min(0)] public int count;
+            [Tooltip("Place on SpawnSpots of this type when the map has some (random NavMesh point otherwise).")]
+            public bool useSpawnSpots;
+            public SpawnSpotType spotType;
         }
 
         [SerializeField] private List<Entry> entries = new();
         [SerializeField, Min(0f)] private float minSpacing = 5f;
         [SerializeField, Min(0f)] private float playerSpawnClearance = 8f;
-        [SerializeField] private bool spawnOnStart = true;
+        [SerializeField, Tooltip("Off when a StageManager drives the stages.")] private bool spawnOnStart;
 
         private readonly List<Vector3> placed = new();
         private readonly List<NetworkObject> spawned = new();
@@ -64,13 +68,20 @@ namespace RiskOfMagic.Run
                     continue;
                 for (int i = 0; i < entry.count; i++)
                 {
-                    if (!bounds.TryGetRandomPoint(out var position, playerSpawnClearance, p => StageBounds.IsFarFrom(p, placed, minSpacing)))
+                    Vector3 position;
+                    var rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                    if (entry.useSpawnSpots && SpawnSpot.TryPick(entry.spotType, out var spot, p => StageBounds.IsFarFrom(p, placed, minSpacing)))
+                    {
+                        position = spot.position;
+                        rotation = spot.rotation;
+                    }
+                    else if (!bounds.TryGetRandomPoint(out position, playerSpawnClearance, p => StageBounds.IsFarFrom(p, placed, minSpacing)))
                     {
                         Debug.LogWarning($"[InteractableSpawner] No room left for {entry.prefab.name}.", this);
                         break;
                     }
                     placed.Add(position);
-                    var instance = Instantiate(entry.prefab, position, Quaternion.Euler(0f, Random.Range(0f, 360f), 0f));
+                    var instance = Instantiate(entry.prefab, position, rotation);
                     instance.Spawn(true);
                     spawned.Add(instance);
                 }

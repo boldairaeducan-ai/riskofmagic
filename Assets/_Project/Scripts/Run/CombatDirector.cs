@@ -26,7 +26,7 @@ namespace RiskOfMagic.Run
         [SerializeField] private float startingCredits = 40f;
 
         [Header("Stage population")]
-        [SerializeField] private bool populateOnStart = true;
+        [SerializeField, Tooltip("Off when a StageManager drives the stages.")] private bool populateOnStart;
         [SerializeField, Min(0f), Tooltip("Credits spent on idle enemies at stage start (scaled by sqrt(difficulty coefficient)).")]
         private float stagePopulationCredits = 110f;
         [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 45f;

@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Items;
+using RiskOfMagic.Maps;
 using RiskOfMagic.Player;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RiskOfMagic.Run
 {
     /// <summary>
-    /// Server: run and stage lifecycle on the current map.
-    /// Places the teleporter, starts the next stage when it is used, detects the game over (every player dead)
-    /// and restarts the run on request.
+    /// Server: run and stage lifecycle. Persistent across map scenes (spawned once by GameBootstrap).
+    /// Each stage: picks the map scene from the MapRotation (loads it if it differs from the current one),
+    /// rolls the layout seed (MapLayout variants, replicated), then places interactables, the teleporter
+    /// (on a Teleporter SpawnSpot when the map has some) and the enemy population.
+    /// Also detects the game over (every player dead) and restarts the run on request.
     /// </summary>
     public class StageManager : NetworkBehaviour
     {
@@ -23,7 +27,9 @@ namespace RiskOfMagic.Run
         private readonly NetworkVariable<bool> gameOver = new();
         private readonly NetworkVariable<float> finalTime = new();
         private readonly NetworkVariable<int> kills = new();
+        private readonly NetworkVariable<int> layoutSeed = new();
         private Teleporter teleporter;
+        private bool pendingFullHeal;
 
         public static StageManager Instance { get; private set; }
 
@@ -37,22 +43,36 @@ namespace RiskOfMagic.Run
         /// <summary>Run duration frozen at the game over.</summary>
         public float FinalTime => finalTime.Value;
         public int Kills => kills.Value;
+        /// <summary>Seed of the current stage's MapLayout variants.</summary>
+        public int LayoutSeed => layoutSeed.Value;
 
         public override void OnNetworkSpawn()
         {
             Instance = this;
             stageNumber.OnValueChanged += OnStageChanged;
             gameOver.OnValueChanged += OnGameOverChanged;
+            layoutSeed.OnValueChanged += OnLayoutSeedChanged;
             if (!IsServer)
+            {
+                ApplyLayoutLocally(layoutSeed.Value);
                 return;
+            }
             EnemyActor.Killed += OnEnemyKilled;
-            SpawnTeleporter();
+            ResetStage(fullHeal: false); // first stage, in the scene that spawned us
+        }
+
+        /// <summary>Server: called by the GameBootstrap of a newly loaded map scene.</summary>
+        public void OnMapSceneReady()
+        {
+            if (IsServer)
+                ResetStage(pendingFullHeal);
         }
 
         public override void OnNetworkDespawn()
         {
             stageNumber.OnValueChanged -= OnStageChanged;
             gameOver.OnValueChanged -= OnGameOverChanged;
+            layoutSeed.OnValueChanged -= OnLayoutSeedChanged;
             EnemyActor.Killed -= OnEnemyKilled;
             if (Instance == this)
                 Instance = null;
@@ -75,8 +95,8 @@ namespace RiskOfMagic.Run
                 RunDifficulty.Instance.CompleteStage();
             foreach (var player in PlayerAvatar.All)
                 player.Wallet.ResetGold(); // gold doesn't carry over between stages
-            ResetStage(fullHeal: false);
             stageNumber.Value++;
+            GoToStage(fullHeal: false);
         }
 
         /// <summary>Server only: new run after a game over (or any time, e.g. from a debug menu).</summary>
@@ -94,11 +114,27 @@ namespace RiskOfMagic.Run
                     player.Equipment.ClearEquipment();
             }
 
-            ResetStage(fullHeal: true);
             stageNumber.Value = 1;
             kills.Value = 0;
             finalTime.Value = 0f;
             gameOver.Value = false;
+            GoToStage(fullHeal: true);
+        }
+
+        /// <summary>Loads the stage's map scene if it differs from the current one, otherwise resets in place.</summary>
+        private void GoToStage(bool fullHeal)
+        {
+            pendingFullHeal = fullHeal;
+            var rotation = RiskOfMagic.Core.GameCatalog.Instance != null ? RiskOfMagic.Core.GameCatalog.Instance.MapRotation : null;
+            string next = rotation != null ? rotation.PickScene(stageNumber.Value - 1) : null;
+            if (!string.IsNullOrEmpty(next) && next != SceneManager.GetActiveScene().name)
+            {
+                // Scene objects (enemies, chests, teleporter...) go away with the old map;
+                // the new map's GameBootstrap calls OnMapSceneReady once every client has loaded it.
+                NetworkManager.SceneManager.LoadScene(next, LoadSceneMode.Single);
+                return;
+            }
+            ResetStage(fullHeal);
         }
 
         private void TriggerGameOver()
@@ -125,6 +161,11 @@ namespace RiskOfMagic.Run
             DespawnAll(new List<ItemPickup>(ItemPickup.Active));
             if (teleporter != null && teleporter.IsSpawned)
                 teleporter.NetworkObject.Despawn();
+
+            // Layout first: variants change the geometry, the NavMesh and the active SpawnSpots.
+            layoutSeed.Value = UnityEngine.Random.Range(1, int.MaxValue);
+            if (MapLayout.Instance != null)
+                MapLayout.Instance.Apply(layoutSeed.Value, rebuildNavMesh: true);
 
             var interactables = GetComponent<InteractableSpawner>();
             if (interactables != null)
@@ -155,8 +196,11 @@ namespace RiskOfMagic.Run
                 return;
             }
 
-            if (!bounds.TryGetRandomPoint(out var position, teleporterMinDistanceFromSpawns, attempts: 60) &&
-                !bounds.TryGetRandomPoint(out position, 0f, attempts: 60))
+            Vector3 position;
+            if (SpawnSpot.TryPick(SpawnSpotType.Teleporter, out var spot))
+                position = spot.position;
+            else if (!bounds.TryGetRandomPoint(out position, teleporterMinDistanceFromSpawns, attempts: 60) &&
+                     !bounds.TryGetRandomPoint(out position, 0f, attempts: 60))
             {
                 Debug.LogError("[StageManager] No valid position for the teleporter.", this);
                 return;
@@ -180,6 +224,19 @@ namespace RiskOfMagic.Run
         }
 
         private void OnStageChanged(int previous, int current) => StageStarted?.Invoke(current);
+
+        private void OnLayoutSeedChanged(int previous, int current)
+        {
+            if (!IsServer)
+                ApplyLayoutLocally(current);
+        }
+
+        /// <summary>Clients only show the variants; the NavMesh is server-side.</summary>
+        private static void ApplyLayoutLocally(int seed)
+        {
+            if (seed != 0 && MapLayout.Instance != null && MapLayout.Instance.AppliedSeed != seed)
+                MapLayout.Instance.Apply(seed, rebuildNavMesh: false);
+        }
         private void OnGameOverChanged(bool previous, bool current) => GameOverChanged?.Invoke(current);
     }
 }

@@ -6,7 +6,8 @@
         "Unity.Networking.Transport",
         "Unity.InputSystem",
         "UnityEngine.UI",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.AI.Navigation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

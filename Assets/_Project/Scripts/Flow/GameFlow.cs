@@ -34,7 +34,15 @@ namespace RiskOfMagic.Flow
         {
             var manager = NetworkManager.Singleton;
             if (manager != null && manager.IsServer)
-                manager.SceneManager.LoadScene(GameScene, LoadSceneMode.Single);
+                manager.SceneManager.LoadScene(FirstStageScene(), LoadSceneMode.Single);
+        }
+
+        /// <summary>A scene of the first stage's pool (MapRotation), or the default game scene.</summary>
+        public static string FirstStageScene()
+        {
+            var rotation = RiskOfMagic.Core.GameCatalog.Instance != null ? RiskOfMagic.Core.GameCatalog.Instance.MapRotation : null;
+            var scene = rotation != null ? rotation.PickScene(0) : null;
+            return string.IsNullOrEmpty(scene) ? GameScene : scene;
         }
 
         /// <summary>Leaves the online game, stops Netcode and goes back to the main menu (if it is in the build).</summary>

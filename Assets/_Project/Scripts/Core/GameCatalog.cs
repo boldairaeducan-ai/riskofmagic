@@ -3,6 +3,7 @@ using RiskOfMagic.Characters;
 using RiskOfMagic.Combat.Projectiles;
 using RiskOfMagic.Equipment;
 using RiskOfMagic.Items;
+using RiskOfMagic.Maps;
 using UnityEngine;
 
 namespace RiskOfMagic.Core
@@ -24,6 +25,7 @@ namespace RiskOfMagic.Core
         [SerializeField] private List<GameObject> effects = new();
         [SerializeField] private List<EquipmentDefinition> equipment = new();
         [SerializeField, Tooltip("Prefab with an ItemPickup, used to drop items and equipment.")] private ItemPickup pickupPrefab;
+        [SerializeField, Tooltip("Map scenes per stage.")] private MapRotation mapRotation;
 
         private readonly List<ItemDefinition> rollBuffer = new();
 
@@ -46,6 +48,7 @@ namespace RiskOfMagic.Core
         public IReadOnlyList<ItemDefinition> Items => items;
         public IReadOnlyList<EquipmentDefinition> Equipment => equipment;
         public ItemPickup PickupPrefab => pickupPrefab;
+        public MapRotation MapRotation => mapRotation;
 
         public CharacterDefinition GetCharacter(int index) => Get(characters, index);
         public ProjectileDefinition GetProjectile(int index) => Get(projectiles, index);
@@ -99,6 +102,8 @@ namespace RiskOfMagic.Core
             => index >= 0 && index < list.Count ? list[index] : null;
 
 #if UNITY_EDITOR
+        public void EditorSetMapRotation(MapRotation rotation) => mapRotation = rotation;
+
         public void EditorSet(List<CharacterDefinition> newCharacters, List<ProjectileDefinition> newProjectiles,
             List<ItemDefinition> newItems, List<GameObject> newEffects, List<EquipmentDefinition> newEquipment, ItemPickup newPickupPrefab)
         {

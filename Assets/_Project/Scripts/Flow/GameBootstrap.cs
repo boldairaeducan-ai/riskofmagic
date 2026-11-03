@@ -7,8 +7,9 @@ using UnityEngine.SceneManagement;
 namespace RiskOfMagic.Flow
 {
     /// <summary>
-    /// Game scene entry point (server): spawns run systems and one player object per connected client.
-    /// Works when the scene is loaded from the lobby (waits for every client to finish loading) and when
+    /// Map scene entry point (server). First stage: spawns the run systems and one player object per client,
+    /// all persistent across map scenes. Later stages (new map scene): tells the StageManager the map is ready.
+    /// Works when loaded from the lobby/previous stage (waits for every client to finish loading) and when
     /// hosting directly from this scene (debug).
     /// </summary>
     public class GameBootstrap : MonoBehaviour
@@ -63,16 +64,22 @@ namespace RiskOfMagic.Flow
                 return;
             started = true;
 
+            foreach (ulong clientId in manager.ConnectedClientsIds)
+                SpawnPlayer(clientId);
+
+            if (RiskOfMagic.Run.StageManager.Instance != null)
+            {
+                RiskOfMagic.Run.StageManager.Instance.OnMapSceneReady(); // run systems survived the scene change
+                return;
+            }
             foreach (var prefab in serverPrefabs)
             {
                 if (prefab == null)
                     continue;
                 var instance = Instantiate(prefab);
                 instance.name = prefab.name;
-                instance.Spawn(true);
+                instance.Spawn(false); // kept across map scenes
             }
-            foreach (ulong clientId in manager.ConnectedClientsIds)
-                SpawnPlayer(clientId);
         }
 
         private void OnClientConnected(ulong clientId)
@@ -85,7 +92,7 @@ namespace RiskOfMagic.Flow
         {
             if (playerPrefab == null || (manager.ConnectedClients.TryGetValue(clientId, out var client) && client.PlayerObject != null))
                 return;
-            Instantiate(playerPrefab).SpawnAsPlayerObject(clientId, true);
+            Instantiate(playerPrefab).SpawnAsPlayerObject(clientId, false); // inventory etc. kept across map scenes
         }
     }
 }

@@ -9,6 +9,15 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 4. Play from `MainMenu`: Solo, or *Créer une partie en ligne* → share the code → others *Rejoindre*. Lobby: character, ready, difficulty (host), start.
    Playing `Prototype` directly still works (debug panel: Host/Client by IP).
 
+## Making a map
+1. **Tools → Risk of Magic → Maps → New Map Scene** creates a ready-to-play map (Level root with `StageBounds`, `MapLayout`, `NavMeshSurface` collecting Physics Colliders, spawn points, example variant group and spots, `GameBootstrap`, HUD) and adds it to the build.
+2. Build the level under `Level`. Alternatives go in a **`LayoutVariantGroup`**: each direct child is one option, one is picked per stage (same for every player); `allowNone` adds an empty option; groups can be nested.
+3. Place **`SpawnSpot`**s: Teleporter and Merchant are put on one of them (random NavMesh point if none). Chests, barrels and shrines are scattered randomly. Spots inside an inactive variant are ignored.
+4. Add the scene name to a stage pool in `Configs/MapRotation.asset` (stage N picks a random scene of pool N, then loops).
+5. **Tools → Risk of Magic → Maps → Validate Open Map** reports missing pieces.
+
+The NavMesh is rebaked by the server after the layout is applied; bake it in the editor too (NavMeshSurface → Bake) for editing.
+
 ## Controls
 | Action | Keyboard/Mouse | Gamepad |
 |---|---|---|
