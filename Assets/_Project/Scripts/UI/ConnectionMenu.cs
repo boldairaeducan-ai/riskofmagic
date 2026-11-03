@@ -135,7 +135,7 @@ namespace RiskOfMagic.UI
 
         private void ForceWave()
         {
-            var director = FindFirstObjectByType<CombatDirector>();
+            var director = FindAnyObjectByType<CombatDirector>();
             if (director != null)
                 director.ForceWave();
         }
