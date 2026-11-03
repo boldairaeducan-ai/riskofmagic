@@ -69,7 +69,7 @@ namespace RiskOfMagic.Editor
                 "RISK OF MAGIC", 84f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
 
             // Home
-            var home = H.Rect("Home", root, H.Center, H.Center, new Vector2(0f, -40f), new Vector2(460f, 520f));
+            var home = H.Rect("Home", root, H.Center, H.Center, new Vector2(0f, -40f), new Vector2(460f, 590f));
             H.Themed(home, HudSprite.Panel, HudColor.Panel);
             H.VerticalLayout(home.gameObject, 24, 14);
             var solo = H.Button(home, "SoloButton", "Solo", 60f);
@@ -79,6 +79,7 @@ namespace RiskOfMagic.Editor
             codeField.text = string.Empty;
             codeField.characterLimit = 12;
             var join = H.Button(home, "JoinButton", "Rejoindre", 56f);
+            var options = H.Button(home, "OptionsButton", "Options", 52f);
             var quit = H.Button(home, "QuitButton", "Quitter", 52f);
             var status = H.Text(H.Rect("Status", root, H.Center, H.Center, new Vector2(0f, -340f), new Vector2(1000f, 60f)), null,
                 string.Empty, 22f, HudFont.Body, HudColor.Danger, TextAlignmentOptions.Center);
@@ -123,6 +124,8 @@ namespace RiskOfMagic.Editor
             Place(leave, H.BottomLeft, new Vector2(60f, 60f), new Vector2(260f, 56f));
             lobby.gameObject.SetActive(false);
 
+            var optionsMenu = BuildOptions(root);
+
             var controller = canvasGo.AddComponent<MainMenuController>();
             H.Props(controller, so =>
             {
@@ -134,6 +137,8 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("joinCodeField").objectReferenceValue = codeField;
                 so.FindProperty("joinButton").objectReferenceValue = join;
                 so.FindProperty("quitButton").objectReferenceValue = quit;
+                so.FindProperty("optionsButton").objectReferenceValue = options;
+                so.FindProperty("optionsMenu").objectReferenceValue = optionsMenu;
                 so.FindProperty("statusLabel").objectReferenceValue = status;
                 so.FindProperty("lobbyScreen").objectReferenceValue = lobby.gameObject;
                 so.FindProperty("codeLabel").objectReferenceValue = code;
@@ -150,6 +155,59 @@ namespace RiskOfMagic.Editor
             });
 
             EditorSceneManager.SaveScene(scene, ScenePath);
+        }
+
+        /// <summary>Options screen: rows are created at runtime by OptionsMenu from the two templates.</summary>
+        private static OptionsMenu BuildOptions(RectTransform root)
+        {
+            var panel = Panel(root, "Options", H.Center, H.Center, new Vector2(0f, -40f), new Vector2(900f, 900f), "Options");
+
+            var content = H.Rect("Content", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -66f), new Vector2(840f, 740f));
+            var layout = content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            layout.spacing = 2f;
+            layout.childControlWidth = layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.childAlignment = TextAnchor.UpperCenter;
+
+            var header = H.Text(content, "HeaderTemplate", "Section", 24f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.BottomLeft, stretch: false);
+            H.LayoutHeight(header.rectTransform, 34f);
+
+            var row = H.Rect("RowTemplate", content, H.Center, H.Center, Vector2.zero, new Vector2(0f, 34f));
+            H.LayoutHeight(row, 34f);
+            var label = H.Text(H.Rect("Label", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(10f, 0f), new Vector2(420f, 38f)), null,
+                "Option", 20f, HudFont.Body, HudColor.Text, TextAlignmentOptions.MidlineLeft);
+            var previous = H.Button(row, "Previous", "<", 0f);
+            Place(previous, new Vector2(1f, 0.5f), new Vector2(-330f, 0f), new Vector2(44f, 34f));
+            var value = H.Text(H.Rect("Value", row, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-58f, 0f), new Vector2(260f, 38f)), null,
+                "Valeur", 20f, HudFont.Body, HudColor.Accent, TextAlignmentOptions.Center);
+            var next = H.Button(row, "Next", ">", 0f);
+            Place(next, new Vector2(1f, 0.5f), new Vector2(-6f, 0f), new Vector2(44f, 34f));
+            var optionRow = row.gameObject.AddComponent<OptionRow>();
+            H.Props(optionRow, so =>
+            {
+                so.FindProperty("label").objectReferenceValue = label;
+                so.FindProperty("valueLabel").objectReferenceValue = value;
+                so.FindProperty("previousButton").objectReferenceValue = previous;
+                so.FindProperty("nextButton").objectReferenceValue = next;
+            });
+
+            var reset = H.Button(panel, "ResetButton", "Par défaut", 0f);
+            Place(reset, H.BottomCenter, new Vector2(-150f, 24f), new Vector2(260f, 56f));
+            var back = H.Button(panel, "BackButton", "Retour", 0f);
+            Place(back, H.BottomCenter, new Vector2(150f, 24f), new Vector2(260f, 56f));
+
+            var menu = panel.gameObject.AddComponent<OptionsMenu>();
+            H.Props(menu, so =>
+            {
+                so.FindProperty("content").objectReferenceValue = content;
+                so.FindProperty("headerTemplate").objectReferenceValue = header;
+                so.FindProperty("rowTemplate").objectReferenceValue = optionRow;
+                so.FindProperty("resetButton").objectReferenceValue = reset;
+                so.FindProperty("backButton").objectReferenceValue = back;
+            });
+            panel.gameObject.SetActive(false);
+            return menu;
         }
 
         private static RectTransform Panel(RectTransform parent, string name, Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size, string title)

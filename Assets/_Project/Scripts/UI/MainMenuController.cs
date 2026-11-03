@@ -27,7 +27,9 @@ namespace RiskOfMagic.UI
         [SerializeField] private UnityEngine.UI.Button hostButton;
         [SerializeField] private TMP_InputField joinCodeField;
         [SerializeField] private UnityEngine.UI.Button joinButton;
+        [SerializeField] private UnityEngine.UI.Button optionsButton;
         [SerializeField] private UnityEngine.UI.Button quitButton;
+        [SerializeField] private OptionsMenu optionsMenu;
         [SerializeField] private TMP_Text statusLabel;
 
         [Header("Lobby")]
@@ -61,6 +63,9 @@ namespace RiskOfMagic.UI
             AddListener(hostButton, () => _ = HostOnline());
             AddListener(joinButton, () => _ = JoinOnline());
             AddListener(quitButton, Application.Quit);
+            AddListener(optionsButton, OpenOptions);
+            if (optionsMenu != null)
+                optionsMenu.gameObject.SetActive(false);
             AddListener(copyCodeButton, () => GUIUtility.systemCopyBuffer = OnlineSessions.Service?.JoinCode ?? string.Empty);
             AddListener(normalButton, () => SetDifficulty(DifficultyLevel.Normal));
             AddListener(hardButton, () => SetDifficulty(DifficultyLevel.Hard));
@@ -137,6 +142,14 @@ namespace RiskOfMagic.UI
             {
                 SetBusy(false);
             }
+        }
+
+        private void OpenOptions()
+        {
+            if (optionsMenu == null)
+                return;
+            homeScreen.SetActive(false);
+            optionsMenu.Open(() => homeScreen.SetActive(true));
         }
 
         private void OnHosting()

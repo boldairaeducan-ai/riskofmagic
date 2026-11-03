@@ -1,3 +1,4 @@
+using RiskOfMagic.Settings;
 using UnityEngine;
 
 namespace RiskOfMagic.Player
@@ -49,6 +50,12 @@ namespace RiskOfMagic.Player
         public void SetLocal(bool local)
         {
             isLocal = local;
+            GameSettings.Changed -= ApplySettings;
+            if (local)
+            {
+                GameSettings.Changed += ApplySettings;
+                ApplySettings();
+            }
             if (playerCamera != null)
             {
                 playerCamera.enabled = local;
@@ -74,14 +81,23 @@ namespace RiskOfMagic.Player
             if (!IsCursorLocked)
                 return;
 
-            Vector2 delta = input.LookPointerDelta * mouseSensitivity + input.LookStick * (stickSensitivity * Time.deltaTime);
+            Vector2 delta = input.LookPointerDelta * (mouseSensitivity * GameSettings.MouseSensitivity)
+                            + input.LookStick * (stickSensitivity * GameSettings.StickSensitivity * Time.deltaTime);
             transform.Rotate(0f, delta.x, 0f, Space.Self);
-            pitch = Mathf.Clamp(pitch + (invertY ? delta.y : -delta.y), minPitch, maxPitch);
+            bool invert = invertY != GameSettings.InvertY;
+            pitch = Mathf.Clamp(pitch + (invert ? delta.y : -delta.y), minPitch, maxPitch);
             cameraPivot.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+        }
+
+        private void ApplySettings()
+        {
+            if (playerCamera != null)
+                playerCamera.fieldOfView = GameSettings.FieldOfView;
         }
 
         private void OnDestroy()
         {
+            GameSettings.Changed -= ApplySettings;
             if (isLocal)
                 SetCursorLocked(false);
         }

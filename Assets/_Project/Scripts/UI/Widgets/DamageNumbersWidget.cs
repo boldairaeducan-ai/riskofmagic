@@ -46,7 +46,7 @@ namespace RiskOfMagic.UI
         private void OnAnyDamaged(Health victim, DamageInfo info)
         {
             var local = PlayerAvatar.Local;
-            if (local == null || victim == null || info.Amount <= 0f || theme == null)
+            if (local == null || victim == null || info.Amount <= 0f || theme == null || !RiskOfMagic.Settings.GameSettings.ShowDamageNumbers)
                 return;
 
             bool taken = victim == local.Health;
