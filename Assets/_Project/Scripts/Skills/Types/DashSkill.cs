@@ -28,6 +28,7 @@ namespace RiskOfMagic.Skills.Types
         [Min(0.1f)] public float damageRadius = 1.6f;
         public DamageType damageType = DamageType.Physical;
         [Min(0.02f)] public float damageTickInterval = 0.05f;
+        [Tooltip("Optional damage over time applied on contact.")] public DotEffect dot;
 
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
         {
@@ -60,7 +61,7 @@ namespace RiskOfMagic.Skills.Types
             var wait = new WaitForSeconds(damageTickInterval);
             while (Time.time < end && context.Avatar.IsAlive)
             {
-                context.DamageArea(context.BodyCenter, damageRadius, damageCoefficient, damageType, alreadyHit);
+                context.DamageArea(context.BodyCenter, damageRadius, damageCoefficient, damageType, alreadyHit, dot);
                 yield return wait;
             }
         }

@@ -73,6 +73,8 @@ namespace RiskOfMagic.Run
                 return;
             if (RunDifficulty.Instance != null)
                 RunDifficulty.Instance.CompleteStage();
+            foreach (var player in PlayerAvatar.All)
+                player.Wallet.ResetGold(); // gold doesn't carry over between stages
             ResetStage(fullHeal: false);
             stageNumber.Value++;
         }

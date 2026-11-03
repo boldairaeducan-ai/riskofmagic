@@ -50,13 +50,14 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt };
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart;
+            public DotEffect Poison;
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -75,7 +76,7 @@ namespace RiskOfMagic.Editor
             var items = BuildItems(projectiles, vfx);
 
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
-            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning, vfx.Telegraph });
+            catalog.EditorSet(characters, projectiles.All, items, new List<GameObject> { vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst });
             EditorUtility.SetDirty(catalog);
 
             var pickup = BuildPickupPrefab();
@@ -148,6 +149,8 @@ namespace RiskOfMagic.Editor
                 FireBurst = EffectPrefab("VFX_FireBurst", PrimitiveType.Sphere, Vector3.one * 6f, Vector3.zero, new Color(1f, 0.45f, 0.1f), 0.25f),
                 // Ground marker of artillery impacts: lives for windup + flight.
                 ArcaneBurst = EffectPrefab("VFX_ArcaneBurst", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.05f, 0f), new Color(0.75f, 0.4f, 1f), 0.3f),
+                PoisonCloud = EffectPrefab("VFX_PoisonCloud", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.07f, 0f), new Color(0.45f, 0.85f, 0.25f), 0.45f),
+                PoisonBurst = EffectPrefab("VFX_PoisonBurst", PrimitiveType.Sphere, Vector3.one * 2f, Vector3.zero, new Color(0.5f, 1f, 0.3f), 0.25f),
                 TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
                 Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f)
             };
@@ -164,7 +167,8 @@ namespace RiskOfMagic.Editor
                 EnemyBolt = ProjectileAsset("Projectile_EnemyBolt", new Color(0.4f, 1f, 0.3f), 0.3f, vfx.Impact),
                 ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact),
                 Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst),
-                ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact)
+                ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact),
+                PoisonDart = ProjectileAsset("Projectile_PoisonDart", new Color(0.45f, 0.9f, 0.2f), 0.15f, vfx.Impact)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -178,6 +182,17 @@ namespace RiskOfMagic.Editor
             Configure(set.ArcaneBolt, speed: 30f, gravity: 0f, lifetime: 3f, radius: 0.25f);
             set.ArcaneBolt.homingTurnRate = 420f;
             EditorUtility.SetDirty(set.ArcaneBolt);
+
+            set.Poison = Asset<DotEffect>(ProjectilesFolder + "/Dot_Poison.asset");
+            set.Poison.damageType = DamageType.Poison;
+            set.Poison.tickDamageFraction = 0.25f;
+            set.Poison.tickInterval = 0.5f;
+            set.Poison.duration = 4f;
+            set.Poison.maxStacks = 10;
+            EditorUtility.SetDirty(set.Poison);
+
+            Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
+            set.PoisonDart.dot = set.Poison;
             return set;
         }
 
@@ -192,6 +207,7 @@ namespace RiskOfMagic.Editor
             p.explosionRadius = explosion;
             p.explodeOnExpire = explodeOnExpire;
             p.homingTurnRate = 0f;
+            p.dot = null;
             EditorUtility.SetDirty(p);
         }
 
@@ -307,7 +323,48 @@ namespace RiskOfMagic.Editor
             timeLock.castVfxAnchor = VfxAnchor.Caster;
             timeLock.castVfxScale = 20f;
 
-            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock })
+            // Druid (poison, damage over time)
+            var dart = Skill<ProjectileSkill>("Druid_PoisonDart", "Dard empoisonné",
+                "Dards rapides : 70% + poison (8 ticks de 25%, cumulable 10 fois).",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.3f, attackSpeed: true);
+            dart.projectile = p.PoisonDart;
+            dart.damageType = DamageType.Poison;
+            dart.damageCoefficient = 0.7f;
+
+            var cloud = Skill<AreaSkill>("Druid_ToxicCloud", "Nuage toxique", "Nuage ciblé pendant 5 s : 30% par tick + poison.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
+            cloud.center = AreaCenter.AimPoint;
+            cloud.maxRange = 35f;
+            cloud.radius = 5f;
+            cloud.ticks = 10;
+            cloud.tickInterval = 0.5f;
+            cloud.damageCoefficient = 0.3f;
+            cloud.damageType = DamageType.Poison;
+            cloud.dot = p.Poison;
+            cloud.tickVfx = vfx.PoisonCloud;
+
+            var leap = Skill<DashSkill>("Druid_WildLeap", "Bond sylvestre", "Bond en avant, empoisonne les ennemis traversés.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0.2f);
+            leap.direction = DashDirection.AimFlat;
+            leap.speed = 22f;
+            leap.duration = 0.35f;
+            leap.ignoreGravity = false;
+            leap.upwardVelocity = 7f;
+            leap.damageCoefficient = 1f;
+            leap.damageRadius = 2f;
+            leap.damageType = DamageType.Poison;
+            leap.dot = p.Poison;
+            leap.keepsSprint = true;
+
+            var bloom = Skill<DetonateDotsSkill>("Druid_FatalBloom", "Floraison fatale",
+                "Fait éclater tous les poisons à 25 m : 150% des dégâts de poison restants, instantanément.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
+            bloom.dotType = DamageType.Poison;
+            bloom.radius = 25f;
+            bloom.damageMultiplier = 1.5f;
+            bloom.burstVfx = vfx.PoisonBurst;
+
+            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, dart, cloud, leap, bloom })
                 EditorUtility.SetDirty(skill);
 
             return new List<CharacterDefinition>
@@ -317,7 +374,9 @@ namespace RiskOfMagic.Editor
                 Character("Character_Warrior", "Guerrier", "Robuste, combat au corps à corps.", new Color(0.8f, 0.3f, 0.25f),
                     130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
-                    90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock)
+                    90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock),
+                Character("Character_Druid", "Druide", "Poisons cumulables et dégâts sur la durée.", new Color(0.25f, 0.55f, 0.2f),
+                    100f, Movement("Movement_Druid", 7.2f, 1), dart, cloud, leap, bloom)
             };
         }
 

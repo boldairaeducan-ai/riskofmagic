@@ -29,6 +29,7 @@ namespace RiskOfMagic.Skills.Types
         [Min(0f)] public float initialDelay;
         [Min(0f)] public float tickInterval = 0.2f;
         public bool hitOncePerTarget;
+        [Tooltip("Optional damage over time applied on each tick.")] public DotEffect dot;
 
         [Header("Knockback (enemies)")]
         [Min(0f), Tooltip("Distance enemies are pushed away from the center on each tick.")] public float knockbackDistance;
@@ -86,7 +87,7 @@ namespace RiskOfMagic.Skills.Types
                 if (center == AreaCenter.Caster && !context.Avatar.IsAlive)
                     yield break;
                 Vector3 tickCenter = GetCenter(context, target);
-                context.DamageArea(tickCenter + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit);
+                context.DamageArea(tickCenter + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit, dot);
                 if (knockbackDistance > 0f)
                     Knockback(context, tickCenter);
                 if (i < ticks - 1)

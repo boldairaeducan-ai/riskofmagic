@@ -22,5 +22,6 @@ namespace RiskOfMagic.Combat.Projectiles
         [Min(0f)] public float explosionRadius;
         public bool explodeOnExpire;
         public LayerMask hitMask = Physics.DefaultRaycastLayers;
+        [Tooltip("Optional damage over time applied by direct hits and the explosion.")] public DotEffect dot;
     }
 }

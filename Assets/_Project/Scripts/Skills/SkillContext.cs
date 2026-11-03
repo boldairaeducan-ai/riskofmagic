@@ -44,8 +44,8 @@ namespace RiskOfMagic.Skills
         }
 
         /// <summary>Server side.</summary>
-        public int DamageArea(Vector3 center, float radius, float coefficient, DamageType type, HashSet<Health> alreadyHit = null)
-            => AreaDamage.Apply(center, radius, CreateDamage(coefficient, type, center), HitMask, alreadyHit);
+        public int DamageArea(Vector3 center, float radius, float coefficient, DamageType type, HashSet<Health> alreadyHit = null, DotEffect dot = null)
+            => AreaDamage.Apply(center, radius, CreateDamage(coefficient, type, center), HitMask, alreadyHit, dot);
 
         /// <summary>Server side: authoritative projectile, replicated to other clients.</summary>
         public void FireProjectile(ProjectileDefinition projectile, Vector3 origin, Vector3 direction, float coefficient, DamageType type, float scale = 1f)

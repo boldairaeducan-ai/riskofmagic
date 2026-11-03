@@ -109,6 +109,8 @@ namespace RiskOfMagic.Combat.Projectiles
                         info.Point = point;
                         info.Direction = direction;
                         target.ApplyDamage(info);
+                        if (definition.dot != null)
+                            DotSystem.Apply(target.Health, definition.dot, info);
                     }
 
                     if (pierced < definition.pierceCount)
@@ -131,7 +133,7 @@ namespace RiskOfMagic.Combat.Projectiles
             if (authoritative && definition.explosionRadius > 0f)
             {
                 var info = damage;
-                AreaDamage.Apply(point, definition.explosionRadius * scale, info, definition.hitMask, damaged);
+                AreaDamage.Apply(point, definition.explosionRadius * scale, info, definition.hitMask, damaged, definition.dot);
             }
             VfxUtility.Spawn(definition.impactVfx, point, Quaternion.identity, scale);
             Release();

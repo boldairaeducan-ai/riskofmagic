@@ -12,7 +12,7 @@ namespace RiskOfMagic.Combat
         /// Server only. Damages every hostile Health in the sphere once (weak points ignored).
         /// <paramref name="alreadyHit"/> lets multi-tick effects hit each target only once.
         /// </summary>
-        public static int Apply(Vector3 center, float radius, DamageInfo template, LayerMask mask, HashSet<Health> alreadyHit = null)
+        public static int Apply(Vector3 center, float radius, DamageInfo template, LayerMask mask, HashSet<Health> alreadyHit = null, DotEffect dot = null)
         {
             int count = Physics.OverlapSphereNonAlloc(center, radius, buffer, mask, QueryTriggerInteraction.Ignore);
             hitThisCall.Clear();
@@ -32,12 +32,14 @@ namespace RiskOfMagic.Combat
                 info.Point = buffer[i].ClosestPoint(center);
                 info.Direction = (info.Point - center).normalized;
                 health.ApplyDamage(info);
+                if (dot != null)
+                    DotSystem.Apply(health, dot, info);
                 applied++;
             }
             return applied;
         }
 
-        public static int Apply(Vector3 center, float radius, DamageInfo template, HashSet<Health> alreadyHit = null)
-            => Apply(center, radius, template, Physics.DefaultRaycastLayers, alreadyHit);
+        public static int Apply(Vector3 center, float radius, DamageInfo template, HashSet<Health> alreadyHit = null, DotEffect dot = null)
+            => Apply(center, radius, template, Physics.DefaultRaycastLayers, alreadyHit, dot);
     }
 }
