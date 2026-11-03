@@ -48,6 +48,10 @@ namespace RiskOfMagic.Run
             }
         }
 
+        /// <summary>Coefficient without the player-count factor: 1 at the start of a run whatever the number of players.</summary>
+        public float Progress => Coefficient / PlayerFactor;
+        public static float CurrentProgress => Instance != null && Instance.IsSpawned ? Instance.Progress : 1f;
+
         public int EnemyLevel => Mathf.Clamp(1 + Mathf.FloorToInt((Coefficient - PlayerFactor) / levelStep), 1, maxEnemyLevel);
 
         public override void OnNetworkSpawn()

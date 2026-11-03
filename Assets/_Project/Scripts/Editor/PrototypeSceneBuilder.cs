@@ -106,13 +106,15 @@ namespace RiskOfMagic.Editor
 
             var cards = new List<SpawnCard>
             {
-                Card("SpawnCard_Ghoul", ghoul, 10, 1f, 0f),
-                Card("SpawnCard_Wolf", wolf, 7, 1f, 0f),
-                Card("SpawnCard_Assassin", assassin, 14, 0.6f, 0f),
-                Card("SpawnCard_Pyromancer", pyromancer, 16, 0.5f, 0f),
-                Card("SpawnCard_Ogre", ogre, 28, 0.4f, 1.25f),
+                // Min "progress" (difficulty without the player factor): ~1.2 ≈ 1.5 min, ~1.6 ≈ 4 min in Normal.
+                // Ghouls only at first, then variety unlocks over time.
+                Card("SpawnCard_Ghoul", ghoul, 10, 1.5f, 0f),
+                Card("SpawnCard_Wolf", wolf, 12, 0.35f, 1.2f),
+                Card("SpawnCard_Pyromancer", pyromancer, 16, 0.45f, 1.3f),
+                Card("SpawnCard_Assassin", assassin, 14, 0.4f, 1.45f),
+                Card("SpawnCard_Ogre", ogre, 28, 0.35f, 1.6f),
                 // Projectiles are hard to read in first person: archers stay rare and late.
-                Card("SpawnCard_SkeletonArcher", skeleton, 20, 0.15f, 1.6f)
+                Card("SpawnCard_SkeletonArcher", skeleton, 20, 0.15f, 1.9f)
             };
 
             var bossCards = new List<SpawnCard> { Card("SpawnCard_Boss_BoneColossus", colossus, 1, 1f, 0f) };
@@ -514,8 +516,8 @@ namespace RiskOfMagic.Editor
             });
             FinishEnemy(root, attack, dodge: so =>
             {
-                so.FindProperty("chanceOnHit").floatValue = 0.2f;
-                so.FindProperty("chanceWhenAimedAt").floatValue = 0.1f;
+                so.FindProperty("chanceOnHit").floatValue = 0.12f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.05f;
             });
             return SavePrefab(root, Prefabs + "/Enemy_Ghoul.prefab").GetComponent<EnemyActor>();
         }
@@ -523,7 +525,7 @@ namespace RiskOfMagic.Editor
         /// <summary>Fast pack hunter: flanks, then bounds at the player from mid range.</summary>
         private static EnemyActor BuildWolf()
         {
-            var def = EnemyDef("Enemy_Wolf", "Loup spectral", health: 40f, speed: 9f, gold: 6, detection: 35f);
+            var def = EnemyDef("Enemy_Wolf", "Loup spectral", health: 40f, speed: 7f, gold: 8, detection: 35f);
             def.movementStyle = EnemyMovementStyle.Flank;
             def.flankRadius = 7f;
             def.flankAngle = new Vector2(90f, 160f);
@@ -537,14 +539,14 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("cooldown").floatValue = 1.8f;
                 so.FindProperty("damage").floatValue = 9f;
                 so.FindProperty("windup").floatValue = 0.4f;
-                so.FindProperty("dashSpeed").floatValue = 20f;
+                so.FindProperty("dashSpeed").floatValue = 16f;
                 so.FindProperty("dashDuration").floatValue = 0.35f;
                 so.FindProperty("recovery").floatValue = 0.5f;
             });
             FinishEnemy(root, attack, dodge: so =>
             {
-                so.FindProperty("chanceOnHit").floatValue = 0.15f;
-                so.FindProperty("chanceWhenAimedAt").floatValue = 0.2f;
+                so.FindProperty("chanceOnHit").floatValue = 0.1f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.1f;
                 so.FindProperty("distance").floatValue = 5f;
             });
             return SavePrefab(root, Prefabs + "/Enemy_Wolf.prefab").GetComponent<EnemyActor>();
@@ -569,9 +571,9 @@ namespace RiskOfMagic.Editor
             });
             FinishEnemy(root, attack, dodge: so =>
             {
-                so.FindProperty("chanceOnHit").floatValue = 0.5f;
-                so.FindProperty("chanceWhenAimedAt").floatValue = 0.45f;
-                so.FindProperty("cooldown").floatValue = 1.6f;
+                so.FindProperty("chanceOnHit").floatValue = 0.3f;
+                so.FindProperty("chanceWhenAimedAt").floatValue = 0.25f;
+                so.FindProperty("cooldown").floatValue = 2.5f;
                 so.FindProperty("distance").floatValue = 5f;
                 so.FindProperty("backwardBias").floatValue = 0f;
             });

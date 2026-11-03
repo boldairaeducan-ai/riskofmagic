@@ -14,9 +14,9 @@ namespace RiskOfMagic.Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyDodge : MonoBehaviour
     {
-        [SerializeField, Range(0f, 1f)] private float chanceOnHit = 0.25f;
+        [SerializeField, Range(0f, 1f)] private float chanceOnHit = 0.15f;
         [SerializeField, Range(0f, 1f), Tooltip("Chance per check while the target looks at this enemy.")]
-        private float chanceWhenAimedAt = 0.2f;
+        private float chanceWhenAimedAt = 0.1f;
         [SerializeField, Min(0.05f)] private float aimCheckInterval = 0.5f;
         [SerializeField, Range(1f, 45f)] private float aimConeAngle = 8f;
         [SerializeField, Min(0f)] private float aimMaxDistance = 25f;
@@ -24,7 +24,7 @@ namespace RiskOfMagic.Enemies
         [Header("Sidestep")]
         [SerializeField, Min(0.5f)] private float distance = 4.5f;
         [SerializeField, Min(0.05f)] private float duration = 0.25f;
-        [SerializeField, Min(0f)] private float cooldown = 2.5f;
+        [SerializeField, Min(0f)] private float cooldown = 3.5f;
         [SerializeField, Range(0f, 1f), Tooltip("How much the dodge also moves away from the threat.")] private float backwardBias = 0.3f;
 
         private NavMeshAgent agent;

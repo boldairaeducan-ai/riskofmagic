@@ -10,6 +10,7 @@ namespace RiskOfMagic.Run
         public EnemyActor prefab;
         [Min(1)] public int cost = 10;
         [Min(0f)] public float weight = 1f;
-        [Min(0f), Tooltip("Not available before this difficulty coefficient.")] public float minCoefficient;
+        [Min(0f), Tooltip("Not available before this run progress (difficulty coefficient without the player factor, 1 at start).")]
+        public float minCoefficient;
     }
 }

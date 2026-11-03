@@ -122,7 +122,7 @@ namespace RiskOfMagic.Run
 
             while (EnemyActor.Active.Count < maxAliveEnemies)
             {
-                var card = PickCard(budget, coefficient);
+                var card = PickCard(budget, RunDifficulty.CurrentProgress);
                 if (card == null || !bounds.TryGetRandomPoint(out var position, populationMinDistanceFromSpawns,
                         p => StageBounds.IsFarFrom(p, populationPoints, populationMinSpacing)))
                     break;
@@ -176,7 +176,7 @@ namespace RiskOfMagic.Run
 
         private void SpawnWave(float coefficient)
         {
-            var card = PickCard(credits, coefficient);
+            var card = PickCard(credits, RunDifficulty.CurrentProgress);
             if (card == null)
             {
                 Diagnose($"No affordable card (credits {credits:0}, coefficient {coefficient:0.00}).");
@@ -211,13 +211,13 @@ namespace RiskOfMagic.Run
             Debug.Log($"[CombatDirector] {message}", this);
         }
 
-        private SpawnCard PickCard(float budget, float coefficient)
+        private SpawnCard PickCard(float budget, float progress)
         {
             candidates.Clear();
             float totalWeight = 0f;
             foreach (var card in cards)
             {
-                if (card == null || card.prefab == null || card.cost > budget || coefficient < card.minCoefficient || card.weight <= 0f)
+                if (card == null || card.prefab == null || card.cost > budget || progress < card.minCoefficient || card.weight <= 0f)
                     continue;
                 candidates.Add(card);
                 totalWeight += card.weight;
