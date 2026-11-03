@@ -21,6 +21,8 @@ namespace RiskOfMagic.Skills
         public Vector3 Target;
         public float Charge;
         public byte Step;
+        /// <summary>Owner-selected targets (NetworkObjectIds), e.g. lock-on skills. Never null once serialized.</summary>
+        public ulong[] TargetIds;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -29,6 +31,9 @@ namespace RiskOfMagic.Skills
             serializer.SerializeValue(ref Target);
             serializer.SerializeValue(ref Charge);
             serializer.SerializeValue(ref Step);
+            if (serializer.IsWriter && TargetIds == null)
+                TargetIds = System.Array.Empty<ulong>();
+            serializer.SerializeValue(ref TargetIds);
         }
     }
 }

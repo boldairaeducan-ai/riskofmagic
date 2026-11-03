@@ -8,13 +8,13 @@ namespace RiskOfMagic.UI
     public enum HudSprite : byte
     {
         Panel, Frame, BarBackground, BarFill, SlotFrame, CooldownOverlay, Crosshair, Button, InputField,
-        GoldIcon, DefaultSkillIcon, DefaultItemIcon, DefaultPortrait
+        GoldIcon, DefaultSkillIcon, DefaultItemIcon, DefaultPortrait, LockOn
     }
 
     public enum HudColor : byte
     {
         Panel, Frame, Text, TextMuted, Accent, BarBackground, Health, HealthLow, HealthTrail, Gold,
-        CooldownOverlay, Charge, Button, ButtonSelected, Danger, Icon, Overlay
+        CooldownOverlay, Charge, Button, ButtonSelected, Danger, Icon, Overlay, LockOn
     }
 
     public enum HudFont : byte
@@ -48,6 +48,7 @@ namespace RiskOfMagic.UI
         public Sprite defaultSkillIcon;
         public Sprite defaultItemIcon;
         public Sprite defaultPortrait;
+        [Tooltip("Marker drawn on enemies locked by lock-on skills.")] public Sprite lockOnMarker;
 
         [Header("Colors")]
         public Color panelColor = new(0.05f, 0.05f, 0.08f, 0.75f);
@@ -67,6 +68,7 @@ namespace RiskOfMagic.UI
         public Color dangerColor = new(0.85f, 0.15f, 0.15f, 1f);
         public Color iconColor = Color.white;
         public Color overlayColor = new(0.3f, 0f, 0f, 0.45f);
+        public Color lockOnColor = new(0.8f, 0.5f, 1f, 0.9f);
 
         [Header("Damage numbers")]
         public Color damagePhysical = Color.white;
@@ -102,6 +104,7 @@ namespace RiskOfMagic.UI
             HudSprite.DefaultSkillIcon => defaultSkillIcon,
             HudSprite.DefaultItemIcon => defaultItemIcon,
             HudSprite.DefaultPortrait => defaultPortrait,
+            HudSprite.LockOn => lockOnMarker,
             _ => null
         };
 
@@ -124,6 +127,7 @@ namespace RiskOfMagic.UI
             HudColor.Danger => dangerColor,
             HudColor.Icon => iconColor,
             HudColor.Overlay => overlayColor,
+            HudColor.LockOn => lockOnColor,
             _ => Color.magenta
         };
 

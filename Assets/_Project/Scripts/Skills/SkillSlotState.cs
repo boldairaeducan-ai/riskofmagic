@@ -19,6 +19,8 @@ namespace RiskOfMagic.Skills
         public bool HasStock => Stock > 0;
         public int Step { get; set; }
         public float LastActivationTime { get; set; } = float.NegativeInfinity;
+        /// <summary>Owner-side per-cast scratch list (lock-on targets).</summary>
+        public System.Collections.Generic.List<ulong> LockedTargets { get; } = new();
 
         public float GetCooldown(float multiplier) => Definition.cooldown * multiplier;
 

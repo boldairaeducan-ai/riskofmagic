@@ -45,6 +45,12 @@ namespace RiskOfMagic.Skills
         /// <summary>Owner side gate (e.g. needs a target).</summary>
         public virtual bool CanActivate(SkillContext context, SkillSlotState state) => true;
 
+        /// <summary>Owner side: a Charge-mode skill starts charging.</summary>
+        public virtual void OnChargeStarted(SkillContext context, SkillSlotState state) { }
+
+        /// <summary>Owner side: every frame while charging (charge in [0,1]).</summary>
+        public virtual void OnChargeTick(SkillContext context, SkillSlotState state, float charge) { }
+
         /// <summary>Owner side: finalize the activation sent to the server.</summary>
         public virtual void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation) { }
 

@@ -26,12 +26,13 @@ namespace RiskOfMagic.Enemies
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         [SerializeField] private Color frozenTint = new(0.45f, 0.75f, 1f);
+        [SerializeField] private Color poisonedTint = new(0.35f, 0.85f, 0.25f);
 
         private readonly NetworkVariable<int> level = new(1);
         private readonly NetworkVariable<double> frozenUntil = new();
         private Renderer[] renderers;
         private MaterialPropertyBlock propertyBlock;
-        private bool frozenVisual;
+        private Color? currentTint;
         private Collider[] colliders;
         private int pendingLevel = 1;
 
@@ -98,21 +99,28 @@ namespace RiskOfMagic.Enemies
 
         private void Update()
         {
-            bool frozen = IsFrozen && Health.IsAlive;
-            if (frozen == frozenVisual)
+            Color? tint = null;
+            if (IsSpawned && Health.IsAlive)
+            {
+                if (IsFrozen)
+                    tint = frozenTint;
+                else if (Health.HasDot(DamageType.Poison))
+                    tint = poisonedTint;
+            }
+            if (tint == currentTint)
                 return;
-            frozenVisual = frozen;
+            currentTint = tint;
 
             propertyBlock ??= new MaterialPropertyBlock();
             foreach (var r in renderers)
             {
                 if (r == null)
                     continue;
-                if (frozen)
+                if (tint.HasValue)
                 {
                     r.GetPropertyBlock(propertyBlock);
-                    propertyBlock.SetColor(ColorId, frozenTint);
-                    propertyBlock.SetColor(BaseColorId, frozenTint);
+                    propertyBlock.SetColor(ColorId, tint.Value);
+                    propertyBlock.SetColor(BaseColorId, tint.Value);
                     r.SetPropertyBlock(propertyBlock);
                 }
                 else

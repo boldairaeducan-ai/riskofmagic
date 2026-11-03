@@ -93,6 +93,7 @@ namespace RiskOfMagic.Skills
             if (chargingSlot >= 0)
             {
                 var charging = (SkillSlot)chargingSlot;
+                slots[chargingSlot].Definition.OnChargeTick(Context, slots[chargingSlot], ChargeProgress);
                 if (!input.IsSkillHeld(charging))
                 {
                     float charge = ChargeProgress;
@@ -119,6 +120,7 @@ namespace RiskOfMagic.Skills
                 {
                     chargingSlot = i;
                     chargeStartTime = Time.time;
+                    definition.OnChargeStarted(Context, state);
                     if (!definition.keepsSprint)
                         avatar.Motor.CancelSprint();
                 }

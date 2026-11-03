@@ -18,6 +18,7 @@ namespace RiskOfMagic.Combat
         private readonly NetworkVariable<float> max = new();
         private readonly NetworkVariable<double> shieldUntil = new();
         private readonly NetworkVariable<float> shieldReduction = new();
+        private readonly NetworkVariable<int> dotMask = new();
 
         /// <summary>(current, max)</summary>
         public event Action<float, float> HealthChanged;
@@ -46,6 +47,17 @@ namespace RiskOfMagic.Combat
         public float Max => max.Value;
         public float Normalized => max.Value > 0f ? current.Value / max.Value : 0f;
         public bool IsAlive => current.Value > 0f;
+        /// <summary>Bit per DamageType with an active damage over time (replicated, for visuals).</summary>
+        public int DotMask => dotMask.Value;
+        public bool HasDot(DamageType type) => (dotMask.Value & (1 << (int)type)) != 0;
+
+        /// <summary>Server only (DotSystem).</summary>
+        public void SetDotMask(int mask)
+        {
+            if (IsServer && IsSpawned && dotMask.Value != mask)
+                dotMask.Value = mask;
+        }
+
         public bool IsShielded => IsSpawned && NetworkManager.ServerTime.Time < shieldUntil.Value;
         public float ShieldTimeRemaining => IsShielded ? (float)(shieldUntil.Value - NetworkManager.ServerTime.Time) : 0f;
 

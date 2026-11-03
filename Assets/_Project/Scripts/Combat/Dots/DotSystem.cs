@@ -58,6 +58,18 @@ namespace RiskOfMagic.Combat
                 dots[oldest] = dot;
             else
                 dots.Add(dot);
+            RefreshMask(target);
+        }
+
+        private static void RefreshMask(Health target)
+        {
+            if (target == null)
+                return;
+            int mask = 0;
+            foreach (var dot in dots)
+                if (dot.Target == target)
+                    mask |= 1 << (int)dot.Tick.Type;
+            target.SetDotMask(mask);
         }
 
         public static int CountStacks(Health target, DamageType type)
@@ -83,6 +95,7 @@ namespace RiskOfMagic.Combat
                 remaining += ticksLeft * dot.Tick.Amount;
                 dots.RemoveAt(i);
             }
+            RefreshMask(target);
             return remaining;
         }
 
@@ -117,9 +130,14 @@ namespace RiskOfMagic.Combat
                 if (i >= dots.Count)
                     continue;
                 if (now >= dot.EndTime || !dot.Target.IsAlive)
+                {
                     dots.RemoveAt(i);
+                    RefreshMask(dot.Target);
+                }
                 else
+                {
                     dots[i] = dot;
+                }
             }
         }
 

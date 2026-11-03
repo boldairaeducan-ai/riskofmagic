@@ -68,6 +68,7 @@ namespace RiskOfMagic.Editor
             var worldLayer = Stretch("WorldLayer", rootRect);
             BuildPickupLabels(worldLayer);
             BuildDamageNumbers(worldLayer);
+            BuildLockOn(worldLayer);
 
             var gameplay = Stretch("Gameplay", rootRect);
             var gameplayGroup = gameplay.gameObject.AddComponent<CanvasGroup>();
@@ -100,7 +101,15 @@ namespace RiskOfMagic.Editor
         {
             var existing = AssetDatabase.LoadAssetAtPath<HudTheme>(ThemePath);
             if (existing != null)
+            {
+                // Slots added after the theme was created: give them a placeholder, never override user art.
+                if (existing.lockOnMarker == null)
+                {
+                    existing.lockOnMarker = BuiltinSprite("UI/Skin/Knob.psd");
+                    EditorUtility.SetDirty(existing);
+                }
                 return existing;
+            }
 
             var created = ScriptableObject.CreateInstance<HudTheme>();
             // Unity built-in placeholders: replace them with real art in the asset.
@@ -110,6 +119,7 @@ namespace RiskOfMagic.Editor
             created.button = BuiltinSprite("UI/Skin/UISprite.psd");
             created.inputField = BuiltinSprite("UI/Skin/InputFieldBackground.psd");
             created.crosshair = BuiltinSprite("UI/Skin/Knob.psd");
+            created.lockOnMarker = BuiltinSprite("UI/Skin/Knob.psd");
             AssetDatabase.CreateAsset(created, ThemePath);
             return created;
         }
@@ -407,6 +417,32 @@ namespace RiskOfMagic.Editor
             {
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("template").objectReferenceValue = template;
+            });
+        }
+
+        private static void BuildLockOn(RectTransform parent)
+        {
+            var layer = Stretch("LockOn", parent);
+
+            var marker = Rect("LockMarkerTemplate", layer, Center, Center, Vector2.zero, new Vector2(46f, 46f));
+            Themed(marker, HudSprite.LockOn, HudColor.LockOn);
+            Text(Rect("Count", marker, BottomRight, TopLeft, new Vector2(-4f, 4f), new Vector2(60f, 28f)), null,
+                string.Empty, 22f, HudFont.Numbers, HudColor.LockOn, TextAlignmentOptions.TopLeft);
+
+            var next = Rect("NextTargetMarker", layer, Center, Center, Vector2.zero, new Vector2(30f, 30f));
+            var nextImage = Themed(next, HudSprite.LockOn, HudColor.LockOn, applyColor: false);
+            nextImage.color = new Color(1f, 1f, 1f, 0.35f);
+
+            var counter = Text(Rect("Counter", layer, Center, Center, new Vector2(0f, -72f), new Vector2(420f, 30f)), null,
+                string.Empty, 20f, HudFont.Body, HudColor.LockOn, TextAlignmentOptions.Center);
+
+            var widget = layer.gameObject.AddComponent<LockOnWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("markerTemplate").objectReferenceValue = marker;
+                so.FindProperty("nextTargetMarker").objectReferenceValue = next;
+                so.FindProperty("counterLabel").objectReferenceValue = counter;
             });
         }
 
