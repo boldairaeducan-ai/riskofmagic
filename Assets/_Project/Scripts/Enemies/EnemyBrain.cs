@@ -167,7 +167,7 @@ namespace RiskOfMagic.Enemies
         /// <summary>Server only. Makes this enemy (and optionally its allies) chase the player from now on.</summary>
         public void Alert(PlayerAvatar player, bool propagate = true)
         {
-            if (!IsServer || player == null || !player.IsAlive || State == EnemyState.Dead || !knownPlayers.Add(player))
+            if (!IsServer || player == null || !player.IsStanding || State == EnemyState.Dead || !knownPlayers.Add(player))
                 return;
             if (!propagate || Definition == null || Definition.alertAlliesRadius <= 0f)
                 return;
@@ -209,7 +209,7 @@ namespace RiskOfMagic.Enemies
             if (!agent.enabled || !agent.isOnNavMesh)
                 return;
 
-            if (Time.time >= nextPerception || (Target != null && !Target.IsAlive))
+            if (Time.time >= nextPerception || (Target != null && !Target.IsStanding))
             {
                 nextPerception = Time.time + perceptionInterval;
                 Perceive();
@@ -253,7 +253,7 @@ namespace RiskOfMagic.Enemies
 
             foreach (var player in PlayerAvatar.All)
             {
-                if (!player.IsAlive || knownPlayers.Contains(player))
+                if (!player.IsStanding || knownPlayers.Contains(player))
                     continue;
                 if ((player.transform.position - transform.position).sqrMagnitude > rangeSqr)
                     continue;
@@ -269,7 +269,7 @@ namespace RiskOfMagic.Enemies
             float bestSqr = float.MaxValue;
             foreach (var player in knownPlayers)
             {
-                if (!player.IsAlive)
+                if (!player.IsStanding)
                     continue;
                 float sqr = (player.transform.position - transform.position).sqrMagnitude;
                 if (sqr < bestSqr)

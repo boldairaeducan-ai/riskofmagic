@@ -33,6 +33,7 @@ namespace RiskOfMagic.Player
         public bool SprintPressed => sprint.WasPressedThisFrame();
         public bool ToggleCursorPressed => toggleCursor.WasPressedThisFrame();
         public bool InteractPressed => interact.WasPressedThisFrame();
+        public bool InteractHeld => interact.IsPressed();
         public bool EquipmentPressed => equipment.WasPressedThisFrame();
 
         public bool IsSkillHeld(SkillSlot slot) => skills[(int)slot].IsPressed();

@@ -212,7 +212,7 @@ namespace RiskOfMagic.Run
         public bool AnyLivingPlayerInside()
         {
             foreach (var player in PlayerAvatar.All)
-                if (player.IsAlive && IsInside(player.transform.position))
+                if (player.IsStanding && IsInside(player.transform.position))
                     return true;
             return false;
         }

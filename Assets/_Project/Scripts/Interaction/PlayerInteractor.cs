@@ -12,6 +12,7 @@ namespace RiskOfMagic.Interaction
         [SerializeField, Tooltip("Extra server-side distance tolerance (latency).")] private float serverRangeTolerance = 2f;
 
         private PlayerAvatar avatar;
+        private IHoldInteractable holding;
 
         /// <summary>Owner only.</summary>
         public IInteractable Focus { get; private set; }
@@ -25,15 +26,39 @@ namespace RiskOfMagic.Interaction
                 return;
 
             Focus = null;
-            if (!avatar.ControlEnabled)
-                return;
+            if (avatar.ControlEnabled)
+            {
+                Ray ray = avatar.Look.AimRay;
+                if (Physics.Raycast(ray, out var hit, range, mask, QueryTriggerInteraction.Collide))
+                    Focus = hit.collider.GetComponentInParent<IInteractable>();
+            }
 
-            Ray ray = avatar.Look.AimRay;
-            if (Physics.Raycast(ray, out var hit, range, mask, QueryTriggerInteraction.Collide))
-                Focus = hit.collider.GetComponentInParent<IInteractable>();
+            // Hold interactions (revive): tell the server when we start/stop holding on a target.
+            var wanted = Focus is IHoldInteractable hold && avatar.Input.InteractHeld && hold.CanInteract(avatar) ? hold : null;
+            if (wanted != holding)
+            {
+                if (holding != null && holding.NetworkObject != null)
+                    HoldRpc(holding.NetworkObject, false);
+                if (wanted != null)
+                    HoldRpc(wanted.NetworkObject, true);
+                holding = wanted;
+            }
 
-            if (Focus != null && avatar.Input.InteractPressed && Focus.CanInteract(avatar))
+            if (Focus != null && Focus is not IHoldInteractable && avatar.Input.InteractPressed && Focus.CanInteract(avatar))
                 InteractRpc(Focus.NetworkObject);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void HoldRpc(NetworkObjectReference target, bool isHolding)
+        {
+            if (!target.TryGet(out NetworkObject networkObject))
+                return;
+            var interactable = networkObject.GetComponentInChildren<IHoldInteractable>();
+            if (interactable == null)
+                return;
+            float maxDistance = range + serverRangeTolerance;
+            bool inRange = (networkObject.transform.position - transform.position).sqrMagnitude <= maxDistance * maxDistance;
+            interactable.SetHolding(avatar, isHolding && inRange && avatar.IsAlive);
         }
 
         [Rpc(SendTo.Server)]

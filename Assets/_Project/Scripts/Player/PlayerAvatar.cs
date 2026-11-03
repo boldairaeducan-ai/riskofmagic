@@ -52,6 +52,10 @@ namespace RiskOfMagic.Player
         public CharacterDefinition Character { get; private set; }
         public int CharacterIndex => characterIndex.Value;
         public bool IsAlive => Health.IsAlive;
+        public PlayerDowned Downed { get; private set; }
+        public bool IsDowned => Downed != null && Downed.IsDowned;
+        /// <summary>Alive and standing: what enemies chase and what counts for objectives.</summary>
+        public bool IsStanding => IsAlive && !IsDowned;
         public bool ControlEnabled { get; private set; } = true;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -76,7 +80,7 @@ namespace RiskOfMagic.Player
             float bestSqr = maxDistance * maxDistance;
             foreach (var player in all)
             {
-                if (!player.IsAlive)
+                if (!player.IsStanding)
                     continue;
                 float sqr = (player.transform.position - position).sqrMagnitude;
                 if (sqr <= bestSqr)
@@ -99,6 +103,7 @@ namespace RiskOfMagic.Player
             Inventory = GetComponent<PlayerInventory>();
             Status = GetComponent<StatusEffects>();
             Equipment = GetComponent<PlayerEquipment>();
+            Downed = GetComponent<PlayerDowned>();
             Skills = GetComponent<SkillController>();
         }
 
@@ -112,6 +117,8 @@ namespace RiskOfMagic.Player
                 characterIndex.Value = lobbyCharacter; // choice made in the lobby
             characterIndex.OnValueChanged += OnCharacterIndexChanged;
             Inventory.ItemsChanged += RecalculateStats;
+            if (Downed != null)
+                Downed.Changed += UpdateControl;
             if (Status != null)
                 Status.Changed += RecalculateStats;
             ApplyCharacter(characterIndex.Value);
@@ -135,6 +142,8 @@ namespace RiskOfMagic.Player
             Health.Revived -= OnRevived;
             characterIndex.OnValueChanged -= OnCharacterIndexChanged;
             Inventory.ItemsChanged -= RecalculateStats;
+            if (Downed != null)
+                Downed.Changed -= UpdateControl;
             if (Status != null)
                 Status.Changed -= RecalculateStats;
             if (Local == this)
@@ -212,7 +221,7 @@ namespace RiskOfMagic.Player
 
         private void Update()
         {
-            if (!IsServer || !IsSpawned || !IsAlive || Stats.HealthRegen <= 0f)
+            if (!IsServer || !IsSpawned || !IsStanding || Stats.HealthRegen <= 0f)
                 return;
             regenTimer += Time.deltaTime;
             if (regenTimer < regenTickInterval)
@@ -235,7 +244,10 @@ namespace RiskOfMagic.Player
             }
         }
 
-        private void OnDied(DamageInfo info) => SetControlEnabled(false);
-        private void OnRevived() => SetControlEnabled(true);
+        /// <summary>Control follows health and the downed state, whatever order their events arrive in.</summary>
+        private void UpdateControl() => SetControlEnabled(IsStanding);
+
+        private void OnDied(DamageInfo info) => UpdateControl();
+        private void OnRevived() => UpdateControl();
     }
 }
