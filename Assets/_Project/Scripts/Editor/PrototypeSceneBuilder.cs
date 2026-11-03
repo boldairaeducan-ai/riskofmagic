@@ -565,6 +565,17 @@ namespace RiskOfMagic.Editor
             return all;
         }
 
+        private static T Item<T>(string file, string displayName, string description, ItemRarity rarity, params StatModifier[] modifiers)
+            where T : ItemDefinition
+        {
+            var item = Asset<T>($"{ItemsFolder}/{file}.asset");
+            item.displayName = displayName;
+            item.description = description;
+            item.rarity = rarity;
+            item.modifiers = modifiers;
+            return item;
+        }
+
         private static StatModifier Mod(StatType stat, float valuePerStack) => new() { stat = stat, valuePerStack = valuePerStack };
 
         private static ItemPickup BuildPickupPrefab()
