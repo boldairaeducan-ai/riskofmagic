@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using RiskOfMagic.Combat;
-using RiskOfMagic.Core;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Interaction;
 using RiskOfMagic.Player;
@@ -22,8 +20,8 @@ namespace RiskOfMagic.Run
 
     /// <summary>
     /// RoR-style teleporter event: activating it spawns the boss and boosts the director; the charge only
-    /// progresses while a living player stands in the radius. Charged + bosses dead → remaining enemies die
-    /// and the teleporter can be used to go to the next stage.
+    /// progresses while a living player stands in the radius. Charged + bosses dead → the director returns to
+    /// normal (remaining enemies stay alive) and the teleporter can be used to go to the next stage.
     /// </summary>
     public class Teleporter : NetworkBehaviour, IInteractable
     {
@@ -38,7 +36,6 @@ namespace RiskOfMagic.Run
 
         [Header("Event")]
         [SerializeField, Min(1f)] private float eventCreditMultiplier = 1.75f;
-        [SerializeField] private bool killEnemiesOnCompletion = true;
 
         [Header("Visuals")]
         [SerializeField] private LineRenderer radiusRing;
@@ -185,18 +182,6 @@ namespace RiskOfMagic.Run
             state.Value = TeleporterState.Ready;
             if (CombatDirector.Instance != null)
                 CombatDirector.Instance.EventCreditMultiplier = 1f;
-            if (!killEnemiesOnCompletion)
-                return;
-
-            var enemies = new List<EnemyActor>(EnemyActor.Active);
-            foreach (var enemy in enemies)
-            {
-                if (enemy == null || !enemy.Health.IsAlive)
-                    continue;
-                var info = DamageInfo.Create(enemy.Health.Max * 10f, DamageType.Arcane, null, Team.Neutral, enemy.transform.position + Vector3.up, Vector3.up);
-                info.ProcCoefficient = 0f;
-                enemy.Health.ApplyDamage(info);
-            }
         }
 
         public bool AnyLivingPlayerInside()
