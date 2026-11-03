@@ -25,7 +25,7 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 |---|---|---|---|---|
 | **Archer** | Tir rapide | Flèche perforante (charge) | Roulade | Pluie de flèches |
 | **Guerrier** | Combo d'épée (3 coups) | Tourbillon | Charge | Frappe sismique |
-| **Mage** | Trait de feu (4 charges) | Orbe de givre (charge) | Transfert | Chaîne d'éclairs |
+| **Arcaniste** | Projectile magique (charge → jusqu'à 6 cibles, tête chercheuse) | Explosion arcanique (repousse) | Bouclier arcanique (-95% dégâts, 3 s) | Blocage temporel (cône, fige 4 s) |
 
 ## Architecture (`Assets/_Project/Scripts`)
 - **Core** — `GameCatalog` (Resources, network ids for characters/projectiles), `GameObjectPool`, `Team`, `SkillSlot`.
