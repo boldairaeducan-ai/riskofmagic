@@ -75,10 +75,6 @@ namespace RiskOfMagic.UI
                 StageManager.Instance.RestartRun();
         }
 
-        private static void Quit()
-        {
-            if (NetworkManager.Singleton != null)
-                NetworkManager.Singleton.Shutdown();
-        }
+        private static void Quit() => RiskOfMagic.Flow.GameFlow.ReturnToMainMenu();
     }
 }

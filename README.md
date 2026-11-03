@@ -3,10 +3,11 @@
 FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input System · Netcode for GameObjects.
 
 ## Setup
-1. Unity Hub → **Add project from disk** → this folder (Unity 6000.0+).
-2. Accept the prompt to enable the new Input System backend (restart).
-3. **Tools → Risk of Magic → Build Prototype Scene**.
-4. Play → **Host**. A second instance (ParrelSync / Multiplayer Play Mode / build) → **Client**.
+1. Unity Hub → **Add project from disk** → this folder.
+2. Package Manager → Unity Registry → **Multiplayer Services** (online play by join code). Link the project to a Unity Cloud project (*Edit → Project Settings → Services*). Without it, only Solo is available.
+3. **Tools → Risk of Magic → Build Prototype Scene** (builds the `MainMenu` and `Prototype` scenes, MainMenu first in the build).
+4. Play from `MainMenu`: Solo, or *Créer une partie en ligne* → share the code → others *Rejoindre*. Lobby: character, ready, difficulty (host), start.
+   Playing `Prototype` directly still works (debug panel: Host/Client by IP).
 
 ## Controls
 | Action | Keyboard/Mouse | Gamepad |
@@ -57,6 +58,8 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 - **Status** — `StatusEffects` (replicated: Curse, Rally, Warhorn), `DotSystem` (Poison, Bleed, Burn), Health hooks (`IHealthHooks`, `IDamageDealerHooks`).
 - **Economy** — `PlayerWallet` (gold), `GoldRewarder` (kill → gold, scaled by difficulty).
 - **Interaction** — `IInteractable`, `PlayerInteractor`, `PurchaseInteractable` (cost scales with difficulty), `ChestInteractable` (rarity weights), `ChoiceChest` (pick 1 of 3), `EquipmentBarrel`, `Merchant` (shop + reroll), `HealingShrine`. `InteractableSpawner` scatters chests on the NavMesh.
+- **Flow** — `GameFlow` (scenes, return to menu), `LobbyState` (replicated lobby), `RunSettings` (lobby choices → game), `GameBootstrap` (spawns systems and players in the game scene), `PersistentNetworkManager`.
+- **Online** (separate assembly, compiled only with the Multiplayer Services package) — join-code games behind `IOnlineSessionService`.
 - **Vfx / Networking** — pooled effects + `VfxNetwork` (server-triggered effects), `ServerBootstrap` (spawns `GameSystems`).
 - **UI** (uGUI + TextMeshPro) — `HUD.prefab` built by *Tools → Risk of Magic → Rebuild HUD Prefab*. `HudController` binds `HudWidget`s to the local player (health, gold, character, skills, charge, prompt, inventory, run info, death overlay), plus damage numbers, pickup labels, item notification and `ConnectionMenu`.
 

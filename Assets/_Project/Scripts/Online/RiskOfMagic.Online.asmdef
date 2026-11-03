@@ -1,0 +1,28 @@
+{
+    "name": "RiskOfMagic.Online",
+    "rootNamespace": "RiskOfMagic.Online",
+    "references": [
+        "RiskOfMagic.Runtime",
+        "Unity.Netcode.Runtime",
+        "Unity.Services.Core",
+        "Unity.Services.Authentication",
+        "Unity.Services.Multiplayer"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "ROM_MULTIPLAYER_SERVICES"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.services.multiplayer",
+            "expression": "1.0.0",
+            "define": "ROM_MULTIPLAYER_SERVICES"
+        }
+    ],
+    "noEngineReferences": false
+}

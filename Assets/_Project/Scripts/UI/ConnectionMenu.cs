@@ -62,11 +62,7 @@ namespace RiskOfMagic.UI
                 button.onClick.AddListener(action);
         }
 
-        private static void Disconnect()
-        {
-            if (NetworkManager.Singleton != null)
-                NetworkManager.Singleton.Shutdown();
-        }
+        private static void Disconnect() => RiskOfMagic.Flow.GameFlow.ReturnToMainMenu();
 
         private void BuildCharacterButtons()
         {

@@ -7,6 +7,7 @@ using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Equipment;
+using RiskOfMagic.Flow;
 using RiskOfMagic.Interaction;
 using RiskOfMagic.Items;
 using RiskOfMagic.Items.Types;
@@ -107,6 +108,9 @@ namespace RiskOfMagic.Editor
             string listPath = Configs + "/NetworkPrefabs.asset";
             AssetDatabase.DeleteAsset(listPath);
             var prefabList = Asset<NetworkPrefabsList>(listPath);
+            prefabList.Add(new NetworkPrefab { Prefab = playerPrefab });
+            var lobbyPrefab = MainMenuBuilder.BuildLobbyPrefab();
+            prefabList.Add(new NetworkPrefab { Prefab = lobbyPrefab });
             foreach (var enemy in new[] { ghoul, wolf, assassin, ogre, pyromancer, skeleton })
                 prefabList.Add(new NetworkPrefab { Prefab = enemy.gameObject });
             var colossus = BuildBoss();
@@ -148,6 +152,9 @@ namespace RiskOfMagic.Editor
             var hud = HudBuilder.GetOrBuild();
             AssetDatabase.SaveAssets();
             BuildScene(playerPrefab, prefabList, gameSystems, hud);
+            MainMenuBuilder.BuildScene(prefabList, lobbyPrefab);
+            AddSceneToBuildSettings(MainMenuBuilder.ScenePath); // first scene of the build
+            EditorSceneManager.OpenScene(ScenePath);
             AssetDatabase.SaveAssets();
             Debug.Log("[Risk of Magic] Prototype built. Play → choose a character → Host.");
         }
@@ -1092,13 +1099,18 @@ namespace RiskOfMagic.Editor
             var transport = netGo.AddComponent<UnityTransport>();
             manager.NetworkConfig ??= new NetworkConfig();
             manager.NetworkConfig.NetworkTransport = transport;
-            manager.NetworkConfig.PlayerPrefab = playerPrefab;
+            manager.NetworkConfig.PlayerPrefab = null; // spawned by GameBootstrap (also when coming from the lobby)
             // Only our list: Netcode's auto-generated default list would register the same prefabs twice.
             manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Clear();
             manager.NetworkConfig.Prefabs.NetworkPrefabsLists.Add(prefabList);
-            var bootstrap = netGo.AddComponent<ServerBootstrap>();
+            // Direct testing: this NetworkManager is discarded when arriving from the main menu (PersistentNetworkManager).
+            netGo.AddComponent<PersistentNetworkManager>();
+
+            var bootstrapGo = new GameObject("GameBootstrap");
+            var bootstrap = bootstrapGo.AddComponent<GameBootstrap>();
             SetProperties(bootstrap, so =>
             {
+                so.FindProperty("playerPrefab").objectReferenceValue = playerPrefab.GetComponent<NetworkObject>();
                 var list = so.FindProperty("serverPrefabs");
                 list.arraySize = 1;
                 list.GetArrayElementAtIndex(0).objectReferenceValue = gameSystems.GetComponent<NetworkObject>();
@@ -1386,9 +1398,8 @@ namespace RiskOfMagic.Editor
         private static void AddSceneToBuildSettings(string path)
         {
             var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-            if (scenes.Exists(s => s.path == path))
-                return;
-            scenes.Insert(0, new EditorBuildSettingsScene(path, true));
+            scenes.RemoveAll(s => s.path == path);
+            scenes.Insert(0, new EditorBuildSettingsScene(path, true)); // the last added scene becomes the first one
             EditorBuildSettings.scenes = scenes.ToArray();
         }
     }

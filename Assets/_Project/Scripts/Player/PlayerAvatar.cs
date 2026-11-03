@@ -107,6 +107,9 @@ namespace RiskOfMagic.Player
             all.Add(this);
             Health.Died += OnDied;
             Health.Revived += OnRevived;
+            if (IsServer && RiskOfMagic.Flow.RunSettings.TryGetCharacter(OwnerClientId, out int lobbyCharacter)
+                && GameCatalog.Instance != null && GameCatalog.Instance.GetCharacter(lobbyCharacter) != null)
+                characterIndex.Value = lobbyCharacter; // choice made in the lobby
             characterIndex.OnValueChanged += OnCharacterIndexChanged;
             Inventory.ItemsChanged += RecalculateStats;
             if (Status != null)

@@ -128,7 +128,7 @@ namespace RiskOfMagic.Run
 
             while (EnemyActor.Active.Count < maxAliveEnemies)
             {
-                var card = PickCard(budget, RunDifficulty.CurrentProgress);
+                var card = PickCard(budget, RunDifficulty.CurrentProgress * RunDifficulty.CurrentUnlockMultiplier);
                 if (card == null || !bounds.TryGetRandomPoint(out var position, populationMinDistanceFromSpawns,
                         p => StageBounds.IsFarFrom(p, populationPoints, populationMinSpacing)))
                     break;
@@ -172,7 +172,7 @@ namespace RiskOfMagic.Run
 
             float coefficient = RunDifficulty.CurrentCoefficient;
             int players = PlayerAvatar.All.Count;
-            credits += creditMultiplier * EventCreditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
+            credits += creditMultiplier * EventCreditMultiplier * RunDifficulty.CurrentDirectorCreditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
 
             if (Time.time < nextWaveTime)
                 return;
@@ -182,7 +182,7 @@ namespace RiskOfMagic.Run
 
         private void SpawnWave(float coefficient)
         {
-            var card = PickCard(credits, RunDifficulty.CurrentProgress);
+            var card = PickCard(credits, RunDifficulty.CurrentProgress * RunDifficulty.CurrentUnlockMultiplier);
             if (card == null)
             {
                 Diagnose($"No affordable card (credits {credits:0}, coefficient {coefficient:0.00}).");

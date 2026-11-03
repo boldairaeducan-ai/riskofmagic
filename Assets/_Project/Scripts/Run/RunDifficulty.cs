@@ -24,12 +24,22 @@ namespace RiskOfMagic.Run
         [SerializeField] private float levelStep = 0.33f;
         [SerializeField] private int maxEnemyLevel = 99;
 
+        [Header("Hard mode (time scaling is already x1.5 through the difficulty value)")]
+        [SerializeField] private float hardDirectorCreditMultiplier = 1.3f;
+        [SerializeField] private float hardDetectionMultiplier = 1.25f;
+        [SerializeField, Tooltip("Enemy variety unlocks as if the run were this much further.")] private float hardUnlockMultiplier = 1.2f;
+
         private readonly NetworkVariable<double> runStartTime = new();
         private readonly NetworkVariable<int> stagesCompleted = new();
         private readonly NetworkVariable<DifficultyLevel> difficulty = new(DifficultyLevel.Normal);
 
         public static RunDifficulty Instance { get; private set; }
         public static float CurrentCoefficient => Instance != null && Instance.IsSpawned ? Instance.Coefficient : 1f;
+        public static float CurrentDirectorCreditMultiplier => IsHard ? Instance.hardDirectorCreditMultiplier : 1f;
+        public static float CurrentDetectionMultiplier => IsHard ? Instance.hardDetectionMultiplier : 1f;
+        public static float CurrentUnlockMultiplier => IsHard ? Instance.hardUnlockMultiplier : 1f;
+        private static bool IsHard => Instance != null && Instance.IsSpawned && Instance.difficulty.Value == DifficultyLevel.Hard;
+
         public static int CurrentEnemyLevel => Instance != null && Instance.IsSpawned ? Instance.EnemyLevel : 1;
 
         public DifficultyLevel Difficulty => difficulty.Value;
@@ -60,7 +70,7 @@ namespace RiskOfMagic.Run
             if (!IsServer)
                 return;
             runStartTime.Value = NetworkManager.ServerTime.Time;
-            difficulty.Value = startingDifficulty;
+            difficulty.Value = RiskOfMagic.Flow.RunSettings.Difficulty ?? startingDifficulty;
         }
 
         public override void OnNetworkDespawn()

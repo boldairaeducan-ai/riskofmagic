@@ -100,6 +100,9 @@ namespace RiskOfMagic.Editor
             return prefab;
         }
 
+        /// <summary>Loads the theme for other UI builders (main menu) using these helpers.</summary>
+        internal static HudTheme UseTheme() => theme = LoadOrCreateTheme();
+
         private static HudTheme LoadOrCreateTheme()
         {
             var existing = AssetDatabase.LoadAssetAtPath<HudTheme>(ThemePath);
@@ -654,7 +657,7 @@ namespace RiskOfMagic.Editor
             });
         }
 
-        private static void PlaceButton(UnityEngine.UI.Button button, Vector2 bottomCenterOffset)
+        internal static void PlaceButton(UnityEngine.UI.Button button, Vector2 bottomCenterOffset)
         {
             var rect = (RectTransform)button.transform;
             rect.anchorMin = rect.anchorMax = rect.pivot = BottomCenter;
@@ -721,15 +724,15 @@ namespace RiskOfMagic.Editor
 
         // ---------------------------------------------------------------- Helpers
 
-        private static readonly Vector2 Center = new(0.5f, 0.5f);
-        private static readonly Vector2 TopLeft = new(0f, 1f);
-        private static readonly Vector2 TopCenter = new(0.5f, 1f);
-        private static readonly Vector2 TopRight = new(1f, 1f);
-        private static readonly Vector2 BottomLeft = new(0f, 0f);
-        private static readonly Vector2 BottomCenter = new(0.5f, 0f);
-        private static readonly Vector2 BottomRight = new(1f, 0f);
+        internal static readonly Vector2 Center = new(0.5f, 0.5f);
+        internal static readonly Vector2 TopLeft = new(0f, 1f);
+        internal static readonly Vector2 TopCenter = new(0.5f, 1f);
+        internal static readonly Vector2 TopRight = new(1f, 1f);
+        internal static readonly Vector2 BottomLeft = new(0f, 0f);
+        internal static readonly Vector2 BottomCenter = new(0.5f, 0f);
+        internal static readonly Vector2 BottomRight = new(1f, 0f);
 
-        private static RectTransform Rect(string name, RectTransform parent, Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size)
+        internal static RectTransform Rect(string name, RectTransform parent, Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size)
         {
             var go = new GameObject(name, typeof(RectTransform));
             var rect = (RectTransform)go.transform;
@@ -741,7 +744,7 @@ namespace RiskOfMagic.Editor
             return rect;
         }
 
-        private static RectTransform Stretch(string name, RectTransform parent, float inset = 0f)
+        internal static RectTransform Stretch(string name, RectTransform parent, float inset = 0f)
         {
             var go = new GameObject(name, typeof(RectTransform));
             var rect = (RectTransform)go.transform;
@@ -754,7 +757,7 @@ namespace RiskOfMagic.Editor
             return rect;
         }
 
-        private static UnityEngine.UI.Image Themed(RectTransform rect, HudSprite? sprite, HudColor color, bool applyColor = true, bool raycast = false)
+        internal static UnityEngine.UI.Image Themed(RectTransform rect, HudSprite? sprite, HudColor color, bool applyColor = true, bool raycast = false)
         {
             var image = rect.gameObject.AddComponent<UnityEngine.UI.Image>();
             image.raycastTarget = raycast;
@@ -772,7 +775,7 @@ namespace RiskOfMagic.Editor
         }
 
         /// <summary>Image filled at runtime with game data (skill/item icons, portraits).</summary>
-        private static UnityEngine.UI.Image PlainImage(RectTransform rect)
+        internal static UnityEngine.UI.Image PlainImage(RectTransform rect)
         {
             var image = rect.gameObject.AddComponent<UnityEngine.UI.Image>();
             image.raycastTarget = false;
@@ -782,7 +785,7 @@ namespace RiskOfMagic.Editor
         }
 
         /// <summary>Adds a themed TMP label. With name == null, the label goes on <paramref name="parent"/> itself.</summary>
-        private static TextMeshProUGUI Text(RectTransform parent, string name, string value, float size, HudFont font, HudColor color,
+        internal static TextMeshProUGUI Text(RectTransform parent, string name, string value, float size, HudFont font, HudColor color,
             TextAlignmentOptions alignment, bool stretch = true)
         {
             var rect = name == null ? parent : stretch ? Stretch(name, parent) : Rect(name, parent, Center, Center, Vector2.zero, new Vector2(0f, size + 8f));
@@ -802,7 +805,7 @@ namespace RiskOfMagic.Editor
             return text;
         }
 
-        private static UnityEngine.UI.Button Button(RectTransform parent, string name, string label, float height)
+        internal static UnityEngine.UI.Button Button(RectTransform parent, string name, string label, float height)
         {
             var rect = Rect(name, parent, Center, Center, Vector2.zero, new Vector2(0f, height));
             if (height > 0f)
@@ -814,7 +817,7 @@ namespace RiskOfMagic.Editor
             return button;
         }
 
-        private static TMP_InputField InputField(RectTransform parent, string name, string value)
+        internal static TMP_InputField InputField(RectTransform parent, string name, string value)
         {
             var rect = Rect(name, parent, Center, Center, Vector2.zero, new Vector2(0f, 42f));
             LayoutHeight(rect, 42f);
@@ -834,7 +837,7 @@ namespace RiskOfMagic.Editor
             return field;
         }
 
-        private static void VerticalLayout(GameObject go, int padding, float spacing)
+        internal static void VerticalLayout(GameObject go, int padding, float spacing)
         {
             var layout = go.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
             layout.padding = new RectOffset(padding, padding, padding, padding);
@@ -845,7 +848,7 @@ namespace RiskOfMagic.Editor
             layout.childAlignment = TextAnchor.UpperCenter;
         }
 
-        private static void LayoutHeight(RectTransform rect, float height)
+        internal static void LayoutHeight(RectTransform rect, float height)
         {
             var element = rect.GetComponent<UnityEngine.UI.LayoutElement>();
             if (element == null)
@@ -854,7 +857,7 @@ namespace RiskOfMagic.Editor
             element.minHeight = height;
         }
 
-        private static void Props(Object target, System.Action<SerializedObject> edit)
+        internal static void Props(Object target, System.Action<SerializedObject> edit)
         {
             var so = new SerializedObject(target);
             edit(so);

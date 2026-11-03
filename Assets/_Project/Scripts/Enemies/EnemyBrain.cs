@@ -248,7 +248,7 @@ namespace RiskOfMagic.Enemies
         private void Perceive()
         {
             knownPlayers.RemoveWhere(p => p == null || !p.IsSpawned);
-            float range = Definition != null ? Definition.detectionRange : 30f;
+            float range = (Definition != null ? Definition.detectionRange : 30f) * RiskOfMagic.Run.RunDifficulty.CurrentDetectionMultiplier;
             float rangeSqr = range * range;
 
             foreach (var player in PlayerAvatar.All)
