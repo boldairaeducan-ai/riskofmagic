@@ -85,10 +85,10 @@ namespace RiskOfMagic.Skills.Types
             {
                 if (center == AreaCenter.Caster && !context.Avatar.IsAlive)
                     yield break;
-                Vector3 center = GetCenter(context, target);
-                context.DamageArea(center + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit);
+                Vector3 tickCenter = GetCenter(context, target);
+                context.DamageArea(tickCenter + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit);
                 if (knockbackDistance > 0f)
-                    Knockback(context, center);
+                    Knockback(context, tickCenter);
                 if (i < ticks - 1)
                     yield return new WaitForSeconds(tickInterval);
             }
@@ -96,14 +96,14 @@ namespace RiskOfMagic.Skills.Types
 
         private static readonly List<Health> pushed = new();
 
-        private void Knockback(SkillContext context, Vector3 center)
+        private void Knockback(SkillContext context, Vector3 origin)
         {
-            TargetFinder.FindHostiles(center + Vector3.up * 0.5f, radius, context.Team, pushed, context.HitMask);
+            TargetFinder.FindHostiles(origin + Vector3.up * 0.5f, radius, context.Team, pushed, context.HitMask);
             foreach (var health in pushed)
             {
                 if (!health.TryGetComponent(out RiskOfMagic.Enemies.EnemyBrain brain))
                     continue;
-                Vector3 away = health.transform.position - center;
+                Vector3 away = health.transform.position - origin;
                 away.y = 0f;
                 away = away.sqrMagnitude > 0.01f ? away.normalized : context.Transform.forward;
                 brain.Push(away * knockbackDistance, knockbackDuration);
