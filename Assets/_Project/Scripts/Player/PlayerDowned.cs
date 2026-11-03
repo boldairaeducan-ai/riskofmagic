@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RiskOfMagic.Combat;
+using RiskOfMagic.Core;
 using RiskOfMagic.Interaction;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,7 +14,6 @@ namespace RiskOfMagic.Player
     /// Solo / last standing player: no downed state, death is immediate. Runs after PlayerInventory's death
     /// prevention (Phoenix Feather) thanks to the component order.
     /// </summary>
-    [RequireComponent(typeof(PlayerAvatar))]
     public class PlayerDowned : NetworkBehaviour, IHealthHooks, IHoldInteractable
     {
         [SerializeField, Min(1f)] private float bleedOutDuration = 30f;
