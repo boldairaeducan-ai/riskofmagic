@@ -14,6 +14,8 @@ namespace RiskOfMagic.Enemies
     {
         [SerializeField, Min(0f)] protected float range = 2f;
         [SerializeField, Min(0f)] protected float cooldown = 1.5f;
+        [SerializeField, Min(0f), Tooltip("Max vertical gap with the target (prevents hitting through platforms).")]
+        protected float maxHeightDifference = 2.5f;
 
         private float readyTime;
         private Coroutine routine;
@@ -31,6 +33,8 @@ namespace RiskOfMagic.Enemies
         public virtual bool IsInRange(Transform target)
         {
             Vector3 offset = target.position - transform.position;
+            if (Mathf.Abs(offset.y) > maxHeightDifference)
+                return false;
             offset.y = 0f;
             return offset.sqrMagnitude <= range * range;
         }

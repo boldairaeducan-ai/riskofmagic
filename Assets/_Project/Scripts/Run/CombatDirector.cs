@@ -28,7 +28,7 @@ namespace RiskOfMagic.Run
 
         [Header("Placement")]
         [SerializeField] private float minSpawnDistance = 12f;
-        [SerializeField] private float maxSpawnDistance = 40f;
+        [SerializeField] private float maxSpawnDistance = 28f;
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;
 

@@ -18,7 +18,15 @@ namespace RiskOfMagic.Enemies
         [Min(0f)] public float damagePerLevel = 0.2f;
 
         [Header("Perception")]
-        [Min(0f)] public float detectionRange = 200f;
+        [Min(0f), Tooltip("A player entering this radius is detected and chased until death.")]
+        public float detectionRange = 30f;
+        public bool requireLineOfSight;
+        [Min(0f), Tooltip("Allies within this radius are alerted when this enemy detects or is hit by a player.")]
+        public float alertAlliesRadius = 10f;
+
+        [Header("Idle")]
+        [Min(0f)] public float wanderRadius = 6f;
+        [Range(0f, 1f)] public float wanderSpeedMultiplier = 0.4f;
 
         [Header("Rewards")]
         [Min(0), Tooltip("Multiplied by the difficulty coefficient at death.")] public int goldReward = 10;

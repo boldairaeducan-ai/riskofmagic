@@ -482,7 +482,7 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildGhoul()
         {
-            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 110f, speed: 6f, gold: 8);
+            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 110f, speed: 6f, gold: 8, detection: 30f);
             var root = EnemyBase("Enemy_Ghoul", def, new Color(0.75f, 0.2f, 0.2f), out _);
             var attack = root.AddComponent<EnemyMeleeAttack>();
             SetProperties(attack, so =>
@@ -497,7 +497,7 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildSkeletonArcher(ProjectileDefinition bolt)
         {
-            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 80f, speed: 4f, gold: 12);
+            var def = EnemyDef("Enemy_SkeletonArcher", "Squelette archer", health: 80f, speed: 4f, gold: 12, detection: 35f);
             var root = EnemyBase("Enemy_SkeletonArcher", def, new Color(0.85f, 0.85f, 0.75f), out _);
             var attack = root.AddComponent<EnemyProjectileAttack>();
             SetProperties(attack, so =>
@@ -506,14 +506,16 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("cooldown").floatValue = 2f;
                 so.FindProperty("damage").floatValue = 12f;
                 so.FindProperty("projectile").objectReferenceValue = bolt;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
             });
             FinishEnemy(root, attack);
             return SavePrefab(root, Prefabs + "/Enemy_SkeletonArcher.prefab").GetComponent<EnemyActor>();
         }
 
-        private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold)
+        private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold, float detection)
         {
             var def = Asset<EnemyDefinition>($"{EnemiesFolder}/{file}.asset");
+            def.detectionRange = detection;
             def.displayName = displayName;
             def.maxHealth = health;
             def.moveSpeed = speed;
@@ -565,6 +567,7 @@ namespace RiskOfMagic.Editor
 
         private static void FinishEnemy(GameObject root, EnemyAttack attack)
         {
+            root.AddComponent<EnemyLeap>();
             var brain = root.AddComponent<EnemyBrain>();
             SetProperties(brain, so => so.FindProperty("attack").objectReferenceValue = attack);
         }
@@ -662,6 +665,13 @@ namespace RiskOfMagic.Editor
                 block.transform.position = new Vector3(x, size.y * 0.5f, z);
                 block.GetComponent<Renderer>().sharedMaterial = rockMat;
             }
+
+            // Traversal test area: plateaus separated by a gap, and raised/floating platforms.
+            var platformMat = Mat("M_Platform", new Color(0.5f, 0.45f, 0.35f));
+            Platform(level, "Plateau_A", new Vector3(18f, 0.75f, 22f), new Vector3(10f, 1.5f, 10f), platformMat);
+            Platform(level, "Plateau_B", new Vector3(32f, 0.75f, 22f), new Vector3(10f, 1.5f, 10f), platformMat);
+            Platform(level, "Step", new Vector3(-14f, 0.6f, 8f), new Vector3(4f, 1.2f, 4f), platformMat);
+            Platform(level, "FloatingPlatform", new Vector3(-14f, 2.6f, 15f), new Vector3(7f, 0.5f, 7f), platformMat);
             foreach (var t in level.GetComponentsInChildren<Transform>())
                 GameObjectUtility.SetStaticEditorFlags(t.gameObject, StaticEditorFlags.BatchingStatic | StaticEditorFlags.ContributeGI);
 
@@ -674,6 +684,16 @@ namespace RiskOfMagic.Editor
                 AssetDatabase.DeleteAsset(navPath);
                 AssetDatabase.CreateAsset(surface.navMeshData, navPath);
             }
+        }
+
+        private static void Platform(GameObject level, string name, Vector3 position, Vector3 size, Material material)
+        {
+            var platform = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            platform.name = name;
+            platform.transform.SetParent(level.transform);
+            platform.transform.position = position;
+            platform.transform.localScale = size;
+            platform.GetComponent<Renderer>().sharedMaterial = material;
         }
 
         private static GameObject BuildShrinePrefab()
