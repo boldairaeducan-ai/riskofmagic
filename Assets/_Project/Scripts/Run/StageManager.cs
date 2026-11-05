@@ -195,6 +195,8 @@ namespace RiskOfMagic.Run
             {
                 if (player.Downed != null)
                     player.Downed.ForceStand();
+                if (player.Status != null)
+                    player.Status.Clear(StatusType.Withered); // cursed chests last one stage
                 if (!player.IsAlive)
                     player.Health.Revive(1f);
                 else if (fullHeal)

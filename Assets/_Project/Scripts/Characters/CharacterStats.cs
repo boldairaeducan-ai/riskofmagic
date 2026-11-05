@@ -70,7 +70,7 @@ namespace RiskOfMagic.Characters
             CritChance = Mathf.Clamp01(definition.critChance + crit);
             CooldownMultiplier = cooldown;
             MoveSpeedMultiplier = (1f + moveBonus) * statusMove;
-            MaxHealth = (definition.maxHealth + healthFlat) * (1f + healthPercent);
+            MaxHealth = (definition.maxHealth + healthFlat) * (1f + healthPercent) * (status != null ? status.MaxHealthMultiplier : 1f);
             HealthRegen = definition.healthRegen + regen;
             ExtraJumps = jumps;
             FlatDamageReduction = flatReduction;

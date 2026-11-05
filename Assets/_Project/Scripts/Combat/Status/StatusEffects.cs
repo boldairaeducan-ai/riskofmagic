@@ -13,7 +13,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Stacking attack/move speed, lost when hit (Cor de guerre).</summary>
         Warhorn,
         /// <summary>Slowed (Glacial elite blizzard).</summary>
-        Chilled
+        Chilled,
+        /// <summary>Max health reduced by 1% per stack (cursed chest), until the end of the stage.</summary>
+        Withered
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -52,6 +54,8 @@ namespace RiskOfMagic.Combat
 
         private double Now => IsSpawned ? NetworkManager.ServerTime.Time : 0d;
 
+        /// <summary>Withered: 1% max health per stack (at least 5% left).</summary>
+        public float MaxHealthMultiplier => Mathf.Max(0.05f, 1f - GetStacks(StatusType.Withered) / 100f);
         public float DamageDealtMultiplier => Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f;
         public float MoveSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
                                             * (1f + SpeedBonus);

@@ -40,6 +40,13 @@ namespace RiskOfMagic.UI
                 }
             }
 
+            foreach (var mapEvent in RiskOfMagic.Run.MapEvents.MapEvent.Active)
+            {
+                string line = mapEvent != null ? mapEvent.GetObjective(Player) : string.Empty;
+                if (!string.IsNullOrEmpty(line))
+                    text = string.IsNullOrEmpty(text) ? line : $"{text}\n<size=85%>{line}</size>";
+            }
+
             if (label != null && label.text != text)
                 label.text = text;
             if (chargeGroup != null)

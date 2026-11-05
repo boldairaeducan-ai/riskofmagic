@@ -77,6 +77,17 @@ player (damage, kills, deaths, gold, items) and Rejouer (host) / Retour au menu.
 1.6 s ahead). At 66%: splits into 3 illusions (4% HP, 40% damage, same look) and blinks among them, summons ghouls/wolves/
 pyromancers from now on. At 33%: splits again, meteors twice as often (+1 per player). Illusions vanish after 25 s or at its death.
 
+## Map events
+0 to 2 per stage (never twice the same), placed like interactables (on `Interactable` SpawnSpots when the map has some).
+**Every value is in `Assets/_Project/Resources/MapEventsConfig.asset`** (count per stage, toggles, weights, rewards): created once
+by the builder, never overwritten.
+
+| Event | Rule | Reward |
+|---|---|---|
+| Tombe à purifier | Purification only progresses while a player stands in the 6 m zone (30 s); 2–3 monsters every 8 s | Healing zone 8 m (5%/s, 20 s) + 1 item per player (Uncommon, 25% Rare) |
+| Autel de défi | Free; wave of elites (4 + 1/player, one affix), hunting right away | All dead → 1 item per player (Uncommon, 35% Rare) |
+| Coffre maudit | Costs 20% max HP until the end of the stage (stacks, `Withered` status) | Rare item (10% Legendary) |
+
 ## Elites
 From run progress 1.5, a director wave has a 35% chance to be elite (one affix for the whole wave) if the boosted cost is affordable.
 Bosses can be elite from stage 3 (50%). Affix assets: `Configs/Enemies/Elite_*.asset` (registered in the `GameCatalog`).

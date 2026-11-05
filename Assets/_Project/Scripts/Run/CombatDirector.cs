@@ -253,6 +253,9 @@ namespace RiskOfMagic.Run
             Debug.Log($"[CombatDirector] {message}", this);
         }
 
+        /// <summary>Server. Random card unlocked at the current progress, whatever its cost (map events).</summary>
+        public SpawnCard PickUnlockedCard() => PickCard(float.MaxValue, RunDifficulty.CurrentProgress * RunDifficulty.CurrentUnlockMultiplier);
+
         private SpawnCard PickCard(float budget, float progress)
         {
             candidates.Clear();

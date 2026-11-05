@@ -18,6 +18,7 @@ using RiskOfMagic.Maps;
 using RiskOfMagic.Networking;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
+using RiskOfMagic.Run.MapEvents;
 using RiskOfMagic.Skills;
 using RiskOfMagic.Skills.Types;
 using RiskOfMagic.UI;
@@ -175,10 +176,21 @@ namespace RiskOfMagic.Editor
             var teleporter = BuildTeleporterPrefab(bossCards, new List<SpawnCard> { avatarCard }, seal);
             prefabList.Add(new NetworkPrefab { Prefab = teleporter });
 
+            // Map events: 0..2 per stage, every value in Resources/MapEventsConfig.asset (never overwritten).
+            LoadOrCreateMapEventsConfig();
+            var tomb = BuildPurificationTombPrefab();
+            var altar = BuildChallengeAltarPrefab();
+            var cursedChest = BuildCursedChestPrefab();
+            foreach (var mapEventPrefab in new[] { tomb, altar, cursedChest })
+                prefabList.Add(new NetworkPrefab { Prefab = mapEventPrefab });
+            var mapEvents = new[]
+            {
+                (MapEventType.PurificationTomb, tomb), (MapEventType.ChallengeAltar, altar), (MapEventType.CursedChest, cursedChest)
+            };
             var gameSystems = BuildGameSystemsPrefab(cards, new[]
             {
                 (smallChest, 12), (largeChest, 3), (choiceChest, 3), (barrel, 3), (shrine, 2), (merchant, 1)
-            }, teleporter);
+            }, teleporter, mapEvents);
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
@@ -1608,7 +1620,110 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/HealingShrine.prefab");
         }
 
-        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, (GameObject prefab, int count)[] entries, GameObject teleporter)
+        private static void LoadOrCreateMapEventsConfig()
+        {
+            string path = ResourcesFolder + "/MapEventsConfig.asset";
+            if (AssetDatabase.LoadAssetAtPath<MapEventsConfig>(path) != null)
+                return; // user-tuned: never overwritten
+            AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<MapEventsConfig>(), path);
+        }
+
+        private static GameObject BuildPurificationTombPrefab()
+        {
+            var root = new GameObject("PurificationTomb");
+            var stone = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            stone.name = "Gravestone";
+            stone.transform.SetParent(root.transform, false);
+            stone.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            stone.transform.localScale = new Vector3(1.2f, 1.8f, 0.4f);
+            stone.GetComponent<Renderer>().sharedMaterial = Mat("M_Tomb", new Color(0.35f, 0.33f, 0.4f));
+            var slab = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            slab.name = "Slab";
+            slab.transform.SetParent(root.transform, false);
+            slab.transform.localPosition = new Vector3(0f, 0.1f, -1.2f);
+            slab.transform.localScale = new Vector3(1.4f, 0.2f, 2.2f);
+            slab.GetComponent<Renderer>().sharedMaterial = Mat("M_Tomb", new Color(0.35f, 0.33f, 0.4f));
+
+            var ringGo = new GameObject("ZoneRing");
+            ringGo.transform.SetParent(root.transform, false);
+            var ring = ringGo.AddComponent<LineRenderer>();
+            ring.widthMultiplier = 0.25f;
+            ring.sharedMaterial = LineMat();
+            ring.shadowCastingMode = ShadowCastingMode.Off;
+
+            var heal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            heal.name = "HealZone";
+            Object.DestroyImmediate(heal.GetComponent<Collider>());
+            heal.transform.SetParent(root.transform, false);
+            heal.transform.localPosition = new Vector3(0f, 0.04f, 0f);
+            heal.transform.localScale = new Vector3(16f, 0.01f, 16f);
+            heal.GetComponent<Renderer>().sharedMaterial = Mat("M_TombHeal", new Color(0.35f, 1f, 0.5f), unlit: true);
+            heal.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            heal.SetActive(false);
+
+            root.AddComponent<NetworkObject>();
+            var tomb = root.AddComponent<PurificationTomb>();
+            SetProperties(tomb, so =>
+            {
+                so.FindProperty("zoneRing").objectReferenceValue = ring;
+                so.FindProperty("healVisual").objectReferenceValue = heal;
+            });
+            return SavePrefab(root, Prefabs + "/MapEvent_PurificationTomb.prefab");
+        }
+
+        private static GameObject BuildChallengeAltarPrefab()
+        {
+            var root = new GameObject("ChallengeAltar");
+            var pedestal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            pedestal.name = "Pedestal";
+            pedestal.transform.SetParent(root.transform, false);
+            pedestal.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            pedestal.transform.localScale = new Vector3(1.6f, 0.5f, 1.6f);
+            pedestal.GetComponent<Renderer>().sharedMaterial = Mat("M_ChallengeAltar", new Color(0.25f, 0.2f, 0.2f));
+            var flame = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            flame.name = "Flame";
+            Object.DestroyImmediate(flame.GetComponent<Collider>());
+            flame.transform.SetParent(root.transform, false);
+            flame.transform.localPosition = new Vector3(0f, 1.5f, 0f);
+            flame.transform.localScale = Vector3.one * 0.7f;
+            flame.GetComponent<Renderer>().sharedMaterial = Mat("M_ChallengeAltarFlame", Color.white, unlit: true);
+
+            root.AddComponent<NetworkObject>();
+            var altar = root.AddComponent<ChallengeAltar>();
+            SetProperties(altar, so =>
+            {
+                var renderers = so.FindProperty("glowRenderers");
+                renderers.arraySize = 1;
+                renderers.GetArrayElementAtIndex(0).objectReferenceValue = flame.GetComponent<Renderer>();
+            });
+            return SavePrefab(root, Prefabs + "/MapEvent_ChallengeAltar.prefab");
+        }
+
+        private static GameObject BuildCursedChestPrefab()
+        {
+            var root = new GameObject("CursedChest");
+            var body = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            body.name = "Body";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = new Vector3(0f, 0.4f, 0f);
+            body.transform.localScale = new Vector3(1.3f, 0.8f, 0.9f);
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_CursedChest", new Color(0.2f, 0.08f, 0.12f));
+            var lid = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            lid.name = "Lid";
+            Object.DestroyImmediate(lid.GetComponent<Collider>());
+            lid.transform.SetParent(root.transform, false);
+            lid.transform.localPosition = new Vector3(0f, 0.9f, 0f);
+            lid.transform.localScale = new Vector3(1.35f, 0.25f, 0.95f);
+            lid.GetComponent<Renderer>().sharedMaterial = Mat("M_CursedChestGlow", new Color(0.8f, 0.1f, 0.25f), unlit: true);
+
+            root.AddComponent<NetworkObject>();
+            var chest = root.AddComponent<CursedChest>();
+            SetProperties(chest, so => so.FindProperty("closedVisual").objectReferenceValue = lid);
+            return SavePrefab(root, Prefabs + "/MapEvent_CursedChest.prefab");
+        }
+
+        private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, (GameObject prefab, int count)[] entries, GameObject teleporter,
+            (MapEventType type, GameObject prefab)[] mapEvents)
         {
             var root = new GameObject("GameSystems");
             root.AddComponent<NetworkObject>();
@@ -1639,6 +1754,14 @@ namespace RiskOfMagic.Editor
                     bool isMerchant = entries[i].prefab.GetComponent<Merchant>() != null;
                     element.FindPropertyRelative("useSpawnSpots").boolValue = isMerchant;
                     element.FindPropertyRelative("spotType").enumValueIndex = (int)SpawnSpotType.Merchant;
+                }
+                var events = so.FindProperty("mapEvents");
+                events.arraySize = mapEvents.Length;
+                for (int i = 0; i < mapEvents.Length; i++)
+                {
+                    var element = events.GetArrayElementAtIndex(i);
+                    element.FindPropertyRelative("type").enumValueIndex = (int)mapEvents[i].type;
+                    element.FindPropertyRelative("prefab").objectReferenceValue = mapEvents[i].prefab.GetComponent<NetworkObject>();
                 }
             });
 
