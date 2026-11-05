@@ -20,6 +20,19 @@ namespace RiskOfMagic.Flow
 
         private NetworkManager manager;
         private bool started;
+        private bool loadEventSubscribed;
+
+        // Awake: when only the host has to load, Netcode completes the load event before Start runs
+        // (it was missed and the stage only started after startTimeout).
+        private void Awake()
+        {
+            manager = NetworkManager.Singleton;
+            if (manager != null && manager.IsListening && manager.IsServer && manager.SceneManager != null)
+            {
+                manager.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
+                loadEventSubscribed = true;
+            }
+        }
 
         private IEnumerator Start()
         {
@@ -36,8 +49,12 @@ namespace RiskOfMagic.Flow
             if (!manager.IsServer)
                 yield break;
 
-            // Loaded from the lobby: wait until every client has loaded the scene.
-            manager.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
+            // Loaded from the lobby / previous stage: wait until every client has loaded the scene.
+            if (!loadEventSubscribed)
+            {
+                manager.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
+                loadEventSubscribed = true;
+            }
             yield return new WaitForSeconds(startTimeout);
             Begin();
         }

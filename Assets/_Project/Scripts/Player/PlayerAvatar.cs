@@ -172,6 +172,7 @@ namespace RiskOfMagic.Player
         {
             if (PlayerSpawnPoint.TryGet((int)OwnerClientId, out var pose))
                 Motor.Teleport(pose.position, pose.rotation);
+            RiskOfMagic.UI.LoadingScreen.NotifyLocalPlayerPlaced();
         }
 
         public void SetControlEnabled(bool value)
