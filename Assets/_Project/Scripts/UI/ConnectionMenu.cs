@@ -147,9 +147,11 @@ namespace RiskOfMagic.UI
             bool cursorFree = Cursor.lockState != CursorLockMode.Locked;
             // From the main menu: only on Esc once the local player exists (not while the game scene is loading).
             bool fromMenu = RiskOfMagic.Flow.GameFlow.LaunchedFromMenu;
+            // With a pause menu, the session panel (debug) only shows alongside it.
+            bool sessionVisible = PauseMenu.Instance != null ? PauseMenu.IsOpen : cursorFree;
             bool visible = fromMenu
-                ? connected && cursorFree && PlayerAvatar.Local != null
-                : !connected || cursorFree;
+                ? PauseMenu.Instance == null && connected && cursorFree && PlayerAvatar.Local != null
+                : !connected || sessionVisible;
 
             if (group != null)
             {

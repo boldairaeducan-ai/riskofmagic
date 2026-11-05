@@ -28,7 +28,7 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 | Primary / Secondary | LMB / RMB | RT / LT |
 | Utility / Special | Left Shift / R | LB / RB |
 | Interact | E | X |
-| Toggle cursor (+ character picker) | Esc | Start |
+| Pause menu (solo: real pause; online: overlay) | Esc | Start |
 
 ## Characters
 | | Primary | Secondary | Utility | Special |

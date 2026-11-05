@@ -22,7 +22,7 @@ Game-facing text (UI, item/skill names and descriptions) is in **French**; code,
 - **Tools → Risk of Magic → Rebuild HUD Prefab** (`Editor/HudBuilder.cs`) rebuilds `UI/HUD.prefab`; needed whenever a
   HUD widget is added. It never overwrites `UI/HudTheme.asset` (where art is plugged in).
 - Play from `Scenes/MainMenu` (Solo / online join code / lobby). Playing `Scenes/Prototype` directly still works for
-  debugging (Esc panel: Host/Client by IP). Multi-instance tests use Multiplayer Play Mode.
+  debugging (Host/Client-by-IP panel while disconnected; Esc = pause menu, `UI/PauseMenu`). Multi-instance tests use Multiplayer Play Mode.
 - Online play needs the **Multiplayer Services** package + a linked Unity Cloud project. `Scripts/Online` is a separate
   assembly compiled only when that package is installed (`versionDefines` + `defineConstraints`); the runtime only knows
   `IOnlineSessionService` / `OnlineSessions`.

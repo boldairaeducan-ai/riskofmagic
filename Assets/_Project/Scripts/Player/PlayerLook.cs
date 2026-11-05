@@ -32,6 +32,8 @@ namespace RiskOfMagic.Player
         public CameraEffects Effects { get; private set; }
         public float Pitch => pitch;
         public bool IsCursorLocked => Cursor.lockState == CursorLockMode.Locked;
+        /// <summary>Set by the pause menu: Esc opens it instead of just freeing the cursor.</summary>
+        public static bool EscapeHandledExternally { get; set; }
         public Ray AimRay => new(cameraPivot.position, cameraPivot.forward);
 
         public float MouseSensitivity
@@ -81,7 +83,7 @@ namespace RiskOfMagic.Player
         {
             if (!isLocal)
                 return;
-            if (input.ToggleCursorPressed)
+            if (input.ToggleCursorPressed && !EscapeHandledExternally)
                 SetCursorLocked(!IsCursorLocked);
             if (!IsCursorLocked)
                 return;

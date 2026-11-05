@@ -158,7 +158,7 @@ namespace RiskOfMagic.Editor
         }
 
         /// <summary>Options screen: rows are created at runtime by OptionsMenu from the two templates.</summary>
-        private static OptionsMenu BuildOptions(RectTransform root)
+        internal static OptionsMenu BuildOptions(RectTransform root)
         {
             var panel = Panel(root, "Options", H.Center, H.Center, new Vector2(0f, -40f), new Vector2(900f, 900f), "Options");
 

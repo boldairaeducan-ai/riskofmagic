@@ -30,6 +30,8 @@ namespace RiskOfMagic.Run
         [SerializeField, Tooltip("Enemy variety unlocks as if the run were this much further.")] private float hardUnlockMultiplier = 1.2f;
 
         private readonly NetworkVariable<double> runStartTime = new();
+        /// <summary>Server time when the solo pause started (0 = running): the run clock is frozen meanwhile.</summary>
+        private readonly NetworkVariable<double> pausedAt = new();
         private readonly NetworkVariable<int> stagesCompleted = new();
         private readonly NetworkVariable<DifficultyLevel> difficulty = new(DifficultyLevel.Normal);
 
@@ -44,7 +46,24 @@ namespace RiskOfMagic.Run
 
         public DifficultyLevel Difficulty => difficulty.Value;
         public int StagesCompleted => stagesCompleted.Value;
-        public float ElapsedSeconds => IsSpawned ? Mathf.Max(0f, (float)(NetworkManager.ServerTime.Time - runStartTime.Value)) : 0f;
+        public float ElapsedSeconds => IsSpawned
+            ? Mathf.Max(0f, (float)((pausedAt.Value > 0d ? pausedAt.Value : NetworkManager.ServerTime.Time) - runStartTime.Value))
+            : 0f;
+
+        /// <summary>Server only (solo pause): freezes the run clock; the paused duration is not counted.</summary>
+        public void SetPaused(bool paused)
+        {
+            if (!IsServer || paused == pausedAt.Value > 0d)
+                return;
+            double now = NetworkManager.ServerTime.Time;
+            if (paused)
+            {
+                pausedAt.Value = now;
+                return;
+            }
+            runStartTime.Value += now - pausedAt.Value;
+            pausedAt.Value = 0d;
+        }
         public float PlayerFactor => 1f + playerFactorPerPlayer * (Mathf.Max(1, PlayerAvatar.All.Count) - 1);
 
         public float Coefficient
@@ -85,6 +104,7 @@ namespace RiskOfMagic.Run
             if (!IsServer)
                 return;
             runStartTime.Value = NetworkManager.ServerTime.Time;
+            pausedAt.Value = 0d;
             stagesCompleted.Value = 0;
         }
 
