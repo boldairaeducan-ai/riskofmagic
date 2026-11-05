@@ -35,6 +35,8 @@ namespace RiskOfMagic.Skills
 
         /// <summary>Owner only, after a successful local cast.</summary>
         public event Action<SkillSlot> SkillActivated;
+        /// <summary>Every peer: a skill was cast (owner on activation, others when the server confirms). Animation hook.</summary>
+        public event Action<SkillSlot, SkillDefinition> SkillExecuted;
         public event Action LoadoutChanged;
 
         public SkillContext Context { get; private set; }
@@ -171,6 +173,7 @@ namespace RiskOfMagic.Skills
                     effects.AddTrauma(definition.ownerCameraTrauma);
             }
             SkillActivated?.Invoke(slot);
+            SkillExecuted?.Invoke(slot, definition);
 
             if (IsServer)
                 ExecuteOnServer(slot, activation);
@@ -232,6 +235,7 @@ namespace RiskOfMagic.Skills
                 return;
             definition.OnRemoteExecute(Context, activation);
             AudioService.PlayAt(definition.castSound, transform.position);
+            SkillExecuted?.Invoke((SkillSlot)slotIndex, definition);
         }
 
         public override void OnNetworkDespawn() => StopAllCoroutines();

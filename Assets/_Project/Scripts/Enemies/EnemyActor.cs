@@ -11,6 +11,12 @@ using UnityEngine;
 
 namespace RiskOfMagic.Enemies
 {
+    public enum EnemyAnimationCue : byte
+    {
+        Dodge,
+        Leap
+    }
+
     /// <summary>
     /// Root of an enemy: applies its definition and level, handles death and exposes a registry.
     /// </summary>
@@ -51,6 +57,32 @@ namespace RiskOfMagic.Enemies
         private int pendingLevel = 1;
 
         public EnemyDefinition Definition => definition;
+
+        /// <summary>Every peer: server-side movement cues for animation (dodge, leap).</summary>
+        public event Action<EnemyAnimationCue> AnimationCue;
+
+        /// <summary>Server only.</summary>
+        public void BroadcastCue(EnemyAnimationCue cue)
+        {
+            if (IsServer && IsSpawned)
+                AnimationCueRpc(cue);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void AnimationCueRpc(EnemyAnimationCue cue) => AnimationCue?.Invoke(cue);
+
+        /// <summary>Every peer: swaps the placeholder visuals for a real model (tints then apply to the model).</summary>
+        public void UseModel(GameObject model)
+        {
+            if (model == null)
+                return;
+            renderers ??= GetComponentsInChildren<Renderer>(true);
+            foreach (var r in renderers)
+                if (r != null && !r.transform.IsChildOf(model.transform))
+                    r.enabled = false;
+            renderers = model.GetComponentsInChildren<Renderer>(true);
+            currentTint = null;
+        }
         /// <summary>Every peer once spawned (null = normal enemy).</summary>
         public EliteAffix Elite { get; private set; }
         public bool IsElite => Elite != null;

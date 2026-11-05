@@ -19,6 +19,8 @@ namespace RiskOfMagic.Enemies
         protected float maxHeightDifference = 2.5f;
         [SerializeField, Min(0f), Tooltip("Multi-attack enemies: relative chance to pick this attack among the ready ones.")]
         protected float selectionWeight = 1f;
+        [SerializeField, Tooltip("Animator trigger at the attack start (every peer), with the AttackIndex int parameter.")]
+        private string animatorTrigger = "Attack";
 
         private float readyTime;
         private Coroutine routine;
@@ -28,6 +30,7 @@ namespace RiskOfMagic.Enemies
 
         public float Range => range;
         public float SelectionWeight => selectionWeight;
+        public string AnimatorTrigger => animatorTrigger;
         /// <summary>Server. Phase tuning (ChaosAvatar): &lt; 1 = more frequent.</summary>
         public float CooldownMultiplier { get; set; } = 1f;
         /// <summary>Disabled attacks are never picked (phase-gated attacks).</summary>

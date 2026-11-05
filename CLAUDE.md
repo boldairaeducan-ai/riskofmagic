@@ -91,6 +91,11 @@ game over) to sounds; definitions carry `SoundEvent` slots played where their fe
 generated empty by `Editor/AudioSlots.cs` (never overwritten, re-linked after each build); `AudioService.Pick` treats a
 clip-less slot as unset.
 
+**Animation.** Cosmetic only. `PlayerAnimationDriver` / `EnemyAnimationDriver` spawn the `modelPrefab` (+ player
+`viewModelPrefab`) of the definitions and drive their Animators on every peer through `AnimatorBridge` (only sets the
+parameters the controller has, names in `AnimParams`). Server-only cues reach clients via existing RPCs or
+`EnemyActor.BroadcastCue`.
+
 **UI.** `HudController` binds every `HudWidget` to the local player. `ThemedImage` / `ThemedText` pull sprites, fonts
 and colors from `HudTheme`; widgets only fill in game data (icons come from skill/item/equipment/character assets).
 

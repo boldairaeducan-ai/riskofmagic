@@ -77,6 +77,26 @@ player (damage, kills, deaths, gold, items) and Rejouer (host) / Retour au menu.
 1.6 s ahead). At 66%: splits into 3 illusions (4% HP, 40% damage, same look) and blinks among them, summons ghouls/wolves/
 pyromancers from now on. At 33%: splits again, meteors twice as often (+1 per player). Illusions vanish after 25 s or at its death.
 
+## Plugging in models & animations
+| What | Where |
+|---|---|
+| Player body (third person, shadow only for its owner) | `modelPrefab` on each character (`Configs/Characters`) |
+| First-person arms/weapon (parented to the owner's camera) | `viewModelPrefab` on each character |
+| Enemy model (placeholder hidden, hitboxes kept) | `modelPrefab` on each enemy (`Configs/Enemies`), authored at scale 1, feet at the pivot |
+| Per-skill animation | `animatorTrigger` on each skill (default `Cast`) + int `SkillSlot` |
+| Per-attack enemy animation | `animatorTrigger` on each `EnemyAttack` (default `Attack`) + int `AttackIndex` (component order) |
+| Animation events | `AnimationEventRelay` on the Animator object: `PlaySound(SoundEvent)`, `PlayVfx(GameObject)`, `Footstep()` |
+
+`PlayerAnimationDriver` / `EnemyAnimationDriver` drive every Animator found in those models on every peer. Create only the
+parameters you need (others are ignored, no warnings). Root motion is off (movement is gameplay-driven).
+
+| Type | Parameters |
+|---|---|
+| Float | `Speed`, `MoveX`, `MoveY` (local m/s), `VerticalSpeed`, `AimPitch` (owner only) |
+| Bool | `Grounded`, `Sprinting` (owner only), `Downed`, `Dead`, `Frozen` |
+| Int | `SkillSlot`, `AttackIndex` |
+| Trigger | `Jump`, `Land`, `Hit`, `Cast` (or the skill's trigger), `UseEquipment`, `Revive`, `Attack` (or the attack's trigger), `Dodge`, `Leap`, `Spawn` |
+
 ## Map events
 0 to 2 per stage (never twice the same), placed like interactables (on `Interactable` SpawnSpots when the map has some).
 **Every value is in `Assets/_Project/Resources/MapEventsConfig.asset`** (count per stage, toggles, weights, rewards): created once

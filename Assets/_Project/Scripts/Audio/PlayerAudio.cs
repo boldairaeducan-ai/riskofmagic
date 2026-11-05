@@ -15,6 +15,8 @@ namespace RiskOfMagic.Audio
         [SerializeField] private float groundProbe = 0.25f;
         [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
         [SerializeField, Min(0f), Tooltip("Minimum vertical speed to play the landing sound.")] private float landingSpeed = 4f;
+        [SerializeField, Tooltip("Off when footsteps come from animation events (AnimationEventRelay.Footstep).")]
+        private bool distanceFootsteps = true;
 
         private PlayerAvatar avatar;
         private Vector3 lastPosition;
@@ -61,11 +63,18 @@ namespace RiskOfMagic.Audio
             bool sprinting = avatar.Motor != null && avatar.Motor.IsSprinting;
             strideProgress += delta.magnitude;
             float stride = strideLength * (sprinting ? sprintStrideMultiplier : 1f);
-            if (strideProgress >= stride)
+            if (distanceFootsteps && strideProgress >= stride)
             {
                 strideProgress -= stride;
-                AudioService.PlayAt(character.footstepSound, position);
+                PlayFootstep();
             }
+        }
+
+        /// <summary>Also called by animation events (AnimationEventRelay).</summary>
+        public void PlayFootstep()
+        {
+            if (avatar.Character != null)
+                AudioService.PlayAt(avatar.Character.footstepSound, transform.position);
         }
     }
 }

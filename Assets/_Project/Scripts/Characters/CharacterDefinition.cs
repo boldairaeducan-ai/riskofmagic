@@ -22,6 +22,11 @@ namespace RiskOfMagic.Characters
         [Range(0f, 1f)] public float critChance = 0.01f;
         public MovementConfig movement;
 
+        [Header("Models (optional, replace the placeholder capsule)")]
+        [Tooltip("Third-person body seen by other players (shadow only for its owner). Animator inside = driven by PlayerAnimationDriver.")]
+        public GameObject modelPrefab;
+        [Tooltip("First-person arms/weapon, parented to the owner's camera.")] public GameObject viewModelPrefab;
+
         [Header("Audio")]
         [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepSound;
         public SoundEvent jumpSound;

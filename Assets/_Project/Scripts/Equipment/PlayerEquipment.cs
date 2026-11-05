@@ -20,6 +20,8 @@ namespace RiskOfMagic.Equipment
 
         /// <summary>Every peer.</summary>
         public event Action Changed;
+        /// <summary>Every peer: a successful activation (animation hook).</summary>
+        public event Action Activated;
 
         public PlayerAvatar Avatar { get; private set; }
 
@@ -101,7 +103,10 @@ namespace RiskOfMagic.Equipment
         {
             var equipment = Current;
             if (current > previous && equipment != null)
+            {
                 AudioService.PlayAt(equipment.activateSound, transform.position);
+                Activated?.Invoke();
+            }
         }
     }
 }

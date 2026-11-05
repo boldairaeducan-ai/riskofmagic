@@ -48,6 +48,9 @@ namespace RiskOfMagic.Enemies
         [Header("Lifecycle")]
         [Min(0f)] public float despawnDelay = 2f;
 
+        [Header("Model (optional, replaces the placeholder capsule; hitboxes stay)")]
+        [Tooltip("Animator inside = driven by EnemyAnimationDriver. Authored at scale 1, feet at the pivot.")] public GameObject modelPrefab;
+
         [Header("Audio")]
         public SoundEvent spawnSound;
         [Tooltip("Attack start (windup), every peer.")] public SoundEvent attackSound;

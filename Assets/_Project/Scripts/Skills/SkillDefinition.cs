@@ -40,6 +40,7 @@ namespace RiskOfMagic.Skills
         public VfxAnchor castVfxAnchor = VfxAnchor.Caster;
         [Min(0f)] public float castVfxScale = 1f;
         [Tooltip("Played at the caster on every peer.")] public SoundEvent castSound;
+        [Tooltip("Animator trigger set on cast (every peer), with the SkillSlot int parameter.")] public string animatorTrigger = "Cast";
 
         [Header("Owner camera feedback")]
         [Tooltip("Field of view change (degrees) on cast: positive widens (dashes), negative narrows.")] public float ownerFovKick;

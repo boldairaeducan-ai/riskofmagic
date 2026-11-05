@@ -232,6 +232,14 @@ namespace RiskOfMagic.Player
             regenTimer = 0f;
         }
 
+        /// <summary>Hides the placeholder capsule when a real model is used (PlayerAnimationDriver).</summary>
+        public void SetPlaceholderVisible(bool visible)
+        {
+            foreach (var body in bodyRenderers)
+                if (body != null)
+                    body.enabled = visible;
+        }
+
         private void ApplyBodyColor(Color color)
         {
             propertyBlock ??= new MaterialPropertyBlock();

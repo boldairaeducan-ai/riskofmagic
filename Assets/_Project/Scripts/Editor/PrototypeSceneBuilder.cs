@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using RiskOfMagic.Animation;
 using RiskOfMagic.Audio;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Combat;
@@ -815,6 +816,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<LocalCombatFeedback>();
             root.AddComponent<PlayerAudio>();
             root.AddComponent<PlayerRunStats>();
+            root.AddComponent<PlayerAnimationDriver>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -1421,6 +1423,7 @@ namespace RiskOfMagic.Editor
             if (dodge != null)
                 SetProperties(root.AddComponent<EnemyDodge>(), dodge);
             root.AddComponent<EnemyLeap>();
+            root.AddComponent<EnemyAnimationDriver>(); // after every EnemyAttack/Dodge/Leap
             var brain = root.AddComponent<EnemyBrain>();
             SetProperties(brain, so => so.FindProperty("attack").objectReferenceValue = attack);
         }
