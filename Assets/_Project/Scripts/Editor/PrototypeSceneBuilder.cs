@@ -75,6 +75,14 @@ namespace RiskOfMagic.Editor
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
         public static void Build()
         {
+            // With compile errors, existing configs can't be loaded as their type: Asset<T> would replace them with
+            // empty ones (items named "Item" with no effect). Never build in that state.
+            if (EditorApplication.isCompiling || EditorUtility.scriptCompilationFailed)
+            {
+                EditorUtility.DisplayDialog("Build Prototype Scene",
+                    "Des scripts ne compilent pas (ou sont en cours de compilation). Corrige les erreurs de la console puis relance.", "OK");
+                return;
+            }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() || !HudBuilder.EnsureTextMeshPro())
                 return;
 
@@ -2242,8 +2250,14 @@ namespace RiskOfMagic.Editor
             var existing = AssetDatabase.LoadAssetAtPath<T>(path);
             if (existing != null)
                 return existing;
-            if (AssetDatabase.LoadMainAssetAtPath(path) != null)
+            var main = AssetDatabase.LoadMainAssetAtPath(path);
+            if (main != null)
+            {
+                // Only replace an asset of a genuinely different type, never one whose script failed to load.
+                if (main is not ScriptableObject other || other.GetType() == typeof(ScriptableObject) || other.GetType() == typeof(MonoBehaviour))
+                    throw new System.InvalidOperationException($"[Risk of Magic] {path} could not be loaded as {typeof(T).Name} (script error?). Build aborted.");
                 AssetDatabase.DeleteAsset(path);
+            }
             var asset = ScriptableObject.CreateInstance<T>();
             AssetDatabase.CreateAsset(asset, path);
             return asset;
