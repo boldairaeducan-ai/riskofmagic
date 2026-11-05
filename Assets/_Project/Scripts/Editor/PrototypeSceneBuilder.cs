@@ -61,9 +61,9 @@ namespace RiskOfMagic.Editor
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart;
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit;
             public DotEffect Poison;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart };
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -86,7 +86,7 @@ namespace RiskOfMagic.Editor
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
@@ -119,6 +119,14 @@ namespace RiskOfMagic.Editor
                 prefabList.Add(new NetworkPrefab { Prefab = enemy.gameObject });
             var colossus = BuildBoss();
             prefabList.Add(new NetworkPrefab { Prefab = colossus.gameObject });
+            var spiderling = BuildSpiderling();
+            prefabList.Add(new NetworkPrefab { Prefab = spiderling.gameObject });
+            var spiderlingCard = Card("SpawnCard_Spiderling", spiderling, 4, 0f, 0f); // summoned only (weight 0, not in the director)
+            var burn = AssetDatabase.LoadAssetAtPath<DotEffect>(ItemsFolder + "/Dot_Burn.asset"); // built with the items
+            var drake = BuildEmberDrake(projectiles.Firebomb, vfx, burn);
+            prefabList.Add(new NetworkPrefab { Prefab = drake.gameObject });
+            var queen = BuildSpiderQueen(projectiles.SpiderSpit, spiderlingCard, vfx);
+            prefabList.Add(new NetworkPrefab { Prefab = queen.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = pickup.gameObject });
             prefabList.Add(new NetworkPrefab { Prefab = smallChest });
             prefabList.Add(new NetworkPrefab { Prefab = largeChest });
@@ -142,7 +150,13 @@ namespace RiskOfMagic.Editor
                 Card("SpawnCard_SkeletonArcher", skeleton, 20, 0.15f, 1.9f)
             };
 
-            var bossCards = new List<SpawnCard> { Card("SpawnCard_Boss_BoneColossus", colossus, 1, 1f, 0f) };
+            // Teleporter: weighted pick among unlocked cards, never the previous boss; +1 boss from stage 4.
+            var bossCards = new List<SpawnCard>
+            {
+                Card("SpawnCard_Boss_BoneColossus", colossus, 1, 1f, 0f),
+                Card("SpawnCard_Boss_SpiderQueen", queen, 1, 1f, 0f),
+                Card("SpawnCard_Boss_EmberDrake", drake, 1, 1f, 0f, minStage: 2)
+            };
             var teleporter = BuildTeleporterPrefab(bossCards);
             prefabList.Add(new NetworkPrefab { Prefab = teleporter });
 
@@ -205,7 +219,8 @@ namespace RiskOfMagic.Editor
                 ArcaneMissile = ProjectileAsset("Projectile_ArcaneMissile", new Color(0.8f, 0.45f, 1f), 0.3f, vfx.Impact),
                 Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst),
                 ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact),
-                PoisonDart = ProjectileAsset("Projectile_PoisonDart", new Color(0.45f, 0.9f, 0.2f), 0.15f, vfx.Impact)
+                PoisonDart = ProjectileAsset("Projectile_PoisonDart", new Color(0.45f, 0.9f, 0.2f), 0.15f, vfx.Impact),
+                SpiderSpit = ProjectileAsset("Projectile_SpiderSpit", new Color(0.55f, 0.85f, 0.15f), 0.45f, vfx.PoisonBurst)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -231,6 +246,7 @@ namespace RiskOfMagic.Editor
             EditorUtility.SetDirty(set.Poison);
 
             Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
+            Configure(set.SpiderSpit, speed: 28f, gravity: 4f, lifetime: 3f, radius: 0.3f, explosion: 2f);
 
             // Strict max ranges (m) for ranged attacks.
             set.Arrow.maxRange = 70f;
@@ -241,9 +257,11 @@ namespace RiskOfMagic.Editor
             set.FireBolt.maxRange = 60f;
             set.FrostOrb.maxRange = 50f;
             set.PoisonDart.maxRange = 50f;
+            set.SpiderSpit.maxRange = 45f;
             foreach (var projectile in set.All)
                 EditorUtility.SetDirty(projectile);
             set.PoisonDart.dot = set.Poison;
+            set.SpiderSpit.dot = set.Poison;
             return set;
         }
 
@@ -1010,6 +1028,141 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Teleporter.prefab");
         }
 
+        private static EnemyDefinition BossDef(string file, string displayName, float health, float speed)
+        {
+            var def = EnemyDef(file, displayName, health, speed, gold: 150, detection: 200f);
+            def.isBoss = true;
+            def.controlResistance = 0.6f;
+            def.alertAlliesRadius = 0f;
+            def.despawnDelay = 3f;
+            EditorUtility.SetDirty(def);
+            return def;
+        }
+
+        private static EnemyActor BuildEmberDrake(ProjectileDefinition firebomb, VfxSet vfx, DotEffect burn)
+        {
+            var def = BossDef("Boss_EmberDrake", "Drake de braise", health: 1600f, speed: 6f);
+            var root = EnemyBase("Boss_EmberDrake", def, new Color(0.75f, 0.2f, 0.08f), out _);
+            root.transform.localScale = Vector3.one * 2f;
+
+            // Primary (drives the approach): fire breath, slow tracking, strafe around it.
+            var breath = root.AddComponent<EnemyConeAttack>();
+            SetProperties(breath, so =>
+            {
+                so.FindProperty("range").floatValue = 9f;
+                so.FindProperty("cooldown").floatValue = 6f;
+                so.FindProperty("selectionWeight").floatValue = 1.5f;
+                so.FindProperty("maxHeightDifference").floatValue = 5f;
+                so.FindProperty("angle").floatValue = 55f;
+                so.FindProperty("damagePerTick").floatValue = 7f;
+                so.FindProperty("windup").floatValue = 0.8f;
+                so.FindProperty("duration").floatValue = 2.2f;
+                so.FindProperty("tickInterval").floatValue = 0.25f;
+                so.FindProperty("originHeight").floatValue = 1.5f;
+                so.FindProperty("dot").objectReferenceValue = burn;
+                so.FindProperty("telegraphVfx").objectReferenceValue = vfx.Telegraph;
+                so.FindProperty("tickVfx").objectReferenceValue = vfx.FireBurst;
+            });
+            var charge = root.AddComponent<EnemyLungeAttack>();
+            SetProperties(charge, so =>
+            {
+                so.FindProperty("range").floatValue = 16f;
+                so.FindProperty("minRange").floatValue = 6f;
+                so.FindProperty("cooldown").floatValue = 7f;
+                so.FindProperty("damage").floatValue = 30f;
+                so.FindProperty("windup").floatValue = 0.9f;
+                so.FindProperty("dashSpeed").floatValue = 24f;
+                so.FindProperty("dashDuration").floatValue = 0.55f;
+                so.FindProperty("recovery").floatValue = 1f;
+                so.FindProperty("hitRadius").floatValue = 2.2f;
+                so.FindProperty("maxHeightDifference").floatValue = 5f;
+            });
+            var fireball = root.AddComponent<EnemyArtilleryAttack>();
+            SetProperties(fireball, so =>
+            {
+                so.FindProperty("range").floatValue = 35f;
+                so.FindProperty("minRange").floatValue = 8f;
+                so.FindProperty("cooldown").floatValue = 5f;
+                so.FindProperty("damage").floatValue = 28f;
+                so.FindProperty("windup").floatValue = 0.9f;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
+                so.FindProperty("projectile").objectReferenceValue = firebomb;
+                so.FindProperty("telegraphVfx").objectReferenceValue = vfx.Telegraph;
+            });
+            FinishEnemy(root, breath);
+            return SavePrefab(root, Prefabs + "/Boss_EmberDrake.prefab").GetComponent<EnemyActor>();
+        }
+
+        private static EnemyActor BuildSpiderQueen(ProjectileDefinition spit, SpawnCard spiderling, VfxSet vfx)
+        {
+            var def = BossDef("Boss_SpiderQueen", "Reine araignée", health: 1300f, speed: 5f);
+            def.movementStyle = EnemyMovementStyle.Kite;
+            def.kiteRange = new Vector2(8f, 20f);
+            def.retreatDistance = 7f;
+            EditorUtility.SetDirty(def);
+            var root = EnemyBase("Boss_SpiderQueen", def, new Color(0.3f, 0.12f, 0.35f), out _);
+            root.transform.localScale = Vector3.one * 1.8f;
+
+            // Primary: poison spit (keeps her at range with the Kite style).
+            var spitAttack = root.AddComponent<EnemyProjectileAttack>();
+            SetProperties(spitAttack, so =>
+            {
+                so.FindProperty("range").floatValue = 24f;
+                so.FindProperty("cooldown").floatValue = 2.2f;
+                so.FindProperty("selectionWeight").floatValue = 1.5f;
+                so.FindProperty("damage").floatValue = 14f;
+                so.FindProperty("windup").floatValue = 0.6f;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
+                so.FindProperty("projectile").objectReferenceValue = spit;
+            });
+            var summon = root.AddComponent<EnemySummonAttack>();
+            SetProperties(summon, so =>
+            {
+                so.FindProperty("range").floatValue = 30f;
+                so.FindProperty("cooldown").floatValue = 15f;
+                so.FindProperty("selectionWeight").floatValue = 3f;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
+                so.FindProperty("minion").objectReferenceValue = spiderling;
+                so.FindProperty("countPerCast").intValue = 4;
+                so.FindProperty("maxAlive").intValue = 8;
+                so.FindProperty("spawnVfx").objectReferenceValue = vfx.PoisonBurst;
+            });
+            var pounce = root.AddComponent<EnemyLungeAttack>();
+            SetProperties(pounce, so =>
+            {
+                so.FindProperty("range").floatValue = 12f;
+                so.FindProperty("minRange").floatValue = 4f;
+                so.FindProperty("cooldown").floatValue = 6f;
+                so.FindProperty("damage").floatValue = 24f;
+                so.FindProperty("windup").floatValue = 0.5f;
+                so.FindProperty("dashSpeed").floatValue = 22f;
+                so.FindProperty("dashDuration").floatValue = 0.45f;
+                so.FindProperty("recovery").floatValue = 0.8f;
+                so.FindProperty("hitRadius").floatValue = 1.8f;
+                so.FindProperty("maxHeightDifference").floatValue = 5f;
+            });
+            FinishEnemy(root, spitAttack);
+            return SavePrefab(root, Prefabs + "/Boss_SpiderQueen.prefab").GetComponent<EnemyActor>();
+        }
+
+        private static EnemyActor BuildSpiderling()
+        {
+            var def = EnemyDef("Enemy_Spiderling", "Araignée", health: 20f, speed: 7.5f, gold: 2, detection: 40f);
+            var root = EnemyBase("Enemy_Spiderling", def, new Color(0.2f, 0.1f, 0.25f), out _);
+            root.transform.localScale = Vector3.one * 0.55f;
+            var attack = root.AddComponent<EnemyMeleeAttack>();
+            SetProperties(attack, so =>
+            {
+                so.FindProperty("range").floatValue = 1.8f;
+                so.FindProperty("cooldown").floatValue = 1.2f;
+                so.FindProperty("damage").floatValue = 5f;
+                so.FindProperty("windup").floatValue = 0.35f;
+                so.FindProperty("hitRadius").floatValue = 1f;
+            });
+            FinishEnemy(root, attack);
+            return SavePrefab(root, Prefabs + "/Enemy_Spiderling.prefab").GetComponent<EnemyActor>();
+        }
+
         private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold, float detection)
         {
             var def = Asset<EnemyDefinition>($"{EnemiesFolder}/{file}.asset");
@@ -1082,13 +1235,14 @@ namespace RiskOfMagic.Editor
             SetProperties(brain, so => so.FindProperty("attack").objectReferenceValue = attack);
         }
 
-        private static SpawnCard Card(string file, EnemyActor prefab, int cost, float weight, float minCoefficient)
+        private static SpawnCard Card(string file, EnemyActor prefab, int cost, float weight, float minCoefficient, int minStage = 1)
         {
             var card = Asset<SpawnCard>($"{EnemiesFolder}/{file}.asset");
             card.prefab = prefab;
             card.cost = cost;
             card.weight = weight;
             card.minCoefficient = minCoefficient;
+            card.minStage = minStage;
             EditorUtility.SetDirty(card);
             return card;
         }

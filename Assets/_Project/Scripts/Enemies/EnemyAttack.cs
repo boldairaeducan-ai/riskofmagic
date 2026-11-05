@@ -17,6 +17,8 @@ namespace RiskOfMagic.Enemies
         [SerializeField, Min(0f)] protected float cooldown = 1.5f;
         [SerializeField, Min(0f), Tooltip("Max vertical gap with the target (prevents hitting through platforms).")]
         protected float maxHeightDifference = 2.5f;
+        [SerializeField, Min(0f), Tooltip("Multi-attack enemies: relative chance to pick this attack among the ready ones.")]
+        protected float selectionWeight = 1f;
 
         private float readyTime;
         private Coroutine routine;
@@ -25,6 +27,9 @@ namespace RiskOfMagic.Enemies
         public event Action AttackStarted;
 
         public float Range => range;
+        public float SelectionWeight => selectionWeight;
+        /// <summary>Multiplier of the brain's turn speed while this attack runs (low = sweeping breath).</summary>
+        public virtual float TrackingFactor => 1f;
         public bool IsAttacking { get; private set; }
         public bool IsReady => !IsAttacking && Time.time >= readyTime;
         protected EnemyActor Actor { get; private set; }

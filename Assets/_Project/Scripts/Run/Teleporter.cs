@@ -34,6 +34,7 @@ namespace RiskOfMagic.Run
         [Header("Boss")]
         [SerializeField] private List<SpawnCard> bossCards = new();
         [SerializeField, Min(1)] private int bossCount = 1;
+        [SerializeField, Min(1), Tooltip("From this stage, one extra boss.")] private int extraBossFromStage = 4;
         [SerializeField] private Vector2 bossSpawnDistance = new(12f, 22f);
 
         [Header("Boss reward (one item per player)")]
@@ -58,6 +59,12 @@ namespace RiskOfMagic.Run
         private readonly NetworkVariable<float> charge = new();
         private readonly List<EnemyActor> bosses = new();
         private bool bossRewardGiven;
+
+        // Last boss of the previous event: never picked twice in a row (when there is an alternative).
+        private static SpawnCard lastBossCard;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => lastBossCard = null;
         private MaterialPropertyBlock propertyBlock;
 
         public static Teleporter Instance { get; private set; }
@@ -137,11 +144,16 @@ namespace RiskOfMagic.Run
             }
 
             int level = RunDifficulty.CurrentEnemyLevel;
-            for (int i = 0; i < bossCount; i++)
+            int stage = StageManager.Instance != null ? StageManager.Instance.StageNumber : 1;
+            int count = bossCount + (stage >= extraBossFromStage ? 1 : 0);
+            var picked = new List<SpawnCard>();
+            for (int i = 0; i < count; i++)
             {
-                var card = bossCards[Random.Range(0, bossCards.Count)];
-                if (card == null || card.prefab == null || !TryFindBossPosition(out var position))
+                var card = PickBossCard(stage, picked);
+                if (card == null || !TryFindBossPosition(out var position))
                     continue;
+                picked.Add(card);
+                lastBossCard = card;
 
                 Vector3 facing = Vector3.ProjectOnPlane(transform.position - position, Vector3.up);
                 var boss = director.Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
@@ -150,6 +162,36 @@ namespace RiskOfMagic.Run
                     foreach (var player in PlayerAvatar.All)
                         brain.Alert(player, false);
             }
+        }
+
+        /// <summary>Weighted pick among cards unlocked at this stage, avoiding the previous event's boss and the bosses
+        /// already picked for this event whenever another card is available.</summary>
+        private SpawnCard PickBossCard(int stage, List<SpawnCard> alreadyPicked)
+        {
+            var candidates = new List<SpawnCard>();
+            foreach (var card in bossCards)
+                if (card != null && card.prefab != null && card.minStage <= stage)
+                    candidates.Add(card);
+            if (candidates.Count == 0)
+                return null;
+
+            var fresh = candidates.FindAll(c => c != lastBossCard && !alreadyPicked.Contains(c));
+            if (fresh.Count == 0)
+                fresh = candidates.FindAll(c => !alreadyPicked.Contains(c));
+            if (fresh.Count == 0)
+                fresh = candidates;
+
+            float total = 0f;
+            foreach (var card in fresh)
+                total += Mathf.Max(0.01f, card.weight);
+            float roll = Random.value * total;
+            foreach (var card in fresh)
+            {
+                roll -= Mathf.Max(0.01f, card.weight);
+                if (roll <= 0f)
+                    return card;
+            }
+            return fresh[fresh.Count - 1];
         }
 
         private bool TryFindBossPosition(out Vector3 position)
