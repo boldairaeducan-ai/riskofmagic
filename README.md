@@ -58,7 +58,7 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 | Ogre | Direct | Charge (12 m) | Tank, from difficulty 1.25 |
 | Pyromancien | Kite | Lobbed fire bomb, ground marker | Backs off when approached |
 | Squelette archer | Kite | Arrows | Rare, from difficulty 1.6 |
-| Colosse d'os | Direct | Heavy melee | Teleporter boss |
+| Colosse d'os | Direct | Ground slam + expanding wave (jump over it) / lobbed boulder / charge | Teleporter boss |
 | Reine araignée | Kite | Poison spit / summons 4 spiderlings (max 8) / pounce | Teleporter boss |
 | Drake de braise | Direct | Fire breath cone (burn, slow turn) / charge / lobbed fireball | Teleporter boss from stage 2 |
 | Araignée | Direct | Melee | Summoned by the Spider Queen only |

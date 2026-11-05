@@ -56,14 +56,14 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit;
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder;
             public DotEffect Poison;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit };
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -86,7 +86,7 @@ namespace RiskOfMagic.Editor
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
@@ -117,7 +117,7 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = lobbyPrefab });
             foreach (var enemy in new[] { ghoul, wolf, assassin, ogre, pyromancer, skeleton })
                 prefabList.Add(new NetworkPrefab { Prefab = enemy.gameObject });
-            var colossus = BuildBoss();
+            var colossus = BuildBoss(projectiles.Boulder, vfx);
             prefabList.Add(new NetworkPrefab { Prefab = colossus.gameObject });
             var spiderling = BuildSpiderling();
             prefabList.Add(new NetworkPrefab { Prefab = spiderling.gameObject });
@@ -203,7 +203,8 @@ namespace RiskOfMagic.Editor
                 RallyPulse = EffectPrefab("VFX_RallyPulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.1f, 0f), new Color(1f, 0.8f, 0.3f), 0.5f),
                 Shockwave = EffectPrefab("VFX_Shockwave", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.11f, 0f), new Color(0.9f, 0.85f, 0.75f), 0.3f),
                 TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
-                Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f)
+                Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f),
+                GroundWave = RingPrefab("VFX_GroundWave", new Color(1f, 0.75f, 0.35f), 0.6f, ColossusWaveSpeed)
             };
         }
 
@@ -220,7 +221,8 @@ namespace RiskOfMagic.Editor
                 Firebomb = ProjectileAsset("Projectile_Firebomb", new Color(1f, 0.4f, 0.1f), 0.6f, vfx.FireBurst),
                 ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact),
                 PoisonDart = ProjectileAsset("Projectile_PoisonDart", new Color(0.45f, 0.9f, 0.2f), 0.15f, vfx.Impact),
-                SpiderSpit = ProjectileAsset("Projectile_SpiderSpit", new Color(0.55f, 0.85f, 0.15f), 0.45f, vfx.PoisonBurst)
+                SpiderSpit = ProjectileAsset("Projectile_SpiderSpit", new Color(0.55f, 0.85f, 0.15f), 0.45f, vfx.PoisonBurst),
+                Boulder = ProjectileAsset("Projectile_Boulder", new Color(0.45f, 0.4f, 0.35f), 1.1f, vfx.Explosion)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -247,6 +249,8 @@ namespace RiskOfMagic.Editor
 
             Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
             Configure(set.SpiderSpit, speed: 28f, gravity: 4f, lifetime: 3f, radius: 0.3f, explosion: 2f);
+            // Speed is overridden by the artillery attack.
+            Configure(set.Boulder, speed: 20f, gravity: 20f, lifetime: 4f, radius: 0.5f, explosion: 3.5f, explodeOnExpire: true);
 
             // Strict max ranges (m) for ranged attacks.
             set.Arrow.maxRange = 70f;
@@ -954,28 +958,62 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Enemy_SkeletonArcher.prefab").GetComponent<EnemyActor>();
         }
 
-        private static EnemyActor BuildBoss()
+        /// <summary>Seismic titan: ground slam + expanding wave to jump over, lobbed boulder, charge.</summary>
+        private static EnemyActor BuildBoss(ProjectileDefinition boulder, VfxSet vfx)
         {
-            var def = EnemyDef("Boss_BoneColossus", "Colosse d'os", health: 1400f, speed: 5f, gold: 150, detection: 200f);
-            def.isBoss = true;
-            def.controlResistance = 0.6f;
-            def.alertAlliesRadius = 0f;
-            def.despawnDelay = 3f;
-            EditorUtility.SetDirty(def);
-
+            var def = BossDef("Boss_BoneColossus", "Colosse d'os", health: 1400f, speed: 5f);
             var root = EnemyBase("Boss_BoneColossus", def, new Color(0.35f, 0.3f, 0.28f), out _);
             root.transform.localScale = Vector3.one * 2.2f;
-            var attack = root.AddComponent<EnemyMeleeAttack>();
-            SetProperties(attack, so =>
+
+            // Primary (drives the approach): slam + shockwave.
+            var slam = root.AddComponent<EnemyShockwaveAttack>();
+            SetProperties(slam, so =>
             {
-                so.FindProperty("range").floatValue = 4.5f;
-                so.FindProperty("cooldown").floatValue = 2.2f;
-                so.FindProperty("damage").floatValue = 35f;
-                so.FindProperty("windup").floatValue = 0.8f;
-                so.FindProperty("hitRadius").floatValue = 2.8f;
+                so.FindProperty("range").floatValue = 7f;
+                so.FindProperty("cooldown").floatValue = 4.5f;
+                so.FindProperty("selectionWeight").floatValue = 1.5f;
+                so.FindProperty("maxHeightDifference").floatValue = 5f;
+                so.FindProperty("slamDamage").floatValue = 30f;
+                so.FindProperty("slamRadius").floatValue = 4f;
+                so.FindProperty("windup").floatValue = 1f;
+                so.FindProperty("recovery").floatValue = 0.8f;
+                so.FindProperty("waveDamage").floatValue = 20f;
+                so.FindProperty("waveMaxRadius").floatValue = 25f;
+                so.FindProperty("waveSpeed").floatValue = ColossusWaveSpeed;
+                so.FindProperty("waveThickness").floatValue = 1.5f;
+                so.FindProperty("jumpClearance").floatValue = 0.5f;
+                so.FindProperty("telegraphVfx").objectReferenceValue = vfx.Telegraph;
+                so.FindProperty("slamVfx").objectReferenceValue = vfx.Shockwave;
+                so.FindProperty("waveVfx").objectReferenceValue = vfx.GroundWave;
+            });
+            var rock = root.AddComponent<EnemyArtilleryAttack>();
+            SetProperties(rock, so =>
+            {
+                so.FindProperty("range").floatValue = 40f;
+                so.FindProperty("minRange").floatValue = 10f;
+                so.FindProperty("cooldown").floatValue = 5f;
+                so.FindProperty("damage").floatValue = 30f;
+                so.FindProperty("damageType").enumValueIndex = (int)DamageType.Physical;
+                so.FindProperty("windup").floatValue = 0.9f;
+                so.FindProperty("maxHeightDifference").floatValue = 15f;
+                so.FindProperty("projectile").objectReferenceValue = boulder;
+                so.FindProperty("telegraphVfx").objectReferenceValue = vfx.Telegraph;
+            });
+            var charge = root.AddComponent<EnemyLungeAttack>();
+            SetProperties(charge, so =>
+            {
+                so.FindProperty("range").floatValue = 18f;
+                so.FindProperty("minRange").floatValue = 7f;
+                so.FindProperty("cooldown").floatValue = 8f;
+                so.FindProperty("damage").floatValue = 32f;
+                so.FindProperty("windup").floatValue = 0.9f;
+                so.FindProperty("dashSpeed").floatValue = 22f;
+                so.FindProperty("dashDuration").floatValue = 0.6f;
+                so.FindProperty("recovery").floatValue = 1f;
+                so.FindProperty("hitRadius").floatValue = 2.4f;
                 so.FindProperty("maxHeightDifference").floatValue = 5f;
             });
-            FinishEnemy(root, attack);
+            FinishEnemy(root, slam);
             return SavePrefab(root, Prefabs + "/Boss_BoneColossus.prefab").GetComponent<EnemyActor>();
         }
 
@@ -1508,6 +1546,22 @@ namespace RiskOfMagic.Editor
             renderer.shadowCastingMode = ShadowCastingMode.Off;
             var timed = root.AddComponent<TimedEffect>();
             SetProperties(timed, so => so.FindProperty("lifetime").floatValue = lifetime);
+            root.AddComponent<EffectSound>();
+            return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
+        }
+
+        private const float ColossusWaveSpeed = 14f; // shared by the ring VFX and the shockwave attack
+
+        private static GameObject RingPrefab(string name, Color color, float width, float speed)
+        {
+            var root = new GameObject(name);
+            var line = root.AddComponent<LineRenderer>();
+            line.widthMultiplier = width;
+            line.sharedMaterial = LineMat();
+            line.startColor = line.endColor = color;
+            line.shadowCastingMode = ShadowCastingMode.Off;
+            var ring = root.AddComponent<ExpandingRing>();
+            SetProperties(ring, so => so.FindProperty("speed").floatValue = speed);
             root.AddComponent<EffectSound>();
             return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
         }
