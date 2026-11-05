@@ -49,6 +49,8 @@ namespace RiskOfMagic.Player
         public PlayerWallet Wallet { get; private set; }
         public PlayerInventory Inventory { get; private set; }
         public PlayerRunStats RunStats { get; private set; }
+        public PlayerExperience Experience { get; private set; }
+        public int Level => Experience != null ? Experience.Level : 1;
         public StatusEffects Status { get; private set; }
         public PlayerEquipment Equipment { get; private set; }
         public SkillController Skills { get; private set; }
@@ -109,6 +111,7 @@ namespace RiskOfMagic.Player
             Equipment = GetComponent<PlayerEquipment>();
             Downed = GetComponent<PlayerDowned>();
             RunStats = GetComponent<PlayerRunStats>();
+            Experience = GetComponent<PlayerExperience>();
             Skills = GetComponent<SkillController>();
         }
 
@@ -129,6 +132,8 @@ namespace RiskOfMagic.Player
                 Downed.Changed += UpdateControl;
             if (Status != null)
                 Status.Changed += RecalculateStats;
+            if (Experience != null)
+                Experience.LevelChanged += OnLevelChanged;
             ApplyCharacter(characterIndex.Value);
 
             Input.enabled = IsOwner;
@@ -155,6 +160,8 @@ namespace RiskOfMagic.Player
                 Downed.Changed -= UpdateControl;
             if (Status != null)
                 Status.Changed -= RecalculateStats;
+            if (Experience != null)
+                Experience.LevelChanged -= OnLevelChanged;
             if (Local == this)
                 Local = null;
         }
@@ -189,6 +196,8 @@ namespace RiskOfMagic.Player
         }
 
         private void OnCharacterIndexChanged(int previous, int current) => ApplyCharacter(current);
+
+        private void OnLevelChanged(int newLevel) => RecalculateStats();
 
         private void OnLoadoutChanged(byte previous, byte current)
         {
@@ -225,7 +234,7 @@ namespace RiskOfMagic.Player
             if (Character == null)
                 return;
 
-            Stats.Recalculate(Character, Inventory, Status);
+            Stats.Recalculate(Character, Inventory, Status, Level);
             Motor.SpeedMultiplier = Stats.MoveSpeedMultiplier;
             Motor.ExtraJumps = Stats.ExtraJumps;
             if (Skills != null)

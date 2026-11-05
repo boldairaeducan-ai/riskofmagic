@@ -23,8 +23,9 @@ namespace RiskOfMagic.Characters
         public float DamageTakenMultiplier { get; private set; } = 1f;
         public int BonusSkillCharges { get; private set; }
 
-        public void Recalculate(CharacterDefinition definition, PlayerInventory inventory, StatusEffects status)
+        public void Recalculate(CharacterDefinition definition, PlayerInventory inventory, StatusEffects status, int level = 1)
         {
+            int levelsAboveOne = Mathf.Max(0, level - 1);
             float attackSpeedBonus = 0f, damageBonus = 0f, moveBonus = 0f, healthFlat = 0f, healthPercent = 0f, regen = 0f, crit = 0f, flatReduction = 0f;
             float cooldown = 1f, damageTaken = 1f;
             int jumps = 0, charges = 0;
@@ -64,14 +65,14 @@ namespace RiskOfMagic.Characters
             float statusAttack = status != null ? status.AttackSpeedMultiplier : 1f;
             float statusMove = status != null ? status.MoveSpeedMultiplier : 1f;
 
-            BaseDamage = definition.baseDamage;
+            BaseDamage = definition.baseDamage * (1f + definition.damagePerLevel * levelsAboveOne);
             DamageMultiplier = (1f + damageBonus) * (status != null ? status.DamageDealtMultiplier : 1f);
             AttackSpeed = definition.attackSpeed * (1f + attackSpeedBonus) * statusAttack;
             CritChance = Mathf.Clamp01(definition.critChance + crit);
             CooldownMultiplier = cooldown;
             MoveSpeedMultiplier = (1f + moveBonus) * statusMove;
-            MaxHealth = (definition.maxHealth + healthFlat) * (1f + healthPercent) * (status != null ? status.MaxHealthMultiplier : 1f);
-            HealthRegen = definition.healthRegen + regen;
+            MaxHealth = (definition.maxHealth * (1f + definition.healthPerLevel * levelsAboveOne) + healthFlat) * (1f + healthPercent) * (status != null ? status.MaxHealthMultiplier : 1f);
+            HealthRegen = definition.healthRegen * (1f + definition.regenPerLevel * levelsAboveOne) + regen;
             ExtraJumps = jumps;
             FlatDamageReduction = flatReduction;
             DamageTakenMultiplier = damageTaken;

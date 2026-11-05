@@ -262,7 +262,7 @@ namespace RiskOfMagic.Editor
             var portrait = Stretch("Portrait", portraitFrame, 5f);
             var portraitImage = PlainImage(portrait);
 
-            var nameLabel = Text(Rect("Name", panel, TopLeft, TopLeft, new Vector2(142f, -8f), new Vector2(330f, 34f)), null,
+            var nameLabel = Text(Rect("Name", panel, TopLeft, TopLeft, new Vector2(142f, -8f), new Vector2(220f, 34f)), null,
                 "Personnage", 26f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Left);
             var character = panel.gameObject.AddComponent<CharacterWidget>();
             Props(character, so =>
@@ -289,6 +289,21 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("fillImage").objectReferenceValue = fillImage;
                 so.FindProperty("trail").objectReferenceValue = trail;
                 so.FindProperty("label").objectReferenceValue = healthLabel;
+            });
+
+            // Experience: thin bar under the health bar, small level label at the top right (discreet).
+            var xpBar = Rect("ExperienceBar", panel, BottomLeft, BottomLeft, new Vector2(142f, 44f), new Vector2(330f, 4f));
+            Themed(xpBar, HudSprite.BarBackground, HudColor.BarBackground);
+            var xpFill = Stretch("Fill", xpBar);
+            Themed(xpFill, HudSprite.BarFill, HudColor.Accent);
+            var levelLabel = Text(Rect("Level", panel, TopRight, TopRight, new Vector2(-12f, -12f), new Vector2(110f, 26f)), null,
+                "Niv. 1", 18f, HudFont.Numbers, HudColor.TextMuted, TextAlignmentOptions.Right);
+            var xpWidget = xpBar.gameObject.AddComponent<ExperienceBarWidget>();
+            Props(xpWidget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("fill").objectReferenceValue = xpFill;
+                so.FindProperty("levelLabel").objectReferenceValue = levelLabel;
             });
 
             // Gold

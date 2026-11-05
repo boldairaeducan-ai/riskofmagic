@@ -125,6 +125,8 @@ namespace RiskOfMagic.Run
                     player.Equipment.ClearEquipment();
                 if (player.RunStats != null)
                     player.RunStats.ResetStats();
+                if (player.Experience != null)
+                    player.Experience.ResetExperience();
             }
             victory.Value = false;
 

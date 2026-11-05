@@ -22,6 +22,11 @@ namespace RiskOfMagic.Characters
         [Range(0f, 1f)] public float critChance = 0.01f;
         public MovementConfig movement;
 
+        [Header("Per level (above 1, RoR2-style)")]
+        [Min(0f), Tooltip("Base damage gained per level (fraction of baseDamage).")] public float damagePerLevel = 0.2f;
+        [Min(0f), Tooltip("Max health gained per level (fraction of maxHealth).")] public float healthPerLevel = 0.3f;
+        [Min(0f), Tooltip("Regen gained per level (fraction of healthRegen).")] public float regenPerLevel = 0.2f;
+
         [Header("Models (optional, replace the placeholder capsule)")]
         [Tooltip("Third-person body seen by other players (shadow only for its owner). Animator inside = driven by PlayerAnimationDriver.")]
         public GameObject modelPrefab;

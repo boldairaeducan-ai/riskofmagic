@@ -125,6 +125,8 @@ namespace RiskOfMagic.Audio
                     boundPlayer.Wallet.GoldChanged -= OnGoldChanged;
                 if (boundPlayer.Downed != null)
                     boundPlayer.Downed.Changed -= OnDownedChanged;
+                if (boundPlayer.Experience != null)
+                    boundPlayer.Experience.LevelChanged -= OnLevelChanged;
             }
             boundPlayer = player;
             if (player == null)
@@ -136,12 +138,20 @@ namespace RiskOfMagic.Audio
                 wasDowned = player.Downed.IsDowned;
                 player.Downed.Changed += OnDownedChanged;
             }
+            if (player.Experience != null)
+                player.Experience.LevelChanged += OnLevelChanged;
         }
 
         private static void OnGoldChanged(uint previous, uint current)
         {
             if (current > previous)
                 AudioService.Play2D(Config != null ? Config.goldGained : null);
+        }
+
+        private static void OnLevelChanged(int level)
+        {
+            if (level > 1)
+                AudioService.Play2D(Config != null ? Config.levelUp : null);
         }
 
         private void OnDownedChanged()

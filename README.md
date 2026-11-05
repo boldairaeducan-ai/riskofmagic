@@ -126,6 +126,13 @@ by the builder, never overwritten.
 | Autel de défi | Free; wave of elites (4 + 1/player, one affix), hunting right away | All dead → 1 item per player (Uncommon, 35% Rare) |
 | Coffre maudit | Costs 20% max HP until the end of the stage (stacks, `Withered` status) | Rare item (10% Legendary) |
 
+## Player levels
+RoR2-style: every kill gives the whole team experience equal to the enemy's gold reward (already scaled by the difficulty).
+Level L needs `20 × (1.55^(L−1) − 1) / 0.55` total experience (`PlayerExperience`). Each level above 1: +20% base damage,
++30% base max health, +20% base regen (`CharacterDefinition.damagePerLevel / healthPerLevel / regenPerLevel`). Shown as a
+thin bar under the health bar and a small "Niv. N" label (pulses on level up, optional `AudioConfig.levelUp` sound).
+Kept across stages, reset on a new run.
+
 ## Meta progression
 Local profile per player (`Application.persistentDataPath/profile.json`): counters (global and per character), completed challenges,
 discovered items, bestiary, skill loadouts, best victory time. `Meta/ChallengeTracker` turns replicated events into counters on each

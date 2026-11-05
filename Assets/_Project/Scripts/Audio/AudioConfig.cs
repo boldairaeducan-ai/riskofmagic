@@ -43,6 +43,7 @@ namespace RiskOfMagic.Audio
         [SoundSlot(false)] public SoundEvent playerDowned;
         [SoundSlot(false)] public SoundEvent playerRevived;
         [SoundSlot(false)] public SoundEvent playerDeath;
+        [SoundSlot(false), Tooltip("Keep it subtle: level ups are meant to be almost transparent.")] public SoundEvent levelUp;
 
         [Header("Economy & items")]
         [SoundSlot(false, Cooldown = 0.06f, MaxSimultaneous = 2)] public SoundEvent goldGained;

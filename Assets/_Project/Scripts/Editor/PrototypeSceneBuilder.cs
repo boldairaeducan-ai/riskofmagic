@@ -1094,6 +1094,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<PlayerRunStats>();
             root.AddComponent<PlayerAnimationDriver>();
             root.AddComponent<FallRecovery>();
+            root.AddComponent<PlayerExperience>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
