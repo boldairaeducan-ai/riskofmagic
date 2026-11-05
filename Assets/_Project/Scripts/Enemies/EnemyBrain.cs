@@ -51,7 +51,31 @@ namespace RiskOfMagic.Enemies
         [Header("Idle")]
         [SerializeField] private Vector2 wanderPause = new(2f, 5f);
 
+        [Header("Crowd (no single file)")]
+        [SerializeField, Tooltip("Direct chasers of a same player spread their approach angles around them.")]
+        private bool surround = true;
+        [SerializeField, Range(10f, 120f), Tooltip("Max angle between two neighbours on the ring (smaller crowds spread less).")]
+        private float maxSpacingAngle = 40f;
+        [SerializeField, Min(0.5f), Tooltip("Minimum radius of the approach ring around the target.")] private float minRingRadius = 2.2f;
+        [SerializeField, Min(0f), Tooltip("Closer than ring radius + this: go straight for the target.")] private float commitDistance = 2.5f;
+        [SerializeField, Tooltip("Random NavMesh avoidance priority so agents sidestep each other instead of queueing.")]
+        private Vector2Int avoidancePriorityRange = new(30, 70);
+
         private readonly HashSet<PlayerAvatar> knownPlayers = new();
+
+        // Crowd coordination (server): approach angles around each target, refreshed a few times per second.
+        private const float CrowdRefreshInterval = 0.4f;
+        private static readonly List<EnemyBrain> brains = new();
+        private static readonly Dictionary<PlayerAvatar, float> crowdRefreshAt = new();
+        private static readonly List<EnemyBrain> crowdBuffer = new();
+        private float approachAngle = float.NaN; // world yaw (degrees) around the target, NaN = none
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetCrowd()
+        {
+            brains.Clear();
+            crowdRefreshAt.Clear();
+        }
         private EnemyActor actor;
         private NavMeshAgent agent;
         private EnemyLeap leap;
@@ -103,6 +127,9 @@ namespace RiskOfMagic.Enemies
             home = transform.position;
             if (Definition != null)
                 flankAngle = Random.Range(Definition.flankAngle.x, Definition.flankAngle.y) * (Random.value < 0.5f ? -1f : 1f);
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+            agent.avoidancePriority = Random.Range(avoidancePriorityRange.x, avoidancePriorityRange.y + 1);
+            brains.Add(this);
 
             actor.Health.Died += OnDied;
             actor.Health.Damaged += OnDamaged;
@@ -110,6 +137,7 @@ namespace RiskOfMagic.Enemies
 
         public override void OnNetworkDespawn()
         {
+            brains.Remove(this);
             if (!IsServer)
                 return;
             actor.Health.Died -= OnDied;
@@ -441,11 +469,99 @@ namespace RiskOfMagic.Enemies
             nextRepath = Time.time + repathInterval;
             if (flank && TryFlankPath())
                 return;
+            if (!flank && surround && TrySurroundPath())
+                return;
             UpdatePath();
 
             // Target unreachable by walking: leap onto its NavMesh area once in range.
             if (!pathComplete && targetOnNavMesh && leap != null && leap.TryLeap(targetNavPoint))
                 State = EnemyState.Leap;
+        }
+
+        /// <summary>
+        /// Paths to this enemy's slot on a ring around the target (angles spread by the crowd coordinator) while still
+        /// far enough; false = go straight for the target.
+        /// </summary>
+        private bool TrySurroundPath()
+        {
+            RefreshCrowd(Target);
+            if (float.IsNaN(approachAngle))
+                return false;
+            float ring = Mathf.Max(minRingRadius, attack != null ? attack.Range * 0.8f : minRingRadius);
+            Vector3 toTarget = Target.transform.position - transform.position;
+            toTarget.y = 0f;
+            if (toTarget.magnitude < ring + commitDistance)
+                return false;
+
+            Vector3 offset = Quaternion.Euler(0f, approachAngle, 0f) * Vector3.forward * ring;
+            if (!NavMesh.SamplePosition(Target.transform.position + offset, out var hit, 2f, NavMesh.AllAreas)
+                || !agent.CalculatePath(hit.position, path) || path.status != NavMeshPathStatus.PathComplete)
+                return false;
+            agent.SetPath(path);
+            pathComplete = true;
+            targetOnNavMesh = true;
+            targetNavPoint = hit.position;
+            return true;
+        }
+
+        /// <summary>
+        /// Gives every enemy chasing <paramref name="target"/> an approach angle: sorted by their current bearing around
+        /// the target, then pushed apart to at least the spacing angle (keeping the group's mean bearing), so a line of
+        /// followers fans out into an arc and then a circle instead of a single file.
+        /// </summary>
+        private static void RefreshCrowd(PlayerAvatar target)
+        {
+            if (target == null || (crowdRefreshAt.TryGetValue(target, out float next) && Time.time < next))
+                return;
+            crowdRefreshAt[target] = Time.time + CrowdRefreshInterval;
+
+            crowdBuffer.Clear();
+            foreach (var brain in brains)
+                if (brain != null && brain.Target == target && brain.surround && brain.State != EnemyState.Dead
+                    && (brain.Definition == null || brain.Definition.movementStyle == EnemyMovementStyle.Direct))
+                {
+                    brain.approachAngle = float.NaN;
+                    crowdBuffer.Add(brain);
+                }
+            int count = crowdBuffer.Count;
+            if (count < 2)
+                return; // alone: straight line is fine
+
+            Vector3 center = target.transform.position;
+            float Bearing(EnemyBrain b)
+            {
+                Vector3 d = b.transform.position - center;
+                return Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg;
+            }
+            float spacing = Mathf.Min(crowdBuffer[0].maxSpacingAngle, 360f / count);
+            // Unwrap bearings around the circular mean so a group around ±180° stays contiguous.
+            float sx = 0f, sy = 0f;
+            foreach (var b in crowdBuffer)
+            {
+                float r = Bearing(b) * Mathf.Deg2Rad;
+                sx += Mathf.Sin(r);
+                sy += Mathf.Cos(r);
+            }
+            float mean = Mathf.Atan2(sx, sy) * Mathf.Rad2Deg;
+            var angles = new float[count];
+            var ordered = new List<EnemyBrain>(crowdBuffer);
+            ordered.Sort((a, b) => Mathf.DeltaAngle(mean, Bearing(a)).CompareTo(Mathf.DeltaAngle(mean, Bearing(b))));
+            for (int i = 0; i < count; i++)
+                angles[i] = mean + Mathf.DeltaAngle(mean, Bearing(ordered[i]));
+
+            // Push apart (forward pass), then recenter on the original mean.
+            float originalMean = 0f;
+            foreach (float a in angles)
+                originalMean += a;
+            originalMean /= count;
+            for (int i = 1; i < count; i++)
+                angles[i] = Mathf.Max(angles[i], angles[i - 1] + spacing);
+            float newMean = 0f;
+            foreach (float a in angles)
+                newMean += a;
+            float shift = originalMean - newMean / count;
+            for (int i = 0; i < count; i++)
+                ordered[i].approachAngle = angles[i] + shift;
         }
 
         /// <summary>Paths to a point on the target's side/back while still far enough; false = go direct.</summary>
