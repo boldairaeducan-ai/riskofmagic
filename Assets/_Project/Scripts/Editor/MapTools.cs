@@ -38,64 +38,107 @@ namespace RiskOfMagic.Editor
             return rotation;
         }
 
+        /// <summary>Everything a generated map scene needs; geometry comes from BuildLevel (under the Level root).</summary>
+        internal sealed class MapSpec
+        {
+            public string SceneName;
+            public Vector3 BoundsCenter = new(0f, 10f, 0f);
+            public Vector3 BoundsSize = new(110f, 40f, 110f);
+            /// <summary>Center of the 4 player spawns (ground position).</summary>
+            public Vector3 PlayerSpawn = new(0f, 0f, -3f);
+            public float PlayerSpawnYaw;
+            /// <summary>Builds the walkable geometry, variants and SpawnSpots under the Level root.</summary>
+            public System.Action<Transform> BuildLevel;
+            /// <summary>Optional: lighting, fog, weather (scene is active).</summary>
+            public System.Action<Transform> Atmosphere;
+        }
+
+        internal static bool PrefabsReady(out GameObject player, out GameObject systems, out NetworkPrefabsList prefabList, out GameObject hud)
+        {
+            player = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+            systems = AssetDatabase.LoadAssetAtPath<GameObject>(GameSystemsPrefabPath);
+            prefabList = AssetDatabase.LoadAssetAtPath<NetworkPrefabsList>(NetworkPrefabsPath);
+            hud = AssetDatabase.LoadAssetAtPath<GameObject>(HudBuilder.PrefabPath);
+            return player != null && systems != null && prefabList != null && hud != null;
+        }
+
+        internal static string ScenePathFor(string sceneName) => $"{MapsFolder}/{sceneName}.unity";
+
         [MenuItem("Tools/Risk of Magic/Maps/New Map Scene")]
         public static void CreateMap()
         {
-            var player = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
-            var systems = AssetDatabase.LoadAssetAtPath<GameObject>(GameSystemsPrefabPath);
-            var prefabList = AssetDatabase.LoadAssetAtPath<NetworkPrefabsList>(NetworkPrefabsPath);
-            var hud = AssetDatabase.LoadAssetAtPath<GameObject>(HudBuilder.PrefabPath);
-            if (player == null || systems == null || prefabList == null || hud == null)
+            if (!PrefabsReady(out _, out _, out _, out _))
             {
                 EditorUtility.DisplayDialog("New Map", "Run Tools → Risk of Magic → Build Prototype Scene first (prefabs missing).", "OK");
                 return;
             }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 return;
-
             Directory.CreateDirectory(MapsFolder);
             string path = AssetDatabase.GenerateUniqueAssetPath($"{MapsFolder}/Map_New.unity");
+            CreateMapScene(new MapSpec
+            {
+                SceneName = Path.GetFileNameWithoutExtension(path),
+                BuildLevel = level =>
+                {
+                    var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                    ground.name = "Ground";
+                    ground.transform.SetParent(level);
+                    ground.transform.localScale = new Vector3(12f, 1f, 12f);
+
+                    var variants = new GameObject("Variants_Example");
+                    variants.transform.SetParent(level);
+                    variants.AddComponent<LayoutVariantGroup>();
+                    for (int i = 0; i < 2; i++)
+                    {
+                        var option = new GameObject(i == 0 ? "OptionA" : "OptionB");
+                        option.transform.SetParent(variants.transform);
+                        var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        block.transform.SetParent(option.transform);
+                        block.transform.position = new Vector3(i == 0 ? -15f : 15f, 1.5f, 15f);
+                        block.transform.localScale = new Vector3(6f, 3f, 6f);
+                    }
+
+                    var spots = new GameObject("SpawnSpots");
+                    spots.transform.SetParent(level);
+                    AddSpot(spots, SpawnSpotType.Teleporter, new Vector3(-40f, 0f, 40f));
+                    AddSpot(spots, SpawnSpotType.Teleporter, new Vector3(40f, 0f, 40f));
+                    AddSpot(spots, SpawnSpotType.Merchant, new Vector3(0f, 0f, 20f));
+                }
+            });
+        }
+
+        /// <summary>Creates, bakes, saves and adds to the build a map scene. Returns its path (null if prefabs are missing).</summary>
+        internal static string CreateMapScene(MapSpec spec)
+        {
+            if (!PrefabsReady(out var player, out var systems, out var prefabList, out var hud))
+                return null;
+            Directory.CreateDirectory(MapsFolder);
+            string path = ScenePathFor(spec.SceneName);
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
 
             // Level root: everything walkable goes under it.
             var level = new GameObject("Level");
-            level.AddComponent<StageBounds>();
+            var bounds = level.AddComponent<StageBounds>();
+            var boundsSo = new SerializedObject(bounds);
+            boundsSo.FindProperty("center").vector3Value = spec.BoundsCenter;
+            boundsSo.FindProperty("size").vector3Value = spec.BoundsSize;
+            boundsSo.ApplyModifiedPropertiesWithoutUndo();
             level.AddComponent<MapLayout>();
             level.AddComponent<MapLayoutClientSync>();
-            var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            ground.name = "Ground";
-            ground.transform.SetParent(level.transform);
-            ground.transform.localScale = new Vector3(12f, 1f, 12f);
-
-            var variants = new GameObject("Variants_Example");
-            variants.transform.SetParent(level.transform);
-            variants.AddComponent<LayoutVariantGroup>();
-            for (int i = 0; i < 2; i++)
-            {
-                var option = new GameObject(i == 0 ? "OptionA" : "OptionB");
-                option.transform.SetParent(variants.transform);
-                var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                block.transform.SetParent(option.transform);
-                block.transform.position = new Vector3(i == 0 ? -15f : 15f, 1.5f, 15f);
-                block.transform.localScale = new Vector3(6f, 3f, 6f);
-            }
-
-            var spots = new GameObject("SpawnSpots");
-            spots.transform.SetParent(level.transform);
-            AddSpot(spots, SpawnSpotType.Teleporter, new Vector3(-40f, 0f, 40f));
-            AddSpot(spots, SpawnSpotType.Teleporter, new Vector3(40f, 0f, 40f));
-            AddSpot(spots, SpawnSpotType.Merchant, new Vector3(0f, 0f, 20f));
+            spec.BuildLevel?.Invoke(level.transform);
 
             var surface = level.AddComponent<NavMeshSurface>();
             surface.collectObjects = CollectObjects.Children;
             surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
 
             var spawns = new GameObject("PlayerSpawns");
+            spawns.transform.SetPositionAndRotation(spec.PlayerSpawn, Quaternion.Euler(0f, spec.PlayerSpawnYaw, 0f));
             for (int i = 0; i < 4; i++)
             {
                 var point = new GameObject($"Spawn_{i}");
-                point.transform.SetParent(spawns.transform);
-                point.transform.position = new Vector3((i - 1.5f) * 2.5f, 0.1f, -3f);
+                point.transform.SetParent(spawns.transform, false);
+                point.transform.localPosition = new Vector3((i - 1.5f) * 2.5f, 0.1f, 0f);
                 point.AddComponent<PlayerSpawnPoint>();
             }
 
@@ -120,19 +163,42 @@ namespace RiskOfMagic.Editor
 
             PrefabUtility.InstantiatePrefab(hud);
             new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+            spec.Atmosphere?.Invoke(level.transform);
 
+            Physics.SyncTransforms();
             surface.BuildNavMesh();
             EditorSceneManager.SaveScene(scene, path);
             if (surface.navMeshData != null)
             {
-                AssetDatabase.CreateAsset(surface.navMeshData, Path.ChangeExtension(path, null) + "_NavMesh.asset");
+                string navPath = Path.ChangeExtension(path, null) + "_NavMesh.asset";
+                AssetDatabase.DeleteAsset(navPath);
+                AssetDatabase.CreateAsset(surface.navMeshData, navPath);
                 EditorSceneManager.SaveScene(scene, path);
             }
 
             var buildScenes = EditorBuildSettings.scenes.ToList();
-            buildScenes.Add(new EditorBuildSettingsScene(path, true));
-            EditorBuildSettings.scenes = buildScenes.ToArray();
-            Debug.Log($"[Risk of Magic] New map created at {path} and added to the build. Add its name to {RotationPath} to play it.");
+            if (!buildScenes.Any(s => s.path == path))
+            {
+                buildScenes.Add(new EditorBuildSettingsScene(path, true));
+                EditorBuildSettings.scenes = buildScenes.ToArray();
+            }
+            Debug.Log($"[Risk of Magic] Map created at {path} (in the build). Add '{spec.SceneName}' to {RotationPath} to play it.");
+            return path;
+        }
+
+        /// <summary>Replaces the rotation pools if it still is the default one (Prototype only); returns false otherwise.</summary>
+        internal static bool TrySetDefaultRotation(IList<string> scenePerStage)
+        {
+            var rotation = LoadOrCreateRotation();
+            bool isDefault = rotation.stages.All(stage => stage.scenes.All(scene => scene == GameFlow.GameScene));
+            if (!isDefault)
+                return false;
+            rotation.stages.Clear();
+            foreach (string scene in scenePerStage)
+                rotation.stages.Add(new MapRotation.StagePool { scenes = { scene } });
+            EditorUtility.SetDirty(rotation);
+            AssetDatabase.SaveAssets();
+            return true;
         }
 
         [MenuItem("Tools/Risk of Magic/Maps/Validate Open Map")]
@@ -182,7 +248,7 @@ namespace RiskOfMagic.Editor
             Debug.Log($"[Map] {scene.name}: {errors.Count} error(s), {warnings.Count} warning(s).");
         }
 
-        private static void AddSpot(GameObject parent, SpawnSpotType type, Vector3 position)
+        internal static void AddSpot(GameObject parent, SpawnSpotType type, Vector3 position)
         {
             var spot = new GameObject($"Spot_{type}");
             spot.transform.SetParent(parent.transform);

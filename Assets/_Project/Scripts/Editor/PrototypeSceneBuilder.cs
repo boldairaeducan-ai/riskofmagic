@@ -1936,7 +1936,7 @@ namespace RiskOfMagic.Editor
             return go;
         }
 
-        private static Material Mat(string name, Color color, bool unlit = false)
+        internal static Material Mat(string name, Color color, bool unlit = false)
         {
             bool urp = GraphicsSettings.currentRenderPipeline != null;
             var shader = unlit

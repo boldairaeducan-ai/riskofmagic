@@ -18,6 +18,21 @@ FPS roguelite coop (Risk of Rain-like), medieval fantasy. Unity 6 · Input Syste
 
 The NavMesh is rebaked by the server after the layout is applied; bake it in the editor too (NavMeshSurface → Bake) for editing.
 
+### Map skeletons
+**Tools → Risk of Magic → Maps → Generate Map Skeletons** creates 5 greybox maps in `Scenes/Maps` (asks before overwriting) and,
+if `MapRotation` is still the default, sets them as stages 1–5:
+
+| Scene | Content |
+|---|---|
+| `Map_GrimForest` | Gently rolling terrain, ~340 trees (trunks block sight lines), clearings with ruins (variants), optional thickets |
+| `Map_Necropolis` | Walled crypt: open central plaza, two mausoleums (roofs 8 m, towers 16 m, ramps), tower bridge (full / broken / none), catacomb corridors with optional gates |
+| `Map_MountainPeak` | Mountain terrain, temple on the summit (intact / collapsed), boulders; `BlizzardWeather` (irregular fog storms + snow, same on every peer) |
+| `Map_VolcanoTomb` | Rolling terrain, lava basins (`HazardZone`: hurts players only), stepped temple with ramp variants, obsidian spires |
+| `Map_ChaosSanctum` | Final arena (stage 5): walled disc, pillars, dais with the teleporter, optional cover |
+
+Terrains, materials and NavMesh assets are generated next to the scenes (`Scenes/Maps/Terrain`). `HazardZone` (box/cylinder volume,
+% max HP + flat damage per second) and `BlizzardWeather` can be reused in any map.
+
 ## Controls
 | Action | Keyboard/Mouse | Gamepad |
 |---|---|---|
