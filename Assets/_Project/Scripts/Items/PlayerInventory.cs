@@ -194,8 +194,24 @@ namespace RiskOfMagic.Items
             }
         }
 
+        private const float TickInterval = 0.5f;
+        private float nextTick;
+
         private void Update()
         {
+            if (IsServer && IsSpawned && Time.time >= nextTick && avatar.IsStanding)
+            {
+                nextTick = Time.time + TickInterval;
+                var tickCatalog = GameCatalog.Instance;
+                for (int i = 0; i < counts.Count && tickCatalog != null; i++)
+                {
+                    int stacks = counts[i];
+                    var item = stacks > 0 ? tickCatalog.GetItem(i) : null;
+                    if (item != null)
+                        item.OnServerTick(avatar, stacks, TickInterval);
+                }
+            }
+
             if (!IsServer || pending.Count == 0)
                 return;
 

@@ -63,6 +63,9 @@ namespace RiskOfMagic.Items
         /// <summary>Server only. Called a frame after the owner killed something.</summary>
         public virtual void OnKillServer(PlayerAvatar owner, in ProcEvent proc, int stacks) { }
 
+        /// <summary>Server only. Called every <paramref name="interval"/> seconds while the owner stands (auras).</summary>
+        public virtual void OnServerTick(PlayerAvatar owner, int stacks, float interval) { }
+
         /// <summary>Server only. Called right after the owner took damage.</summary>
         public virtual void OnOwnerDamagedServer(PlayerAvatar owner, in DamageInfo info, int stacks) { }
 

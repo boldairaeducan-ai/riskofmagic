@@ -19,7 +19,13 @@ namespace RiskOfMagic.Combat
         /// <summary>Slowed while channelling a skill (Rayon du néant).</summary>
         Channeling,
         /// <summary>Cannot move (Enracinement).</summary>
-        Rooted
+        Rooted,
+        /// <summary>+1% attack speed per stack (Fiole d'adrénaline).</summary>
+        Adrenaline,
+        /// <summary>Damage bonus aura (Bannière de guerre).</summary>
+        Banner,
+        /// <summary>+1% damage per stack until the end of the stage (Couronne des âmes).</summary>
+        SoulHarvest
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -47,6 +53,7 @@ namespace RiskOfMagic.Combat
         [Header("Chilled")]
         [SerializeField] private float chillSpeedMultiplier = 0.7f;
         [SerializeField] private float channelingSpeedMultiplier = 0.5f;
+        [SerializeField] private float bannerDamageBonus = 0.2f;
 
         [Header("Buffs")]
         [SerializeField] private float rallyBonus = 0.4f;
@@ -61,11 +68,14 @@ namespace RiskOfMagic.Combat
 
         /// <summary>Withered: 1% max health per stack (at least 5% left).</summary>
         public float MaxHealthMultiplier => Mathf.Max(0.05f, 1f - GetStacks(StatusType.Withered) / 100f);
-        public float DamageDealtMultiplier => Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f;
+        public float DamageDealtMultiplier => (Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f)
+                                              * (Has(StatusType.Banner) ? 1f + bannerDamageBonus : 1f)
+                                              * (1f + GetStacks(StatusType.SoulHarvest) / 100f);
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f
             : (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
               * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus);
-        public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus);
+        public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus)
+                                              * (1f + GetStacks(StatusType.Adrenaline) / 100f);
 
         private float SpeedBonus => (Has(StatusType.Rally) ? rallyBonus : 0f) + GetStacks(StatusType.Warhorn) * warhornBonusPerStack;
 

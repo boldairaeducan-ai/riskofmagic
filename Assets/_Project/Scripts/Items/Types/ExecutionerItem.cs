@@ -10,8 +10,13 @@ namespace RiskOfMagic.Items.Types
     {
         [Range(0f, 1f)] public float healthThreshold = 0.3f;
         [Min(0f)] public float bonusPerStack = 0.2f;
+        [Tooltip("Off: bonus below the threshold (executioner). On: bonus above it (brise-garde, healthy targets).")]
+        public bool aboveThreshold;
 
         public override float ModifyOutgoingDamage(PlayerAvatar owner, Health victim, in DamageInfo info, float amount, int stacks)
-            => victim.Normalized < healthThreshold ? amount * (1f + bonusPerStack * stacks) : amount;
+        {
+            bool applies = aboveThreshold ? victim.Normalized > healthThreshold : victim.Normalized < healthThreshold;
+            return applies ? amount * (1f + bonusPerStack * stacks) : amount;
+        }
     }
 }

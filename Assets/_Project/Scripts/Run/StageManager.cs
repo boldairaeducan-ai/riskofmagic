@@ -198,7 +198,10 @@ namespace RiskOfMagic.Run
                 if (player.Downed != null)
                     player.Downed.ForceStand();
                 if (player.Status != null)
+                {
                     player.Status.Clear(StatusType.Withered); // cursed chests last one stage
+                    player.Status.Clear(StatusType.SoulHarvest); // Couronne des âmes: per stage
+                }
                 if (!player.IsAlive)
                     player.Health.Revive(1f);
                 else if (fullHeal)

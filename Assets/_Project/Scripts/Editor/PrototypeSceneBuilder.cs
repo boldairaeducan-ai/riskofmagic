@@ -92,15 +92,15 @@ namespace RiskOfMagic.Editor
 
             var vfx = BuildVfx();
             var projectiles = BuildProjectiles(vfx);
+            var items = BuildItems(projectiles, vfx); // first: it wipes Configs/Items (shared DoTs live there)
             var characters = BuildCharacters(projectiles, vfx);
-            var items = BuildItems(projectiles, vfx);
             var equipment = BuildEquipment(vfx);
             var pickup = BuildPickupPrefab();
 
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink, vfx.VoidBeam, vfx.PoisonCloud, vfx.ArcaneBurst
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink, vfx.VoidBeam, vfx.PoisonCloud, vfx.ArcaneBurst, vfx.FrostBurst
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
@@ -859,9 +859,9 @@ namespace RiskOfMagic.Editor
             fang.healPerExtraStack = 6f;
 
             // Uncommon
-            var oak = Item<ItemDefinition>("Item_OakShield", "Bouclier de chêne", "Chaque coup reçu est réduit de 5 (+5), jamais sous 1.", ItemRarity.Uncommon,
+            var oak = Item<ItemDefinition>("Item_OakShield", "Bouclier de chêne", "Chaque coup reçu est réduit de 5 (+5), jamais sous 1.", ItemRarity.Common,
                 Mod(StatType.FlatDamageReduction, 5f));
-            var dagger = Item<DotOnHitItem>("Item_BarbedDagger", "Dague barbelée", "10% (+10%) de chances de faire saigner : 240% en 3 s.", ItemRarity.Uncommon);
+            var dagger = Item<DotOnHitItem>("Item_BarbedDagger", "Dague barbelée", "10% (+10%) de chances de faire saigner : 240% en 3 s.", ItemRarity.Common);
             dagger.dot = bleed;
             dagger.chanceFirstStack = 0.1f;
             dagger.chancePerExtraStack = 0.1f;
@@ -871,15 +871,27 @@ namespace RiskOfMagic.Editor
             fireOrb.radiusPerExtraStack = 4f;
             fireOrb.vfx = vfx.Explosion;
             var feather = Item<ItemDefinition>("Item_GriffinFeather", "Plume de griffon", "+1 saut (+1).", ItemRarity.Uncommon, Mod(StatType.ExtraJumps, 1f));
-            var executioner = Item<ExecutionerItem>("Item_ExecutionerBlade", "Lame du bourreau", "+20% (+20%) de dégâts contre les ennemis sous 30% de PV.", ItemRarity.Uncommon);
+            var executioner = Item<ExecutionerItem>("Item_ExecutionerBlade", "Lame du bourreau", "+30% (+30%) de dégâts contre les ennemis sous 30% de PV.", ItemRarity.Common);
+            executioner.healthThreshold = 0.3f;
+            executioner.bonusPerStack = 0.3f;
+            executioner.aboveThreshold = false;
+            var breaker = Item<ExecutionerItem>("Item_GuardBreaker", "Masse brise-garde", "+75% (+75%) de dégâts contre les ennemis à plus de 90% de PV.", ItemRarity.Common);
+            breaker.healthThreshold = 0.9f;
+            breaker.bonusPerStack = 0.75f;
+            breaker.aboveThreshold = true;
+            var adrenaline = Item<AdrenalineItem>("Item_AdrenalineVial", "Fiole d'adrénaline", "Après un kill : +25% (+15%) de vitesse d'attaque pendant 3 s.", ItemRarity.Common);
+            adrenaline.bonusFirstStack = 0.25f;
+            adrenaline.bonusPerExtraStack = 0.15f;
+            adrenaline.duration = 3f;
+            var whetstone = Item<ItemDefinition>("Item_Whetstone", "Pierre à aiguiser", "+8% de dégâts (+8%).", ItemRarity.Common, Mod(StatType.Damage, 0.08f));
 
             // Rare
-            var hourglass = Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-12% temps de recharge (multiplicatif).", ItemRarity.Rare, Mod(StatType.CooldownReduction, 0.12f));
-            var storm = Item<ChainOnHitItem>("Item_StormOrb", "Orbe de tempête", "25% de chances : éclair sur 3 ennemis (+2), 80% des dégâts.", ItemRarity.Rare);
+            var hourglass = Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-12% temps de recharge (multiplicatif).", ItemRarity.Uncommon, Mod(StatType.CooldownReduction, 0.12f));
+            var storm = Item<ChainOnHitItem>("Item_StormOrb", "Orbe de tempête", "25% de chances : éclair sur 3 ennemis (+2), 80% des dégâts.", ItemRarity.Uncommon);
             storm.boltVfx = vfx.Lightning;
-            var oil = Item<ExplodeOnKillItem>("Item_FireOil", "Huile incendiaire", "Les ennemis tués explosent : 150% (+75%) dans 6 m (+1,5 m).", ItemRarity.Rare);
+            var oil = Item<ExplodeOnKillItem>("Item_FireOil", "Huile incendiaire", "Les ennemis tués explosent : 150% (+75%) dans 6 m (+1,5 m).", ItemRarity.Uncommon);
             oil.explosionVfx = vfx.Explosion;
-            var quiver = Item<ProjectileOnHitItem>("Item_EnchantedQuiver", "Carquois enchanté", "10% de chances : missile chercheur, 300% des dégâts (+300%).", ItemRarity.Rare);
+            var quiver = Item<ProjectileOnHitItem>("Item_EnchantedQuiver", "Carquois enchanté", "10% de chances : missile chercheur, 300% des dégâts (+300%).", ItemRarity.Uncommon);
             quiver.projectile = projectiles.ArcaneMissile;
             var horn = Item<WarHornItem>("Item_WarHorn", "Cor de guerre",
                 "Chaque kill : +15% vitesse de déplacement et d'attaque, max 5 (+1). Tout est perdu en subissant des dégâts.", ItemRarity.Rare);
@@ -889,7 +901,27 @@ namespace RiskOfMagic.Editor
             chaosEye.explosionVfx = vfx.Explosion;
             var phoenix = Item<PhoenixFeatherItem>("Item_PhoenixFeather", "Plume de phénix", "À la mort, ressuscite avec 50% des PV. Consommée.", ItemRarity.Legendary);
             var grimoire = Item<ItemDefinition>("Item_ForbiddenGrimoire", "Grimoire interdit", "+1 charge (+1) à toutes les compétences sauf la principale.",
-                ItemRarity.Legendary, Mod(StatType.BonusSkillCharges, 1f));
+                ItemRarity.Rare, Mod(StatType.BonusSkillCharges, 1f));
+            var twinBlade = Item<DoubleHitItem>("Item_TwinBlade", "Lame jumelle", "15% (+10%) de chances qu'un coup frappe une seconde fois (100%).", ItemRarity.Rare);
+            twinBlade.chanceFirstStack = 0.15f;
+            twinBlade.chancePerExtraStack = 0.1f;
+            var frostRing = Item<FreezeOnHitItem>("Item_FrostRing", "Anneau de givre", "10% (+5%) de chances de geler 1,5 s et d'infliger 250% de givre.", ItemRarity.Rare);
+            frostRing.chanceFirstStack = 0.1f;
+            frostRing.chancePerExtraStack = 0.05f;
+            frostRing.freezeDuration = 1.5f;
+            frostRing.damageCoefficient = 2.5f;
+            frostRing.vfx = vfx.FrostBurst;
+            var banner = Item<BannerItem>("Item_WarBanner", "Bannière de guerre", "Les alliés à 12 m (+4 m), vous compris, infligent +20% de dégâts.", ItemRarity.Rare);
+            banner.radiusFirstStack = 12f;
+            banner.radiusPerExtraStack = 4f;
+            var comet = Item<MeteorOnHitItem>("Item_CometTear", "Larme de comète", "8% (+4%) de chances qu'un coup appelle un météore : 500% dans 5 m.", ItemRarity.Legendary);
+            comet.meteor = projectiles.Meteor;
+            comet.chanceFirstStack = 0.08f;
+            comet.chancePerExtraStack = 0.04f;
+            comet.damageCoefficient = 5f;
+            var crown = Item<SoulHarvestItem>("Item_SoulCrown", "Couronne des âmes", "Chaque kill : +1% (+1%) de dégâts jusqu'à la fin de l'étape (max +60%).", ItemRarity.Legendary);
+            crown.percentPerKillPerStack = 1;
+            crown.maxPercent = 60;
 
             // Boss
             var scale = Item<ItemDefinition>("Item_ColossusScale", "Écaille du colosse", "-15% de dégâts subis (dégressif).", ItemRarity.Boss,
@@ -899,10 +931,10 @@ namespace RiskOfMagic.Editor
 
             var items = new List<ItemDefinition>
             {
-                gauntlet, boots, hawkEye, meat, fang,
-                oak, dagger, fireOrb, feather, executioner,
-                hourglass, storm, oil, quiver, horn,
-                chaosEye, phoenix, grimoire,
+                gauntlet, boots, hawkEye, meat, fang, oak, dagger, executioner, breaker, adrenaline, whetstone,
+                fireOrb, feather, hourglass, storm, oil, quiver,
+                horn, grimoire, twinBlade, frostRing, banner,
+                chaosEye, phoenix, comet, crown,
                 scale, bone
             };
             foreach (var item in items)
