@@ -12,5 +12,7 @@ namespace RiskOfMagic.Run
         [Min(0f)] public float weight = 1f;
         [Min(0f), Tooltip("Not available before this run progress (difficulty coefficient without the player factor, 1 at start).")]
         public float minCoefficient;
+        [Min(1), Tooltip("Bosses: first stage where the teleporter can pick this card.")]
+        public int minStage = 1;
     }
 }

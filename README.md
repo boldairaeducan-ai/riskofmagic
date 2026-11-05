@@ -59,6 +59,11 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 | Pyromancien | Kite | Lobbed fire bomb, ground marker | Backs off when approached |
 | Squelette archer | Kite | Arrows | Rare, from difficulty 1.6 |
 | Colosse d'os | Direct | Heavy melee | Teleporter boss |
+| Reine araignée | Kite | Poison spit / summons 4 spiderlings (max 8) / pounce | Teleporter boss |
+| Drake de braise | Direct | Fire breath cone (burn, slow turn) / charge / lobbed fireball | Teleporter boss from stage 2 |
+| Araignée | Direct | Melee | Summoned by the Spider Queen only |
+
+Bosses: the teleporter picks a weighted random boss among the cards unlocked at the current stage (`SpawnCard.minStage`), never the previous boss; one extra boss from stage 4. Enemies can carry several `EnemyAttack` components: the brain picks a random ready one in range (`selectionWeight`), the primary one drives the approach distance.
 - **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (stage population of idle enemies + credit-based waves hunting players), `StageBounds` (playable volume, placed in each map), `Teleporter` (boss event, charge zone), `StageManager` (next stage: cleanup, revive, respawn).
 
 ## Tuning the director

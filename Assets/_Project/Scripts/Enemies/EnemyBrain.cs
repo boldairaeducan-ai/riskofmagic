@@ -33,7 +33,8 @@ namespace RiskOfMagic.Enemies
     [RequireComponent(typeof(EnemyActor), typeof(NavMeshAgent))]
     public class EnemyBrain : NetworkBehaviour
     {
-        [SerializeField] private EnemyAttack attack;
+        [SerializeField, Tooltip("Primary attack: its range drives the approach. Every EnemyAttack on the object can be used.")]
+        private EnemyAttack attack;
 
         [Header("Perception")]
         [SerializeField, Min(0.05f)] private float perceptionInterval = 0.25f;
@@ -55,6 +56,8 @@ namespace RiskOfMagic.Enemies
         private NavMeshAgent agent;
         private EnemyLeap leap;
         private EnemyDodge dodge;
+        private EnemyAttack[] attacks;
+        private EnemyAttack currentAttack;
         private float flankAngle;
         private Coroutine pushRoutine;
         private NavMeshPath path;
@@ -79,6 +82,7 @@ namespace RiskOfMagic.Enemies
             dodge = GetComponent<EnemyDodge>();
             if (attack == null)
                 attack = GetComponent<EnemyAttack>();
+            attacks = GetComponents<EnemyAttack>();
             agent.enabled = false; // enabled on the server once spawned
         }
 
@@ -123,8 +127,7 @@ namespace RiskOfMagic.Enemies
             if (displacement.sqrMagnitude < 0.01f)
                 return;
 
-            if (attack != null)
-                attack.Cancel();
+            CancelAttacks();
             if (dodge != null)
                 dodge.Cancel();
             if (pushRoutine != null)
@@ -151,8 +154,8 @@ namespace RiskOfMagic.Enemies
         private void HoldStill(EnemyState state)
         {
             State = state;
-            if (attack != null && attack.IsAttacking)
-                attack.Cancel();
+            if (IsAttacking)
+                CancelAttacks();
             if (dodge != null)
                 dodge.Cancel();
             if (leap != null && leap.IsLeaping)
@@ -222,10 +225,11 @@ namespace RiskOfMagic.Enemies
                 return;
             }
 
-            bool attacking = attack != null && attack.IsAttacking;
-            if (attacking)
+            if (IsAttacking)
             {
-                Attack();
+                State = EnemyState.Attack;
+                agent.isStopped = true;
+                FaceTarget(currentAttack != null ? currentAttack.TrackingFactor : 1f);
                 return;
             }
             if (dodge != null && dodge.CheckAimedAt(Target))
@@ -237,9 +241,7 @@ namespace RiskOfMagic.Enemies
             var style = Definition != null ? Definition.movementStyle : EnemyMovementStyle.Direct;
             if (style == EnemyMovementStyle.Kite)
                 Kite();
-            else if (attack != null && attack.IsInRange(Target.transform))
-                Attack();
-            else
+            else if (!TryAttack())
                 Chase(style == EnemyMovementStyle.Flank);
         }
 
@@ -295,7 +297,7 @@ namespace RiskOfMagic.Enemies
             if (!info.TryGetSource(out var source) || !source.TryGetComponent(out PlayerAvatar player))
                 return;
             Alert(player);
-            bool busy = (attack != null && attack.IsAttacking) || (leap != null && leap.IsLeaping);
+            bool busy = IsAttacking || (leap != null && leap.IsLeaping);
             if (dodge != null && !busy && actor.Health.IsAlive)
                 dodge.OnHit(player.transform.position);
         }
@@ -328,13 +330,53 @@ namespace RiskOfMagic.Enemies
                 agent.SetDestination(hit.position);
         }
 
-        private void Attack()
+        private bool IsAttacking => currentAttack != null && currentAttack.IsAttacking;
+
+        private void CancelAttacks()
         {
+            foreach (var a in attacks)
+                if (a != null)
+                    a.Cancel();
+            currentAttack = null;
+        }
+
+        /// <summary>
+        /// Starts a random ready attack in range (weighted). With none ready, holds position if the primary attack
+        /// is in range (waiting for its cooldown). False = nothing to do here, keep moving.
+        /// </summary>
+        private bool TryAttack()
+        {
+            var picked = PickAttack();
+            if (picked == null && (attack == null || !attack.IsInRange(Target.transform)))
+                return false;
             State = EnemyState.Attack;
             agent.isStopped = true;
             FaceTarget();
-            if (attack.IsReady)
-                attack.TryBegin(Target);
+            if (picked != null && picked.TryBegin(Target))
+                currentAttack = picked;
+            return true;
+        }
+
+        private EnemyAttack PickAttack()
+        {
+            float total = 0f;
+            foreach (var a in attacks)
+                if (a != null && a.IsReady && a.IsInRange(Target.transform))
+                    total += a.SelectionWeight;
+            if (total <= 0f)
+                return null;
+            float roll = Random.value * total;
+            EnemyAttack last = null;
+            foreach (var a in attacks)
+            {
+                if (a == null || !a.IsReady || !a.IsInRange(Target.transform))
+                    continue;
+                last = a;
+                roll -= a.SelectionWeight;
+                if (roll <= 0f)
+                    return a;
+            }
+            return last;
         }
 
         private void Kite()
@@ -346,12 +388,9 @@ namespace RiskOfMagic.Enemies
 
             if (distance < band.x && TryRetreat())
                 return;
-            if (attack != null && attack.IsInRange(Target.transform))
-            {
-                Attack();
+            if (TryAttack())
                 return;
-            }
-            if (distance > band.y || attack == null)
+            if (distance > band.y || attacks.Length == 0)
             {
                 Chase(false, band.y * 0.85f);
                 return;
@@ -457,13 +496,13 @@ namespace RiskOfMagic.Enemies
             agent.SetDestination(targetPosition); // falls back to the closest reachable point
         }
 
-        private void FaceTarget()
+        private void FaceTarget(float speedFactor = 1f)
         {
             Vector3 direction = Target.transform.position - transform.position;
             direction.y = 0f;
             if (direction.sqrMagnitude < 0.0001f)
                 return;
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), turnSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(direction), turnSpeed * speedFactor * Time.deltaTime);
         }
 
         private void OnDied(DamageInfo info)
@@ -471,8 +510,7 @@ namespace RiskOfMagic.Enemies
             State = EnemyState.Dead;
             Target = null;
             knownPlayers.Clear();
-            if (attack != null)
-                attack.Cancel();
+            CancelAttacks();
             if (leap != null)
                 leap.Cancel();
             if (dodge != null)
