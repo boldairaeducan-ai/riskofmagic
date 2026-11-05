@@ -27,8 +27,6 @@ namespace RiskOfMagic.Player
         private bool isLocal;
 
         public Transform CameraPivot => cameraPivot;
-        /// <summary>Owner only (not replicated): vertical aim angle, negative = up.</summary>
-        public float Pitch => pitch;
         public Camera Camera => playerCamera;
         /// <summary>Shake and FOV kicks (local player only; null if the camera has no CameraEffects).</summary>
         public CameraEffects Effects { get; private set; }
