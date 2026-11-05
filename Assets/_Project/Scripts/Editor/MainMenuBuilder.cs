@@ -95,36 +95,45 @@ namespace RiskOfMagic.Editor
             copyRect.anchoredPosition = new Vector2(360f, -180f);
             copyRect.sizeDelta = new Vector2(140f, 44f);
 
-            var playersPanel = Panel(lobby, "Players", new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(60f, -10f), new Vector2(520f, 560f), "Joueurs");
-            var players = H.Text(H.Rect("List", playersPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -70f), new Vector2(480f, 470f)), null,
-                "En attente du salon...", 22f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+            // Left column: players, difficulty (locked card shows its challenge).
+            var playersPanel = Panel(lobby, "Players", H.Center, H.Center, new Vector2(-710f, 145f), new Vector2(420f, 290f), "Joueurs");
+            var players = H.Text(H.Rect("List", playersPanel, H.TopLeft, H.TopLeft, new Vector2(16f, -64f), new Vector2(388f, 216f)), null,
+                "En attente du salon...", 19f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
 
-            var characterPanel = Panel(lobby, "Character", H.Center, H.Center, new Vector2(0f, -10f), new Vector2(700f, 560f), "Personnage");
-            var characterRow = H.Rect("Characters", characterPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -70f), new Vector2(660f, 56f));
+            var difficultyPanel = Panel(lobby, "Difficulty", H.Center, H.Center, new Vector2(-710f, -200f), new Vector2(420f, 380f), "Difficulté");
+            var normal = Card(difficultyPanel, "NormalCard", new Vector2(380f, 96f), 64f);
+            Anchor(normal, new Vector2(0f, -60f));
+            var hard = Card(difficultyPanel, "HardCard", new Vector2(380f, 96f), 64f);
+            Anchor(hard, new Vector2(0f, -166f));
+            var difficultyInfo = H.Text(H.Rect("Description", difficultyPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -272f), new Vector2(380f, 100f)), null,
+                string.Empty, 16f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.TopLeft);
+
+            // Center: 3D preview of the selected character (model or placeholder).
+            var previewPanel = Panel(lobby, "Preview", H.Center, H.Center, new Vector2(-210f, -40f), new Vector2(520f, 660f), "Aperçu");
+            var previewRect = H.Rect("Model", previewPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(460f, 480f));
+            previewRect.gameObject.AddComponent<UnityEngine.UI.RawImage>().raycastTarget = false;
+            var preview = previewRect.gameObject.AddComponent<CharacterPreview>();
+            var characterInfo = H.Text(H.Rect("Description", previewPanel, H.TopLeft, H.TopLeft, new Vector2(24f, -548f), new Vector2(472f, 104f)), null,
+                string.Empty, 17f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+
+            // Right: character cards, then the skill grid (base | alternative per slot).
+            var selectionPanel = Panel(lobby, "Selection", H.Center, H.Center, new Vector2(500f, -40f), new Vector2(840f, 660f), "Personnage");
+            var characterRow = H.Rect("Characters", selectionPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(800f, 130f));
             var row = characterRow.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
             row.spacing = 8f;
             row.childControlWidth = row.childControlHeight = true;
             row.childForceExpandWidth = row.childForceExpandHeight = true;
-            var characterTemplate = H.Button(characterRow, "CharacterTemplate", "Personnage", 0f);
-            // Skill kit: one button per slot, toggles the unlocked alternative.
-            var kitRow = H.Rect("Kit", characterPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -136f), new Vector2(660f, 66f));
-            var kitLayout = kitRow.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-            kitLayout.spacing = 8f;
-            kitLayout.childControlWidth = kitLayout.childControlHeight = true;
-            kitLayout.childForceExpandWidth = kitLayout.childForceExpandHeight = true;
-            var kitTemplate = H.Button(kitRow, "KitTemplate", "Compétence", 0f);
-            var kitLabel = kitTemplate.GetComponentInChildren<TextMeshProUGUI>();
-            kitLabel.fontSize = 16f;
-            var characterInfo = H.Text(H.Rect("Description", characterPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -214f), new Vector2(660f, 330f)), null,
-                string.Empty, 18f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+            var characterTemplate = Card(characterRow, "CharacterTemplate", new Vector2(194f, 130f), 64f);
 
-            var difficultyPanel = Panel(lobby, "Difficulty", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-60f, -10f), new Vector2(520f, 560f), "Difficulté");
-            var normal = H.Button(difficultyPanel, "NormalButton", "Normal", 0f);
-            Place(normal, H.TopCenter, new Vector2(-120f, -80f), new Vector2(220f, 56f));
-            var hard = H.Button(difficultyPanel, "HardButton", "Difficile", 0f);
-            Place(hard, H.TopCenter, new Vector2(120f, -80f), new Vector2(220f, 56f));
-            var difficultyInfo = H.Text(H.Rect("Description", difficultyPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -160f), new Vector2(480f, 380f)), null,
-                string.Empty, 20f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+            H.Text(H.Rect("SkillsHeader", selectionPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -200f), new Vector2(800f, 34f)), null,
+                "Compétences  <size=70%><alpha=#A0>(de base | alternative)</size>", 24f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.BottomLeft);
+            var skillGrid = H.Rect("Skills", selectionPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -240f), new Vector2(800f, 408f));
+            var grid = skillGrid.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
+            grid.cellSize = new Vector2(396f, 96f);
+            grid.spacing = new Vector2(8f, 8f);
+            grid.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 2;
+            var skillTemplate = Card(skillGrid, "SkillTemplate", new Vector2(396f, 96f), 56f);
 
             var main = H.Button(lobby, "MainButton", "Prêt", 0f);
             Place(main, H.BottomCenter, new Vector2(0f, 60f), new Vector2(380f, 72f));
@@ -152,16 +161,17 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("optionsMenu").objectReferenceValue = optionsMenu;
                 so.FindProperty("journalButton").objectReferenceValue = journal;
                 so.FindProperty("journalMenu").objectReferenceValue = journalMenu;
-                so.FindProperty("kitButtonTemplate").objectReferenceValue = kitTemplate;
+                so.FindProperty("skillCardTemplate").objectReferenceValue = skillTemplate;
+                so.FindProperty("characterPreview").objectReferenceValue = preview;
                 so.FindProperty("statusLabel").objectReferenceValue = status;
                 so.FindProperty("lobbyScreen").objectReferenceValue = lobby.gameObject;
                 so.FindProperty("codeLabel").objectReferenceValue = code;
                 so.FindProperty("copyCodeButton").objectReferenceValue = copy;
                 so.FindProperty("playersLabel").objectReferenceValue = players;
-                so.FindProperty("characterButtonTemplate").objectReferenceValue = characterTemplate;
+                so.FindProperty("characterCardTemplate").objectReferenceValue = characterTemplate;
                 so.FindProperty("characterDescription").objectReferenceValue = characterInfo;
-                so.FindProperty("normalButton").objectReferenceValue = normal;
-                so.FindProperty("hardButton").objectReferenceValue = hard;
+                so.FindProperty("normalCard").objectReferenceValue = normal;
+                so.FindProperty("hardCard").objectReferenceValue = hard;
                 so.FindProperty("difficultyDescription").objectReferenceValue = difficultyInfo;
                 so.FindProperty("mainButton").objectReferenceValue = main;
                 so.FindProperty("mainButtonLabel").objectReferenceValue = mainLabel;
@@ -169,6 +179,58 @@ namespace RiskOfMagic.Editor
             });
 
             EditorSceneManager.SaveScene(scene, ScenePath);
+        }
+
+        /// <summary>Lobby card: button frame, icon (+ letter fallback), title, body, selection highlight, lock overlay.</summary>
+        private static LobbyCard Card(RectTransform parent, string name, Vector2 size, float iconSize)
+        {
+            var rect = H.Rect(name, parent, H.Center, H.Center, Vector2.zero, size);
+            var element = rect.gameObject.AddComponent<UnityEngine.UI.LayoutElement>();
+            element.preferredWidth = size.x;
+            element.preferredHeight = size.y;
+            var image = H.Themed(rect, HudSprite.SlotFrame, HudColor.Button, raycast: true);
+            var button = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = image;
+
+            var selected = H.Stretch("Selected", rect);
+            H.Themed(selected, HudSprite.Frame, HudColor.ButtonSelected);
+            selected.gameObject.SetActive(false);
+
+            var icon = H.Rect("Icon", rect, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(10f, 0f), new Vector2(iconSize, iconSize));
+            var iconImage = H.PlainImage(icon);
+            var letter = H.Text(icon, "Letter", string.Empty, iconSize * 0.55f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Center);
+
+            float textX = iconSize + 20f;
+            var title = H.Text(H.Rect("Title", rect, H.TopLeft, H.TopLeft, new Vector2(textX, -6f), new Vector2(size.x - textX - 8f, 30f)), null,
+                "Titre", 19f, HudFont.Title, HudColor.Text, TextAlignmentOptions.TopLeft);
+            var body = H.Text(H.Rect("Body", rect, H.TopLeft, H.TopLeft, new Vector2(textX, -34f), new Vector2(size.x - textX - 8f, size.y - 40f)), null,
+                string.Empty, 14f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.TopLeft);
+
+            var lockRect = H.Stretch("Lock", rect);
+            H.Themed(lockRect, null, HudColor.Overlay);
+            var lockLabel = H.Text(lockRect, "Label", "VERROUILLÉ", 15f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
+            lockRect.gameObject.SetActive(false);
+
+            var card = rect.gameObject.AddComponent<LobbyCard>();
+            H.Props(card, so =>
+            {
+                so.FindProperty("button").objectReferenceValue = button;
+                so.FindProperty("icon").objectReferenceValue = iconImage;
+                so.FindProperty("iconLetter").objectReferenceValue = letter;
+                so.FindProperty("titleLabel").objectReferenceValue = title;
+                so.FindProperty("bodyLabel").objectReferenceValue = body;
+                so.FindProperty("selectedFrame").objectReferenceValue = selected.gameObject;
+                so.FindProperty("lockOverlay").objectReferenceValue = lockRect.gameObject;
+                so.FindProperty("lockLabel").objectReferenceValue = lockLabel;
+            });
+            return card;
+        }
+
+        private static void Anchor(LobbyCard card, Vector2 topCenterOffset)
+        {
+            var rect = (RectTransform)card.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = H.TopCenter;
+            rect.anchoredPosition = topCenterOffset;
         }
 
         /// <summary>Journal: 4 tabs filling one scrollable rich text (stats, challenges, items, bestiary).</summary>

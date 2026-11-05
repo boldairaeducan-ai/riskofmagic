@@ -108,16 +108,18 @@ namespace RiskOfMagic.Meta
             return challenge == null || IsCompleted(challenge);
         }
 
-        public static bool IsHardModeUnlocked
+        public static ChallengeDefinition HardModeChallenge
         {
             get
             {
                 foreach (var challenge in Challenges)
                     if (challenge != null && challenge.unlocksHardMode)
-                        return IsCompleted(challenge);
-                return true;
+                        return challenge;
+                return null;
             }
         }
+
+        public static bool IsHardModeUnlocked => HardModeChallenge == null || IsCompleted(HardModeChallenge);
 
         // ---------------------------------------------------------------- Loadouts, discoveries
 

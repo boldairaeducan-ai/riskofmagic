@@ -40,18 +40,19 @@ namespace RiskOfMagic.UI
         [SerializeField] private TMP_Text codeLabel;
         [SerializeField] private UnityEngine.UI.Button copyCodeButton;
         [SerializeField] private TMP_Text playersLabel;
-        [SerializeField] private UnityEngine.UI.Button characterButtonTemplate;
+        [SerializeField, Tooltip("Cloned per character.")] private LobbyCard characterCardTemplate;
+        [SerializeField] private CharacterPreview characterPreview;
         [SerializeField] private TMP_Text characterDescription;
-        [SerializeField, Tooltip("Cloned once per skill slot: toggles the slot's alternative skill.")] private UnityEngine.UI.Button kitButtonTemplate;
-        [SerializeField] private UnityEngine.UI.Button normalButton;
-        [SerializeField] private UnityEngine.UI.Button hardButton;
+        [SerializeField, Tooltip("Cloned per slot: base then alternative (grid of 2 columns).")] private LobbyCard skillCardTemplate;
+        [SerializeField] private LobbyCard normalCard;
+        [SerializeField] private LobbyCard hardCard;
         [SerializeField] private TMP_Text difficultyDescription;
         [SerializeField] private UnityEngine.UI.Button mainButton;
         [SerializeField] private TMP_Text mainButtonLabel;
         [SerializeField] private UnityEngine.UI.Button leaveButton;
 
-        private readonly List<UnityEngine.UI.Button> characterButtons = new();
-        private readonly List<UnityEngine.UI.Button> kitButtons = new();
+        private readonly List<LobbyCard> characterCards = new();
+        private readonly List<LobbyCard> skillCards = new(); // index = slot * 2 + (alternative ? 1 : 0)
         private bool sentInitialLoadout;
         private static readonly string[] SlotKeys = { "Clic G", "Clic D", "Maj", "R" };
         private LobbyState subscribedLobby;
@@ -77,13 +78,15 @@ namespace RiskOfMagic.UI
             if (optionsMenu != null)
                 optionsMenu.gameObject.SetActive(false);
             AddListener(copyCodeButton, () => GUIUtility.systemCopyBuffer = OnlineSessions.Service?.JoinCode ?? string.Empty);
-            AddListener(normalButton, () => SetDifficulty(DifficultyLevel.Normal));
-            AddListener(hardButton, () => SetDifficulty(DifficultyLevel.Hard));
+            if (normalCard != null)
+                AddListener(normalCard.Button, () => SetDifficulty(DifficultyLevel.Normal));
+            if (hardCard != null)
+                AddListener(hardCard.Button, () => SetDifficulty(DifficultyLevel.Hard));
             AddListener(mainButton, OnMainButton);
             AddListener(leaveButton, () => _ = Leave());
 
-            BuildCharacterButtons();
-            BuildKitButtons();
+            BuildCharacterCards();
+            BuildSkillCards();
             SetStatus(GameFlow.PendingMessage ?? (OnlineSessions.IsAvailable ? string.Empty
                 : "Jeu en ligne indisponible : installez le package Multiplayer Services."));
             GameFlow.PendingMessage = null;
@@ -191,72 +194,71 @@ namespace RiskOfMagic.UI
 
         // ---------------------------------------------------------------- Lobby
 
-        private void BuildCharacterButtons()
+        private void BuildCharacterCards()
         {
             var catalog = GameCatalog.Instance;
-            if (catalog == null || characterButtonTemplate == null)
+            if (catalog == null || characterCardTemplate == null)
                 return;
-            characterButtonTemplate.gameObject.SetActive(false);
+            characterCardTemplate.gameObject.SetActive(false);
             for (int i = 0; i < catalog.Characters.Count; i++)
             {
                 int index = i;
-                var button = Instantiate(characterButtonTemplate, characterButtonTemplate.transform.parent);
-                button.gameObject.SetActive(true);
-                var label = button.GetComponentInChildren<TMP_Text>();
-                bool unlocked = MetaProgression.IsUnlocked(catalog.Characters[i]);
-                if (label != null)
-                    label.text = unlocked ? catalog.Characters[i].displayName : $"<alpha=#80>{catalog.Characters[i].displayName} (verrouillé)";
-                button.onClick.AddListener(() => SelectCharacter(index));
-                characterButtons.Add(button);
+                var card = Instantiate(characterCardTemplate, characterCardTemplate.transform.parent);
+                card.gameObject.SetActive(true);
+                AddListener(card.Button, () => SelectCharacter(index));
+                characterCards.Add(card);
             }
         }
 
-        private void BuildKitButtons()
+        private void BuildSkillCards()
         {
-            if (kitButtonTemplate == null)
+            if (skillCardTemplate == null)
                 return;
-            kitButtonTemplate.gameObject.SetActive(false);
+            skillCardTemplate.gameObject.SetActive(false);
             for (int slot = 0; slot < 4; slot++)
-            {
-                int index = slot;
-                var button = Instantiate(kitButtonTemplate, kitButtonTemplate.transform.parent);
-                button.gameObject.SetActive(true);
-                button.onClick.AddListener(() => ToggleAlternative(index));
-                kitButtons.Add(button);
-            }
+                for (int variant = 0; variant < 2; variant++)
+                {
+                    int s = slot;
+                    bool alternative = variant == 1;
+                    var card = Instantiate(skillCardTemplate, skillCardTemplate.transform.parent);
+                    card.gameObject.SetActive(true);
+                    AddListener(card.Button, () => SelectSkill(s, alternative));
+                    skillCards.Add(card);
+                }
         }
+
+        /// <summary>"VERROUILLÉ + challenge + progress" for a locked reward, null when available.</summary>
+        private static string LockText(ChallengeDefinition challenge)
+        {
+            if (challenge == null || MetaProgression.IsCompleted(challenge))
+                return null;
+            return $"<b>VERROUILLÉ</b>\n<size=80%>{challenge.description}\n{MetaProgression.Progress(challenge):N0} / {challenge.target:N0}</size>";
+        }
+
+        private static string LockText(UnityEngine.Object reward) => LockText(MetaProgression.UnlockedBy(reward));
 
         private void SelectCharacter(int index)
         {
             var character = GameCatalog.Instance != null ? GameCatalog.Instance.GetCharacter(index) : null;
-            if (LobbyState.Instance == null || character == null)
+            if (LobbyState.Instance == null || character == null || !MetaProgression.IsUnlocked(character))
                 return;
-            if (!MetaProgression.IsUnlocked(character))
-            {
-                var challenge = MetaProgression.UnlockedBy(character);
-                SetStatus($"{character.displayName} verrouillé — défi : {(challenge != null ? challenge.description : "?")}");
-                return;
-            }
             LobbyState.Instance.SelectCharacter(index);
             LobbyState.Instance.SetLoadout(MetaProgression.GetLoadout(character));
         }
 
-        private void ToggleAlternative(int slot)
+        private void SelectSkill(int slot, bool alternative)
         {
             var lobby = LobbyState.Instance;
             if (lobby == null || !lobby.TryGetLocalPlayer(out var me))
                 return;
             var character = GameCatalog.Instance.GetCharacter(me.Character);
-            var alternative = character != null ? character.GetAlternative((SkillSlot)slot) : null;
-            if (alternative == null)
+            var skill = character != null ? (alternative ? character.GetAlternative((SkillSlot)slot) : character.GetSkill((SkillSlot)slot)) : null;
+            if (skill == null || !MetaProgression.IsUnlocked(skill))
                 return;
-            if (!MetaProgression.IsUnlocked(alternative))
-            {
-                var challenge = MetaProgression.UnlockedBy(alternative);
-                SetStatus($"{alternative.displayName} verrouillée — défi : {(challenge != null ? challenge.description : "?")}");
+            byte bit = (byte)(1 << slot);
+            byte mask = alternative ? (byte)(me.Loadout | bit) : (byte)(me.Loadout & ~bit);
+            if (mask == me.Loadout)
                 return;
-            }
-            byte mask = (byte)(me.Loadout ^ (1 << slot));
             MetaProgression.SetLoadout(character, mask);
             lobby.SetLoadout(mask);
         }
@@ -345,19 +347,34 @@ namespace RiskOfMagic.UI
                 sentInitialLoadout = true;
                 lobby.SetLoadout(MetaProgression.GetLoadout(catalog.GetCharacter(me.Character)));
             }
-            for (int i = 0; i < characterButtons.Count; i++)
-                Tint(characterButtons[i], hasMe && me.Character == i);
-            if (characterDescription != null && catalog != null && hasMe && catalog.GetCharacter(me.Character) != null)
-                characterDescription.text = DescribeCharacter(me.Character, me.Loadout);
-            RefreshKitButtons(hasMe && catalog != null ? catalog.GetCharacter(me.Character) : null, hasMe ? me.Loadout : (byte)0);
+            var selected = hasMe && catalog != null ? catalog.GetCharacter(me.Character) : null;
+            for (int i = 0; i < characterCards.Count && catalog != null; i++)
+            {
+                var character = catalog.GetCharacter(i);
+                if (character != null)
+                    characterCards[i].Set(character.displayName, $"{character.maxHealth:0} PV", character.portrait, character.bodyColor,
+                        hasMe && me.Character == i, LockText(character));
+            }
+            if (characterPreview != null)
+                characterPreview.Show(selected);
+            if (characterDescription != null)
+                characterDescription.text = selected != null ? $"<size=130%><b>{selected.displayName}</b></size>  ·  {selected.maxHealth:0} PV\n<i>{selected.description}</i>" : string.Empty;
+            RefreshSkillCards(selected, hasMe ? me.Loadout : (byte)0);
 
             // Difficulty
             bool isServer = lobby.IsServer;
-            Tint(normalButton, lobby.Difficulty == DifficultyLevel.Normal);
-            Tint(hardButton, lobby.Difficulty == DifficultyLevel.Hard);
             bool hardUnlocked = MetaProgression.IsHardModeUnlocked;
-            SetInteractable(normalButton, isServer);
-            SetInteractable(hardButton, isServer && hardUnlocked);
+            if (normalCard != null)
+            {
+                normalCard.Set("Normal", "Pour découvrir le jeu.", null, new Color(0.35f, 0.6f, 0.35f), lobby.Difficulty == DifficultyLevel.Normal, null);
+                SetInteractable(normalCard.Button, isServer);
+            }
+            if (hardCard != null)
+            {
+                hardCard.Set("Difficile", "Pour les vétérans.", null, new Color(0.75f, 0.25f, 0.2f), lobby.Difficulty == DifficultyLevel.Hard,
+                    hardUnlocked ? null : LockText(MetaProgression.HardModeChallenge));
+                SetInteractable(hardCard.Button, isServer && hardUnlocked);
+            }
             if (difficultyDescription != null)
                 difficultyDescription.text = (lobby.Difficulty == DifficultyLevel.Hard ? HardDescription : NormalDescription)
                                              + (isServer ? string.Empty : "\n<size=80%><i>Choisie par l'hôte.</i></size>")
@@ -378,37 +395,25 @@ namespace RiskOfMagic.UI
             }
         }
 
-        private static string DescribeCharacter(int index, byte loadout)
+        private void RefreshSkillCards(RiskOfMagic.Characters.CharacterDefinition character, byte loadout)
         {
-            var character = GameCatalog.Instance.GetCharacter(index);
-            var builder = new StringBuilder();
-            builder.AppendLine($"<b>{character.displayName}</b> · {character.maxHealth:0} PV");
-            builder.AppendLine($"<i>{character.description}</i>");
-            for (int slot = 0; slot < 4; slot++)
+            for (int slot = 0; slot < 4 && skillCards.Count >= 8; slot++)
             {
-                var skill = character.GetSkill((SkillSlot)slot, loadout);
-                if (skill != null)
-                    builder.AppendLine($"<b>{SlotKeys[slot]}</b> {skill.displayName} : {skill.description}");
-            }
-            return builder.ToString();
-        }
+                var baseCard = skillCards[slot * 2];
+                var altCard = skillCards[slot * 2 + 1];
+                var baseSkill = character != null ? character.GetSkill((SkillSlot)slot) : null;
+                var altSkill = character != null ? character.GetAlternative((SkillSlot)slot) : null;
+                bool usingAlt = altSkill != null && (loadout & (1 << slot)) != 0 && MetaProgression.IsUnlocked(altSkill);
+                var neutral = new Color(0.35f, 0.32f, 0.4f);
 
-        private void RefreshKitButtons(RiskOfMagic.Characters.CharacterDefinition character, byte loadout)
-        {
-            for (int slot = 0; slot < kitButtons.Count; slot++)
-            {
-                var button = kitButtons[slot];
-                var alternative = character != null ? character.GetAlternative((SkillSlot)slot) : null;
-                var label = button.GetComponentInChildren<TMP_Text>();
-                bool usingAlt = alternative != null && (loadout & (1 << slot)) != 0;
-                if (label != null)
-                {
-                    var current = character != null ? character.GetSkill((SkillSlot)slot, loadout) : null;
-                    string lockText = alternative != null && !MetaProgression.IsUnlocked(alternative) ? "\n<size=70%><alpha=#90>Alternative verrouillée<alpha=#FF></size>" : string.Empty;
-                    label.text = $"<size=75%>{SlotKeys[slot]}</size>\n{(current != null ? current.displayName : "—")}{lockText}";
-                }
-                SetInteractable(button, alternative != null);
-                Tint(button, usingAlt);
+                baseCard.gameObject.SetActive(baseSkill != null);
+                if (baseSkill != null)
+                    baseCard.Set($"<size=75%>{SlotKeys[slot]}</size>  {baseSkill.displayName}", baseSkill.description, baseSkill.icon, neutral, !usingAlt, null);
+
+                altCard.gameObject.SetActive(altSkill != null);
+                if (altSkill != null)
+                    altCard.Set($"<size=75%>{SlotKeys[slot]} · alt.</size>  {altSkill.displayName}", altSkill.description, altSkill.icon, neutral, usingAlt,
+                        LockText(altSkill));
             }
         }
 
