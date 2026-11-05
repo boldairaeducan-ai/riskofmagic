@@ -12,6 +12,7 @@ namespace RiskOfMagic.Enemies
     public class EnemySummonAttack : EnemyAttack
     {
         [SerializeField] private SpawnCard minion;
+        [SerializeField, Tooltip("Optional: random card per minion instead of `minion`.")] private SpawnCard[] minionPool = new SpawnCard[0];
         [SerializeField, Min(1)] private int countPerCast = 4;
         [SerializeField, Min(1)] private int maxAlive = 8;
         [SerializeField] private Vector2 spawnDistance = new(2f, 5f);
@@ -30,7 +31,7 @@ namespace RiskOfMagic.Enemies
         protected override IEnumerator Perform(PlayerAvatar target)
         {
             var director = CombatDirector.Instance;
-            if (director == null || minion == null || minion.prefab == null)
+            if (director == null || ((minion == null || minion.prefab == null) && minionPool.Length == 0))
                 yield break;
             yield return new WaitForSeconds(windup);
 
@@ -40,7 +41,10 @@ namespace RiskOfMagic.Enemies
                 Vector2 dir = Random.insideUnitCircle.normalized * Random.Range(spawnDistance.x, spawnDistance.y);
                 if (!NavMesh.SamplePosition(transform.position + new Vector3(dir.x, 0f, dir.y), out var hit, 3f, NavMesh.AllAreas))
                     continue;
-                var spawned = director.Spawn(minion, hit.position, transform.rotation, Actor.Level);
+                var card = minionPool.Length > 0 ? minionPool[Random.Range(0, minionPool.Length)] : minion;
+                if (card == null || card.prefab == null)
+                    continue;
+                var spawned = director.Spawn(card, hit.position, transform.rotation, Actor.Level);
                 minions.Add(spawned);
                 VfxNetwork.Spawn(spawnVfx, hit.position, Quaternion.identity);
                 if (target != null && spawned.TryGetComponent(out EnemyBrain brain))

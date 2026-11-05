@@ -728,24 +728,50 @@ namespace RiskOfMagic.Editor
             group.blocksRaycasts = false;
             Themed(screen, null, HudColor.Panel);
 
-            var panel = Rect("Panel", screen, Center, Center, Vector2.zero, new Vector2(640f, 440f));
+            var panel = Rect("Panel", screen, Center, Center, Vector2.zero, new Vector2(1100f, 760f));
             Themed(panel, HudSprite.Panel, HudColor.Panel);
-            Text(Rect("Title", panel, TopCenter, TopCenter, new Vector2(0f, -30f), new Vector2(600f, 70f)), null,
-                "FIN DE LA PARTIE", 56f, HudFont.Title, HudColor.Danger, TextAlignmentOptions.Center);
-            var stats = Text(Rect("Stats", panel, Center, Center, new Vector2(0f, 10f), new Vector2(560f, 150f)), null,
-                "Étape atteinte : 1", 28f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
+            var title = Text(Rect("Title", panel, TopCenter, TopCenter, new Vector2(0f, -24f), new Vector2(1000f, 80f)), null,
+                "DÉFAITE", 64f, HudFont.Title, HudColor.Danger, TextAlignmentOptions.Center);
+            var stats = Text(Rect("RunStats", panel, TopCenter, TopCenter, new Vector2(0f, -108f), new Vector2(1000f, 76f)), null,
+                "Temps : 00:00", 26f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
 
-            var restart = Button(panel, "RestartButton", "Recommencer", 0f);
-            PlaceButton(restart, new Vector2(-135f, 40f));
-            var quit = Button(panel, "QuitButton", "Quitter", 0f);
-            PlaceButton(quit, new Vector2(135f, 40f));
+            // Player rows (cloned at runtime from the disabled template).
+            var list = Rect("Players", panel, TopCenter, TopCenter, new Vector2(0f, -196f), new Vector2(1040f, 440f));
+            VerticalLayout(list.gameObject, 0, 10f);
+            var row = Rect("PlayerRowTemplate", list, Center, Center, Vector2.zero, new Vector2(0f, 100f));
+            LayoutHeight(row, 100f);
+            Themed(row, HudSprite.Frame, HudColor.Frame);
+            Text(Rect("Name", row, TopLeft, TopLeft, new Vector2(16f, -6f), new Vector2(1000f, 30f)), null,
+                "Joueur 1 — Guerrier", 24f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.MidlineLeft);
+            Text(Rect("Stats", row, TopLeft, TopLeft, new Vector2(16f, -36f), new Vector2(1000f, 26f)), null,
+                "Dégâts 0 · Kills 0", 20f, HudFont.Body, HudColor.Text, TextAlignmentOptions.MidlineLeft);
+            var items = Rect("Items", row, BottomLeft, BottomLeft, new Vector2(16f, 6f), new Vector2(1000f, 34f));
+            var itemsLayout = items.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            itemsLayout.spacing = 4f;
+            itemsLayout.childControlWidth = itemsLayout.childControlHeight = false;
+            itemsLayout.childForceExpandWidth = itemsLayout.childForceExpandHeight = false;
+            itemsLayout.childAlignment = TextAnchor.MiddleLeft;
+            var icon = Rect("ItemIconTemplate", items, Center, Center, Vector2.zero, new Vector2(34f, 34f));
+            var iconImage = PlainImage(icon);
+            iconImage.color = Color.white;
+            Text(Rect("Count", icon, BottomRight, BottomRight, Vector2.zero, new Vector2(34f, 16f)), null,
+                string.Empty, 12f, HudFont.Numbers, HudColor.Text, TextAlignmentOptions.BottomRight);
+            row.gameObject.SetActive(false);
+
+            var restart = Button(panel, "RestartButton", "Rejouer", 0f);
+            PlaceButton(restart, new Vector2(-135f, 30f));
+            var quit = Button(panel, "QuitButton", "Retour au menu", 0f);
+            PlaceButton(quit, new Vector2(135f, 30f));
 
             var widget = screen.gameObject.AddComponent<GameOverWidget>();
             Props(widget, so =>
             {
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("group").objectReferenceValue = group;
+                so.FindProperty("titleLabel").objectReferenceValue = title;
                 so.FindProperty("statsLabel").objectReferenceValue = stats;
+                so.FindProperty("playerRowTemplate").objectReferenceValue = row;
+                so.FindProperty("itemIconTemplate").objectReferenceValue = iconImage;
                 so.FindProperty("restartButton").objectReferenceValue = restart;
                 so.FindProperty("quitButton").objectReferenceValue = quit;
             });

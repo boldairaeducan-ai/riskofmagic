@@ -66,6 +66,17 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 Bosses: the teleporter picks a weighted random boss among the cards unlocked at the current stage (`SpawnCard.minStage`), never the previous boss; one extra boss from stage 4. Enemies can carry several `EnemyAttack` components: the brain picks a random ready one in range (`selectionWeight`), the primary one drives the approach distance.
 - **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (stage population of idle enemies + credit-based waves hunting players), `StageBounds` (playable volume, placed in each map), `Teleporter` (boss event, charge zone), `StageManager` (next stage: cleanup, revive, respawn).
 
+## End of run
+A loop is 5 stages (`StageManager.stagesPerLoop`). The 5th is the final stage: its teleporter spawns a final boss
+(`Teleporter.finalBossCards`, one picked at random: add more avatars there). Once the event is over, a victory seal appears next
+to the teleporter: the seal ends the run (victory), the teleporter starts a new loop (stage 6 = stage 1 pool, difficulty kept).
+The `MapRotation` should have 5 pools (the 5th = final maps). The end screen (victory or defeat) shows the run stats, one row per
+player (damage, kills, deaths, gold, items) and Rejouer (host) / Retour au menu. Needs **Rebuild HUD Prefab**.
+
+**Avatar du chaos** (4000 HP, Kite): homing volley of 5 chaos bolts; meteor shower (one per player + 2 around, 45 dmg, 5 m, marked
+1.6 s ahead). At 66%: splits into 3 illusions (4% HP, 40% damage, same look) and blinks among them, summons ghouls/wolves/
+pyromancers from now on. At 33%: splits again, meteors twice as often (+1 per player). Illusions vanish after 25 s or at its death.
+
 ## Elites
 From run progress 1.5, a director wave has a 35% chance to be elite (one affix for the whole wave) if the boosted cost is affordable.
 Bosses can be elite from stage 3 (50%). Affix assets: `Configs/Enemies/Elite_*.asset` (registered in the `GameCatalog`).

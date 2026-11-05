@@ -361,7 +361,7 @@ namespace RiskOfMagic.Enemies
         {
             float total = 0f;
             foreach (var a in attacks)
-                if (a != null && a.IsReady && a.IsInRange(Target.transform))
+                if (a != null && a.IsAvailable && a.IsReady && a.IsInRange(Target.transform))
                     total += a.SelectionWeight;
             if (total <= 0f)
                 return null;
@@ -369,7 +369,7 @@ namespace RiskOfMagic.Enemies
             EnemyAttack last = null;
             foreach (var a in attacks)
             {
-                if (a == null || !a.IsReady || !a.IsInRange(Target.transform))
+                if (a == null || !a.IsAvailable || !a.IsReady || !a.IsInRange(Target.transform))
                     continue;
                 last = a;
                 roll -= a.SelectionWeight;

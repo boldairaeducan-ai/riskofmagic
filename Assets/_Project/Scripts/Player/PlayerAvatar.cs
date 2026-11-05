@@ -46,6 +46,7 @@ namespace RiskOfMagic.Player
         public CharacterStats Stats { get; private set; }
         public PlayerWallet Wallet { get; private set; }
         public PlayerInventory Inventory { get; private set; }
+        public PlayerRunStats RunStats { get; private set; }
         public StatusEffects Status { get; private set; }
         public PlayerEquipment Equipment { get; private set; }
         public SkillController Skills { get; private set; }
@@ -104,6 +105,7 @@ namespace RiskOfMagic.Player
             Status = GetComponent<StatusEffects>();
             Equipment = GetComponent<PlayerEquipment>();
             Downed = GetComponent<PlayerDowned>();
+            RunStats = GetComponent<PlayerRunStats>();
             Skills = GetComponent<SkillController>();
         }
 

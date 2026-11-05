@@ -28,6 +28,10 @@ namespace RiskOfMagic.Enemies
 
         public float Range => range;
         public float SelectionWeight => selectionWeight;
+        /// <summary>Server. Phase tuning (ChaosAvatar): &lt; 1 = more frequent.</summary>
+        public float CooldownMultiplier { get; set; } = 1f;
+        /// <summary>Disabled attacks are never picked (phase-gated attacks).</summary>
+        public bool IsAvailable => isActiveAndEnabled;
         /// <summary>Multiplier of the brain's turn speed while this attack runs (low = sweeping breath).</summary>
         public virtual float TrackingFactor => 1f;
         public bool IsAttacking { get; private set; }
@@ -70,7 +74,7 @@ namespace RiskOfMagic.Enemies
         {
             yield return Perform(target);
             IsAttacking = false;
-            readyTime = Time.time + cooldown / Mathf.Max(0.1f, Actor.AttackSpeedMultiplier);
+            readyTime = Time.time + cooldown * CooldownMultiplier / Mathf.Max(0.1f, Actor.AttackSpeedMultiplier);
             routine = null;
         }
 

@@ -22,8 +22,12 @@ namespace RiskOfMagic.Run
     {
         [SerializeField] private Teleporter teleporterPrefab;
         [SerializeField, Min(0f)] private float teleporterMinDistanceFromSpawns = 45f;
+        [SerializeField, Min(1), Tooltip("Stages per loop; the last one is the final stage (final boss, victory or loop).")]
+        private int stagesPerLoop = 5;
 
         private readonly NetworkVariable<int> stageNumber = new(1);
+        // Declared before gameOver: NetworkVariables apply in declaration order, so it's up to date in GameOverChanged.
+        private readonly NetworkVariable<bool> victory = new();
         private readonly NetworkVariable<bool> gameOver = new();
         private readonly NetworkVariable<float> finalTime = new();
         private readonly NetworkVariable<int> kills = new();
@@ -39,7 +43,14 @@ namespace RiskOfMagic.Run
         public event Action<bool> GameOverChanged;
 
         public int StageNumber => stageNumber.Value;
+        /// <summary>Run ended (defeat or victory).</summary>
         public bool IsGameOver => gameOver.Value;
+        public bool IsVictory => gameOver.Value && victory.Value;
+        public int StagesPerLoop => stagesPerLoop;
+        /// <summary>Last stage of a loop (5, 10, 15...): final boss, then victory or loop.</summary>
+        public bool IsFinalStage => stageNumber.Value % stagesPerLoop == 0;
+        /// <summary>Completed loops (0 during the first one).</summary>
+        public int Loop => (stageNumber.Value - 1) / stagesPerLoop;
         /// <summary>Run duration frozen at the game over.</summary>
         public float FinalTime => finalTime.Value;
         public int Kills => kills.Value;
@@ -81,7 +92,7 @@ namespace RiskOfMagic.Run
         private void Update()
         {
             if (IsServer && IsSpawned && !gameOver.Value && AllPlayersDead())
-                TriggerGameOver();
+                EndRun(won: false);
         }
 
         // ---------------------------------------------------------------- Run (server)
@@ -112,7 +123,10 @@ namespace RiskOfMagic.Run
                 player.Wallet.ResetGold();
                 if (player.Equipment != null)
                     player.Equipment.ClearEquipment();
+                if (player.RunStats != null)
+                    player.RunStats.ResetStats();
             }
+            victory.Value = false;
 
             stageNumber.Value = 1;
             kills.Value = 0;
@@ -137,10 +151,16 @@ namespace RiskOfMagic.Run
             ResetStage(fullHeal);
         }
 
-        private void TriggerGameOver()
+        /// <summary>Server only. Victory: sealed at the final stage. Defeat: every player dead.</summary>
+        public void EndRun(bool won)
         {
+            if (!IsServer || gameOver.Value)
+                return;
             finalTime.Value = RunDifficulty.Instance != null ? RunDifficulty.Instance.ElapsedSeconds : 0f;
+            victory.Value = won;
             gameOver.Value = true;
+            if (won)
+                DespawnAll(new List<EnemyActor>(EnemyActor.Active));
             if (CombatDirector.Instance != null)
                 CombatDirector.Instance.Paused = true;
         }
@@ -219,7 +239,7 @@ namespace RiskOfMagic.Run
 
         private void OnEnemyKilled(EnemyActor enemy, DamageInfo killingBlow)
         {
-            if (!gameOver.Value)
+            if (!gameOver.Value && !enemy.IsIllusion)
                 kills.Value++;
         }
 

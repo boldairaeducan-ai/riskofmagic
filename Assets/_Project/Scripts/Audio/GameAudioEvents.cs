@@ -184,7 +184,10 @@ namespace RiskOfMagic.Audio
             {
                 case TeleporterState.Charging:
                     AudioService.PlayAt(config.teleporterActivated, position);
-                    AudioService.SetOverrideMusic(config.bossMusic);
+                    bool final = StageManager.Instance != null && StageManager.Instance.IsFinalStage;
+                    AudioService.SetOverrideMusic(final && config.finalBossMusic != null && config.finalBossMusic.clip != null
+                        ? config.finalBossMusic
+                        : config.bossMusic);
                     break;
                 case TeleporterState.Charged:
                     AudioService.PlayAt(config.teleporterCharged, position);
@@ -208,15 +211,17 @@ namespace RiskOfMagic.Audio
                 stage.GameOverChanged += OnGameOverChanged;
         }
 
-        private static void OnGameOverChanged(bool gameOver)
+        private void OnGameOverChanged(bool gameOver)
         {
             var config = Config;
             if (config == null)
                 return;
             if (gameOver)
             {
-                AudioService.Play2D(config.gameOver);
-                AudioService.SetOverrideMusic(config.gameOverMusic);
+                // StageManager declares victory before gameOver: IsVictory is up to date here.
+                bool won = boundStage != null && boundStage.IsVictory;
+                AudioService.Play2D(won ? config.victory : config.gameOver);
+                AudioService.SetOverrideMusic(won ? config.victoryMusic : config.gameOverMusic);
             }
             else
             {

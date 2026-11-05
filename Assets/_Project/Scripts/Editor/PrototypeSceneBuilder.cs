@@ -62,9 +62,9 @@ namespace RiskOfMagic.Editor
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder;
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor;
             public DotEffect Poison;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder };
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -159,7 +159,20 @@ namespace RiskOfMagic.Editor
                 Card("SpawnCard_Boss_SpiderQueen", queen, 1, 1f, 0f),
                 Card("SpawnCard_Boss_EmberDrake", drake, 1, 1f, 0f, minStage: 2)
             };
-            var teleporter = BuildTeleporterPrefab(bossCards);
+            // Final stage (every StageManager.stagesPerLoop stages): one avatar, then victory seal or loop.
+            var avatar = BuildChaosAvatar(projectiles, vfx, new[]
+            {
+                cards.Find(c => c.name == "SpawnCard_Ghoul"), cards.Find(c => c.name == "SpawnCard_Wolf"),
+                cards.Find(c => c.name == "SpawnCard_Pyromancer")
+            });
+            prefabList.Add(new NetworkPrefab { Prefab = avatar.gameObject });
+            var avatarCard = Card("SpawnCard_Boss_ChaosAvatar", avatar, 1, 1f, 0f);
+            SetProperties(avatar.GetComponent<ChaosAvatar>(), so => so.FindProperty("illusionCard").objectReferenceValue = avatarCard);
+            EditorUtility.SetDirty(avatar.GetComponent<ChaosAvatar>());
+            var seal = BuildRunEndSealPrefab();
+            prefabList.Add(new NetworkPrefab { Prefab = seal });
+
+            var teleporter = BuildTeleporterPrefab(bossCards, new List<SpawnCard> { avatarCard }, seal);
             prefabList.Add(new NetworkPrefab { Prefab = teleporter });
 
             var gameSystems = BuildGameSystemsPrefab(cards, new[]
@@ -231,7 +244,9 @@ namespace RiskOfMagic.Editor
                 ArcaneBolt = ProjectileAsset("Projectile_ArcaneBolt", new Color(0.75f, 0.45f, 1f), 0.3f, vfx.Impact),
                 PoisonDart = ProjectileAsset("Projectile_PoisonDart", new Color(0.45f, 0.9f, 0.2f), 0.15f, vfx.Impact),
                 SpiderSpit = ProjectileAsset("Projectile_SpiderSpit", new Color(0.55f, 0.85f, 0.15f), 0.45f, vfx.PoisonBurst),
-                Boulder = ProjectileAsset("Projectile_Boulder", new Color(0.45f, 0.4f, 0.35f), 1.1f, vfx.Explosion)
+                Boulder = ProjectileAsset("Projectile_Boulder", new Color(0.45f, 0.4f, 0.35f), 1.1f, vfx.Explosion),
+                ChaosBolt = ProjectileAsset("Projectile_ChaosBolt", new Color(0.85f, 0.2f, 0.6f), 0.4f, vfx.Impact),
+                Meteor = ProjectileAsset("Projectile_Meteor", new Color(0.55f, 0.15f, 0.1f), 2.5f, vfx.FireBurst)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -260,6 +275,11 @@ namespace RiskOfMagic.Editor
             Configure(set.SpiderSpit, speed: 28f, gravity: 4f, lifetime: 3f, radius: 0.3f, explosion: 2f);
             // Speed is overridden by the artillery attack.
             Configure(set.Boulder, speed: 20f, gravity: 20f, lifetime: 4f, radius: 0.5f, explosion: 3.5f, explodeOnExpire: true);
+            Configure(set.ChaosBolt, speed: 22f, gravity: 0f, lifetime: 3f, radius: 0.3f);
+            set.ChaosBolt.homingTurnRate = 90f;
+            set.ChaosBolt.maxRange = 50f;
+            // Speed is overridden by the meteor attack to land after its fall time.
+            Configure(set.Meteor, speed: 25f, gravity: 0f, lifetime: 4f, radius: 1f, explosion: 5f, explodeOnExpire: true);
 
             // Strict max ranges (m) for ranged attacks.
             set.Arrow.maxRange = 70f;
@@ -782,6 +802,7 @@ namespace RiskOfMagic.Editor
             root.AddComponent<PlayerDowned>(); // after PlayerInventory: Phoenix Feather prevents death first
             root.AddComponent<LocalCombatFeedback>();
             root.AddComponent<PlayerAudio>();
+            root.AddComponent<PlayerRunStats>();
 
             var body = CreateVisual(PrimitiveType.Capsule, "Body", root.transform, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), Mat("M_Player", Color.white));
 
@@ -1026,7 +1047,7 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Boss_BoneColossus.prefab").GetComponent<EnemyActor>();
         }
 
-        private static GameObject BuildTeleporterPrefab(List<SpawnCard> bossCards)
+        private static GameObject BuildTeleporterPrefab(List<SpawnCard> bossCards, List<SpawnCard> finalBossCards, GameObject seal)
         {
             var stone = Mat("M_TeleporterStone", new Color(0.25f, 0.23f, 0.28f));
             var glow = Mat("M_TeleporterGlow", Color.white, unlit: true);
@@ -1066,6 +1087,11 @@ namespace RiskOfMagic.Editor
                 cards.arraySize = bossCards.Count;
                 for (int i = 0; i < bossCards.Count; i++)
                     cards.GetArrayElementAtIndex(i).objectReferenceValue = bossCards[i];
+                var finals = so.FindProperty("finalBossCards");
+                finals.arraySize = finalBossCards.Count;
+                for (int i = 0; i < finalBossCards.Count; i++)
+                    finals.GetArrayElementAtIndex(i).objectReferenceValue = finalBossCards[i];
+                so.FindProperty("runEndSealPrefab").objectReferenceValue = seal.GetComponent<RunEndSeal>();
                 so.FindProperty("radiusRing").objectReferenceValue = ring;
                 var renderers = so.FindProperty("glowRenderers");
                 renderers.arraySize = glowRenderers.Count;
@@ -1073,6 +1099,109 @@ namespace RiskOfMagic.Editor
                     renderers.GetArrayElementAtIndex(i).objectReferenceValue = glowRenderers[i];
             });
             return SavePrefab(root, Prefabs + "/Teleporter.prefab");
+        }
+
+        private static GameObject BuildRunEndSealPrefab()
+        {
+            var root = new GameObject("RunEndSeal");
+            var body = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            body.name = "Obelisk";
+            body.transform.SetParent(root.transform, false);
+            body.transform.localPosition = Vector3.up * 2f;
+            body.transform.localScale = new Vector3(1f, 4f, 1f);
+            body.GetComponent<Renderer>().sharedMaterial = Mat("M_RunEndSeal", new Color(1f, 0.85f, 0.35f), unlit: true);
+            root.AddComponent<NetworkObject>();
+            root.AddComponent<RunEndSeal>();
+            return SavePrefab(root, Prefabs + "/RunEndSeal.prefab");
+        }
+
+        /// <summary>Final boss: chaos bolts + meteors; splits into illusions at 66% and 33% (summons from 66%, meteor storm from 33%).</summary>
+        private static EnemyActor BuildChaosAvatar(ProjectileSet projectiles, VfxSet vfx, SpawnCard[] minionPool)
+        {
+            var def = BossDef("Boss_ChaosAvatar", "Avatar du chaos", health: 4000f, speed: 5f);
+            def.movementStyle = EnemyMovementStyle.Kite;
+            def.kiteRange = new Vector2(10f, 24f);
+            def.retreatDistance = 8f;
+            def.controlResistance = 0.8f;
+            def.goldReward = 400;
+            EditorUtility.SetDirty(def);
+            var root = EnemyBase("Boss_ChaosAvatar", def, new Color(0.45f, 0.1f, 0.35f), out _);
+            root.transform.localScale = Vector3.one * 2.6f;
+
+            var bolts = root.AddComponent<EnemyProjectileAttack>();
+            SetProperties(bolts, so =>
+            {
+                so.FindProperty("range").floatValue = 35f;
+                so.FindProperty("cooldown").floatValue = 3f;
+                so.FindProperty("selectionWeight").floatValue = 1.5f;
+                so.FindProperty("maxHeightDifference").floatValue = 20f;
+                so.FindProperty("damage").floatValue = 10f;
+                so.FindProperty("damageType").enumValueIndex = (int)DamageType.Arcane;
+                so.FindProperty("windup").floatValue = 0.7f;
+                so.FindProperty("count").intValue = 5;
+                so.FindProperty("spreadAngle").floatValue = 40f;
+                so.FindProperty("homing").boolValue = true;
+                so.FindProperty("projectile").objectReferenceValue = projectiles.ChaosBolt;
+            });
+            var meteors = root.AddComponent<EnemyMeteorAttack>();
+            SetProperties(meteors, so =>
+            {
+                so.FindProperty("range").floatValue = 60f;
+                so.FindProperty("cooldown").floatValue = 9f;
+                so.FindProperty("selectionWeight").floatValue = 2f;
+                so.FindProperty("maxHeightDifference").floatValue = 30f;
+                so.FindProperty("damage").floatValue = 45f;
+                so.FindProperty("fallTime").floatValue = 1.6f;
+                so.FindProperty("extraMeteorsPerPlayer").intValue = 2;
+                so.FindProperty("meteor").objectReferenceValue = projectiles.Meteor;
+                so.FindProperty("telegraphVfx").objectReferenceValue = vfx.Telegraph;
+            });
+            var summon = root.AddComponent<EnemySummonAttack>();
+            SetProperties(summon, so =>
+            {
+                so.FindProperty("range").floatValue = 40f;
+                so.FindProperty("cooldown").floatValue = 18f;
+                so.FindProperty("selectionWeight").floatValue = 3f;
+                so.FindProperty("maxHeightDifference").floatValue = 20f;
+                so.FindProperty("countPerCast").intValue = 3;
+                so.FindProperty("maxAlive").intValue = 6;
+                so.FindProperty("spawnVfx").objectReferenceValue = vfx.Blink;
+                var pool = so.FindProperty("minionPool");
+                pool.arraySize = minionPool.Length;
+                for (int i = 0; i < minionPool.Length; i++)
+                    pool.GetArrayElementAtIndex(i).objectReferenceValue = minionPool[i];
+            });
+
+            var phases = root.AddComponent<ChaosAvatar>();
+            SetProperties(phases, so =>
+            {
+                so.FindProperty("meteors").objectReferenceValue = meteors;
+                var locked = so.FindProperty("lockedAtStart");
+                locked.arraySize = 1;
+                locked.GetArrayElementAtIndex(0).objectReferenceValue = summon;
+                so.FindProperty("illusionHealthFraction").floatValue = 0.04f;
+                so.FindProperty("splitDistance").vector2Value = new Vector2(8f, 14f);
+                so.FindProperty("illusionLifetime").floatValue = 25f;
+                so.FindProperty("splitVfx").objectReferenceValue = vfx.Blink;
+                var list = so.FindProperty("phases");
+                list.arraySize = 2;
+                var p2 = list.GetArrayElementAtIndex(0);
+                p2.FindPropertyRelative("healthThreshold").floatValue = 0.66f;
+                p2.FindPropertyRelative("illusions").intValue = 3;
+                var unlock = p2.FindPropertyRelative("unlockAttacks");
+                unlock.arraySize = 1;
+                unlock.GetArrayElementAtIndex(0).objectReferenceValue = summon;
+                p2.FindPropertyRelative("meteorCooldownMultiplier").floatValue = 1f;
+                p2.FindPropertyRelative("bonusMeteors").intValue = 0;
+                var p3 = list.GetArrayElementAtIndex(1);
+                p3.FindPropertyRelative("healthThreshold").floatValue = 0.33f;
+                p3.FindPropertyRelative("illusions").intValue = 3;
+                p3.FindPropertyRelative("unlockAttacks").arraySize = 0;
+                p3.FindPropertyRelative("meteorCooldownMultiplier").floatValue = 0.5f;
+                p3.FindPropertyRelative("bonusMeteors").intValue = 1;
+            });
+            FinishEnemy(root, bolts);
+            return SavePrefab(root, Prefabs + "/Boss_ChaosAvatar.prefab").GetComponent<EnemyActor>();
         }
 
         private static EnemyDefinition BossDef(string file, string displayName, float health, float speed, bool feminine = false)

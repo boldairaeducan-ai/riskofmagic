@@ -38,6 +38,12 @@ namespace RiskOfMagic.Enemies
         private readonly NetworkVariable<int> eliteIndex = new(-1);
         private readonly NetworkVariable<double> phasedUntil = new();
         private EliteAffix pendingElite;
+        private readonly NetworkVariable<bool> illusion = new();
+        private bool pendingIllusion;
+        private float illusionMaxHealth;
+
+        /// <summary>Damage dealt by illusions (ChaosAvatar split).</summary>
+        public const float IllusionDamageMultiplier = 0.4f;
         private Renderer[] renderers;
         private MaterialPropertyBlock propertyBlock;
         private Color? currentTint;
@@ -48,6 +54,16 @@ namespace RiskOfMagic.Enemies
         /// <summary>Every peer once spawned (null = normal enemy).</summary>
         public EliteAffix Elite { get; private set; }
         public bool IsElite => Elite != null;
+        /// <summary>Copy created by a boss (no reward, not tracked as a boss).</summary>
+        public bool IsIllusion => IsSpawned ? illusion.Value : pendingIllusion;
+
+        /// <summary>Server, before Spawn().</summary>
+        public void MakeIllusion(float maxHealth)
+        {
+            pendingIllusion = true;
+            illusionMaxHealth = maxHealth;
+            Initialize(pendingLevel);
+        }
         /// <summary>Invulnerable (Éthéré elite), tinted on every peer.</summary>
         public bool IsPhased => IsSpawned && NetworkManager.ServerTime.Time < phasedUntil.Value;
 
@@ -101,11 +117,12 @@ namespace RiskOfMagic.Enemies
         public StatusEffects Status { get; private set; }
         public float DamageMultiplier => (definition != null ? 1f + definition.damagePerLevel * (Level - 1) : 1f)
                                          * EliteDamageMultiplier
+                                         * (IsIllusion ? IllusionDamageMultiplier : 1f)
                                          * (Status != null ? Status.DamageDealtMultiplier : 1f);
         public float MoveSpeedMultiplier => Status != null ? Status.MoveSpeedMultiplier : 1f;
         public float AttackSpeedMultiplier => Status != null ? Status.AttackSpeedMultiplier : 1f;
 
-        public uint GoldReward => definition != null
+        public uint GoldReward => definition != null && !IsIllusion
             ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * EliteGoldMultiplier * RunDifficulty.CurrentCoefficient))
             : 0u;
 
@@ -131,7 +148,9 @@ namespace RiskOfMagic.Enemies
         public void Initialize(int enemyLevel)
         {
             pendingLevel = Mathf.Max(1, enemyLevel);
-            if (definition != null)
+            if (pendingIllusion)
+                Health.SetBaseMaxHealth(illusionMaxHealth);
+            else if (definition != null)
                 Health.SetBaseMaxHealth(definition.maxHealth * (1f + definition.healthPerLevel * (pendingLevel - 1)) * EliteHealthMultiplier);
         }
 
@@ -140,6 +159,7 @@ namespace RiskOfMagic.Enemies
             if (IsServer)
             {
                 level.Value = pendingLevel;
+                illusion.Value = pendingIllusion;
                 if (pendingElite != null && GameCatalog.Instance != null)
                     eliteIndex.Value = GameCatalog.Instance.IndexOf(pendingElite);
             }

@@ -58,11 +58,14 @@ namespace RiskOfMagic.Audio
         [SoundSlot(MaxDistance = 150f)] public SoundEvent teleporterCharged;
         [SoundSlot(MaxDistance = 150f)] public SoundEvent teleporterReady;
         [SoundSlot(false)] public SoundEvent gameOver;
+        [SoundSlot(false)] public SoundEvent victory;
 
         [Header("Music")]
         public MusicTrack mainMenuMusic = new();
         public MusicTrack stageMusic = new();
         public MusicTrack bossMusic = new();
+        [Tooltip("Final stage event (avatar). Empty clip = bossMusic.")] public MusicTrack finalBossMusic = new();
+        public MusicTrack victoryMusic = new() { loop = false };
         public MusicTrack gameOverMusic = new() { loop = false };
 
         public SoundEvent GetItemPickup(ItemRarity rarity) => rarity switch

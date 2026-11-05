@@ -42,7 +42,7 @@ namespace RiskOfMagic.UI
         private static EnemyActor FindBoss()
         {
             foreach (var enemy in EnemyActor.Active)
-                if (enemy.Definition != null && enemy.Definition.isBoss && enemy.Health.IsAlive)
+                if (enemy.Definition != null && enemy.Definition.isBoss && !enemy.IsIllusion && enemy.Health.IsAlive)
                     return enemy;
             return null;
         }
