@@ -16,6 +16,7 @@ namespace RiskOfMagic.Combat.Projectiles
         private static readonly RaycastHit[] hits = new RaycastHit[16];
 
         private readonly HashSet<Health> damaged = new();
+        private static readonly List<Health> freezeTargets = new();
         private ProjectileDefinition definition;
         private DamageInfo damage;
         private bool authoritative;
@@ -115,6 +116,8 @@ namespace RiskOfMagic.Combat.Projectiles
                         target.ApplyDamage(info);
                         if (definition.dot != null)
                             DotSystem.Apply(target.Health, definition.dot, info);
+                        if (definition.freezeDuration > 0f && target.Health.TryGetComponent(out RiskOfMagic.Enemies.EnemyActor frozen))
+                            frozen.Freeze(definition.freezeDuration);
                     }
 
                     if (pierced < definition.pierceCount)
@@ -139,6 +142,13 @@ namespace RiskOfMagic.Combat.Projectiles
             {
                 var info = damage;
                 AreaDamage.Apply(point, definition.explosionRadius * scale, info, definition.hitMask, damaged, definition.dot);
+                if (definition.freezeDuration > 0f)
+                {
+                    TargetFinder.FindHostiles(point, definition.explosionRadius * scale, damage.SourceTeam, freezeTargets, definition.hitMask);
+                    foreach (var health in freezeTargets)
+                        if (health.TryGetComponent(out RiskOfMagic.Enemies.EnemyActor enemy))
+                            enemy.Freeze(definition.freezeDuration);
+                }
             }
             VfxUtility.Spawn(definition.impactVfx, point, Quaternion.identity, scale);
             AudioService.PlayAt(definition.impactSound, point);

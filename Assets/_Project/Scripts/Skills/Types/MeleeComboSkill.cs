@@ -29,6 +29,7 @@ namespace RiskOfMagic.Skills.Types
         };
         [Min(0f)] public float comboResetTime = 0.9f;
         [Tooltip("Optional damage over time applied by every hit.")] public DotEffect dot;
+        [Min(0f), Tooltip("Enemies hit are pushed this far (0 = none).")] public float knockbackDistance;
         public GameObject swingVfx;
 
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
@@ -63,6 +64,7 @@ namespace RiskOfMagic.Skills.Types
                 yield break;
             Vector3 center = context.Look.CameraPivot.position + direction * step.reach;
             context.DamageArea(center, step.radius, step.damageCoefficient, damageType, null, dot);
+            SkillUtility.Knockback(context, context.Transform.position, step.reach + step.radius, knockbackDistance);
         }
 
         private Step GetStep(in SkillActivation activation) => steps[Mathf.Min(activation.Step, steps.Length - 1)];

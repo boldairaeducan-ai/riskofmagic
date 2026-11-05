@@ -59,11 +59,11 @@ namespace RiskOfMagic.Skills
             Context = new SkillContext(this, avatar, stats);
         }
 
-        public void SetLoadout(CharacterDefinition character)
+        public void SetLoadout(CharacterDefinition character, byte alternatives = 0)
         {
             for (int i = 0; i < SlotCount; i++)
             {
-                var skill = character != null ? character.GetSkill((SkillSlot)i) : null;
+                var skill = character != null ? character.GetSkill((SkillSlot)i, alternatives) : null;
                 slots[i] = skill != null ? new SkillSlotState(skill) : null;
             }
             chargingSlot = -1;

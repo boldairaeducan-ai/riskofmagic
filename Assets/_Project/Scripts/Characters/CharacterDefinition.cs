@@ -38,6 +38,12 @@ namespace RiskOfMagic.Characters
         public SkillDefinition utility;
         public SkillDefinition special;
 
+        [Header("Alternative skills (unlocked by challenges, chosen in the lobby)")]
+        public SkillDefinition primaryAlt;
+        public SkillDefinition secondaryAlt;
+        public SkillDefinition utilityAlt;
+        public SkillDefinition specialAlt;
+
         public SkillDefinition GetSkill(SkillSlot slot) => slot switch
         {
             SkillSlot.Primary => primary,
@@ -45,5 +51,20 @@ namespace RiskOfMagic.Characters
             SkillSlot.Utility => utility,
             _ => special
         };
+
+        public SkillDefinition GetAlternative(SkillSlot slot) => slot switch
+        {
+            SkillSlot.Primary => primaryAlt,
+            SkillSlot.Secondary => secondaryAlt,
+            SkillSlot.Utility => utilityAlt,
+            _ => specialAlt
+        };
+
+        /// <summary>Skill of a slot for a loadout mask (bit per slot = alternative, if it exists).</summary>
+        public SkillDefinition GetSkill(SkillSlot slot, byte loadout)
+        {
+            var alternative = (loadout & (1 << (int)slot)) != 0 ? GetAlternative(slot) : null;
+            return alternative != null ? alternative : GetSkill(slot);
+        }
     }
 }

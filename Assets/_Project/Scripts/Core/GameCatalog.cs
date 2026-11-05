@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Combat.Projectiles;
+using RiskOfMagic.Enemies;
 using RiskOfMagic.Enemies.Elites;
+using RiskOfMagic.Meta;
 using RiskOfMagic.Equipment;
 using RiskOfMagic.Items;
 using RiskOfMagic.Maps;
@@ -26,6 +28,8 @@ namespace RiskOfMagic.Core
         [SerializeField] private List<GameObject> effects = new();
         [SerializeField] private List<EquipmentDefinition> equipment = new();
         [SerializeField] private List<EliteAffix> elites = new();
+        [SerializeField, Tooltip("Meta progression challenges (unlocks).")] private List<ChallengeDefinition> challenges = new();
+        [SerializeField, Tooltip("Bestiary order.")] private List<EnemyDefinition> enemies = new();
         [SerializeField, Tooltip("Prefab with an ItemPickup, used to drop items and equipment.")] private ItemPickup pickupPrefab;
         [SerializeField, Tooltip("Map scenes per stage.")] private MapRotation mapRotation;
 
@@ -50,6 +54,8 @@ namespace RiskOfMagic.Core
         public IReadOnlyList<ItemDefinition> Items => items;
         public IReadOnlyList<EquipmentDefinition> Equipment => equipment;
         public IReadOnlyList<EliteAffix> Elites => elites;
+        public IReadOnlyList<ChallengeDefinition> Challenges => challenges;
+        public IReadOnlyList<EnemyDefinition> Enemies => enemies;
         public EliteAffix GetElite(int index) => Get(elites, index);
         public int IndexOf(EliteAffix affix) => elites.IndexOf(affix);
 
@@ -86,7 +92,7 @@ namespace RiskOfMagic.Core
             var pool = new List<ItemDefinition>();
             for (int r = (int)rarity; r >= 0 && pool.Count == 0; r--)
                 foreach (var item in items)
-                    if (item != null && (int)item.rarity == r)
+                    if (item != null && (int)item.rarity == r && MetaProgression.IsUnlocked(item))
                         pool.Add(item);
 
             var result = new List<ItemDefinition>();
@@ -110,7 +116,7 @@ namespace RiskOfMagic.Core
             {
                 rollBuffer.Clear();
                 foreach (var item in items)
-                    if (item != null && (int)item.rarity == r)
+                    if (item != null && (int)item.rarity == r && MetaProgression.IsUnlocked(item)) // host's unlocks
                         rollBuffer.Add(item);
                 if (rollBuffer.Count > 0)
                     return rollBuffer[Random.Range(0, rollBuffer.Count)];
@@ -124,6 +130,12 @@ namespace RiskOfMagic.Core
 #if UNITY_EDITOR
         public void EditorSetMapRotation(MapRotation rotation) => mapRotation = rotation;
         public void EditorSetElites(List<EliteAffix> newElites) => elites = newElites;
+
+        public void EditorSetMeta(List<ChallengeDefinition> newChallenges, List<EnemyDefinition> newEnemies)
+        {
+            challenges = newChallenges;
+            enemies = newEnemies;
+        }
 
         public void EditorSet(List<CharacterDefinition> newCharacters, List<ProjectileDefinition> newProjectiles,
             List<ItemDefinition> newItems, List<GameObject> newEffects, List<EquipmentDefinition> newEquipment, ItemPickup newPickupPrefab)

@@ -1,3 +1,4 @@
+using System.Collections;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Combat.Projectiles;
 using UnityEngine;
@@ -15,6 +16,8 @@ namespace RiskOfMagic.Skills.Types
         [Min(1)] public int count = 1;
         [Min(0f), Tooltip("Horizontal fan angle for count > 1.")] public float spreadAngle;
         [Tooltip("Relative to the camera pivot.")] public Vector3 muzzleOffset = new(0.25f, -0.2f, 0.5f);
+        [Min(1), Tooltip("Shots fired in sequence (each one fires `count` projectiles).")] public int burstCount = 1;
+        [Min(0.01f)] public float burstInterval = 0.08f;
 
         [Header("Charge (Charge mode)")]
         [Min(0f)] public float minChargeCoefficient = 2f;
@@ -41,7 +44,38 @@ namespace RiskOfMagic.Skills.Types
             float scale = GetScale(activation);
             for (int i = 0; i < count; i++)
                 context.PredictProjectile(projectile, activation.Origin, GetDirection(activation.Direction, i), scale);
+            if (burstCount > 1)
+                context.Run(PredictBurst(context, scale));
         }
+
+        // Follow-up shots of a burst use the current aim (owner prediction / server).
+        private IEnumerator PredictBurst(SkillContext context, float scale)
+        {
+            for (int shot = 1; shot < burstCount; shot++)
+            {
+                yield return new WaitForSeconds(burstInterval);
+                Vector3 muzzle = context.Look.CameraPivot.TransformPoint(muzzleOffset);
+                Vector3 forward = context.Look.CameraPivot.forward;
+                for (int i = 0; i < count; i++)
+                    context.PredictProjectile(projectile, muzzle, GetDirection(forward, i), scale);
+            }
+        }
+
+        private IEnumerator FireBurst(SkillContext context, Vector3 direction, float coefficient, float scale, float yawAtCast)
+        {
+            for (int shot = 1; shot < burstCount; shot++)
+            {
+                yield return new WaitForSeconds(burstInterval);
+                if (!context.Avatar.IsAlive)
+                    yield break;
+                Vector3 muzzle = context.Look.CameraPivot.TransformPoint(muzzleOffset);
+                // Yaw follows the replicated body rotation; pitch stays the one of the activation.
+                Vector3 aim = Quaternion.Euler(0f, context.Transform.eulerAngles.y - yawAtCast, 0f) * direction;
+                for (int i = 0; i < count; i++)
+                    context.FireProjectile(projectile, muzzle, GetDirection(aim, i), coefficient, damageType, scale);
+            }
+        }
+
 
         public override void OnServerExecute(SkillContext context, in SkillActivation activation)
         {
@@ -51,6 +85,8 @@ namespace RiskOfMagic.Skills.Types
             float scale = GetScale(activation);
             for (int i = 0; i < count; i++)
                 context.FireProjectile(projectile, activation.Origin, GetDirection(activation.Direction, i), coefficient, damageType, scale);
+            if (burstCount > 1)
+                context.Run(FireBurst(context, activation.Direction, coefficient, scale, context.Transform.eulerAngles.y));
         }
 
         private float GetScale(in SkillActivation activation)

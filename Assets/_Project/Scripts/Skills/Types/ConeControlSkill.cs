@@ -16,6 +16,7 @@ namespace RiskOfMagic.Skills.Types
         [Header("Optional damage")]
         [Min(0f)] public float damageCoefficient;
         public DamageType damageType = DamageType.Arcane;
+        [Tooltip("Optional damage over time applied to every enemy caught.")] public DotEffect dot;
 
         private static readonly List<Health> targets = new();
 
@@ -36,8 +37,11 @@ namespace RiskOfMagic.Skills.Types
 
                 if (health.TryGetComponent(out EnemyActor enemy))
                     enemy.Freeze(freezeDuration);
+                var info = context.CreateDamage(damageCoefficient > 0f ? damageCoefficient : 1f, damageType, TargetFinder.Center(health), toTarget.normalized);
                 if (damageCoefficient > 0f)
-                    health.ApplyDamage(context.CreateDamage(damageCoefficient, damageType, TargetFinder.Center(health), toTarget.normalized));
+                    health.ApplyDamage(info);
+                if (dot != null)
+                    DotSystem.Apply(health, dot, info);
             }
         }
     }

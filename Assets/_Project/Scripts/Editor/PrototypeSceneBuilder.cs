@@ -16,6 +16,7 @@ using RiskOfMagic.Interaction;
 using RiskOfMagic.Items;
 using RiskOfMagic.Items.Types;
 using RiskOfMagic.Maps;
+using RiskOfMagic.Meta;
 using RiskOfMagic.Networking;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
@@ -59,14 +60,16 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral;
         }
 
         private sealed class ProjectileSet
         {
-            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor;
+            public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
+                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb;
             public DotEffect Poison;
-            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor };
+            public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
+                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -75,7 +78,7 @@ namespace RiskOfMagic.Editor
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() || !HudBuilder.EnsureTextMeshPro())
                 return;
 
-            foreach (var folder in new[] { SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, EquipmentFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
+            foreach (var folder in new[] { ChallengesFolder, SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, EquipmentFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
                 Directory.CreateDirectory(folder);
             AssetDatabase.Refresh();
 
@@ -89,7 +92,7 @@ namespace RiskOfMagic.Editor
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink, vfx.VoidBeam, vfx.PoisonCloud, vfx.ArcaneBurst
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
@@ -174,6 +177,13 @@ namespace RiskOfMagic.Editor
             var seal = BuildRunEndSealPrefab();
             prefabList.Add(new NetworkPrefab { Prefab = seal });
 
+            // Meta progression: challenges (unlocks) and bestiary order.
+            var bestiary = new List<EnemyDefinition>();
+            foreach (var enemy in new[] { ghoul, wolf, assassin, ogre, pyromancer, skeleton, spiderling, colossus, queen, drake, avatar })
+                bestiary.Add(enemy.Definition);
+            catalog.EditorSetMeta(BuildChallenges(characters, items), bestiary);
+            EditorUtility.SetDirty(catalog);
+
             var teleporter = BuildTeleporterPrefab(bossCards, new List<SpawnCard> { avatarCard }, seal);
             prefabList.Add(new NetworkPrefab { Prefab = teleporter });
 
@@ -233,6 +243,7 @@ namespace RiskOfMagic.Editor
                 TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
                 Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f),
                 GroundWave = RingPrefab("VFX_GroundWave", new Color(1f, 0.75f, 0.35f), 0.6f, ColossusWaveSpeed),
+                VoidBeam = LinePrefab("VFX_VoidBeam", new Color(0.7f, 0.35f, 1f), 0.45f, 0.16f),
                 // Burning elite trail: lifetime = BurningAffix.trailDuration, scaled by its radius.
                 FirePatch = EffectPrefab("VFX_FirePatch", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.04f, 0f), new Color(1f, 0.35f, 0.05f), 3f),
                 // Elite auras (persistent, attached to the enemy, sizes in world units).
@@ -259,7 +270,14 @@ namespace RiskOfMagic.Editor
                 SpiderSpit = ProjectileAsset("Projectile_SpiderSpit", new Color(0.55f, 0.85f, 0.15f), 0.45f, vfx.PoisonBurst),
                 Boulder = ProjectileAsset("Projectile_Boulder", new Color(0.45f, 0.4f, 0.35f), 1.1f, vfx.Explosion),
                 ChaosBolt = ProjectileAsset("Projectile_ChaosBolt", new Color(0.85f, 0.2f, 0.6f), 0.4f, vfx.Impact),
-                Meteor = ProjectileAsset("Projectile_Meteor", new Color(0.55f, 0.15f, 0.1f), 2.5f, vfx.FireBurst)
+                Meteor = ProjectileAsset("Projectile_Meteor", new Color(0.55f, 0.15f, 0.1f), 2.5f, vfx.FireBurst),
+                // Alternative skills
+                FireArrow = ProjectileAsset("Projectile_FireArrow", new Color(1f, 0.5f, 0.15f), 0.2f, vfx.Impact),
+                FrostArrow = ProjectileAsset("Projectile_FrostArrow", new Color(0.6f, 0.9f, 1f), 0.25f, vfx.FrostBurst),
+                ExplosiveArrow = ProjectileAsset("Projectile_ExplosiveArrow", new Color(1f, 0.7f, 0.3f), 0.25f, vfx.Explosion),
+                Axe = ProjectileAsset("Projectile_Axe", new Color(0.7f, 0.7f, 0.75f), 0.5f, vfx.Impact),
+                ArcaneShard = ProjectileAsset("Projectile_ArcaneShard", new Color(0.85f, 0.55f, 1f), 0.2f, vfx.Impact),
+                ArcaneFrostOrb = ProjectileAsset("Projectile_ArcaneFrostOrb", new Color(0.55f, 0.85f, 1f), 0.7f, vfx.FrostBurst)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -293,6 +311,22 @@ namespace RiskOfMagic.Editor
             set.ChaosBolt.maxRange = 50f;
             // Speed is overridden by the meteor attack to land after its fall time.
             Configure(set.Meteor, speed: 25f, gravity: 0f, lifetime: 4f, radius: 1f, explosion: 5f, explodeOnExpire: true);
+            Configure(set.FireArrow, speed: 100f, gravity: 6f, lifetime: 2f, radius: 0.12f);
+            Configure(set.FrostArrow, speed: 120f, gravity: 0f, lifetime: 1.5f, radius: 0.25f, pierce: 3);
+            Configure(set.ExplosiveArrow, speed: 80f, gravity: 4f, lifetime: 2f, radius: 0.2f, explosion: 4f);
+            Configure(set.Axe, speed: 45f, gravity: 4f, lifetime: 2f, radius: 0.5f, pierce: 10);
+            Configure(set.ArcaneShard, speed: 90f, gravity: 0f, lifetime: 1.5f, radius: 0.15f);
+            Configure(set.ArcaneFrostOrb, speed: 18f, gravity: 0f, lifetime: 2.5f, radius: 0.35f, explosion: 4f, explodeOnExpire: true);
+            set.FireArrow.maxRange = 70f;
+            set.FrostArrow.maxRange = 80f;
+            set.ExplosiveArrow.maxRange = 70f;
+            set.Axe.maxRange = 45f;
+            set.ArcaneShard.maxRange = 55f;
+            set.ArcaneFrostOrb.maxRange = 45f;
+            set.FrostArrow.freezeDuration = 1.5f;
+            set.ArcaneFrostOrb.freezeDuration = 2f;
+            foreach (var alternative in new[] { set.FireArrow, set.FrostArrow, set.ExplosiveArrow, set.Axe, set.ArcaneShard, set.ArcaneFrostOrb })
+                EditorUtility.SetDirty(alternative);
 
             // Strict max ranges (m) for ranged attacks.
             set.Arrow.maxRange = 70f;
@@ -324,6 +358,7 @@ namespace RiskOfMagic.Editor
             p.homingTurnRate = 0f;
             p.maxRange = 0f;
             p.dot = null;
+            p.freezeDuration = 0f;
             EditorUtility.SetDirty(p);
         }
 
@@ -508,7 +543,7 @@ namespace RiskOfMagic.Editor
             foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, claws, cloud, leap, bloom })
                 EditorUtility.SetDirty(skill);
 
-            return new List<CharacterDefinition>
+            var characters = new List<CharacterDefinition>
             {
                 Character("Character_Archer", "Archer", "Agile, double saut, dégâts à distance.", new Color(0.3f, 0.75f, 0.35f),
                     80f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
@@ -519,6 +554,239 @@ namespace RiskOfMagic.Editor
                 Character("Character_Druid", "Druide", "Corps à corps empoisonné, poisons cumulables.", new Color(0.25f, 0.55f, 0.2f),
                     100f, Movement("Movement_Druid", 7.2f, 1), claws, cloud, leap, bloom)
             };
+            BuildAlternativeSkills(characters, p, vfx);
+            return characters;
+        }
+
+        /// <summary>One alternative per slot and character (locked by challenges, chosen in the lobby).</summary>
+        private static void BuildAlternativeSkills(List<CharacterDefinition> characters, ProjectileSet p, VfxSet vfx)
+        {
+            // Same values as the item burn (BuildItems): the asset is shared.
+            var burn = Dot("Dot_Burn", DamageType.Fire, tickFraction: 0.25f, interval: 0.5f, duration: 3f, maxStacks: 10);
+            p.FireArrow.dot = burn;
+            EditorUtility.SetDirty(p.FireArrow);
+
+            // Archer
+            var fireArrows = Skill<ProjectileSkill>("Archer_FireArrows", "Flèches enflammées", "Tirs plus lents : 160% + brûlure.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.65f, attackSpeed: true);
+            fireArrows.projectile = p.FireArrow;
+            fireArrows.damageType = DamageType.Fire;
+            fireArrows.damageCoefficient = 1.6f;
+
+            var frostArrow = Skill<ProjectileSkill>("Archer_FrostArrow", "Flèche de givre", "Charger : 200-400%, gèle les ennemis touchés 1,5 s.",
+                SkillActivationMode.Charge, cooldown: 7f, cast: 0.3f);
+            frostArrow.projectile = p.FrostArrow;
+            frostArrow.damageType = DamageType.Frost;
+            frostArrow.maxChargeTime = 1.2f;
+            frostArrow.minChargeCoefficient = 2f;
+            frostArrow.maxChargeCoefficient = 4f;
+            frostArrow.maxChargeScale = 1.4f;
+
+            var backHop = Skill<DashSkill>("Archer_BackHop", "Bond arrière", "Saut de 12 m vers l'arrière, repousse les ennemis proches.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0f);
+            backHop.direction = DashDirection.BackwardFlat;
+            backHop.speed = 30f;
+            backHop.duration = 0.4f;
+            backHop.ignoreGravity = false;
+            backHop.upwardVelocity = 6f;
+            backHop.startKnockbackRadius = 4f;
+            backHop.startKnockbackDistance = 6f;
+            backHop.canCastWhileBusy = true;
+            backHop.keepsSprint = true;
+            backHop.castVfx = vfx.DashBurst;
+            backHop.ownerFovKick = 8f;
+
+            var explosiveVolley = Skill<ProjectileSkill>("Archer_ExplosiveVolley", "Volée explosive", "3 flèches qui explosent : 3 × 250% dans 4 m.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.4f);
+            explosiveVolley.projectile = p.ExplosiveArrow;
+            explosiveVolley.damageType = DamageType.Fire;
+            explosiveVolley.damageCoefficient = 2.5f;
+            explosiveVolley.count = 3;
+            explosiveVolley.spreadAngle = 12f;
+
+            // Warrior
+            var hammer = Skill<MeleeComboSkill>("Warrior_WarHammer", "Marteau de guerre", "2 coups lents : 250% en zone (3 m), repousse.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.9f, attackSpeed: true);
+            hammer.swingVfx = vfx.Swing;
+            hammer.knockbackDistance = 3f;
+            hammer.comboResetTime = 1.4f;
+            hammer.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 2.5f, radius = 3f, reach = 2f, hitDelay = 0.25f },
+                new MeleeComboSkill.Step { damageCoefficient = 2.5f, radius = 3f, reach = 2f, hitDelay = 0.25f, lunge = 4f }
+            };
+
+            var axe = Skill<ProjectileSkill>("Warrior_ThrowingAxe", "Hache de jet", "Hache perforante : 300%.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0.35f);
+            axe.projectile = p.Axe;
+            axe.damageCoefficient = 3f;
+
+            var parry = Skill<ParrySkill>("Warrior_Parry", "Parade", "Bloque 100% des dégâts pendant 1 s, puis contre-attaque : 200% autour de soi.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.2f);
+            parry.damageReduction = 1f;
+            parry.duration = 1f;
+            parry.radius = 4f;
+            parry.damageCoefficient = 2f;
+            parry.knockbackDistance = 3f;
+            parry.counterVfx = vfx.Shockwave;
+            parry.castVfx = vfx.ShieldPulse;
+            parry.canCastWhileBusy = true;
+
+            var warCry = Skill<WarCrySkill>("Warrior_WarCry", "Cri de guerre",
+                "Alliés à 15 m : +40% vitesse d'attaque et de déplacement pendant 6 s, et rend 20 PV.",
+                SkillActivationMode.Press, cooldown: 20f, cast: 0.3f);
+            warCry.radius = 15f;
+            warCry.buffDuration = 6f;
+            warCry.heal = 20f;
+            warCry.pulseVfx = vfx.RallyPulse;
+            warCry.ownerCameraTrauma = 0.2f;
+
+            // Arcanist
+            var shards = Skill<ProjectileSkill>("Arcanist_ArcaneShards", "Éclats arcaniques", "Rafale de 3 projectiles rapides : 3 × 60%.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.45f, attackSpeed: true);
+            shards.projectile = p.ArcaneShard;
+            shards.damageType = DamageType.Arcane;
+            shards.damageCoefficient = 0.6f;
+            shards.burstCount = 3;
+            shards.burstInterval = 0.08f;
+
+            var frostOrb = Skill<ProjectileSkill>("Arcanist_FrostOrb", "Orbe de givre", "Orbe lent qui explose (4 m) : 300%, gèle 2 s.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0.35f);
+            frostOrb.projectile = p.ArcaneFrostOrb;
+            frostOrb.damageType = DamageType.Frost;
+            frostOrb.damageCoefficient = 3f;
+
+            var transfer = Skill<BlinkSkill>("Arcanist_Transfer", "Transfert", "Téléportation de 15 m vers la visée, à travers les ennemis.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0f);
+            transfer.distance = 15f;
+            transfer.passThroughCharacters = true;
+            transfer.arrivalVfx = vfx.Blink;
+            transfer.canCastWhileBusy = true;
+            transfer.keepsSprint = true;
+
+            var voidBeam = Skill<BeamSkill>("Arcanist_VoidBeam", "Rayon du néant",
+                "Rayon de 3 s qui traverse les ennemis : 80% 8 fois par seconde. Chaque tick déclenche les objets (coef. 0,5). Ralentit de 50%.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.3f);
+            voidBeam.range = 40f;
+            voidBeam.duration = 3f;
+            voidBeam.ticksPerSecond = 8f;
+            voidBeam.damageCoefficientPerTick = 0.8f;
+            voidBeam.procCoefficient = 0.5f;
+            voidBeam.beamVfx = vfx.VoidBeam;
+            voidBeam.impactVfx = vfx.ArcaneBurst;
+
+            // Druid
+            var thorns = Skill<ProjectileSkill>("Druid_Thorns", "Épines", "Projectiles à distance : 70% + poison.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
+            thorns.projectile = p.PoisonDart;
+            thorns.damageType = DamageType.Poison;
+            thorns.damageCoefficient = 0.7f;
+
+            var brambles = Skill<ConeControlSkill>("Druid_Brambles", "Ronces", "Cône de ronces : immobilise 2 s et empoisonne.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
+            brambles.range = 15f;
+            brambles.coneAngle = 35f;
+            brambles.freezeDuration = 2f;
+            brambles.damageCoefficient = 0.5f;
+            brambles.damageType = DamageType.Poison;
+            brambles.dot = p.Poison;
+            brambles.castVfx = vfx.PoisonCloud;
+            brambles.castVfxAnchor = VfxAnchor.Caster;
+            brambles.castVfxScale = 8f;
+
+            var root = Skill<RootSkill>("Druid_Rooting", "Enracinement", "Immobile 3 s : régénère 10% PV/s, nuage de poison autour de soi.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
+            root.duration = 3f;
+            root.healPerSecond = 0.1f;
+            root.radius = 5f;
+            root.damageCoefficientPerTick = 0.3f;
+            root.dot = p.Poison;
+            root.tickVfx = vfx.PoisonCloud;
+
+            var epidemic = Skill<EpidemicSkill>("Druid_Epidemic", "Épidémie", "Propage les poisons de l'ennemi visé à tous les ennemis à 10 m.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
+            epidemic.poison = p.Poison;
+            epidemic.spreadRadius = 10f;
+            epidemic.spreadVfx = vfx.PoisonBurst;
+
+            foreach (var skill in new SkillDefinition[] { fireArrows, frostArrow, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, brambles, root, epidemic })
+                EditorUtility.SetDirty(skill);
+
+            SetAlternatives(characters[0], fireArrows, frostArrow, backHop, explosiveVolley);
+            SetAlternatives(characters[1], hammer, axe, parry, warCry);
+            SetAlternatives(characters[2], shards, frostOrb, transfer, voidBeam);
+            SetAlternatives(characters[3], thorns, brambles, root, epidemic);
+        }
+
+        private const string ChallengesFolder = Configs + "/Challenges";
+
+        /// <summary>Unlock challenges (validated design). Anything rewarded here starts locked.</summary>
+        private static List<ChallengeDefinition> BuildChallenges(List<CharacterDefinition> characters, List<ItemDefinition> items)
+        {
+            Directory.CreateDirectory(ChallengesFolder);
+            var archer = characters[0];
+            var warrior = characters[1];
+            var arcanist = characters[2];
+            var druid = characters[3];
+            ItemDefinition Find(string file) => items.Find(i => i != null && i.name == file);
+
+            var list = new List<ChallengeDefinition>
+            {
+                Challenge("Unlock_Arcanist", "Apprenti mage", "Atteindre l'étape 3.", ChallengeStat.MaxStage, 3, null, arcanist),
+                Challenge("Unlock_Druid", "Tueur de géants", "Vaincre 3 boss du téléporteur (cumulé).", ChallengeStat.BossKills, 3, null, druid),
+                Challenge("Unlock_HardMode", "Vainqueur", "Remporter une victoire.", ChallengeStat.Victories, 1, null, null, hardMode: true),
+                Challenge("Unlock_PhoenixFeather", "Increvable", "Être mis à terre 10 fois (cumulé).", ChallengeStat.Downs, 10, null, Find("Item_PhoenixFeather")),
+                Challenge("Unlock_ChaosEye", "Briseur de chaos", "Vaincre l'Avatar du chaos.", ChallengeStat.AvatarKills, 1, null, Find("Item_ChaosEye")),
+                Challenge("Unlock_StormOrb", "Chasseur d'élites", "Tuer 50 élites (cumulé).", ChallengeStat.EliteKills, 50, null, Find("Item_StormOrb")),
+                Challenge("Unlock_Hourglass", "Pressé", "Terminer une étape en moins de 5 minutes.", ChallengeStat.FastStages, 1, null, Find("Item_Hourglass")),
+                Challenge("Unlock_EnchantedQuiver", "Pilleur", "Ouvrir 50 coffres (cumulé).", ChallengeStat.ChestsOpened, 50, null, Find("Item_EnchantedQuiver")),
+                Challenge("Unlock_ExecutionerBlade", "Exorciste", "Purifier 3 tombes (cumulé).", ChallengeStat.TombsPurified, 3, null, Find("Item_ExecutionerBlade")),
+                Challenge("Unlock_OakShield", "Téméraire", "Réussir 3 autels de défi (cumulé).", ChallengeStat.AltarsCompleted, 3, null, Find("Item_OakShield")),
+
+                // Alternative skills (with the character)
+                Challenge("Alt_Archer_Primary", "Archer : premiers pas", "Avec l'Archer, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, archer, archer.primaryAlt),
+                Challenge("Alt_Archer_Secondary", "Archer : intouchable", "Avec l'Archer, terminer une étape sans être mis à terre.", ChallengeStat.StagesWithoutDown, 1, archer, archer.secondaryAlt),
+                Challenge("Alt_Archer_Utility", "Archer : fouineur", "Avec l'Archer, ouvrir 20 coffres (cumulé).", ChallengeStat.ChestsOpened, 20, archer, archer.utilityAlt),
+                Challenge("Alt_Archer_Special", "Archer : carnage", "Avec l'Archer, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, archer, archer.specialAlt),
+                Challenge("Alt_Warrior_Primary", "Guerrier : massacre", "Avec le Guerrier, tuer 500 ennemis (cumulé).", ChallengeStat.Kills, 500, warrior, warrior.primaryAlt),
+                Challenge("Alt_Warrior_Secondary", "Guerrier : premiers pas", "Avec le Guerrier, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, warrior, warrior.secondaryAlt),
+                Challenge("Alt_Warrior_Utility", "Guerrier : inébranlable",
+                    "Avec le Guerrier, survivre à un événement de téléporteur sans être mis à terre.", ChallengeStat.TeleporterEventsWithoutDown, 1, warrior, warrior.utilityAlt),
+                Challenge("Alt_Warrior_Special", "Guerrier : champion", "Avec le Guerrier, vaincre un boss.", ChallengeStat.BossKills, 1, warrior, warrior.specialAlt),
+                Challenge("Alt_Arcanist_Primary", "Arcaniste : puissance brute", "Avec l'Arcaniste, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, arcanist, arcanist.primaryAlt),
+                Challenge("Alt_Arcanist_Secondary", "Arcaniste : maître du temps", "Avec l'Arcaniste, geler 50 ennemis (cumulé).", ChallengeStat.Freezes, 50, arcanist, arcanist.secondaryAlt),
+                Challenge("Alt_Arcanist_Utility", "Arcaniste : premiers pas", "Avec l'Arcaniste, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, arcanist, arcanist.utilityAlt),
+                Challenge("Alt_Arcanist_Special", "Arcaniste : fléau des élites", "Avec l'Arcaniste, tuer 20 élites (cumulé).", ChallengeStat.EliteKills, 20, arcanist, arcanist.specialAlt),
+                Challenge("Alt_Druid_Primary", "Druide : prédateur", "Avec le Druide, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, druid, druid.primaryAlt),
+                Challenge("Alt_Druid_Secondary", "Druide : premiers pas", "Avec le Druide, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, druid, druid.secondaryAlt),
+                Challenge("Alt_Druid_Utility", "Druide : enraciné", "Avec le Druide, atteindre l'étape 5.", ChallengeStat.MaxStage, 5, druid, druid.utilityAlt),
+                Challenge("Alt_Druid_Special", "Druide : pestilence", "Avec le Druide, empoisonner 500 ennemis (cumulé).", ChallengeStat.PoisonedEnemies, 500, druid, druid.specialAlt)
+            };
+            return list;
+        }
+
+        private static ChallengeDefinition Challenge(string file, string displayName, string description, ChallengeStat stat, long target,
+            CharacterDefinition character, Object reward, bool hardMode = false)
+        {
+            var challenge = Asset<ChallengeDefinition>($"{ChallengesFolder}/{file}.asset");
+            challenge.displayName = displayName;
+            challenge.description = description;
+            challenge.stat = stat;
+            challenge.target = target;
+            challenge.character = character;
+            challenge.reward = reward;
+            challenge.unlocksHardMode = hardMode;
+            EditorUtility.SetDirty(challenge);
+            return challenge;
+        }
+
+        private static void SetAlternatives(CharacterDefinition character, SkillDefinition primary, SkillDefinition secondary, SkillDefinition utility, SkillDefinition special)
+        {
+            character.primaryAlt = primary;
+            character.secondaryAlt = secondary;
+            character.utilityAlt = utility;
+            character.specialAlt = special;
+            EditorUtility.SetDirty(character);
         }
 
         private static T Skill<T>(string file, string displayName, string description, SkillActivationMode mode,

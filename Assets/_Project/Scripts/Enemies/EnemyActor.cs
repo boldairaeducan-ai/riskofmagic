@@ -28,6 +28,8 @@ namespace RiskOfMagic.Enemies
         public static IReadOnlyList<EnemyActor> Active => active;
         /// <summary>Server only. Hook gold, XP, item procs here.</summary>
         public static event Action<EnemyActor, DamageInfo> Killed;
+        /// <summary>Every peer: an enemy got frozen (or its freeze extended).</summary>
+        public static event Action<EnemyActor> AnyFrozen;
 
         [SerializeField] private EnemyDefinition definition;
 
@@ -163,6 +165,7 @@ namespace RiskOfMagic.Enemies
         {
             active.Clear();
             Killed = null;
+            AnyFrozen = null;
         }
 
         private void Awake()
@@ -196,6 +199,7 @@ namespace RiskOfMagic.Enemies
                     eliteIndex.Value = GameCatalog.Instance.IndexOf(pendingElite);
             }
             eliteIndex.OnValueChanged += OnEliteChanged;
+            frozenUntil.OnValueChanged += OnFrozenChanged;
             ApplyElite(eliteIndex.Value);
             active.Add(this);
             Health.Died += OnDied;
@@ -208,9 +212,16 @@ namespace RiskOfMagic.Enemies
             active.Remove(this);
             Health.Died -= OnDied;
             eliteIndex.OnValueChanged -= OnEliteChanged;
+            frozenUntil.OnValueChanged -= OnFrozenChanged;
         }
 
         private void OnEliteChanged(int previous, int current) => ApplyElite(current);
+
+        private void OnFrozenChanged(double previous, double current)
+        {
+            if (current > previous)
+                AnyFrozen?.Invoke(this);
+        }
 
         private void ApplyElite(int index)
         {

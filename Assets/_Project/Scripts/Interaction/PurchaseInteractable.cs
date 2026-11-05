@@ -77,7 +77,7 @@ namespace RiskOfMagic.Interaction
             uses.Value++;
             OnPurchased(player);
             Purchased?.Invoke(player);
-            PurchasedRpc();
+            PurchasedRpc(player.OwnerClientId);
             if (IsAvailable)
                 RefreshCost();
         }
@@ -85,9 +85,17 @@ namespace RiskOfMagic.Interaction
         /// <summary>Server only: grant the reward here.</summary>
         protected virtual void OnPurchased(PlayerAvatar buyer) { }
 
+        /// <summary>Every peer: something was bought by the local player (meta progression).</summary>
+        public static event Action<PurchaseInteractable> LocalPurchased;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => LocalPurchased = null;
+
         [Rpc(SendTo.Everyone)]
-        private void PurchasedRpc()
+        private void PurchasedRpc(ulong buyerClientId)
         {
+            if (buyerClientId == NetworkManager.LocalClientId)
+                LocalPurchased?.Invoke(this);
             var config = AudioService.Config;
             AudioService.PlayAt(AudioService.Pick(purchaseSound, config != null ? config.purchase : null), transform.position);
             PurchasedFeedback?.Invoke();

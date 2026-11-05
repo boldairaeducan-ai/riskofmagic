@@ -126,7 +126,12 @@ namespace RiskOfMagic.Run.MapEvents
             return false;
         }
 
-        private void OnStateChanged(TombState previous, TombState current) => ApplyVisuals();
+        private void OnStateChanged(TombState previous, TombState current)
+        {
+            ApplyVisuals();
+            if (previous == TombState.Purifying && current != TombState.Idle)
+                RaiseCompleted(MapEventType.PurificationTomb);
+        }
 
         private void ApplyVisuals()
         {

@@ -9,7 +9,9 @@ namespace RiskOfMagic.Skills.Types
     {
         MoveInput,
         AimFlat,
-        Aim
+        Aim,
+        /// <summary>Opposite of the flat aim (back hop).</summary>
+        BackwardFlat
     }
 
     /// <summary>Rolls, charges, leaps. Optional damage along the path.</summary>
@@ -30,6 +32,10 @@ namespace RiskOfMagic.Skills.Types
         [Min(0.02f)] public float damageTickInterval = 0.05f;
         [Tooltip("Optional damage over time applied on contact.")] public DotEffect dot;
 
+        [Header("Knockback at the start (0 = none)")]
+        [Min(0f)] public float startKnockbackRadius;
+        [Min(0f)] public float startKnockbackDistance;
+
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
         {
             Transform t = context.Transform;
@@ -37,6 +43,7 @@ namespace RiskOfMagic.Skills.Types
             {
                 DashDirection.MoveInput => t.right * context.Input.Move.x + t.forward * context.Input.Move.y,
                 DashDirection.AimFlat => Vector3.ProjectOnPlane(activation.Direction, Vector3.up),
+                DashDirection.BackwardFlat => -Vector3.ProjectOnPlane(activation.Direction, Vector3.up),
                 _ => activation.Direction
             };
             activation.Direction = dir.sqrMagnitude > 0.01f ? dir.normalized : t.forward;
@@ -50,6 +57,7 @@ namespace RiskOfMagic.Skills.Types
 
         public override void OnServerExecute(SkillContext context, in SkillActivation activation)
         {
+            SkillUtility.Knockback(context, context.Transform.position, startKnockbackRadius, startKnockbackDistance);
             if (damageCoefficient > 0f)
                 context.Run(ContactDamage(context));
         }

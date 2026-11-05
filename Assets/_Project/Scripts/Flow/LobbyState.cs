@@ -12,10 +12,12 @@ namespace RiskOfMagic.Flow
         public ulong ClientId;
         public int Character;
         public bool Ready;
+        /// <summary>Skill alternatives (bit per slot).</summary>
+        public byte Loadout;
 
-        public bool Equals(LobbyPlayer other) => ClientId == other.ClientId && Character == other.Character && Ready == other.Ready;
+        public bool Equals(LobbyPlayer other) => ClientId == other.ClientId && Character == other.Character && Ready == other.Ready && Loadout == other.Loadout;
         public override bool Equals(object obj) => obj is LobbyPlayer other && Equals(other);
-        public override int GetHashCode() => HashCode.Combine(ClientId, Character, Ready);
+        public override int GetHashCode() => HashCode.Combine(ClientId, Character, Ready, Loadout);
     }
 
     /// <summary>
@@ -103,6 +105,13 @@ namespace RiskOfMagic.Flow
 
         public void SetReady(bool ready) => SetReadyRpc(ready);
 
+        /// <summary>Local player: chooses the skill alternatives (from their profile unlocks).</summary>
+        public void SetLoadout(byte mask) => SetLoadoutRpc(mask);
+
+        [Rpc(SendTo.Server)]
+        private void SetLoadoutRpc(byte mask, RpcParams rpcParams = default)
+            => Mutate(rpcParams.Receive.SenderClientId, (ref LobbyPlayer p) => p.Loadout = mask);
+
         /// <summary>Host only.</summary>
         public void SetDifficulty(DifficultyLevel level)
         {
@@ -118,6 +127,7 @@ namespace RiskOfMagic.Flow
             RunSettings.Difficulty = difficulty.Value;
             foreach (var player in players)
                 RunSettings.SetCharacter(player.ClientId, player.Character);
+                RunSettings.SetLoadout(player.ClientId, player.Loadout);
             GameFlow.StartGame();
             return true;
         }

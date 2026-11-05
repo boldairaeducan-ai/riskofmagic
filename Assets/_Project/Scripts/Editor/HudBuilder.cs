@@ -733,11 +733,11 @@ namespace RiskOfMagic.Editor
             Themed(panel, HudSprite.Panel, HudColor.Panel);
             var title = Text(Rect("Title", panel, TopCenter, TopCenter, new Vector2(0f, -24f), new Vector2(1000f, 80f)), null,
                 "DÉFAITE", 64f, HudFont.Title, HudColor.Danger, TextAlignmentOptions.Center);
-            var stats = Text(Rect("RunStats", panel, TopCenter, TopCenter, new Vector2(0f, -108f), new Vector2(1000f, 76f)), null,
+            var stats = Text(Rect("RunStats", panel, TopCenter, TopCenter, new Vector2(0f, -104f), new Vector2(1000f, 100f)), null,
                 "Temps : 00:00", 26f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
 
             // Player rows (cloned at runtime from the disabled template).
-            var list = Rect("Players", panel, TopCenter, TopCenter, new Vector2(0f, -196f), new Vector2(1040f, 440f));
+            var list = Rect("Players", panel, TopCenter, TopCenter, new Vector2(0f, -212f), new Vector2(1040f, 430f));
             VerticalLayout(list.gameObject, 0, 10f);
             var row = Rect("PlayerRowTemplate", list, Center, Center, Vector2.zero, new Vector2(0f, 100f));
             LayoutHeight(row, 100f);

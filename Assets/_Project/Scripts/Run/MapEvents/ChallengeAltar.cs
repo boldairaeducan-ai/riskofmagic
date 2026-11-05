@@ -84,7 +84,12 @@ namespace RiskOfMagic.Run.MapEvents
             state.Value = AltarState.Done;
         }
 
-        private void OnStateChanged(AltarState previous, AltarState current) => ApplyVisuals();
+        private void OnStateChanged(AltarState previous, AltarState current)
+        {
+            ApplyVisuals();
+            if (current == AltarState.Done)
+                RaiseCompleted(MapEventType.ChallengeAltar);
+        }
 
         private void ApplyVisuals()
         {

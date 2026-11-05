@@ -69,7 +69,7 @@ namespace RiskOfMagic.Editor
                 "RISK OF MAGIC", 84f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
 
             // Home
-            var home = H.Rect("Home", root, H.Center, H.Center, new Vector2(0f, -40f), new Vector2(460f, 590f));
+            var home = H.Rect("Home", root, H.Center, H.Center, new Vector2(0f, -40f), new Vector2(460f, 656f));
             H.Themed(home, HudSprite.Panel, HudColor.Panel);
             H.VerticalLayout(home.gameObject, 24, 14);
             var solo = H.Button(home, "SoloButton", "Solo", 60f);
@@ -79,6 +79,7 @@ namespace RiskOfMagic.Editor
             codeField.text = string.Empty;
             codeField.characterLimit = 12;
             var join = H.Button(home, "JoinButton", "Rejoindre", 56f);
+            var journal = H.Button(home, "JournalButton", "Journal", 52f);
             var options = H.Button(home, "OptionsButton", "Options", 52f);
             var quit = H.Button(home, "QuitButton", "Quitter", 52f);
             var status = H.Text(H.Rect("Status", root, H.Center, H.Center, new Vector2(0f, -340f), new Vector2(1000f, 60f)), null,
@@ -105,8 +106,17 @@ namespace RiskOfMagic.Editor
             row.childControlWidth = row.childControlHeight = true;
             row.childForceExpandWidth = row.childForceExpandHeight = true;
             var characterTemplate = H.Button(characterRow, "CharacterTemplate", "Personnage", 0f);
-            var characterInfo = H.Text(H.Rect("Description", characterPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -140f), new Vector2(660f, 400f)), null,
-                string.Empty, 19f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+            // Skill kit: one button per slot, toggles the unlocked alternative.
+            var kitRow = H.Rect("Kit", characterPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -136f), new Vector2(660f, 66f));
+            var kitLayout = kitRow.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            kitLayout.spacing = 8f;
+            kitLayout.childControlWidth = kitLayout.childControlHeight = true;
+            kitLayout.childForceExpandWidth = kitLayout.childForceExpandHeight = true;
+            var kitTemplate = H.Button(kitRow, "KitTemplate", "Compétence", 0f);
+            var kitLabel = kitTemplate.GetComponentInChildren<TextMeshProUGUI>();
+            kitLabel.fontSize = 16f;
+            var characterInfo = H.Text(H.Rect("Description", characterPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -214f), new Vector2(660f, 330f)), null,
+                string.Empty, 18f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
 
             var difficultyPanel = Panel(lobby, "Difficulty", new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-60f, -10f), new Vector2(520f, 560f), "Difficulté");
             var normal = H.Button(difficultyPanel, "NormalButton", "Normal", 0f);
@@ -125,6 +135,7 @@ namespace RiskOfMagic.Editor
             lobby.gameObject.SetActive(false);
 
             var optionsMenu = BuildOptions(root);
+            var journalMenu = BuildJournal(root, theme);
 
             var controller = canvasGo.AddComponent<MainMenuController>();
             H.Props(controller, so =>
@@ -139,6 +150,9 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("quitButton").objectReferenceValue = quit;
                 so.FindProperty("optionsButton").objectReferenceValue = options;
                 so.FindProperty("optionsMenu").objectReferenceValue = optionsMenu;
+                so.FindProperty("journalButton").objectReferenceValue = journal;
+                so.FindProperty("journalMenu").objectReferenceValue = journalMenu;
+                so.FindProperty("kitButtonTemplate").objectReferenceValue = kitTemplate;
                 so.FindProperty("statusLabel").objectReferenceValue = status;
                 so.FindProperty("lobbyScreen").objectReferenceValue = lobby.gameObject;
                 so.FindProperty("codeLabel").objectReferenceValue = code;
@@ -155,6 +169,61 @@ namespace RiskOfMagic.Editor
             });
 
             EditorSceneManager.SaveScene(scene, ScenePath);
+        }
+
+        /// <summary>Journal: 4 tabs filling one scrollable rich text (stats, challenges, items, bestiary).</summary>
+        private static JournalMenu BuildJournal(RectTransform root, HudTheme theme)
+        {
+            var panel = Panel(root, "Journal", H.Center, H.Center, new Vector2(0f, -40f), new Vector2(1100f, 880f), "Journal");
+
+            var tabs = H.Rect("Tabs", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -66f), new Vector2(1040f, 52f));
+            var tabLayout = tabs.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            tabLayout.spacing = 8f;
+            tabLayout.childControlWidth = tabLayout.childControlHeight = true;
+            tabLayout.childForceExpandWidth = tabLayout.childForceExpandHeight = true;
+            var stats = H.Button(tabs, "StatsTab", "Statistiques", 0f);
+            var challenges = H.Button(tabs, "ChallengesTab", "Défis", 0f);
+            var items = H.Button(tabs, "ItemsTab", "Objets", 0f);
+            var bestiary = H.Button(tabs, "BestiaryTab", "Bestiaire", 0f);
+
+            // Scroll view with a single auto-sized text.
+            var viewport = H.Rect("Viewport", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -132f), new Vector2(1040f, 640f));
+            viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
+            H.Themed(viewport, null, HudColor.BarBackground, raycast: true);
+            var contentRect = H.Rect("Content", viewport, H.TopLeft, H.TopLeft, Vector2.zero, new Vector2(1040f, 640f));
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(1f, 1f);
+            contentRect.pivot = new Vector2(0.5f, 1f);
+            contentRect.offsetMin = new Vector2(16f, contentRect.offsetMin.y);
+            contentRect.offsetMax = new Vector2(-16f, 0f);
+            var text = H.Text(contentRect, null, string.Empty, 20f, HudFont.Body, HudColor.Text, TextAlignmentOptions.TopLeft);
+            var fitter = contentRect.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>();
+            fitter.verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+            var scroll = viewport.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
+            scroll.content = contentRect;
+            scroll.viewport = viewport;
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.scrollSensitivity = 30f;
+            scroll.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped;
+
+            var back = H.Button(panel, "BackButton", "Retour", 0f);
+            Place(back, H.BottomCenter, new Vector2(0f, 24f), new Vector2(260f, 56f));
+
+            var menu = panel.gameObject.AddComponent<JournalMenu>();
+            H.Props(menu, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("statsTab").objectReferenceValue = stats;
+                so.FindProperty("challengesTab").objectReferenceValue = challenges;
+                so.FindProperty("itemsTab").objectReferenceValue = items;
+                so.FindProperty("bestiaryTab").objectReferenceValue = bestiary;
+                so.FindProperty("content").objectReferenceValue = text;
+                so.FindProperty("scroll").objectReferenceValue = scroll;
+                so.FindProperty("backButton").objectReferenceValue = back;
+            });
+            panel.gameObject.SetActive(false);
+            return menu;
         }
 
         /// <summary>Options screen: rows are created at runtime by OptionsMenu from the two templates.</summary>

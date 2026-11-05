@@ -28,6 +28,8 @@ namespace RiskOfMagic.Player
         [SerializeField, Min(0.05f)] private float regenTickInterval = 0.25f;
 
         private readonly NetworkVariable<int> characterIndex = new();
+        /// <summary>Skill loadout: bit per slot = alternative skill (chosen in the lobby, from the owner's profile).</summary>
+        private readonly NetworkVariable<byte> loadout = new();
         private MaterialPropertyBlock propertyBlock;
         private float regenTimer;
 
@@ -52,6 +54,7 @@ namespace RiskOfMagic.Player
         public SkillController Skills { get; private set; }
         public CharacterDefinition Character { get; private set; }
         public int CharacterIndex => characterIndex.Value;
+        public byte Loadout => loadout.Value;
         public bool IsAlive => Health.IsAlive;
         public PlayerDowned Downed { get; private set; }
         public bool IsDowned => Downed != null && Downed.IsDowned;
@@ -117,7 +120,10 @@ namespace RiskOfMagic.Player
             if (IsServer && RiskOfMagic.Flow.RunSettings.TryGetCharacter(OwnerClientId, out int lobbyCharacter)
                 && GameCatalog.Instance != null && GameCatalog.Instance.GetCharacter(lobbyCharacter) != null)
                 characterIndex.Value = lobbyCharacter; // choice made in the lobby
+            if (IsServer && RiskOfMagic.Flow.RunSettings.TryGetLoadout(OwnerClientId, out byte lobbyLoadout))
+                loadout.Value = lobbyLoadout;
             characterIndex.OnValueChanged += OnCharacterIndexChanged;
+            loadout.OnValueChanged += OnLoadoutChanged;
             Inventory.ItemsChanged += RecalculateStats;
             if (Downed != null)
                 Downed.Changed += UpdateControl;
@@ -143,6 +149,7 @@ namespace RiskOfMagic.Player
             Health.Died -= OnDied;
             Health.Revived -= OnRevived;
             characterIndex.OnValueChanged -= OnCharacterIndexChanged;
+            loadout.OnValueChanged -= OnLoadoutChanged;
             Inventory.ItemsChanged -= RecalculateStats;
             if (Downed != null)
                 Downed.Changed -= UpdateControl;
@@ -183,6 +190,15 @@ namespace RiskOfMagic.Player
 
         private void OnCharacterIndexChanged(int previous, int current) => ApplyCharacter(current);
 
+        private void OnLoadoutChanged(byte previous, byte current)
+        {
+            if (Skills != null && Character != null)
+                Skills.SetLoadout(Character, current);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void RequestLoadoutRpc(byte mask) => loadout.Value = mask;
+
         private void ApplyCharacter(int index)
         {
             var catalog = GameCatalog.Instance;
@@ -194,8 +210,10 @@ namespace RiskOfMagic.Player
             if (definition.movement != null)
                 Motor.SetConfig(definition.movement);
             if (Skills != null)
-                Skills.SetLoadout(definition);
+                Skills.SetLoadout(definition, loadout.Value);
             RecalculateStats();
+            if (IsOwner && IsSpawned)
+                RequestLoadoutRpc(RiskOfMagic.Meta.MetaProgression.GetLoadout(definition)); // the owner's own profile
 
             ApplyBodyColor(definition.bodyColor);
             CharacterChanged?.Invoke(definition);

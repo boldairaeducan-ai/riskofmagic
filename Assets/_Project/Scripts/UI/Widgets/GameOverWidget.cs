@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RiskOfMagic.Core;
 using RiskOfMagic.Items;
+using RiskOfMagic.Meta;
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
 using TMPro;
@@ -84,6 +85,14 @@ namespace RiskOfMagic.UI
                 string loops = stages.Loop > 0 ? $"   ·   Boucles : {stages.Loop}" : string.Empty;
                 statsLabel.text = $"Temps : {seconds / 60:00}:{seconds % 60:00}   ·   Étape : {stages.StageNumber}{loops}\n" +
                                   $"Difficulté : {RunDifficulty.CurrentCoefficient:0.00}   ·   Ennemis tués : {stages.Kills}";
+                var completed = MetaProgression.CompletedThisRun;
+                if (completed.Count > 0)
+                {
+                    var names = new List<string>();
+                    foreach (var challenge in completed)
+                        names.Add(challenge.displayName);
+                    statsLabel.text += $"\n<size=80%><color=#E8C060>Défis accomplis : {string.Join(", ", names)}</color></size>";
+                }
             }
 
             BuildRows();

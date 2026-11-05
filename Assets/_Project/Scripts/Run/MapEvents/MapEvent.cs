@@ -19,10 +19,19 @@ namespace RiskOfMagic.Run.MapEvents
         /// <summary>Spawned events (every peer).</summary>
         public static IReadOnlyList<MapEvent> Active => active;
 
+        /// <summary>Every peer: an event was completed successfully (tomb purified, altar cleared).</summary>
+        public static event System.Action<MapEventType> Completed;
+
+        protected static void RaiseCompleted(MapEventType type) => Completed?.Invoke(type);
+
         protected static MapEventsConfig Config => MapEventsConfig.Instance;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        private static void ResetStatics() => active.Clear();
+        private static void ResetStatics()
+        {
+            active.Clear();
+            Completed = null;
+        }
 
         public override void OnNetworkSpawn() => active.Add(this);
         public override void OnNetworkDespawn() => active.Remove(this);

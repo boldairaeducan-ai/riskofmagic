@@ -86,6 +86,11 @@ the teleporter event), `InteractableSpawner`, `StageManager` (teleporter, next s
 → `GameFlow.StartGame` loads `Prototype` through `NetworkSceneManager`. `PersistentNetworkManager` keeps one
 NetworkManager across scenes; `NetworkConfig.PlayerPrefab` is null and `GameBootstrap` spawns player objects.
 
+**Meta progression.** Local, per player: `MetaProgression` (static API over `PlayerProfile` JSON), `ChallengeTracker`
+(event → counters), `ChallengeDefinition` assets in `GameCatalog.Challenges`. A reward is locked iff a challenge rewards it.
+`GameCatalog.RollItem` filters by unlocks (server = host profile). Skill alternatives: `CharacterDefinition.*Alt`, loadout
+mask replicated on `PlayerAvatar` (lobby → `RunSettings` → server; the owner also sends its profile loadout).
+
 **Audio.** Local only, never replicated: `GameAudioEvents` maps replicated events (Health, wallet, inventory, teleporter,
 game over) to sounds; definitions carry `SoundEvent` slots played where their feedback already runs. Slot assets are
 generated empty by `Editor/AudioSlots.cs` (never overwritten, re-linked after each build); `AudioService.Pick` treats a

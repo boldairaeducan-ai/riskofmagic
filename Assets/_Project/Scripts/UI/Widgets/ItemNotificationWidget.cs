@@ -1,10 +1,11 @@
 using RiskOfMagic.Items;
+using RiskOfMagic.Meta;
 using TMPro;
 using UnityEngine;
 
 namespace RiskOfMagic.UI
 {
-    /// <summary>"Item obtained" banner (icon, name, description).</summary>
+    /// <summary>"Item obtained" banner (icon, name, description); also announces completed challenges.</summary>
     public class ItemNotificationWidget : MonoBehaviour
     {
         [SerializeField] private HudTheme theme;
@@ -18,8 +19,38 @@ namespace RiskOfMagic.UI
 
         private float shownAt = float.NegativeInfinity;
 
-        private void OnEnable() => PlayerInventory.LocalItemGained += Show;
-        private void OnDisable() => PlayerInventory.LocalItemGained -= Show;
+        private static readonly Color ChallengeColor = new(1f, 0.82f, 0.3f);
+
+        private void OnEnable()
+        {
+            PlayerInventory.LocalItemGained += Show;
+            MetaProgression.ChallengeCompleted += ShowChallenge;
+        }
+
+        private void OnDisable()
+        {
+            PlayerInventory.LocalItemGained -= Show;
+            MetaProgression.ChallengeCompleted -= ShowChallenge;
+        }
+
+        private void ShowChallenge(ChallengeDefinition challenge)
+        {
+            if (frame != null)
+                frame.color = ChallengeColor;
+            if (icon != null)
+            {
+                icon.sprite = theme != null ? theme.defaultItemIcon : null;
+                icon.color = ChallengeColor;
+            }
+            if (titleLabel != null)
+            {
+                titleLabel.text = $"Défi accompli : {challenge.displayName}";
+                titleLabel.color = ChallengeColor;
+            }
+            if (descriptionLabel != null)
+                descriptionLabel.text = $"Débloqué — {challenge.RewardName}";
+            shownAt = Time.time;
+        }
 
         private void Show(ItemDefinition item, int count)
         {
