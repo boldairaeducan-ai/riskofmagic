@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Item_EnchantedQuiver
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ProjectileOnHitItem
   displayName: "Carquois enchant\xE9"
-  description: "10% de chances : missile arcanique, 300% des d\xE9g\xE2ts (+300%)."
-  rarity: 1
+  description: "10% de chances : missile chercheur, 300% des d\xE9g\xE2ts (+300%)."
+  rarity: 2
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   projectile: {fileID: 11400000, guid: 906b96713250b8e44a0fcff1dd8821fe, type: 2}

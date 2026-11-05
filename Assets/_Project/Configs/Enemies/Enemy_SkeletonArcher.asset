@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_SkeletonArcher
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
   displayName: Squelette archer
+  feminineName: 0
   isBoss: 0
   maxHealth: 60
   moveSpeed: 4
@@ -33,3 +34,7 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 14
   despawnDelay: 2
+  spawnSound: {fileID: 11400000, guid: 12d5de314b184c246a9a56ba2a8a277b, type: 2}
+  attackSound: {fileID: 11400000, guid: 4aec7834a9a9a2e4399e6100ce27b746, type: 2}
+  hurtSound: {fileID: 11400000, guid: 26b90c35a90c896479905d366b0dc032, type: 2}
+  deathSound: {fileID: 11400000, guid: 0b7148a4bd675ca44a22ce5807ae04da, type: 2}

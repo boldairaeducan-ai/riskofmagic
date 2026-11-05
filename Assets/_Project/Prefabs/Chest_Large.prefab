@@ -80,9 +80,12 @@ MonoBehaviour:
   costExponent: 1.25
   maxUses: 1
   costMultiplierPerUse: 1
-  commonWeight: 0
-  rareWeight: 80
-  legendaryWeight: 20
+  purchaseSound: {fileID: 0}
+  rarityWeights:
+    common: 0
+    uncommon: 60
+    rare: 32
+    legendary: 8
   pickupPrefab: {fileID: 388672499120908948, guid: 5ad7226f07e18c8478a881ca391bc93e, type: 3}
   dropOffset: {x: 0, y: 0, z: 1.9599999}
   closedVisual: {fileID: 4165749152396157604}

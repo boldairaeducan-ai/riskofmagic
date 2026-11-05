@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ExplodeOnHitItem
   displayName: "\u0152il du chaos"
   description: "Chaque coup explose : 60% des d\xE9g\xE2ts dans 4 m (+2,5 m)."
-  rarity: 2
+  rarity: 3
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   damageType: 4

@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2313796290754971780}
   - component: {fileID: 763200713142645244}
+  - component: {fileID: 1887266140069344214}
   - component: {fileID: 388672499120908948}
   m_Layer: 0
   m_Name: ItemPickup
@@ -150,6 +151,27 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!135 &1887266140069344214
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8474323075021368347}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.8
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &388672499120908948
 MonoBehaviour:
   m_ObjectHideFlags: 0

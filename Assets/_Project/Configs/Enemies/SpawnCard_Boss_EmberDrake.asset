@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da72fef9315a9840b60b5e77734f1de, type: 3}
+  m_Name: SpawnCard_Boss_EmberDrake
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.SpawnCard
+  prefab: {fileID: 7168913309488066991, guid: 453764c08e1211e48b73a9d5745597b3, type: 3}
+  cost: 1
+  weight: 1
+  minCoefficient: 0
+  minStage: 2

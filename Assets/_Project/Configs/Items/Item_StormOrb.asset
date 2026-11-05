@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ChainOnHitItem
   displayName: "Orbe de temp\xEAte"
   description: "25% de chances : \xE9clair sur 3 ennemis (+2), 80% des d\xE9g\xE2ts."
-  rarity: 1
+  rarity: 2
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   damageType: 3

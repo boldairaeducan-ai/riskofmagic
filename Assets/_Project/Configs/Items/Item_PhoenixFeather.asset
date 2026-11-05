@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b85fb9072f373c4da976ca3c99b5b1f, type: 3}
+  m_Name: Item_PhoenixFeather
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.PhoenixFeatherItem
+  displayName: "Plume de ph\xE9nix"
+  description: "\xC0 la mort, ressuscite avec 50% des PV. Consomm\xE9e."
+  rarity: 3
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  reviveHealthFraction: 0.5

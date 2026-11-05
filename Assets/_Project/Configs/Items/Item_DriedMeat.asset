@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Item_DriedMeat
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: "Viande s\xE9ch\xE9e"
-  description: +25 PV max.
+  description: +25 PV max (+25).
   rarity: 0
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 3

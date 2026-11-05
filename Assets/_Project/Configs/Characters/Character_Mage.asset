@@ -18,10 +18,13 @@ MonoBehaviour:
   portrait: {fileID: 0}
   maxHealth: 85
   healthRegen: 0
-  baseDamage: 10
+  baseDamage: 13
   attackSpeed: 1
   critChance: 0.01
   movement: {fileID: 11400000, guid: ecff304366862624dad2f71eaa9b67d4, type: 2}
+  footstepSound: {fileID: 11400000, guid: ac9ade700cb53cd4f8a36686059807e3, type: 2}
+  jumpSound: {fileID: 11400000, guid: cdcaf2f106e81cf469e9ed6e16a9acaa, type: 2}
+  landSound: {fileID: 11400000, guid: 29f505493c210a44f9f8ae15929c0c71, type: 2}
   primary: {fileID: 11400000, guid: 00b270e63e2abf34cb67967be7b1de6d, type: 2}
   secondary: {fileID: 11400000, guid: 18011e18742c5fb4eb61e57e47599bfe, type: 2}
   utility: {fileID: 11400000, guid: 337bdd68a5ccea74fae37d08e5e72695, type: 2}

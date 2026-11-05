@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1e98b7d64f46e42bfb1913709f5097, type: 3}
+  m_Name: Projectile_Boulder
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileDefinition
+  visualPrefab: {fileID: 2650515605927290138, guid: 952aaf3b70e20dc4ba023c439cebc211, type: 3}
+  impactVfx: {fileID: 4948897298884925427, guid: e5b9a7946e378d84baf4c778dc1edc29, type: 3}
+  fireSound: {fileID: 11400000, guid: f3b139d2d44b7074cb35bc10cb519e57, type: 2}
+  impactSound: {fileID: 11400000, guid: 3eaf4cc7eccad7e42985d87bff794dee, type: 2}
+  speed: 20
+  gravity: 20
+  lifetime: 4
+  maxRange: 0
+  radius: 0.5
+  homingTurnRate: 0
+  pierceCount: 0
+  explosionRadius: 3.5
+  explodeOnExpire: 1
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  dot: {fileID: 0}

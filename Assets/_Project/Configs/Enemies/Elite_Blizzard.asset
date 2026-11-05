@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 091739b60e59adf4d8f8f782d9f07ab8, type: 3}
+  m_Name: Elite_Blizzard
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.Elites.BlizzardAffix
+  nameMasculine: glacial
+  nameFeminine: glaciale
+  tint: {r: 0.55, g: 0.85, b: 1, a: 1}
+  auraPrefab: {fileID: 6126573273597509798, guid: 8556440b543680f4daf30d5ce02b505b, type: 3}
+  healthMultiplier: 4
+  damageMultiplier: 2
+  costMultiplier: 6
+  goldMultiplier: 4
+  bossHealthMultiplier: 1.5
+  bossDamageMultiplier: 1.25
+  bossGoldMultiplier: 1.5
+  radius: 6
+  damagePerTick: 2
+  tickInterval: 0.5
+  chillDuration: 1.2

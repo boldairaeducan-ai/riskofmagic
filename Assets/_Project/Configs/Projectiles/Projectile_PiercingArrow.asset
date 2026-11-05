@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileDefinition
   visualPrefab: {fileID: 6749695244268120462, guid: bb501e26b8e76554ab273c7afe4bf627, type: 3}
   impactVfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}
+  fireSound: {fileID: 11400000, guid: 301bf924238cc094b82756d828039766, type: 2}
+  impactSound: {fileID: 11400000, guid: 26b08a0b40831e04ab6ae114eaaaff1b, type: 2}
   speed: 160
   gravity: 0
   lifetime: 1.5
+  maxRange: 90
   radius: 0.25
   homingTurnRate: 0
   pierceCount: 10

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0f2a3ea3aac524689546801ff50471, type: 3}
+  m_Name: Item_WarHorn
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.WarHornItem
+  displayName: Cor de guerre
+  description: "Chaque kill : +15% vitesse de d\xE9placement et d'attaque, max 5
+    (+1). Tout est perdu en subissant des d\xE9g\xE2ts."
+  rarity: 2
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  maxStacksFirst: 5
+  maxStacksPerExtra: 1

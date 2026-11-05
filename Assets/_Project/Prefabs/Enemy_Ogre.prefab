@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3282338831327471015}
   - component: {fileID: 8951226780943068731}
   - component: {fileID: 2482631536593800782}
+  - component: {fileID: 2917670957643372591}
   - component: {fileID: 3133814041309354726}
   - component: {fileID: 6248464743440899186}
   - component: {fileID: 6320892883416896941}
@@ -175,6 +176,25 @@ MonoBehaviour:
   baseMaxHealth: 100
   team: 2
   allowFriendlyFire: 0
+--- !u!114 &2917670957643372591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49116501537881739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271a91ccdf42a4443ab3ff034296e1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.StatusEffects
+  ShowTopMostFoldoutHeaderGroup: 1
+  curseDamageDealtMultiplier: 0.5
+  curseSpeedMultiplier: 0.9
+  curseDamageTakenMultiplier: 1.3
+  chillSpeedMultiplier: 0.7
+  rallyBonus: 0.4
+  warhornBonusPerStack: 0.15
 --- !u!114 &3133814041309354726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,6 +211,8 @@ MonoBehaviour:
   definition: {fileID: 11400000, guid: df5bc4402da240b4b991f13378390eab, type: 2}
   frozenTint: {r: 0.45, g: 0.75, b: 1, a: 1}
   poisonedTint: {r: 0.35, g: 0.85, b: 0.25, a: 1}
+  cursedTint: {r: 0.55, g: 0.25, b: 0.6, a: 1}
+  phasedTint: {r: 0.9, g: 0.9, b: 1, a: 1}
 --- !u!114 &6248464743440899186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,6 +229,7 @@ MonoBehaviour:
   range: 12
   cooldown: 4
   maxHeightDifference: 3
+  selectionWeight: 1
   minRange: 0
   damage: 26
   damageType: 0

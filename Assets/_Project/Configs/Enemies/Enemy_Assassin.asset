@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Assassin
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
   displayName: Lame d'ombre
+  feminineName: 1
   isBoss: 0
   maxHealth: 50
   moveSpeed: 7.5
@@ -33,3 +34,7 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 10
   despawnDelay: 2
+  spawnSound: {fileID: 11400000, guid: b2f5c7b2cf7d9e04aa37167345cbb64e, type: 2}
+  attackSound: {fileID: 11400000, guid: 14f95881299cebe4ea4d037d35f37f13, type: 2}
+  hurtSound: {fileID: 11400000, guid: ae0b91425fb0a754787ddb3d5a5cf119, type: 2}
+  deathSound: {fileID: 11400000, guid: 43574f8cde978f24aa2cf3ed4bb47b82, type: 2}

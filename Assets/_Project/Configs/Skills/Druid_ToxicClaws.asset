@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2ed3a1dd942934abd401ee2979c336, type: 3}
+  m_Name: Druid_ToxicClaws
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
+  displayName: Griffes toxiques
+  description: Combo de 3 coups de griffes (80/80/140%), chacun empoisonne (8 ticks
+    de 25%, cumulable 10 fois).
+  icon: {fileID: 0}
+  activationMode: 1
+  cooldown: 0
+  maxStock: 1
+  castDuration: 0.35
+  scalesWithAttackSpeed: 1
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: f02dd34157876c240b847a952eed5da8, type: 2}
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  damageType: 5
+  steps:
+  - damageCoefficient: 0.8
+    radius: 1.5
+    reach: 1.5
+    hitDelay: 0.08
+    lunge: 0
+  - damageCoefficient: 0.8
+    radius: 1.5
+    reach: 1.5
+    hitDelay: 0.08
+    lunge: 0
+  - damageCoefficient: 1.4
+    radius: 1.9
+    reach: 1.7
+    hitDelay: 0.12
+    lunge: 4
+  comboResetTime: 0.8
+  dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  swingVfx: {fileID: 7567192199689358438, guid: 8456f2fda818e0d458b34996233552c0, type: 3}

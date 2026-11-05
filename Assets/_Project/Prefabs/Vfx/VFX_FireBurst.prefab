@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2774447980227734952}
   - component: {fileID: 5337263627298234280}
+  - component: {fileID: 5529514345242043021}
   m_Layer: 0
   m_Name: VFX_FireBurst
   m_TagString: Untagged
@@ -160,3 +161,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5529514345242043021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8004041733704343878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f95c8b218439b4b8beb12084c39157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
+  sound: {fileID: 11400000, guid: 1a11029a6ef9eec418692cb902febf5c, type: 2}

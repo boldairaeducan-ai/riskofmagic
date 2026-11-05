@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Character_Druid
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
   displayName: Druide
-  description: "Poisons cumulables et d\xE9g\xE2ts sur la dur\xE9e."
+  description: "Corps \xE0 corps empoisonn\xE9, poisons cumulables."
   bodyColor: {r: 0.25, g: 0.55, b: 0.2, a: 1}
   portrait: {fileID: 0}
   maxHealth: 100
@@ -22,7 +22,10 @@ MonoBehaviour:
   attackSpeed: 0.8
   critChance: 0.01
   movement: {fileID: 11400000, guid: 5a7b5fbf574897c438943a58a6e2068d, type: 2}
-  primary: {fileID: 11400000, guid: 72e0f4b22f8632a438f2a1837273aba9, type: 2}
+  footstepSound: {fileID: 11400000, guid: 07d317a1b220b654aba94591f1fad76b, type: 2}
+  jumpSound: {fileID: 11400000, guid: da466f314d45b0c438d63e59f94af755, type: 2}
+  landSound: {fileID: 11400000, guid: 1932d5afee917f044b1439c8285b30ba, type: 2}
+  primary: {fileID: 11400000, guid: c3f42c4849198624e9020c0ce511ad13, type: 2}
   secondary: {fileID: 11400000, guid: 227321e2160289847ae3b424bfbf7b26, type: 2}
   utility: {fileID: 11400000, guid: 5e73fc48338410146a7ace8378e6df59, type: 2}
   special: {fileID: 11400000, guid: 8e9b5ae33fed4ed468a9e8d6cf71182d, type: 2}

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09883bcf12d83ca45bba92e2aa4ae47b, type: 3}
   m_Name: Item_Boots
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
-  displayName: Bottes de coursier
-  description: "+14% vitesse de d\xE9placement."
+  displayName: Bottes du messager
+  description: "+14% vitesse de d\xE9placement (+14%)."
   rarity: 0
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 2

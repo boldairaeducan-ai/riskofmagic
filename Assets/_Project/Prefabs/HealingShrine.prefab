@@ -191,4 +191,5 @@ MonoBehaviour:
   costExponent: 1.25
   maxUses: 3
   costMultiplierPerUse: 1.5
+  purchaseSound: {fileID: 0}
   healFraction: 0.5

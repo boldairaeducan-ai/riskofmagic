@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Item_HawkEye
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: "\u0152il de faucon"
-  description: +10% chances de coup critique.
+  description: +10% chances de coup critique (+10%).
   rarity: 0
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 6

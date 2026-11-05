@@ -26,6 +26,10 @@ MonoBehaviour:
   castVfx: {fileID: 0}
   castVfxAnchor: 1
   castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 29f33f096f37f8e48befbe42b4843a73, type: 2}
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0.45
   center: 0
   maxRange: 40
   radius: 7

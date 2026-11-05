@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Item_GriffinFeather
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: Plume de griffon
-  description: +1 saut.
-  rarity: 0
+  description: +1 saut (+1).
+  rarity: 1
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 8

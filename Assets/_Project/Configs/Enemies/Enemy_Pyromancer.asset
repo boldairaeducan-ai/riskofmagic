@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Pyromancer
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
   displayName: Pyromancien
+  feminineName: 0
   isBoss: 0
   maxHealth: 55
   moveSpeed: 5
@@ -33,3 +34,7 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 12
   despawnDelay: 2
+  spawnSound: {fileID: 11400000, guid: e83d8150bb721f94ab9813f54fd4721c, type: 2}
+  attackSound: {fileID: 11400000, guid: 05236ed3bca0adf479c53d90ef744073, type: 2}
+  hurtSound: {fileID: 11400000, guid: 35f943babd223fc4280613a596565e8d, type: 2}
+  deathSound: {fileID: 11400000, guid: 6b118d69365a27d4da0efc1725e706fc, type: 2}

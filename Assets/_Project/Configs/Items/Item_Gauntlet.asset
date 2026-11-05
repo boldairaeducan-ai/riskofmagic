@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09883bcf12d83ca45bba92e2aa4ae47b, type: 3}
   m_Name: Item_Gauntlet
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
-  displayName: "Gantelet de vivacit\xE9"
-  description: +15% vitesse d'attaque.
+  displayName: "Gantelet de c\xE9l\xE9rit\xE9"
+  description: +15% vitesse d'attaque (+15%).
   rarity: 0
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 0

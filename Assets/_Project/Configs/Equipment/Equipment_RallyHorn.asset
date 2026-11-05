@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d726c1330685f7647a8bdb85b381b9c8, type: 3}
+  m_Name: Equipment_RallyHorn
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Equipment.RallyHornEquipment
+  displayName: Corne de ralliement
+  description: "+40% vitesse d'attaque et de d\xE9placement pendant 8 s, pour soi
+    et les alli\xE9s \xE0 25 m."
+  icon: {fileID: 0}
+  cooldown: 45
+  activateSound: {fileID: 11400000, guid: ef178d9fffabd3e4db2791d4cd306f6a, type: 2}
+  radius: 25
+  duration: 8
+  vfx: {fileID: 8578036629237866541, guid: e55ac3b1e1a8cf74787d93d8a0ec5e86, type: 3}

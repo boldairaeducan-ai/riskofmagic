@@ -26,6 +26,10 @@ MonoBehaviour:
   castVfx: {fileID: 0}
   castVfxAnchor: 1
   castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 62810099790f9bf48a4b21e9257ee47f, type: 2}
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   projectile: {fileID: 11400000, guid: 22860390e4810974ca92c0c900e1c68e, type: 2}
   damageType: 0
   damageCoefficient: 1

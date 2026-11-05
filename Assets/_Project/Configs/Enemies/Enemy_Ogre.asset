@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Ogre
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
   displayName: Ogre
+  feminineName: 0
   isBoss: 0
   maxHealth: 240
   moveSpeed: 4.5
@@ -33,3 +34,7 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 24
   despawnDelay: 2
+  spawnSound: {fileID: 11400000, guid: 21ea764dddd197f41be76590df1cccae, type: 2}
+  attackSound: {fileID: 11400000, guid: 7e67a98b745931c43a9d12b2c9b650eb, type: 2}
+  hurtSound: {fileID: 11400000, guid: be3c90ec918232a4898012cf4bd0bf9e, type: 2}
+  deathSound: {fileID: 11400000, guid: eb4bf94b68bba2146a5a3c70cee5d5ab, type: 2}

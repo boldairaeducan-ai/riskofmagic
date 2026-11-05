@@ -22,6 +22,9 @@ MonoBehaviour:
   attackSpeed: 1
   critChance: 0.01
   movement: {fileID: 11400000, guid: 7e2a1c53f1bf3df4c916c0a24bfc1c3b, type: 2}
+  footstepSound: {fileID: 11400000, guid: 6827b21eddf6aa245af332dc85e1aced, type: 2}
+  jumpSound: {fileID: 11400000, guid: ae80a8335028240469804a5e7b9ca9bf, type: 2}
+  landSound: {fileID: 11400000, guid: b1ef2c840638d934d88123049b6c7fdd, type: 2}
   primary: {fileID: 11400000, guid: eef9a9239cc7a0e4eaa6136cba5a5a20, type: 2}
   secondary: {fileID: 11400000, guid: 928d3af6b44694141a37fe79e250c84d, type: 2}
   utility: {fileID: 11400000, guid: 258495c326fa6654682304eb47cdcd25, type: 2}

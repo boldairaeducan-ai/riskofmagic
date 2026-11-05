@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2326020160767743739}
   - component: {fileID: 3402046419419954753}
+  - component: {fileID: 62634841549438436}
   m_Layer: 0
   m_Name: VFX_PoisonCloud
   m_TagString: Untagged
@@ -160,3 +161,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &62634841549438436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2897291182143897075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f95c8b218439b4b8beb12084c39157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
+  sound: {fileID: 11400000, guid: 52d18e052b6582e49a2c78a44583e117, type: 2}

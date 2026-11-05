@@ -16,3 +16,4 @@ MonoBehaviour:
   cost: 14
   weight: 0.4
   minCoefficient: 1.45
+  minStage: 1

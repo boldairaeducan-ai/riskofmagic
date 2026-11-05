@@ -23,9 +23,13 @@ MonoBehaviour:
   canCastWhileBusy: 0
   keepsSprint: 0
   maxChargeTime: 1.5
-  castVfx: {fileID: 0}
+  castVfx: {fileID: 8132036637947505890, guid: 9a3c07ec3c6d4374d879ac37782d7ce4, type: 3}
   castVfxAnchor: 1
   castVfxScale: 1
+  castSound: {fileID: 11400000, guid: dba94c4c7e1628d428bc604c83b22d3f, type: 2}
+  ownerFovKick: 12
+  ownerFovKickDuration: 0.4
+  ownerCameraTrauma: 0.15
   direction: 1
   speed: 30
   duration: 0.3

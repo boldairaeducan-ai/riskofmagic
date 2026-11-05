@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2464cd443403b4747a10305ffe2c2158, type: 3}
+  m_Name: AudioConfig
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.AudioConfig
+  mixer: {fileID: 0}
+  effectsGroup: {fileID: 0}
+  uiGroup: {fileID: 0}
+  musicGroup: {fileID: 0}
+  musicVolumeParameter: MusicVolume
+  effectsVolumeParameter: EffectsVolume
+  uiClick: {fileID: 11400000, guid: f4269d1ca974b2e4685315d07ea0fb00, type: 2}
+  uiHover: {fileID: 11400000, guid: 735cbf5b0a344c541a91712d197cef9a, type: 2}
+  hitConfirm: {fileID: 11400000, guid: b8354496f9eeb104e9179a4ae2d12814, type: 2}
+  criticalHitConfirm: {fileID: 11400000, guid: 8ba4a5c7ce9da0c42aa010b008b0477b, type: 2}
+  killConfirm: {fileID: 11400000, guid: e1eca90112edd9340b699193d425ea17, type: 2}
+  playerHurt: {fileID: 11400000, guid: 70a2741ae2636f446af293c4da1e3dd4, type: 2}
+  playerDowned: {fileID: 11400000, guid: 3d3a5c5c3c2a9144eb065b93b2997ef3, type: 2}
+  playerRevived: {fileID: 11400000, guid: 60ed8d37e346f6142b6d80fa6cf46251, type: 2}
+  playerDeath: {fileID: 11400000, guid: 35346665360ea1045a746abfe6caf9a8, type: 2}
+  goldGained: {fileID: 11400000, guid: 5a719463dc1ea1e448e318dfb907396d, type: 2}
+  purchase: {fileID: 11400000, guid: c49b65e957ba97d49b70ca59b2283df1, type: 2}
+  itemPickupCommon: {fileID: 11400000, guid: 62764ea053c40a44c8300a5cec869261, type: 2}
+  itemPickupUncommon: {fileID: 11400000, guid: 1de9d4153c87c2e478b282f27e8d05e8, type: 2}
+  itemPickupRare: {fileID: 11400000, guid: c07777537b0efd54688585495f4055a0, type: 2}
+  itemPickupLegendary: {fileID: 11400000, guid: 86ec184ae96d7c041b8c3b9725e0dd96, type: 2}
+  itemPickupBoss: {fileID: 11400000, guid: 38d4d240727660d4789ead6d67953e31, type: 2}
+  teleporterActivated: {fileID: 11400000, guid: beb28adeeb274c1469c2b238e1031bcd, type: 2}
+  teleporterCharged: {fileID: 11400000, guid: 372d211ae1bf4bc4484dc2f562186d07, type: 2}
+  teleporterReady: {fileID: 11400000, guid: 86dadefcc9801ed4d9e90bb31d23f7c8, type: 2}
+  gameOver: {fileID: 11400000, guid: c6bd48d63c0dc60429f7f4bf4bcde374, type: 2}
+  victory: {fileID: 11400000, guid: f70fee9144e33694f814a346581e27e5, type: 2}
+  mainMenuMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 1
+  stageMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 1
+  bossMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 1
+  finalBossMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 1
+  victoryMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 0
+  gameOverMusic:
+    clip: {fileID: 0}
+    volume: 0.7
+    loop: 0

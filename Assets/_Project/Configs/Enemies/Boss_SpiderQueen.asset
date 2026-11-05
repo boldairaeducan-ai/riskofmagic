@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92faed51aa22e3c45b720e10655ec169, type: 3}
+  m_Name: Boss_SpiderQueen
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
+  displayName: "Reine araign\xE9e"
+  feminineName: 1
+  isBoss: 1
+  maxHealth: 1300
+  moveSpeed: 5
+  acceleration: 20
+  angularSpeed: 540
+  controlResistance: 0.6
+  healthPerLevel: 0.3
+  damagePerLevel: 0.2
+  detectionRange: 200
+  requireLineOfSight: 0
+  alertAlliesRadius: 0
+  movementStyle: 2
+  flankRadius: 6
+  flankAngle: {x: 100, y: 160}
+  kiteRange: {x: 8, y: 20}
+  retreatDistance: 7
+  wanderRadius: 6
+  wanderSpeedMultiplier: 0.4
+  goldReward: 150
+  despawnDelay: 3
+  spawnSound: {fileID: 11400000, guid: 257450a2eef062c428fe47928153ed23, type: 2}
+  attackSound: {fileID: 11400000, guid: 098aa1595e1db3f42b04b1c65cc893cf, type: 2}
+  hurtSound: {fileID: 11400000, guid: 2a463b53e1589274fadf91c7c7424766, type: 2}
+  deathSound: {fileID: 11400000, guid: b544e018846e91f4d844d501142f13c0, type: 2}

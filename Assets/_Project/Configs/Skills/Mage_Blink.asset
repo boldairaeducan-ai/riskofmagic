@@ -26,6 +26,10 @@ MonoBehaviour:
   castVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}
   castVfxAnchor: 1
   castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 2cfb546409ad2e14f849f88f8c549712, type: 2}
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   distance: 14
   collisionRadius: 0.4
   obstacleMask:

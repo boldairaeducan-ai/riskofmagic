@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62adf3e4220ff6a45bfea2370597cc6d, type: 3}
+  m_Name: Item_FireOrb
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.DotAreaOnKillItem
+  displayName: Orbe de feu
+  description: "Un ennemi tu\xE9 br\xFBle les ennemis \xE0 4 m (+4 m) : 150% en 3
+    s."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
+  radiusFirstStack: 4
+  radiusPerExtraStack: 4
+  baseDamageCoefficient: 1
+  vfx: {fileID: 4948897298884925427, guid: e5b9a7946e378d84baf4c778dc1edc29, type: 3}

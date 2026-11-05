@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: Item_WolfFang
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.HealOnKillItem
   displayName: Croc de loup
-  description: Tuer un ennemi soigne 8 PV (+6 par exemplaire).
+  description: Tuer un ennemi soigne 8 PV (+6).
   rarity: 0
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   healFirstStack: 8

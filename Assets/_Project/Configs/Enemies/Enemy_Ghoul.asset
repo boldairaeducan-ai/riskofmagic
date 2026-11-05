@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Enemy_Ghoul
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
   displayName: Goule
+  feminineName: 1
   isBoss: 0
   maxHealth: 70
   moveSpeed: 6
@@ -33,3 +34,7 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 8
   despawnDelay: 2
+  spawnSound: {fileID: 11400000, guid: c2d7fb33d5ec2c94b9fe4bd410045dfb, type: 2}
+  attackSound: {fileID: 11400000, guid: 1747d508d299d6e40b84b304a5c55404, type: 2}
+  hurtSound: {fileID: 11400000, guid: 986c4aa1bc6330f45b6c775a7c242283, type: 2}
+  deathSound: {fileID: 11400000, guid: 9d13cb6497090f543a940901bba4635c, type: 2}

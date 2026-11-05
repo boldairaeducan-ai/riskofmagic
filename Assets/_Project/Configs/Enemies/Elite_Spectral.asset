@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70dc7987a36ce64438a9c81b04886650, type: 3}
+  m_Name: Elite_Spectral
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.Elites.SpectralAffix
+  nameMasculine: "\xE9th\xE9r\xE9"
+  nameFeminine: "\xE9th\xE9r\xE9e"
+  tint: {r: 0.75, g: 0.55, b: 1, a: 1}
+  auraPrefab: {fileID: 6286551570707147690, guid: e3f06a804b253e040b1b05d6c539358e, type: 3}
+  healthMultiplier: 4
+  damageMultiplier: 2
+  costMultiplier: 6
+  goldMultiplier: 4
+  bossHealthMultiplier: 1.5
+  bossDamageMultiplier: 1.25
+  bossGoldMultiplier: 1.5
+  phaseDuration: 1
+  phaseCooldown: 4
+  blinkInterval: 6
+  blinkMinDistance: 12
+  blinkDistanceFromTarget: {x: 3, y: 5}
+  blinkVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}

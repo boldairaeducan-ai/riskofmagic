@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_Hourglass
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: Sablier ancien
-  description: "-10% temps de recharge des comp\xE9tences."
-  rarity: 1
+  description: -12% temps de recharge (multiplicatif).
+  rarity: 2
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:
   - stat: 7
-    valuePerStack: 0.1
+    valuePerStack: 0.12

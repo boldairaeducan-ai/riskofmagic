@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2842f52d2a2764e4e844bc304e9d4b8e, type: 3}
+  m_Name: Warrior_Charge_castSound
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.SoundEvent
+  clips: []
+  category: 0
+  volume: {x: 0.9, y: 1}
+  pitch: {x: 0.95, y: 1.05}
+  spatial: 1
+  minDistance: 2
+  maxDistance: 40
+  cooldown: 0
+  maxSimultaneous: 6

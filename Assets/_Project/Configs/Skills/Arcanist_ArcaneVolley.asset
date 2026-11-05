@@ -27,6 +27,10 @@ MonoBehaviour:
   castVfx: {fileID: 0}
   castVfxAnchor: 1
   castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 88ef380d9d129fb4897c3c5ffe313ec4, type: 2}
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   projectile: {fileID: 11400000, guid: 57dc375aed998054990d512dbbe4382f, type: 2}
   damageType: 4
   damageCoefficient: 1.1
@@ -37,4 +41,4 @@ MonoBehaviour:
   targetConeAngle: 25
   sightMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51

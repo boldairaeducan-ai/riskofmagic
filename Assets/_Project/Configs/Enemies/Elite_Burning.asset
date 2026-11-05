@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7586bc53994c5842b50d5bfd0304adc, type: 3}
+  m_Name: Elite_Burning
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.Elites.BurningAffix
+  nameMasculine: ardent
+  nameFeminine: ardente
+  tint: {r: 1, g: 0.35, b: 0.15, a: 1}
+  auraPrefab: {fileID: 4147401604078738597, guid: 374108c40283e514a848d6cf42da170f, type: 3}
+  healthMultiplier: 4
+  damageMultiplier: 2
+  costMultiplier: 6
+  goldMultiplier: 4
+  bossHealthMultiplier: 1.5
+  bossDamageMultiplier: 1.25
+  bossGoldMultiplier: 1.5
+  burn: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
+  patchVfx: {fileID: 2094601276587834272, guid: 650b7f00b7a89374c89506deb8e379d6, type: 3}
+  dropSpacing: 1.5
+  trailDuration: 3
+  trailRadius: 1.3
+  trailDamage: 3
+  tickInterval: 0.5

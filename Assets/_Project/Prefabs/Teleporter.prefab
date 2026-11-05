@@ -376,8 +376,23 @@ MonoBehaviour:
   radius: 30
   bossCards:
   - {fileID: 11400000, guid: d4e0c7b55f584a448a57e74a298d3c5a, type: 2}
+  - {fileID: 11400000, guid: fac63baffd3d8dd4fba0cd12b27a80a5, type: 2}
+  - {fileID: 11400000, guid: 5ad73b340c375db49be54444053d92f9, type: 2}
   bossCount: 1
+  extraBossFromStage: 4
+  eliteBossFromStage: 3
+  eliteBossChance: 0.5
+  finalBossCards:
+  - {fileID: 11400000, guid: 41f30d0d8eb379641bce7075cd2ad01c, type: 2}
+  runEndSealPrefab: {fileID: 8286580124894887239, guid: e8d4e6606897f5e48a9cdf0483378d5a, type: 3}
+  sealOffset: {x: 6, y: 0, z: 0}
   bossSpawnDistance: {x: 12, y: 22}
+  bossRewardWeights:
+    common: 0
+    uncommon: 65
+    rare: 28
+    legendary: 7
+  bossItemChance: 0.1
   eventCreditMultiplier: 1.75
   radiusRing: {fileID: 3118638330712935752}
   ringSegments: 96

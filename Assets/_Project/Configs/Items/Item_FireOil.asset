@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ExplodeOnKillItem
   displayName: Huile incendiaire
   description: "Les ennemis tu\xE9s explosent : 150% (+75%) dans 6 m (+1,5 m)."
-  rarity: 1
+  rarity: 2
+  pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   damageType: 1

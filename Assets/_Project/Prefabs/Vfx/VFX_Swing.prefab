@@ -100,6 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8052129205316345169}
   - component: {fileID: 7037407456936751332}
+  - component: {fileID: 3312426177800138194}
   m_Layer: 0
   m_Name: VFX_Swing
   m_TagString: Untagged
@@ -160,3 +161,16 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3312426177800138194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7567192199689358438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5f95c8b218439b4b8beb12084c39157, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
+  sound: {fileID: 11400000, guid: ae59254ad9135804f85b4691d897f9e8, type: 2}
