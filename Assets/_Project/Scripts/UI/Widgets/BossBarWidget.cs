@@ -33,7 +33,7 @@ namespace RiskOfMagic.UI
             SetFill(trail, trailRatio);
             if (nameLabel != null)
             {
-                string text = $"{boss.Definition.displayName}  <size=70%>niv. {boss.Level}</size>";
+                string text = $"{boss.DisplayName}  <size=70%>niv. {boss.Level}</size>";
                 if (nameLabel.text != text)
                     nameLabel.text = text;
             }

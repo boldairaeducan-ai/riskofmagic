@@ -118,9 +118,14 @@ namespace RiskOfMagic.Combat
             max.OnValueChanged -= OnHealthValueChanged;
         }
 
+        /// <summary>Server only. Hits are ignored until this server time (except IgnoreModifiers damage).</summary>
+        public double ServerInvulnerableUntil { get; set; }
+
         public void ApplyDamage(DamageInfo info)
         {
             if (!AssertServer() || !IsAlive || info.Amount <= 0f)
+                return;
+            if (!info.IgnoreModifiers && NetworkManager.ServerTime.Time < ServerInvulnerableUntil)
                 return;
             if (!allowFriendlyFire && team != Team.Neutral && info.SourceTeam == team)
                 return;

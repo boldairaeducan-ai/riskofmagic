@@ -66,6 +66,19 @@ The NavMesh is rebaked by the server after the layout is applied; bake it in the
 Bosses: the teleporter picks a weighted random boss among the cards unlocked at the current stage (`SpawnCard.minStage`), never the previous boss; one extra boss from stage 4. Enemies can carry several `EnemyAttack` components: the brain picks a random ready one in range (`selectionWeight`), the primary one drives the approach distance.
 - **Run** — `RunDifficulty` (RoR2 coefficient: time × players × stages → enemy level), `CombatDirector` (stage population of idle enemies + credit-based waves hunting players), `StageBounds` (playable volume, placed in each map), `Teleporter` (boss event, charge zone), `StageManager` (next stage: cleanup, revive, respawn).
 
+## Elites
+From run progress 1.5, a director wave has a 35% chance to be elite (one affix for the whole wave) if the boosted cost is affordable.
+Bosses can be elite from stage 3 (50%). Affix assets: `Configs/Enemies/Elite_*.asset` (registered in the `GameCatalog`).
+
+| Affix | Effect | Normal / boss multipliers |
+|---|---|---|
+| Ardent | Hits burn, fire trail on the ground (3 s, 3 dmg/0.5 s) | HP ×4 / ×1.5, damage ×2 / ×1.25, cost ×6, gold ×4 / ×1.5 |
+| Glacial | Blizzard 6 m: 2 dmg/0.5 s + 30% slow | same |
+| Foudroyant | Telegraphed lightning strike on its target every 4 s (12 dmg, 2.5 m) | same |
+| Éthéré | Invulnerable 1 s after a hit (every 4 s max), blinks next to a target farther than 12 m | same |
+
+Elites are tinted, have a ground aura and an adjective in their name (`EnemyDefinition.feminineName` picks the agreement).
+
 ## Tuning the director
 `Assets/_Project/Prefabs/GameSystems.prefab` → *Combat Director*: **Stage population** (credits, distance from spawns), **Waves** (interval, size, `wavesHuntPlayers`), **Placement** (`farSpawnDistance` = distance to the nearest player for normal waves; `minSpawnDistance` / `maxSpawnDistance` = ring around a player during the teleporter event, where waves also hunt). Defaults live in `CombatDirector.cs`; *Build Prototype Scene* regenerates the prefab with those defaults.
 - **Items** — `ItemDefinition` SO (rarity Common/Uncommon/Rare/Legendary/Boss, stacking stat modifiers, server hooks: on hit, on kill, on owner damaged, outgoing damage, prevent death), `PlayerInventory` (replicated stacks, deferred procs), `ItemPickup` (items auto-pickup, equipment with E), `RarityWeights`.

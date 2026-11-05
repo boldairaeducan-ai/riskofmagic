@@ -7,6 +7,7 @@ namespace RiskOfMagic.Enemies
     public class EnemyDefinition : ScriptableObject
     {
         public string displayName = "Enemy";
+        [Tooltip("French grammatical gender of the name, for elite adjectives (\"Goule ardente\").")] public bool feminineName;
         [Tooltip("Shown in the boss health bar, spawned by the teleporter event.")] public bool isBoss;
 
         [Header("Stats")]

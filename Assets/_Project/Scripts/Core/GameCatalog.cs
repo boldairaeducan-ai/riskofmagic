@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using RiskOfMagic.Characters;
 using RiskOfMagic.Combat.Projectiles;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Equipment;
 using RiskOfMagic.Items;
 using RiskOfMagic.Maps;
@@ -24,6 +25,7 @@ namespace RiskOfMagic.Core
         [SerializeField] private List<ItemDefinition> items = new();
         [SerializeField] private List<GameObject> effects = new();
         [SerializeField] private List<EquipmentDefinition> equipment = new();
+        [SerializeField] private List<EliteAffix> elites = new();
         [SerializeField, Tooltip("Prefab with an ItemPickup, used to drop items and equipment.")] private ItemPickup pickupPrefab;
         [SerializeField, Tooltip("Map scenes per stage.")] private MapRotation mapRotation;
 
@@ -47,6 +49,24 @@ namespace RiskOfMagic.Core
         public IReadOnlyList<ProjectileDefinition> Projectiles => projectiles;
         public IReadOnlyList<ItemDefinition> Items => items;
         public IReadOnlyList<EquipmentDefinition> Equipment => equipment;
+        public IReadOnlyList<EliteAffix> Elites => elites;
+        public EliteAffix GetElite(int index) => Get(elites, index);
+        public int IndexOf(EliteAffix affix) => elites.IndexOf(affix);
+
+        public EliteAffix RollElite()
+        {
+            int count = 0;
+            foreach (var e in elites)
+                if (e != null)
+                    count++;
+            if (count == 0)
+                return null;
+            int pick = Random.Range(0, count);
+            foreach (var e in elites)
+                if (e != null && pick-- == 0)
+                    return e;
+            return null;
+        }
         public ItemPickup PickupPrefab => pickupPrefab;
         public MapRotation MapRotation => mapRotation;
 
@@ -103,6 +123,7 @@ namespace RiskOfMagic.Core
 
 #if UNITY_EDITOR
         public void EditorSetMapRotation(MapRotation rotation) => mapRotation = rotation;
+        public void EditorSetElites(List<EliteAffix> newElites) => elites = newElites;
 
         public void EditorSet(List<CharacterDefinition> newCharacters, List<ProjectileDefinition> newProjectiles,
             List<ItemDefinition> newItems, List<GameObject> newEffects, List<EquipmentDefinition> newEquipment, ItemPickup newPickupPrefab)

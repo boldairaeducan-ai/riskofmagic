@@ -11,7 +11,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Attack and move speed bonus (Corne de ralliement).</summary>
         Rally,
         /// <summary>Stacking attack/move speed, lost when hit (Cor de guerre).</summary>
-        Warhorn
+        Warhorn,
+        /// <summary>Slowed (Glacial elite blizzard).</summary>
+        Chilled
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -36,6 +38,9 @@ namespace RiskOfMagic.Combat
         [SerializeField] private float curseSpeedMultiplier = 0.9f;
         [SerializeField] private float curseDamageTakenMultiplier = 1.3f;
 
+        [Header("Chilled")]
+        [SerializeField] private float chillSpeedMultiplier = 0.7f;
+
         [Header("Buffs")]
         [SerializeField] private float rallyBonus = 0.4f;
         [SerializeField] private float warhornBonusPerStack = 0.15f;
@@ -48,7 +53,8 @@ namespace RiskOfMagic.Combat
         private double Now => IsSpawned ? NetworkManager.ServerTime.Time : 0d;
 
         public float DamageDealtMultiplier => Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f;
-        public float MoveSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus);
+        public float MoveSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
+                                            * (1f + SpeedBonus);
         public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus);
 
         private float SpeedBonus => (Has(StatusType.Rally) ? rallyBonus : 0f) + GetStacks(StatusType.Warhorn) * warhornBonusPerStack;

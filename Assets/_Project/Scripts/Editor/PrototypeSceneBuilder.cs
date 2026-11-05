@@ -7,6 +7,7 @@ using RiskOfMagic.Combat.Projectiles;
 using RiskOfMagic.Core;
 using RiskOfMagic.Economy;
 using RiskOfMagic.Enemies;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Equipment;
 using RiskOfMagic.Feedback;
 using RiskOfMagic.Flow;
@@ -56,7 +57,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral;
         }
 
         private sealed class ProjectileSet
@@ -86,10 +87,11 @@ namespace RiskOfMagic.Editor
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
+            catalog.EditorSetElites(BuildElites(vfx));
             EditorUtility.SetDirty(catalog);
 
             var smallChest = BuildChestPrefab<ChestInteractable>("Chest_Small", "Petit coffre", 25, 1f, new RarityWeights(70f, 24f, 5f, 1f),
@@ -204,7 +206,14 @@ namespace RiskOfMagic.Editor
                 Shockwave = EffectPrefab("VFX_Shockwave", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.11f, 0f), new Color(0.9f, 0.85f, 0.75f), 0.3f),
                 TimePulse = EffectPrefab("VFX_TimePulse", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.08f, 0f), new Color(0.45f, 0.8f, 1f), 0.35f),
                 Telegraph = EffectPrefab("VFX_Telegraph", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.06f, 0f), new Color(1f, 0.2f, 0.1f), 1.9f),
-                GroundWave = RingPrefab("VFX_GroundWave", new Color(1f, 0.75f, 0.35f), 0.6f, ColossusWaveSpeed)
+                GroundWave = RingPrefab("VFX_GroundWave", new Color(1f, 0.75f, 0.35f), 0.6f, ColossusWaveSpeed),
+                // Burning elite trail: lifetime = BurningAffix.trailDuration, scaled by its radius.
+                FirePatch = EffectPrefab("VFX_FirePatch", PrimitiveType.Cylinder, new Vector3(2f, 0.02f, 2f), new Vector3(0f, 0.04f, 0f), new Color(1f, 0.35f, 0.05f), 3f),
+                // Elite auras (persistent, attached to the enemy, sizes in world units).
+                AuraBurning = AuraPrefab("VFX_Aura_Burning", 1.2f, new Color(1f, 0.3f, 0.1f)),
+                AuraBlizzard = AuraPrefab("VFX_Aura_Blizzard", 6f, new Color(0.75f, 0.9f, 1f)), // = BlizzardAffix.radius
+                AuraStorm = AuraPrefab("VFX_Aura_Storm", 1.2f, new Color(1f, 0.9f, 0.2f)),
+                AuraSpectral = AuraPrefab("VFX_Aura_Spectral", 1.2f, new Color(0.65f, 0.4f, 1f))
             };
         }
 
@@ -818,7 +827,7 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildGhoul()
         {
-            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 70f, speed: 6f, gold: 8, detection: 30f);
+            var def = EnemyDef("Enemy_Ghoul", "Goule", health: 70f, speed: 6f, gold: 8, detection: 30f, feminine: true);
             var root = EnemyBase("Enemy_Ghoul", def, new Color(0.75f, 0.2f, 0.2f), out _);
             var attack = root.AddComponent<EnemyMeleeAttack>();
             SetProperties(attack, so =>
@@ -868,7 +877,7 @@ namespace RiskOfMagic.Editor
         /// <summary>Gets behind the player and sidesteps a lot: forces the player to turn around.</summary>
         private static EnemyActor BuildAssassin()
         {
-            var def = EnemyDef("Enemy_Assassin", "Lame d'ombre", health: 50f, speed: 7.5f, gold: 10, detection: 30f);
+            var def = EnemyDef("Enemy_Assassin", "Lame d'ombre", health: 50f, speed: 7.5f, gold: 10, detection: 30f, feminine: true);
             def.movementStyle = EnemyMovementStyle.Flank;
             def.flankRadius = 5f;
             def.flankAngle = new Vector2(140f, 180f);
@@ -1066,9 +1075,9 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Teleporter.prefab");
         }
 
-        private static EnemyDefinition BossDef(string file, string displayName, float health, float speed)
+        private static EnemyDefinition BossDef(string file, string displayName, float health, float speed, bool feminine = false)
         {
-            var def = EnemyDef(file, displayName, health, speed, gold: 150, detection: 200f);
+            var def = EnemyDef(file, displayName, health, speed, gold: 150, detection: 200f, feminine);
             def.isBoss = true;
             def.controlResistance = 0.6f;
             def.alertAlliesRadius = 0f;
@@ -1133,7 +1142,7 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildSpiderQueen(ProjectileDefinition spit, SpawnCard spiderling, VfxSet vfx)
         {
-            var def = BossDef("Boss_SpiderQueen", "Reine araignée", health: 1300f, speed: 5f);
+            var def = BossDef("Boss_SpiderQueen", "Reine araignée", health: 1300f, speed: 5f, feminine: true);
             def.movementStyle = EnemyMovementStyle.Kite;
             def.kiteRange = new Vector2(8f, 20f);
             def.retreatDistance = 7f;
@@ -1185,7 +1194,7 @@ namespace RiskOfMagic.Editor
 
         private static EnemyActor BuildSpiderling()
         {
-            var def = EnemyDef("Enemy_Spiderling", "Araignée", health: 20f, speed: 7.5f, gold: 2, detection: 40f);
+            var def = EnemyDef("Enemy_Spiderling", "Araignée", health: 20f, speed: 7.5f, gold: 2, detection: 40f, feminine: true);
             var root = EnemyBase("Enemy_Spiderling", def, new Color(0.2f, 0.1f, 0.25f), out _);
             root.transform.localScale = Vector3.one * 0.55f;
             var attack = root.AddComponent<EnemyMeleeAttack>();
@@ -1201,9 +1210,11 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/Enemy_Spiderling.prefab").GetComponent<EnemyActor>();
         }
 
-        private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold, float detection)
+        private static EnemyDefinition EnemyDef(string file, string displayName, float health, float speed, int gold, float detection,
+            bool feminine = false)
         {
             var def = Asset<EnemyDefinition>($"{EnemiesFolder}/{file}.asset");
+            def.feminineName = feminine;
             def.detectionRange = detection;
             def.isBoss = false;
             def.movementStyle = EnemyMovementStyle.Direct;
@@ -1548,6 +1559,83 @@ namespace RiskOfMagic.Editor
             SetProperties(timed, so => so.FindProperty("lifetime").floatValue = lifetime);
             root.AddComponent<EffectSound>();
             return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
+        }
+
+        /// <summary>Flat ground disc, no lifetime (elite auras).</summary>
+        private static GameObject AuraPrefab(string name, float radius, Color color)
+        {
+            var root = new GameObject(name);
+            var mesh = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            Object.DestroyImmediate(mesh.GetComponent<Collider>());
+            mesh.transform.SetParent(root.transform, false);
+            mesh.transform.localPosition = new Vector3(0f, 0.03f, 0f);
+            mesh.transform.localScale = new Vector3(radius * 2f, 0.01f, radius * 2f);
+            var renderer = mesh.GetComponent<Renderer>();
+            renderer.sharedMaterial = Mat("M_" + name, color, unlit: true);
+            renderer.shadowCastingMode = ShadowCastingMode.Off;
+            return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
+        }
+
+        private static List<EliteAffix> BuildElites(VfxSet vfx)
+        {
+            var burn = AssetDatabase.LoadAssetAtPath<DotEffect>(ItemsFolder + "/Dot_Burn.asset");
+
+            var burning = Asset<BurningAffix>($"{EnemiesFolder}/Elite_Burning.asset");
+            Elite(burning, "ardent", "ardente", new Color(1f, 0.35f, 0.15f), vfx.AuraBurning);
+            burning.burn = burn;
+            burning.patchVfx = vfx.FirePatch;
+            burning.dropSpacing = 1.5f;
+            burning.trailDuration = 3f;
+            burning.trailRadius = 1.3f;
+            burning.trailDamage = 3f;
+            burning.tickInterval = 0.5f;
+
+            var blizzard = Asset<BlizzardAffix>($"{EnemiesFolder}/Elite_Blizzard.asset");
+            Elite(blizzard, "glacial", "glaciale", new Color(0.55f, 0.85f, 1f), vfx.AuraBlizzard);
+            blizzard.radius = 6f;
+            blizzard.damagePerTick = 2f;
+            blizzard.tickInterval = 0.5f;
+            blizzard.chillDuration = 1.2f;
+
+            var storm = Asset<StormAffix>($"{EnemiesFolder}/Elite_Storm.asset");
+            Elite(storm, "foudroyant", "foudroyante", new Color(1f, 0.9f, 0.3f), vfx.AuraStorm);
+            storm.interval = 4f;
+            storm.strikeDelay = 1f;
+            storm.strikeRadius = 2.5f;
+            storm.strikeDamage = 12f;
+            storm.maxRange = 40f;
+            storm.telegraphVfx = vfx.Telegraph;
+            storm.boltVfx = vfx.Lightning;
+            storm.impactVfx = vfx.Shockwave;
+
+            var spectral = Asset<SpectralAffix>($"{EnemiesFolder}/Elite_Spectral.asset");
+            Elite(spectral, "éthéré", "éthérée", new Color(0.75f, 0.55f, 1f), vfx.AuraSpectral);
+            spectral.phaseDuration = 1f;
+            spectral.phaseCooldown = 4f;
+            spectral.blinkInterval = 6f;
+            spectral.blinkMinDistance = 12f;
+            spectral.blinkDistanceFromTarget = new Vector2(3f, 5f);
+            spectral.blinkVfx = vfx.Blink;
+
+            var all = new List<EliteAffix> { burning, blizzard, storm, spectral };
+            foreach (var affix in all)
+                EditorUtility.SetDirty(affix);
+            return all;
+        }
+
+        private static void Elite(EliteAffix affix, string masculine, string feminine, Color tint, GameObject aura)
+        {
+            affix.nameMasculine = masculine;
+            affix.nameFeminine = feminine;
+            affix.tint = tint;
+            affix.auraPrefab = aura;
+            affix.healthMultiplier = 4f;
+            affix.damageMultiplier = 2f;
+            affix.costMultiplier = 6f;
+            affix.goldMultiplier = 4f;
+            affix.bossHealthMultiplier = 1.5f;
+            affix.bossDamageMultiplier = 1.25f;
+            affix.bossGoldMultiplier = 1.5f;
         }
 
         private const float ColossusWaveSpeed = 14f; // shared by the ring VFX and the shockwave attack

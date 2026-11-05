@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using RiskOfMagic.Audio;
 using RiskOfMagic.Combat;
+using RiskOfMagic.Core;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Run;
 using Unity.Netcode;
 using UnityEngine;
@@ -29,9 +31,13 @@ namespace RiskOfMagic.Enemies
         [SerializeField] private Color frozenTint = new(0.45f, 0.75f, 1f);
         [SerializeField] private Color poisonedTint = new(0.35f, 0.85f, 0.25f);
         [SerializeField] private Color cursedTint = new(0.55f, 0.25f, 0.6f);
+        [SerializeField] private Color phasedTint = new(0.9f, 0.9f, 1f);
 
         private readonly NetworkVariable<int> level = new(1);
         private readonly NetworkVariable<double> frozenUntil = new();
+        private readonly NetworkVariable<int> eliteIndex = new(-1);
+        private readonly NetworkVariable<double> phasedUntil = new();
+        private EliteAffix pendingElite;
         private Renderer[] renderers;
         private MaterialPropertyBlock propertyBlock;
         private Color? currentTint;
@@ -39,6 +45,44 @@ namespace RiskOfMagic.Enemies
         private int pendingLevel = 1;
 
         public EnemyDefinition Definition => definition;
+        /// <summary>Every peer once spawned (null = normal enemy).</summary>
+        public EliteAffix Elite { get; private set; }
+        public bool IsElite => Elite != null;
+        /// <summary>Invulnerable (Éthéré elite), tinted on every peer.</summary>
+        public bool IsPhased => IsSpawned && NetworkManager.ServerTime.Time < phasedUntil.Value;
+
+        /// <summary>"Goule" or "Goule ardente".</summary>
+        public string DisplayName
+        {
+            get
+            {
+                string baseName = definition != null ? definition.displayName : name;
+                return Elite != null ? $"{baseName} {Elite.GetName(definition != null && definition.feminineName)}" : baseName;
+            }
+        }
+
+        private EliteAffix CurrentElite => Elite != null ? Elite : pendingElite;
+        private bool IsBoss => definition != null && definition.isBoss;
+        private float EliteHealthMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossHealthMultiplier : CurrentElite.healthMultiplier;
+        private float EliteDamageMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossDamageMultiplier : CurrentElite.damageMultiplier;
+        private float EliteGoldMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossGoldMultiplier : CurrentElite.goldMultiplier;
+
+        /// <summary>Server, before Spawn() (CombatDirector.Spawn). Applies the health multiplier.</summary>
+        public void MakeElite(EliteAffix affix)
+        {
+            pendingElite = affix;
+            Initialize(pendingLevel);
+        }
+
+        /// <summary>Server only. Ignores hits for the duration.</summary>
+        public void Phase(float duration)
+        {
+            if (!IsServer || !Health.IsAlive)
+                return;
+            double until = NetworkManager.ServerTime.Time + duration;
+            phasedUntil.Value = until;
+            Health.ServerInvulnerableUntil = until;
+        }
         public Health Health { get; private set; }
         public int Level => IsSpawned ? level.Value : pendingLevel;
         /// <summary>No movement nor attacks (EnemyBrain), tinted on every peer.</summary>
@@ -56,12 +100,13 @@ namespace RiskOfMagic.Enemies
         }
         public StatusEffects Status { get; private set; }
         public float DamageMultiplier => (definition != null ? 1f + definition.damagePerLevel * (Level - 1) : 1f)
+                                         * EliteDamageMultiplier
                                          * (Status != null ? Status.DamageDealtMultiplier : 1f);
         public float MoveSpeedMultiplier => Status != null ? Status.MoveSpeedMultiplier : 1f;
         public float AttackSpeedMultiplier => Status != null ? Status.AttackSpeedMultiplier : 1f;
 
         public uint GoldReward => definition != null
-            ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * RunDifficulty.CurrentCoefficient))
+            ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * EliteGoldMultiplier * RunDifficulty.CurrentCoefficient))
             : 0u;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -87,13 +132,19 @@ namespace RiskOfMagic.Enemies
         {
             pendingLevel = Mathf.Max(1, enemyLevel);
             if (definition != null)
-                Health.SetBaseMaxHealth(definition.maxHealth * (1f + definition.healthPerLevel * (pendingLevel - 1)));
+                Health.SetBaseMaxHealth(definition.maxHealth * (1f + definition.healthPerLevel * (pendingLevel - 1)) * EliteHealthMultiplier);
         }
 
         public override void OnNetworkSpawn()
         {
             if (IsServer)
+            {
                 level.Value = pendingLevel;
+                if (pendingElite != null && GameCatalog.Instance != null)
+                    eliteIndex.Value = GameCatalog.Instance.IndexOf(pendingElite);
+            }
+            eliteIndex.OnValueChanged += OnEliteChanged;
+            ApplyElite(eliteIndex.Value);
             active.Add(this);
             Health.Died += OnDied;
             if (definition != null)
@@ -104,6 +155,18 @@ namespace RiskOfMagic.Enemies
         {
             active.Remove(this);
             Health.Died -= OnDied;
+            eliteIndex.OnValueChanged -= OnEliteChanged;
+        }
+
+        private void OnEliteChanged(int previous, int current) => ApplyElite(current);
+
+        private void ApplyElite(int index)
+        {
+            if (Elite != null || index < 0 || GameCatalog.Instance == null)
+                return;
+            Elite = GameCatalog.Instance.GetElite(index);
+            if (Elite != null)
+                EliteRuntime.Attach(this, Elite);
         }
 
         private void Update()
@@ -111,12 +174,16 @@ namespace RiskOfMagic.Enemies
             Color? tint = null;
             if (IsSpawned && Health.IsAlive)
             {
-                if (IsFrozen)
+                if (IsPhased)
+                    tint = phasedTint;
+                else if (IsFrozen)
                     tint = frozenTint;
                 else if (Status != null && Status.Has(StatusType.Curse))
                     tint = cursedTint;
                 else if (Health.HasDot(DamageType.Poison))
                     tint = poisonedTint;
+                else if (Elite != null)
+                    tint = Elite.tint;
             }
             if (tint == currentTint)
                 return;

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using RiskOfMagic.Core;
 using RiskOfMagic.Enemies;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -38,6 +40,12 @@ namespace RiskOfMagic.Run
         [SerializeField] private Vector2 waveInterval = new(8f, 15f);
         [SerializeField, Min(1)] private int maxSpawnsPerWave = 4;
         [SerializeField, Min(1)] private int maxAliveEnemies = 22;
+
+        [Header("Elites")]
+        [SerializeField, Min(0f), Tooltip("Run progress (like SpawnCard.minCoefficient) from which waves can be elite.")]
+        private float eliteMinProgress = 1.5f;
+        [SerializeField, Range(0f, 1f), Tooltip("Chance for a wave to be elite (same affix), if the boosted cost is affordable.")]
+        private float eliteWaveChance = 0.35f;
 
         [Header("Placement")]
         [SerializeField, Tooltip("Normal waves: distance band to the NEAREST living player.")]
@@ -182,11 +190,25 @@ namespace RiskOfMagic.Run
 
         private void SpawnWave(float coefficient)
         {
-            var card = PickCard(credits, RunDifficulty.CurrentProgress * RunDifficulty.CurrentUnlockMultiplier);
+            float progress = RunDifficulty.CurrentProgress * RunDifficulty.CurrentUnlockMultiplier;
+            var card = PickCard(credits, progress);
             if (card == null)
             {
                 Diagnose($"No affordable card (credits {credits:0}, coefficient {coefficient:0.00}).");
                 return;
+            }
+
+            // Elite wave: same card, cost multiplied by the affix.
+            EliteAffix elite = null;
+            float cost = card.cost;
+            if (progress >= eliteMinProgress && Random.value < eliteWaveChance && GameCatalog.Instance != null)
+            {
+                var affix = GameCatalog.Instance.RollElite();
+                if (affix != null && credits >= card.cost * affix.costMultiplier)
+                {
+                    elite = affix;
+                    cost = card.cost * affix.costMultiplier;
+                }
             }
 
             int level = RunDifficulty.CurrentEnemyLevel;
@@ -195,7 +217,7 @@ namespace RiskOfMagic.Run
             bool hunt = wavesHuntPlayers || IsEventActive;
             Vector3 groupCenter = default;
 
-            for (int i = 0; i < maxSpawnsPerWave && credits >= card.cost && EnemyActor.Active.Count < maxAliveEnemies; i++)
+            for (int i = 0; i < maxSpawnsPerWave && credits >= cost && EnemyActor.Active.Count < maxAliveEnemies; i++)
             {
                 PlayerAvatar anchorPlayer;
                 Vector3 position;
@@ -213,14 +235,14 @@ namespace RiskOfMagic.Run
                     groupCenter = position;
 
                 Vector3 facing = Vector3.ProjectOnPlane(anchorPlayer.transform.position - position, Vector3.up);
-                var enemy = Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
+                var enemy = Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level, elite);
                 if (hunt && enemy.TryGetComponent(out EnemyBrain brain))
                     brain.Alert(anchorPlayer, false);
-                credits -= card.cost;
+                credits -= cost;
                 spawned++;
             }
             if (spawned > 0)
-                Diagnose($"Spawned {spawned}x {card.name} (level {level}), {credits:0} credits left.");
+                Diagnose($"Spawned {spawned}x {card.name}{(elite != null ? $" [{elite.name}]" : "")} (level {level}), {credits:0} credits left.");
         }
 
         private void Diagnose(string message)
@@ -333,10 +355,12 @@ namespace RiskOfMagic.Run
         }
 
         /// <summary>Server only. Also usable by shrines, bosses, events.</summary>
-        public EnemyActor Spawn(SpawnCard card, Vector3 position, Quaternion rotation, int level)
+        public EnemyActor Spawn(SpawnCard card, Vector3 position, Quaternion rotation, int level, EliteAffix elite = null)
         {
             var enemy = Instantiate(card.prefab, position, rotation);
             enemy.Initialize(level);
+            if (elite != null)
+                enemy.MakeElite(elite);
             enemy.NetworkObject.Spawn(true);
             EnemySpawned?.Invoke(enemy);
             return enemy;

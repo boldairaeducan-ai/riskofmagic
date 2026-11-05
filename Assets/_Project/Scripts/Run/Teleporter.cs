@@ -35,6 +35,8 @@ namespace RiskOfMagic.Run
         [SerializeField] private List<SpawnCard> bossCards = new();
         [SerializeField, Min(1)] private int bossCount = 1;
         [SerializeField, Min(1), Tooltip("From this stage, one extra boss.")] private int extraBossFromStage = 4;
+        [SerializeField, Min(1), Tooltip("From this stage, bosses can be elite.")] private int eliteBossFromStage = 3;
+        [SerializeField, Range(0f, 1f)] private float eliteBossChance = 0.5f;
         [SerializeField] private Vector2 bossSpawnDistance = new(12f, 22f);
 
         [Header("Boss reward (one item per player)")]
@@ -156,7 +158,10 @@ namespace RiskOfMagic.Run
                 lastBossCard = card;
 
                 Vector3 facing = Vector3.ProjectOnPlane(transform.position - position, Vector3.up);
-                var boss = director.Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level);
+                var elite = stage >= eliteBossFromStage && Random.value < eliteBossChance && GameCatalog.Instance != null
+                    ? GameCatalog.Instance.RollElite()
+                    : null;
+                var boss = director.Spawn(card, position, facing.sqrMagnitude > 0.01f ? Quaternion.LookRotation(facing) : Quaternion.identity, level, elite);
                 bosses.Add(boss);
                 if (boss.TryGetComponent(out EnemyBrain brain))
                     foreach (var player in PlayerAvatar.All)
