@@ -126,8 +126,10 @@ namespace RiskOfMagic.Flow
                 return false;
             RunSettings.Difficulty = difficulty.Value;
             foreach (var player in players)
+            {
                 RunSettings.SetCharacter(player.ClientId, player.Character);
                 RunSettings.SetLoadout(player.ClientId, player.Loadout);
+            }
             GameFlow.StartGame();
             return true;
         }
