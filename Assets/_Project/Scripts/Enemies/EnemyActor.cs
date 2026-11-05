@@ -223,6 +223,15 @@ namespace RiskOfMagic.Enemies
 
         private void Update()
         {
+            // Fell off the map (push, leap): dies (server).
+            if (IsServer && IsSpawned && Health.IsAlive && StageBounds.IsBelowMap(transform.position))
+            {
+                var fall = DamageInfo.Create(Health.Max * 10f, DamageType.Physical, null, Team.Neutral, transform.position, Vector3.down);
+                fall.IgnoreModifiers = true;
+                fall.ProcCoefficient = 0f;
+                Health.ApplyDamage(fall);
+            }
+
             Color? tint = null;
             if (IsSpawned && Health.IsAlive)
             {

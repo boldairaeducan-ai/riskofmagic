@@ -30,6 +30,9 @@ if `MapRotation` is still the default, sets them as stages 1–5:
 | `Map_VolcanoTomb` | Rolling terrain, lava basins (`HazardZone`: hurts players only), stepped temple with ramp variants, obsidian spires |
 | `Map_ChaosSanctum` | Final arena (stage 5): walled disc, pillars, dais with the teleporter, optional cover |
 
+**Out of the map:** below the `StageBounds` volume (minus `killMargin`, 5 m), a player is teleported back to a safe ground
+position from ~1 s earlier and loses 20% max HP (never lethal, `FallRecovery` on the player prefab); an enemy dies.
+
 Terrains, materials and NavMesh assets are generated next to the scenes (`Scenes/Maps/Terrain`). `HazardZone` (box/cylinder volume,
 % max HP + flat damage per second) and `BlizzardWeather` can be reused in any map.
 

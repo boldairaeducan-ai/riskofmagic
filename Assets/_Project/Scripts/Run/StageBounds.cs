@@ -15,8 +15,15 @@ namespace RiskOfMagic.Run
         [SerializeField] private Vector3 size = new(110f, 40f, 110f);
         [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
         [SerializeField, Min(0.1f)] private float navMeshSampleRadius = 2f;
+        [SerializeField, Min(0f), Tooltip("Falling this far below the volume = out of the map (players are brought back, enemies die).")]
+        private float killMargin = 5f;
 
         public static StageBounds Instance { get; private set; }
+
+        /// <summary>World height below which something has fallen off the map.</summary>
+        public float KillHeight => transform.TransformPoint(center).y - size.y * 0.5f - killMargin;
+
+        public static bool IsBelowMap(Vector3 position) => Instance != null && position.y < Instance.KillHeight;
 
         private void OnEnable() => Instance = this;
 
