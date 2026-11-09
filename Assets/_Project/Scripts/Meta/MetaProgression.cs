@@ -91,10 +91,26 @@ namespace RiskOfMagic.Meta
             }
         }
 
+        private const string UnlockAllKey = "RiskOfMagic.Debug.UnlockAll";
+
+        /// <summary>
+        /// Testing: every character, skill, item and the hard mode are available (Tools → Risk of Magic → Debug).
+        /// Editor and development builds only; challenges still progress and complete normally.
+        /// </summary>
+        public static bool DebugUnlockAll
+        {
+            get => (Application.isEditor || Debug.isDebugBuild) && PlayerPrefs.GetInt(UnlockAllKey, 0) == 1;
+            set
+            {
+                PlayerPrefs.SetInt(UnlockAllKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
         /// <summary>The challenge that unlocks this reward (null = available from the start).</summary>
         public static ChallengeDefinition UnlockedBy(Object reward)
         {
-            if (reward == null)
+            if (reward == null || DebugUnlockAll)
                 return null;
             foreach (var challenge in Challenges)
                 if (challenge != null && challenge.reward == reward)
@@ -112,6 +128,8 @@ namespace RiskOfMagic.Meta
         {
             get
             {
+                if (DebugUnlockAll)
+                    return null;
                 foreach (var challenge in Challenges)
                     if (challenge != null && challenge.unlocksHardMode)
                         return challenge;
