@@ -19,12 +19,20 @@ namespace RiskOfMagic.Enemies
         [SerializeField, Min(0f)] private float windup = 1f;
         [SerializeField, Min(0f)] private float recovery = 0.5f;
         [SerializeField, Tooltip("Spawned at each minion (VfxNetwork).")] private GameObject spawnVfx;
+        [SerializeField, Range(0.05f, 1f), Tooltip("Only cast below this health fraction (1 = always).")] private float onlyBelowHealth = 1f;
+        [SerializeField, Min(0), Tooltip("Max casts per life (0 = unlimited).")] private int maxCasts;
+
+        private int casts;
 
         private readonly List<EnemyActor> minions = new();
 
         public override bool IsInRange(Transform target)
         {
             minions.RemoveAll(m => m == null || !m.IsSpawned || !m.Health.IsAlive);
+            if (maxCasts > 0 && casts >= maxCasts)
+                return false;
+            if (onlyBelowHealth < 1f && Actor.Health.Normalized > onlyBelowHealth)
+                return false;
             return minions.Count < maxAlive && base.IsInRange(target);
         }
 
@@ -33,6 +41,7 @@ namespace RiskOfMagic.Enemies
             var director = CombatDirector.Instance;
             if (director == null || ((minion == null || minion.prefab == null) && minionPool.Length == 0))
                 yield break;
+            casts++;
             yield return new WaitForSeconds(windup);
 
             int count = Mathf.Min(countPerCast, maxAlive - minions.Count);

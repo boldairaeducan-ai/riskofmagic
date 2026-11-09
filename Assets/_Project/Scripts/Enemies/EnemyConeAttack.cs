@@ -17,6 +17,9 @@ namespace RiskOfMagic.Enemies
         [SerializeField] private float damagePerTick = 6f;
         [SerializeField] private DamageType damageType = DamageType.Fire;
         [SerializeField] private DotEffect dot;
+        [SerializeField, Tooltip("Status applied to each target hit by a tick.")] private bool applyStatus;
+        [SerializeField] private StatusType status = StatusType.Chilled;
+        [SerializeField, Min(0.1f)] private float statusDuration = 1.2f;
         [SerializeField, Min(0f)] private float windup = 0.8f;
         [SerializeField, Min(0.1f)] private float duration = 2f;
         [SerializeField, Min(0.05f)] private float tickInterval = 0.25f;
@@ -67,6 +70,8 @@ namespace RiskOfMagic.Enemies
                 health.ApplyDamage(info);
                 if (dot != null)
                     DotSystem.Apply(health, dot, info);
+                if (applyStatus && health.TryGetComponent(out StatusEffects effects))
+                    effects.Apply(status, statusDuration);
             }
         }
     }

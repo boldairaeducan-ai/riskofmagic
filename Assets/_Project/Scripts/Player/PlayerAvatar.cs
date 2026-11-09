@@ -189,6 +189,10 @@ namespace RiskOfMagic.Player
             RiskOfMagic.UI.LoadingScreen.NotifyLocalPlayerPlaced();
         }
 
+        /// <summary>Server → owner: push (vortex, knockback). Movement is owner-authoritative.</summary>
+        [Rpc(SendTo.Owner)]
+        public void PushRpc(Vector3 impulse) => Motor.AddImpulse(impulse);
+
         public void SetControlEnabled(bool value)
         {
             ControlEnabled = value;

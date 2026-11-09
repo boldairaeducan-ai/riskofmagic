@@ -16,23 +16,33 @@ namespace RiskOfMagic.Editor
     {
         private const string EnemiesFolder = "Assets/_Project/Configs/Enemies";
 
-        // Placeholder secret bosses until each map gets its own (existing bosses, tougher).
+        // Secret boss of each map (built by Build Prototype Scene).
         private static readonly Dictionary<string, (string card, string title)> DefaultBosses = new()
         {
-            { "Map_GrimForest", ("SpawnCard_Boss_SpiderQueen", "Gardienne des ronces") },
-            { "Map_Necropolis", ("SpawnCard_Boss_BoneColossus", "Roi des ossements") },
-            { "Map_MountainPeak", ("SpawnCard_Boss_EmberDrake", "Drake des cimes") },
-            { "Map_VolcanoTomb", ("SpawnCard_Boss_EmberDrake", "Gardien de la forge") },
-            { "Map_ChaosSanctum", ("SpawnCard_Boss_BoneColossus", "Colosse du néant") },
+            { "Map_GrimForest", ("SpawnCard_Secret_CorruptedSylvan", "") },
+            { "Map_Necropolis", ("SpawnCard_Secret_LichKing", "") },
+            { "Map_MountainPeak", ("SpawnCard_Secret_FrostWyvern", "") },
+            { "Map_VolcanoTomb", ("SpawnCard_Secret_TitanSmith", "") },
+            { "Map_ChaosSanctum", ("SpawnCard_Secret_VoidWeaver", "") },
         };
 
-        [MenuItem("Tools/Risk of Magic/Secrets/Add Secret To Open Map")]
+        [MenuItem("Tools/Risk of Magic/Secrets/Add Secret To Open Map (or assign its boss)")]
         public static void AddToOpenMap()
         {
             var scene = EditorSceneManager.GetActiveScene();
-            if (Object.FindAnyObjectByType<MapSecret>() != null)
+            var existing = Object.FindAnyObjectByType<MapSecret>();
+            if (existing != null)
             {
-                EditorUtility.DisplayDialog("Secrets", "Cette carte a déjà un MapSecret.", "OK");
+                // Already set up: only (re)assign this map's secret boss.
+                if (DefaultBosses.TryGetValue(scene.name, out var mapBoss))
+                {
+                    Undo.RecordObject(existing, "Assign secret boss");
+                    existing.bossCard = AssetDatabase.LoadAssetAtPath<SpawnCard>($"{EnemiesFolder}/{mapBoss.card}.asset");
+                    existing.bossTitle = mapBoss.title;
+                    EditorUtility.SetDirty(existing);
+                    EditorSceneManager.MarkSceneDirty(scene);
+                }
+                EditorUtility.DisplayDialog("Secrets", "Cette carte a déjà un MapSecret : son boss secret a été (ré)assigné.", "OK");
                 return;
             }
             var bounds = Object.FindAnyObjectByType<StageBounds>();

@@ -41,7 +41,7 @@ namespace RiskOfMagic.Editor
     /// One-click prototype: characters, skills, projectiles, VFX, enemies, director and a test level.
     /// Re-running updates the generated assets in place (tweaks made in the inspector are overwritten).
     /// </summary>
-    public static class PrototypeSceneBuilder
+    public static partial class PrototypeSceneBuilder
     {
         private const string Root = "Assets/_Project";
         private const string Configs = Root + "/Configs";
@@ -187,12 +187,15 @@ namespace RiskOfMagic.Editor
             var avatarCard = Card("SpawnCard_Boss_ChaosAvatar", avatar, 1, 1f, 0f);
             SetProperties(avatar.GetComponent<ChaosAvatar>(), so => so.FindProperty("illusionCard").objectReferenceValue = avatarCard);
             EditorUtility.SetDirty(avatar.GetComponent<ChaosAvatar>());
+            var secretBosses = BuildSecretBosses(projectiles, vfx, prefabList, cards.Find(c => c.name == "SpawnCard_SkeletonArcher"), burn);
             var seal = BuildRunEndSealPrefab();
             prefabList.Add(new NetworkPrefab { Prefab = seal });
 
             // Meta progression: challenges (unlocks) and bestiary order.
             var bestiary = new List<EnemyDefinition>();
             foreach (var enemy in new[] { ghoul, wolf, assassin, ogre, pyromancer, skeleton, spiderling, colossus, queen, drake, avatar })
+                bestiary.Add(enemy.Definition);
+            foreach (var enemy in secretBosses)
                 bestiary.Add(enemy.Definition);
             catalog.EditorSetMeta(BuildChallenges(characters, items), bestiary);
             EditorUtility.SetDirty(catalog);
