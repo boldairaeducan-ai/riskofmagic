@@ -1936,8 +1936,35 @@ namespace RiskOfMagic.Editor
             return root;
         }
 
+        // Regular enemies (not bosses): more aggressive than their base values below.
+        private const float RegularAttackRate = 1.3f;   // cooldowns / 1.3
+        private const float RegularDamage = 1.15f;
+        private const float RegularSpeed = 1.15f;
+        private const float RegularDetection = 1.4f;
+        private const float RegularFlankRadius = 0.7f;  // flankers commit closer, sooner
+
         private static void FinishEnemy(GameObject root, EnemyAttack attack, System.Action<SerializedObject> dodge = null)
         {
+            var actor = root.GetComponent<EnemyActor>();
+            var def = actor != null ? actor.Definition : null;
+            if (def != null && !def.isBoss)
+            {
+                def.moveSpeed *= RegularSpeed;
+                def.detectionRange *= RegularDetection;
+                def.flankRadius *= RegularFlankRadius;
+                def.alertAlliesRadius *= RegularDetection;
+                EditorUtility.SetDirty(def);
+                foreach (var enemyAttack in root.GetComponents<EnemyAttack>())
+                    SetProperties(enemyAttack, so =>
+                    {
+                        var cooldown = so.FindProperty("cooldown");
+                        if (cooldown != null)
+                            cooldown.floatValue /= RegularAttackRate;
+                        var damage = so.FindProperty("damage");
+                        if (damage != null)
+                            damage.floatValue *= RegularDamage;
+                    });
+            }
             if (dodge != null)
                 SetProperties(root.AddComponent<EnemyDodge>(), dodge);
             root.AddComponent<EnemyLeap>();
