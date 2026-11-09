@@ -1,7 +1,9 @@
 # Risk of Magic — liste des assets à produire
 
-Chaque ligne indique **où brancher** l'asset. Rien n'est écrasé par les builders aux emplacements indiqués
-(sauf mention « prefab généré » : dans ce cas, brancher l'art via le champ `modelPrefab` de la définition, pas dans le prefab).
+Chaque ligne indique **où brancher** l'asset. Rien n'est écrasé par les builders aux emplacements indiqués.
+Ne jamais modifier directement un prefab généré : passer par le champ de la définition (`icon`, `modelPrefab`…) ou par
+**`Resources/ArtLibrary.asset`** (*Tools → Risk of Magic → Select Art Library*), dont les emplacements sont créés par
+*Build Prototype Scene* et appliqués à chaque génération.
 
 ---
 
@@ -19,7 +21,8 @@ Emplacements générés vides dans `Assets/_Project/Audio/Sounds/` par *Create A
 
 ### 1.2 Musiques — `AudioConfig` (6)
 Menu principal · étape (par défaut ; surchargeable par carte avec `SceneMusic`) · boss (événement du téléporteur) · boss final (Avatar) · victoire · game over.
-**À prévoir en plus (pas encore d'emplacement)** : une musique par carte (5) via `SceneMusic`, ambiances sonores de carte (vent, forêt, lave, crypte).
+Musique par carte : `Audio/Music/<Carte>_Music.asset` (musique + musique du boss), créé avec la carte.
+**À prévoir (pas encore d'emplacement)** : ambiances sonores de carte (vent, forêt, lave, crypte).
 
 ### 1.3 Compétences — `castSound` sur chaque compétence (48)
 | Personnage | De base | Alternatives |
@@ -73,10 +76,16 @@ marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 | Équipements | 3 | `icon` de chaque équipement (`Configs/Equipment`) |
 | Portraits de personnages | 6 | `portrait` de chaque personnage (`Configs/Characters`) — HUD + cartes du salon |
 
-### 2.3 À prévoir (pas encore d'emplacement dédié)
-Logo du jeu, fond du menu principal, fond de l'écran de chargement (`UI/LoadingScreen`, enfant `Background`), icônes des élites (4 affixes),
-icônes des statuts (malédiction, gel, poison, saignement, brûlure, ralliement, furtivité, marque…), icônes des défis du journal,
-icônes de rareté, curseur de souris.
+### 2.3 `ArtLibrary`
+| Quoi | Champ |
+|---|---|
+| Logo (remplace le titre de l'accueil), fond du menu, fond de l'écran de chargement | `logo`, `menuBackground`, `loadingBackground` |
+| Curseur de souris (texture importée en *Cursor*) | `cursor`, `cursorHotspot` |
+| Icônes des statuts (barre de statuts du HUD, au-dessus du portrait) | `statuses` (13) |
+| Icônes de rareté (icône de secours des objets sans icône) | `rarities` (5) |
+
+### 2.4 À prévoir (pas encore d'emplacement ni d'affichage)
+Icônes des élites, icônes des DoT (poison, saignement, brûlure), icônes des défis du journal.
 
 ---
 
@@ -89,11 +98,11 @@ Archer, Guerrier, Arcaniste, Druide, Paladin, Ombre.
 Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée · Boss : Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos.
 Échelle 1, pieds au pivot ; les hitbox (tête = point faible) restent celles du prefab généré.
 
-### 3.3 Objets interactifs (prefabs générés : remplacer les visuels primitifs dans le prefab ou via un modèle enfant)
+### 3.3 Objets interactifs — `ArtLibrary.interactables` (modèle imbriqué à la génération, remplace les primitives)
 Petit coffre, grand coffre, coffre du choix, coffre maudit, tonneau d'équipement, autel de soin, marchand, téléporteur,
 sceau de victoire (obélisque), tombe à purifier, autel de défi, objet au sol (orbe flottant générique).
 
-### 3.4 Projectiles — `visualPrefab` de chaque projectile (22, liste en 1.4)
+### 3.4 Projectiles — `ArtLibrary.projectiles` (22, liste en 1.4), ou directement `visualPrefab` de la définition (conservé)
 
 ### 3.5 Cartes (level design, à ta charge) — `Scenes/Maps`
 Grim Forest, Necropolis, Mountain Peak, Volcano Tomb, Chaos Sanctum : terrains et textures, arbres, ruines, rochers, bâtiments,
@@ -113,7 +122,7 @@ temple, statues, lave, skybox, éclairage, post-process.
 
 ---
 
-## 5. Effets visuels (VFX) — prefabs de `Prefabs/Vfx` (placeholders à remplacer, même nom)
+## 5. Effets visuels (VFX) — `ArtLibrary.vfx` (un emplacement par prefab de `Prefabs/Vfx` ; cocher `keepPlaceholder` pour les rayons et anneaux dessinés par le code)
 
 | Groupe | Prefabs |
 |---|---|

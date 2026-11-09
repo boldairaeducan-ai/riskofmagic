@@ -41,6 +41,9 @@ namespace RiskOfMagic.UI
         [SerializeField] private TMP_Text versionLabel;
         [SerializeField, Tooltip("Last played character, behind the menu.")] private CharacterPreview heroPreview;
         [SerializeField] private TMP_Text heroLabel;
+        [SerializeField, Tooltip("ArtLibrary.menuBackground")] private UnityEngine.UI.Image backgroundImage;
+        [SerializeField, Tooltip("ArtLibrary.logo, replaces gameTitle")] private UnityEngine.UI.Image logoImage;
+        [SerializeField] private TMP_Text gameTitle;
 
         [Header("Lobby")]
         [SerializeField] private GameObject lobbyScreen;
@@ -74,6 +77,7 @@ namespace RiskOfMagic.UI
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
 
+            ApplyArt();
             AddListener(soloButton, StartSolo);
             AddListener(multiplayerButton, ToggleMultiplayer);
             if (multiplayerPanel != null)
@@ -240,6 +244,25 @@ namespace RiskOfMagic.UI
                 heroPreview.Show(character);
             if (heroLabel != null)
                 heroLabel.text = character != null ? $"{character.displayName}\n<size=55%><alpha=#90>{character.description}</size>" : string.Empty;
+        }
+
+        private void ApplyArt()
+        {
+            var library = ArtLibrary.Instance;
+            var background = library != null ? library.menuBackground : null;
+            if (backgroundImage != null)
+            {
+                backgroundImage.sprite = background;
+                backgroundImage.gameObject.SetActive(background != null);
+            }
+            var logo = library != null ? library.logo : null;
+            if (logoImage != null)
+            {
+                logoImage.sprite = logo;
+                logoImage.gameObject.SetActive(logo != null);
+            }
+            if (gameTitle != null)
+                gameTitle.gameObject.SetActive(logo == null);
         }
 
         private static void Select(GameObject target)

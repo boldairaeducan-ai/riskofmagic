@@ -98,6 +98,13 @@ namespace RiskOfMagic.Editor
                 return;
             }
 
+            if (systems.GetComponent<RunDifficulty>() == null || systems.GetComponent<CombatDirector>() == null
+                || systems.GetComponent<InteractableSpawner>() == null)
+            {
+                error = "Prefab GameSystems incomplet : relance Tools → Risk of Magic → Build Prototype Scene.";
+                return;
+            }
+
             // Difficulty (RunDifficulty serialized values)
             var difficulty = new SerializedObject(systems.GetComponent<RunDifficulty>());
             float scalingPerMinute = difficulty.FindProperty("scalingPerMinute").floatValue;
@@ -152,7 +159,13 @@ namespace RiskOfMagic.Editor
             float primaryDps = PrimaryDps(character.primary);
 
             // Experience
-            var experience = new SerializedObject(player.GetComponent<PlayerExperience>());
+            var experienceComponent = player.GetComponent<PlayerExperience>();
+            if (experienceComponent == null)
+            {
+                error = "Prefab du joueur obsolète (sans PlayerExperience) : relance Tools → Risk of Magic → Build Prototype Scene.";
+                return;
+            }
+            var experience = new SerializedObject(experienceComponent);
             float xpPerGold = experience.FindProperty("experiencePerGold").floatValue;
             float firstLevel = experience.FindProperty("firstLevelExperience").floatValue;
             float growth = experience.FindProperty("levelGrowth").floatValue;

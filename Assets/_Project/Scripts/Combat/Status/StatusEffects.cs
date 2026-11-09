@@ -95,6 +95,12 @@ namespace RiskOfMagic.Combat
 
         public bool Has(StatusType type) => GetStacks(type) > 0;
 
+        /// <summary>Replicated entries (UI). Expired ones may linger until the server removes them: check Until.</summary>
+        public int EntryCount => entries.Count;
+        public StatusEntry GetEntry(int index) => entries[index];
+        /// <summary>Server time, the clock of StatusEntry.Until (double.MaxValue = until cleared).</summary>
+        public double CurrentTime => Now;
+
         public int GetStacks(StatusType type)
         {
             double now = Now;

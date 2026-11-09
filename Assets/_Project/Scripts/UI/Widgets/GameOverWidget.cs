@@ -151,7 +151,7 @@ namespace RiskOfMagic.UI
                 var icon = Instantiate(iconTemplate, iconTemplate.parent);
                 icon.gameObject.SetActive(true);
                 var image = icon.GetComponent<Image>();
-                image.sprite = item.icon != null ? item.icon : theme != null ? theme.GetSprite(HudSprite.DefaultItemIcon) : null;
+                image.sprite = RiskOfMagic.Core.ArtLibrary.ItemIcon(item, theme != null ? theme.GetSprite(HudSprite.DefaultItemIcon) : null);
                 image.color = item.icon != null ? Color.white : ItemDefinition.GetRarityColor(item.rarity);
                 var count = icon.GetComponentInChildren<TMP_Text>(true);
                 if (count != null)

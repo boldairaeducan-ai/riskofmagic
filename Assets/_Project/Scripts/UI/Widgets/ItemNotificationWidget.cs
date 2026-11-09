@@ -57,7 +57,7 @@ namespace RiskOfMagic.UI
             if (item == null)
                 return;
             var color = ItemDefinition.GetRarityColor(item.rarity);
-            var sprite = item.icon != null ? item.icon : theme != null ? theme.defaultItemIcon : null;
+            var sprite = RiskOfMagic.Core.ArtLibrary.ItemIcon(item, theme != null ? theme.defaultItemIcon : null);
 
             if (frame != null)
                 frame.color = color;

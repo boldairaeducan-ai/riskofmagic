@@ -83,6 +83,7 @@ namespace RiskOfMagic.Editor
             BuildChargeBar(gameplay);
             BuildInteractionPrompt(gameplay);
             BuildCharacterPanel(gameplay);
+            BuildStatusBar(gameplay);
             BuildSkillBar(gameplay);
             BuildEquipmentSlot(gameplay);
             BuildInventory(gameplay);
@@ -368,6 +369,35 @@ namespace RiskOfMagic.Editor
                 array.arraySize = slots.Length;
                 for (int i = 0; i < slots.Length; i++)
                     array.GetArrayElementAtIndex(i).objectReferenceValue = slots[i];
+            });
+        }
+
+        /// <summary>Active statuses of the local player, above the character panel (icons from ArtLibrary).</summary>
+        private static void BuildStatusBar(RectTransform parent)
+        {
+            var bar = Rect("StatusBar", parent, BottomLeft, BottomLeft, new Vector2(30f, 180f), new Vector2(490f, 40f));
+            var layout = bar.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            layout.spacing = 6f;
+            layout.childAlignment = TextAnchor.LowerLeft;
+            layout.childControlWidth = layout.childControlHeight = false;
+            layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+
+            var slot = Rect("SlotTemplate", bar, Center, Center, Vector2.zero, new Vector2(40f, 40f));
+            Themed(slot, HudSprite.SlotFrame, HudColor.Accent);
+            PlainImage(Stretch("Icon", slot, 4f));
+            Text(slot, "Letter", "?", 20f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Center);
+            var timer = Stretch("Timer", slot, 4f);
+            timer.gameObject.AddComponent<UnityEngine.UI.Image>().color = new Color(0f, 0f, 0f, 0.55f);
+            timer.GetComponent<UnityEngine.UI.Image>().raycastTarget = false;
+            var stacks = Text(Rect("Stacks", slot, BottomRight, BottomRight, new Vector2(-2f, 0f), new Vector2(36f, 18f)), null,
+                string.Empty, 14f, HudFont.Numbers, HudColor.Text, TextAlignmentOptions.BottomRight);
+            stacks.gameObject.name = "Stacks";
+
+            var widget = bar.gameObject.AddComponent<StatusBarWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("slotTemplate").objectReferenceValue = slot;
             });
         }
 

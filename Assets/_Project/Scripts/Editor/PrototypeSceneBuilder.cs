@@ -92,9 +92,10 @@ namespace RiskOfMagic.Editor
                 Directory.CreateDirectory(folder);
             AssetDatabase.Refresh();
 
+            touchedAssets.Clear();
             var vfx = BuildVfx();
             var projectiles = BuildProjectiles(vfx);
-            var items = BuildItems(projectiles, vfx); // first: it wipes Configs/Items (shared DoTs live there)
+            var items = BuildItems(projectiles, vfx);
             var characters = BuildCharacters(projectiles, vfx);
             var equipment = BuildEquipment(vfx);
             var pickup = BuildPickupPrefab();
@@ -215,6 +216,8 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
+            DeleteObsoleteAssets(ItemsFolder);
+            ArtLibraryBuilder.Save();
             var hud = HudBuilder.GetOrBuild();
             AssetDatabase.SaveAssets();
             AudioSlots.CreateAll(); // re-links the persistent sound slots to the regenerated prefabs
@@ -1044,10 +1047,7 @@ namespace RiskOfMagic.Editor
 
         private static List<ItemDefinition> BuildItems(ProjectileSet projectiles, VfxSet vfx)
         {
-            // The item list is generated from scratch: remove assets from previous versions.
-            AssetDatabase.DeleteAsset(ItemsFolder);
-            Directory.CreateDirectory(ItemsFolder);
-            AssetDatabase.Refresh();
+            // Assets are updated in place (user icons and sounds survive); obsolete ones are removed at the end of Build.
 
             var bleed = Dot("Dot_Bleed", DamageType.Bleed, tickFraction: 0.4f, interval: 0.5f, duration: 3f, maxStacks: 20);
             var burn = Dot("Dot_Burn", DamageType.Fire, tickFraction: 0.25f, interval: 0.5f, duration: 3f, maxStacks: 10);
@@ -2307,7 +2307,8 @@ namespace RiskOfMagic.Editor
             var prefab = SavePrefab(root, $"{ProjectilesFolder}/{name}.prefab");
 
             var def = Asset<ProjectileDefinition>($"{ProjectilesFolder}/{name}.asset");
-            def.visualPrefab = prefab;
+            if (def.visualPrefab == null || AssetDatabase.GetAssetPath(def.visualPrefab) == AssetDatabase.GetAssetPath(prefab))
+                def.visualPrefab = prefab; // a visual plugged by hand is kept
             def.impactVfx = impact;
             return def;
         }
@@ -2481,8 +2482,38 @@ namespace RiskOfMagic.Editor
         }
 
         /// <summary>Loads an asset of type T at path, replacing anything of another type.</summary>
+        private static readonly HashSet<string> touchedAssets = new();
+
+        /// <summary>Removes the assets of a folder that this build didn't create or update (renamed / removed content).</summary>
+        private static void DeleteObsoleteAssets(string folder)
+        {
+            foreach (string guid in AssetDatabase.FindAssets("t:ScriptableObject", new[] { folder }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (!touchedAssets.Contains(path))
+                {
+                    Debug.Log($"[Risk of Magic] Obsolete asset removed: {path}");
+                    AssetDatabase.DeleteAsset(path);
+                }
+            }
+        }
+
+        private static ArtLibraryBuilder.Category ArtCategory(string path)
+        {
+            if (path.StartsWith(VfxFolder + "/"))
+                return ArtLibraryBuilder.Category.Vfx;
+            if (path.StartsWith(ProjectilesFolder + "/"))
+                return ArtLibraryBuilder.Category.Projectile;
+            string file = Path.GetFileNameWithoutExtension(path);
+            bool actor = file == "Player" || file == "GameSystems" || file.StartsWith("Enemy_") || file.StartsWith("Boss_");
+            return path.StartsWith(Prefabs + "/") && !actor && !path.Substring(Prefabs.Length + 1).Contains("/")
+                ? ArtLibraryBuilder.Category.Interactable
+                : ArtLibraryBuilder.Category.None;
+        }
+
         private static T Asset<T>(string path) where T : ScriptableObject
         {
+            touchedAssets.Add(path);
             var existing = AssetDatabase.LoadAssetAtPath<T>(path);
             if (existing != null)
                 return existing;
@@ -2501,6 +2532,7 @@ namespace RiskOfMagic.Editor
 
         private static GameObject SavePrefab(GameObject root, string path)
         {
+            ArtLibraryBuilder.Apply(root, ArtCategory(path), Path.GetFileNameWithoutExtension(path));
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
             AssignStableNetworkHash(prefab, path);

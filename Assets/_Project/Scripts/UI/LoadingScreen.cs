@@ -11,7 +11,7 @@ namespace RiskOfMagic.UI
     /// Full-screen cover during map loads (Netcode scene loads: lobby → stage 1, stage → stage): shown as soon as the
     /// load starts, hidden once the local player has been placed on a spawn point of the new map (or after a safety
     /// timeout). Hides the scene camera and the spawn/NavMesh setup. Built at runtime, persistent, no setup needed.
-    /// Art: set a sprite on Background (child of "LoadingScreen") or replace this class.
+    /// Art: ArtLibrary.loadingBackground (Resources/ArtLibrary).
     /// </summary>
     public class LoadingScreen : MonoBehaviour
     {
@@ -82,7 +82,11 @@ namespace RiskOfMagic.UI
             backgroundRect.anchorMin = Vector2.zero;
             backgroundRect.anchorMax = Vector2.one;
             backgroundRect.offsetMin = backgroundRect.offsetMax = Vector2.zero;
-            background.GetComponent<Image>().color = new Color(0.04f, 0.035f, 0.05f, 1f);
+            var backgroundImage = background.GetComponent<Image>();
+            var art = RiskOfMagic.Core.ArtLibrary.Instance != null ? RiskOfMagic.Core.ArtLibrary.Instance.loadingBackground : null;
+            backgroundImage.sprite = art;
+            backgroundImage.preserveAspect = false;
+            backgroundImage.color = art != null ? Color.white : new Color(0.04f, 0.035f, 0.05f, 1f);
 
             var text = new GameObject("Label", typeof(RectTransform));
             text.transform.SetParent(transform, false);

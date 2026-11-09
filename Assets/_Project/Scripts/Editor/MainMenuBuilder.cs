@@ -65,6 +65,11 @@ namespace RiskOfMagic.Editor
             canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             var root = (RectTransform)canvasGo.transform;
 
+            // Optional art (ArtLibrary): full-screen background, logo replacing the home title.
+            var background = H.Stretch("Background", root).gameObject.AddComponent<UnityEngine.UI.Image>();
+            background.raycastTarget = false;
+            background.gameObject.SetActive(false);
+
             var screenTitle = H.Text(H.Rect("Title", root, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(1200f, 110f)), null,
                 "RISK OF MAGIC", 84f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
             screenTitle.gameObject.SetActive(false);
@@ -99,8 +104,12 @@ namespace RiskOfMagic.Editor
             H.Themed(fade, null, HudColor.Panel);
             fade.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
 
-            H.Text(H.Rect("GameTitle", home, H.TopLeft, H.TopLeft, new Vector2(110f, -110f), new Vector2(1000f, 110f)), null,
+            var gameTitle = H.Text(H.Rect("GameTitle", home, H.TopLeft, H.TopLeft, new Vector2(110f, -110f), new Vector2(1000f, 110f)), null,
                 "RISK OF MAGIC", 92f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.MidlineLeft);
+            var logo = H.Rect("Logo", home, H.TopLeft, H.TopLeft, new Vector2(110f, -40f), new Vector2(620f, 180f)).gameObject.AddComponent<UnityEngine.UI.Image>();
+            logo.raycastTarget = false;
+            logo.preserveAspect = true;
+            logo.gameObject.SetActive(false);
             H.Text(H.Rect("Tagline", home, H.TopLeft, H.TopLeft, new Vector2(116f, -218f), new Vector2(900f, 36f)), null,
                 "Roguelite coopératif  ·  1 à 4 joueurs", 22f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineLeft);
 
@@ -210,6 +219,9 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("versionLabel").objectReferenceValue = version;
                 so.FindProperty("heroPreview").objectReferenceValue = hero;
                 so.FindProperty("heroLabel").objectReferenceValue = heroLabel;
+                so.FindProperty("backgroundImage").objectReferenceValue = background;
+                so.FindProperty("logoImage").objectReferenceValue = logo;
+                so.FindProperty("gameTitle").objectReferenceValue = gameTitle;
                 so.FindProperty("hostButton").objectReferenceValue = host;
                 so.FindProperty("joinCodeField").objectReferenceValue = codeField;
                 so.FindProperty("joinButton").objectReferenceValue = join;
