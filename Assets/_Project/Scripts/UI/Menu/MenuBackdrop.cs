@@ -35,6 +35,7 @@ namespace RiskOfMagic.UI
         {
             if (backdropCamera != null)
             {
+                RiskOfMagic.Feedback.PostProcessCamera.Enable(backdropCamera);
                 basePosition = backdropCamera.transform.position;
                 backdropCamera.clearFlags = skybox != null ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
                 backdropCamera.backgroundColor = backgroundColor;

@@ -65,12 +65,16 @@ namespace RiskOfMagic.Player
             }
             if (playerCamera != null)
             {
+                PostProcessCamera.Enable(playerCamera, local);
                 playerCamera.enabled = local;
                 if (playerCamera.TryGetComponent(out AudioListener listener))
                     listener.enabled = local;
             }
             if (local)
+            {
                 SetCursorLocked(true);
+                CombatPostFx.Attach(GetComponent<PlayerAvatar>());
+            }
         }
 
         public void SetCursorLocked(bool locked)

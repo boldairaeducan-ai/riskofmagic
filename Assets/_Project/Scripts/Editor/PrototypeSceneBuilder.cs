@@ -93,6 +93,7 @@ namespace RiskOfMagic.Editor
             AssetDatabase.Refresh();
 
             touchedAssets.Clear();
+            PostProcessBuilder.EnsureSetup();
             var vfx = BuildVfx();
             var projectiles = BuildProjectiles(vfx);
             var items = BuildItems(projectiles, vfx);
@@ -2012,6 +2013,7 @@ namespace RiskOfMagic.Editor
             PrefabUtility.InstantiatePrefab(hud);
             new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
 
+            PostProcessBuilder.AddVolumes(scene, "Prototype");
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddSceneToBuildSettings(ScenePath);
         }
@@ -2456,12 +2458,17 @@ namespace RiskOfMagic.Editor
             return go;
         }
 
+        /// <summary>HDR multiplier of unlit (effect) materials under URP, above the bloom threshold.</summary>
+        private const float GlowIntensity = 1.8f;
+
         internal static Material Mat(string name, Color color, bool unlit = false)
         {
             bool urp = GraphicsSettings.currentRenderPipeline != null;
             var shader = unlit
                 ? Shader.Find(urp ? "Universal Render Pipeline/Unlit" : "Unlit/Color")
                 : Shader.Find(urp ? "Universal Render Pipeline/Lit" : "Standard");
+            if (unlit && urp)
+                color = new Color(color.r * GlowIntensity, color.g * GlowIntensity, color.b * GlowIntensity, color.a); // HDR: spells feed the bloom
             return MaterialAsset(name, shader, color);
         }
 

@@ -101,6 +101,11 @@ clip-less slot as unset.
 parameters the controller has, names in `AnimParams`). Server-only cues reach clients via existing RPCs or
 `EnemyActor.BroadcastCue`.
 
+**Rendering.** URP (Forward+, MSAA 4x, SSAO, HDR grading). `Editor/PostProcessBuilder` creates the volume profiles once in
+`Settings/PostProcess` (global grade + one mood per `Map_*` scene + main menu, never overwritten) and adds a `PostProcess`
+volume object to generated scenes; `PostProcessCamera.Enable` turns post on for screen cameras; `CombatPostFx` adds
+local hit / low-health volumes. Unlit effect materials are HDR (×1.8) so spells bloom.
+
 **UI.** `HudController` binds every `HudWidget` to the local player. `ThemedImage` / `ThemedText` pull sprites, fonts
 and colors from `HudTheme`; widgets only fill in game data (icons come from skill/item/equipment/character assets).
 

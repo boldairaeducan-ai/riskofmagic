@@ -231,6 +231,7 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("leaveButton").objectReferenceValue = leave;
             });
 
+            PostProcessBuilder.AddVolumes(scene, "MainMenu");
             EditorSceneManager.SaveScene(scene, ScenePath);
         }
 

@@ -165,6 +165,7 @@ namespace RiskOfMagic.Editor
             new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
             spec.Atmosphere?.Invoke(level.transform);
             AddMapMusic(spec.SceneName);
+            PostProcessBuilder.AddVolumes(scene, spec.SceneName);
 
             Physics.SyncTransforms();
             surface.BuildNavMesh();
