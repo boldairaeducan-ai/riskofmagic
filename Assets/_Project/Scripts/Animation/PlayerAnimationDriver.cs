@@ -115,8 +115,24 @@ namespace RiskOfMagic.Animation
             avatar.SetPlaceholderVisible(model == null);
         }
 
+        private bool hidden;
+
+        /// <summary>Other players don't see a stealthed Shadow (the owner keeps their own view).</summary>
+        private void UpdateStealthVisibility()
+        {
+            bool stealth = !avatar.IsOwner && avatar.Status != null && avatar.Status.Has(StatusType.Stealth);
+            if (stealth == hidden)
+                return;
+            hidden = stealth;
+            if (model != null)
+                foreach (var r in model.GetComponentsInChildren<Renderer>(true))
+                    r.enabled = !stealth;
+            avatar.SetPlaceholderVisible(model == null && !stealth);
+        }
+
         private void Update()
         {
+            UpdateStealthVisibility();
             float dt = Mathf.Max(Time.deltaTime, 0.0001f);
             Vector3 position = transform.position;
             Vector3 velocity = (position - lastPosition) / dt;

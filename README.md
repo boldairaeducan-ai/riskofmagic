@@ -67,6 +67,15 @@ Terrains, materials and NavMesh assets are generated next to the scenes (`Scenes
 - **Player** — `PlayerAvatar` (root, replicated character choice), `PlayerMotor` (owner-simulated, dash), `PlayerLook`, `PlayerInputHandler`.
 - **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (detection, persistent aggro, movement styles Direct / Flank / Kite, leaps), `EnemyDodge` (sidesteps when hit or aimed at), `EnemyLeap`, `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyLungeAttack` (bound, charge) / `EnemyArtilleryAttack` (telegraphed lob) / `EnemyProjectileAttack`.
 
+## Paladin & Ombre
+| | Clic G | Clic D | Maj | R |
+|---|---|---|---|---|
+| **Paladin** (140 PV, holy) | Marteau béni (heals allies on hit) / *Lame radieuse* | Jugement (stun) / *Bouclier projeté* | Égide (-50% damage, allies) / *Charge du croisé* | Sol consacré (heal + damage zone) / *Intervention divine* |
+| **Ombre** (85 PV, 2 jumps) | Dagues jumelles (backstab crits) / *Lames saignantes* | Dagues de lancer / *Fumigène* | Voile d'ombre (stealth) / *Pas de l'ombre* | Marque de mort / *Danse des lames* |
+
+Unlocks: Paladin = reach stage 5, Ombre = 1 000 kills. Statuses: `Stealth` (enemies ignore the player, first hit x2),
+`Marked` (+50% damage taken), `Ambush` (next hit crit). Backstab = attacker behind the target (`SkillContext.IsBehind`).
+
 ## Bestiary
 | Enemy | Style | Attack | Notes |
 |---|---|---|---|

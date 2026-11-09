@@ -283,7 +283,7 @@ namespace RiskOfMagic.Enemies
 
             foreach (var player in PlayerAvatar.All)
             {
-                if (!player.IsStanding || knownPlayers.Contains(player))
+                if (!player.IsStanding || knownPlayers.Contains(player) || IsHidden(player))
                     continue;
                 if ((player.transform.position - transform.position).sqrMagnitude > rangeSqr)
                     continue;
@@ -299,7 +299,7 @@ namespace RiskOfMagic.Enemies
             float bestSqr = float.MaxValue;
             foreach (var player in knownPlayers)
             {
-                if (!player.IsStanding)
+                if (!player.IsStanding || IsHidden(player))
                     continue;
                 float sqr = (player.transform.position - transform.position).sqrMagnitude;
                 if (sqr < bestSqr)
@@ -310,6 +310,9 @@ namespace RiskOfMagic.Enemies
             }
             return best;
         }
+
+        /// <summary>Stealthed players (Voile d'ombre) can't be detected nor targeted.</summary>
+        private static bool IsHidden(PlayerAvatar player) => player.Status != null && player.Status.Has(StatusType.Stealth);
 
         private bool HasLineOfSight(PlayerAvatar player)
         {

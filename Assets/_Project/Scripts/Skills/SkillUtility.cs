@@ -27,6 +27,25 @@ namespace RiskOfMagic.Skills
             }
         }
 
+        /// <summary>Hostile closest to the aim point (within tolerance) and within range of the caster, or null.</summary>
+        public static Health FindAimedHostile(SkillContext context, Vector3 aimPoint, float range, float tolerance)
+        {
+            Health best = null;
+            float bestSqr = float.MaxValue;
+            foreach (var health in FindHostiles(context, aimPoint, tolerance))
+            {
+                if ((health.transform.position - context.Transform.position).sqrMagnitude > range * range)
+                    continue;
+                float sqr = (TargetFinder.Center(health) - aimPoint).sqrMagnitude;
+                if (sqr < bestSqr)
+                {
+                    bestSqr = sqr;
+                    best = health;
+                }
+            }
+            return best;
+        }
+
         /// <summary>Hostiles within radius of center (reuses a shared list: copy it if you keep it).</summary>
         public static List<Health> FindHostiles(SkillContext context, Vector3 center, float radius)
         {

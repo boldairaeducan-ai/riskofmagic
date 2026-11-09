@@ -62,6 +62,13 @@ namespace RiskOfMagic.Skills
             }
         }
 
+        /// <summary>Back to full stock (Marque de mort: target killed).</summary>
+        public void Refill()
+        {
+            Stock = MaxStock;
+            rechargeTimer = 0f;
+        }
+
         public void Consume()
         {
             if (Stock > 0)

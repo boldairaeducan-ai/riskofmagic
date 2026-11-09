@@ -118,12 +118,14 @@ namespace RiskOfMagic.Editor
 
             // Right: character cards, then the skill grid (base | alternative per slot).
             var selectionPanel = Panel(lobby, "Selection", H.Center, H.Center, new Vector2(500f, -40f), new Vector2(840f, 660f), "Personnage");
+            // 6 characters: grid of 3 columns x 2 rows.
             var characterRow = H.Rect("Characters", selectionPanel, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(800f, 130f));
-            var row = characterRow.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
-            row.spacing = 8f;
-            row.childControlWidth = row.childControlHeight = true;
-            row.childForceExpandWidth = row.childForceExpandHeight = true;
-            var characterTemplate = Card(characterRow, "CharacterTemplate", new Vector2(194f, 130f), 64f);
+            var characterGrid = characterRow.gameObject.AddComponent<UnityEngine.UI.GridLayoutGroup>();
+            characterGrid.cellSize = new Vector2(261f, 61f);
+            characterGrid.spacing = new Vector2(8f, 8f);
+            characterGrid.constraint = UnityEngine.UI.GridLayoutGroup.Constraint.FixedColumnCount;
+            characterGrid.constraintCount = 3;
+            var characterTemplate = Card(characterRow, "CharacterTemplate", new Vector2(261f, 61f), 48f);
 
             H.Text(H.Rect("SkillsHeader", selectionPanel, H.TopLeft, H.TopLeft, new Vector2(20f, -200f), new Vector2(800f, 34f)), null,
                 "Compétences  <size=70%><alpha=#A0>(de base | alternative)</size>", 24f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.BottomLeft);

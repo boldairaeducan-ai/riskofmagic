@@ -78,6 +78,7 @@ namespace RiskOfMagic.UI
         public Color damageArcane = new(0.8f, 0.5f, 1f);
         public Color damagePoison = new(0.5f, 1f, 0.4f);
         public Color damageBleed = new(0.85f, 0.15f, 0.15f);
+        public Color damageHoly = new(1f, 0.92f, 0.55f);
         public Color damageCritical = new(1f, 0.85f, 0.2f);
         public Color damageTaken = new(1f, 0.25f, 0.25f);
         [Min(1f)] public float damageFontSize = 34f;
@@ -153,6 +154,7 @@ namespace RiskOfMagic.UI
                 DamageType.Arcane => damageArcane,
                 DamageType.Poison => damagePoison,
                 DamageType.Bleed => damageBleed,
+                DamageType.Holy => damageHoly,
                 _ => damagePhysical
             };
         }

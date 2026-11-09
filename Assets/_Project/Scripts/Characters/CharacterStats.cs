@@ -80,9 +80,9 @@ namespace RiskOfMagic.Characters
         }
 
         /// <summary>Server side. coefficient 2.5 = "250% damage".</summary>
-        public float RollDamage(float coefficient, out bool isCritical)
+        public float RollDamage(float coefficient, out bool isCritical, bool forceCritical = false)
         {
-            isCritical = Random.value < CritChance;
+            isCritical = forceCritical || Random.value < CritChance;
             return BaseDamage * DamageMultiplier * coefficient * (isCritical ? 2f : 1f);
         }
     }

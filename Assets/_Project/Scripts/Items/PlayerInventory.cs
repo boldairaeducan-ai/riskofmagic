@@ -161,6 +161,23 @@ namespace RiskOfMagic.Items
                 if (item != null)
                     amount = item.ModifyOutgoingDamage(avatar, victim, info, amount, stacks);
             }
+
+            // Shadow: the first hit out of stealth is doubled, an ambush makes the next hit a critical (x2).
+            var status = avatar.Status;
+            if (status != null && info.ProcCoefficient > 0f)
+            {
+                if (status.Has(StatusType.Stealth))
+                {
+                    amount *= 2f;
+                    status.Clear(StatusType.Stealth);
+                }
+                if (status.Has(StatusType.Ambush))
+                {
+                    if (!info.IsCritical)
+                        amount *= 2f;
+                    status.Clear(StatusType.Ambush);
+                }
+            }
             return amount;
         }
 

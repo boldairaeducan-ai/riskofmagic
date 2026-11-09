@@ -66,10 +66,12 @@ namespace RiskOfMagic.Editor
         private sealed class ProjectileSet
         {
             public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
-                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb;
+                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb,
+                HolyHammer, RadiantWave, ThrowingDagger;
             public DotEffect Poison;
             public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
-                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb };
+                FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb,
+                HolyHammer, RadiantWave, ThrowingDagger };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -285,7 +287,11 @@ namespace RiskOfMagic.Editor
                 ExplosiveArrow = ProjectileAsset("Projectile_ExplosiveArrow", new Color(1f, 0.7f, 0.3f), 0.25f, vfx.Explosion),
                 Axe = ProjectileAsset("Projectile_Axe", new Color(0.7f, 0.7f, 0.75f), 0.5f, vfx.Impact),
                 ArcaneShard = ProjectileAsset("Projectile_ArcaneShard", new Color(0.85f, 0.55f, 1f), 0.2f, vfx.Impact),
-                ArcaneFrostOrb = ProjectileAsset("Projectile_ArcaneFrostOrb", new Color(0.55f, 0.85f, 1f), 0.7f, vfx.FrostBurst)
+                ArcaneFrostOrb = ProjectileAsset("Projectile_ArcaneFrostOrb", new Color(0.55f, 0.85f, 1f), 0.7f, vfx.FrostBurst),
+                // Paladin / Shadow
+                HolyHammer = ProjectileAsset("Projectile_HolyHammer", new Color(1f, 0.9f, 0.5f), 0.55f, vfx.Impact),
+                RadiantWave = ProjectileAsset("Projectile_RadiantWave", new Color(1f, 0.95f, 0.7f), 0.9f, vfx.Impact),
+                ThrowingDagger = ProjectileAsset("Projectile_ThrowingDagger", new Color(0.6f, 0.6f, 0.7f), 0.15f, vfx.Impact)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -333,7 +339,16 @@ namespace RiskOfMagic.Editor
             set.ArcaneFrostOrb.maxRange = 45f;
             set.FrostArrow.freezeDuration = 1.5f;
             set.ArcaneFrostOrb.freezeDuration = 2f;
-            foreach (var alternative in new[] { set.FireArrow, set.FrostArrow, set.ExplosiveArrow, set.Axe, set.ArcaneShard, set.ArcaneFrostOrb })
+            Configure(set.HolyHammer, speed: 55f, gravity: 0f, lifetime: 1.5f, radius: 0.35f);
+            Configure(set.RadiantWave, speed: 30f, gravity: 0f, lifetime: 0.4f, radius: 0.9f, pierce: 20);
+            Configure(set.ThrowingDagger, speed: 85f, gravity: 2f, lifetime: 1.5f, radius: 0.12f);
+            set.HolyHammer.maxRange = 50f;
+            set.HolyHammer.freezeDuration = 1f;
+            set.RadiantWave.maxRange = 8f;
+            set.ThrowingDagger.maxRange = 45f;
+            set.ThrowingDagger.backstabCritical = true;
+            foreach (var alternative in new[] { set.FireArrow, set.FrostArrow, set.ExplosiveArrow, set.Axe, set.ArcaneShard, set.ArcaneFrostOrb,
+                         set.HolyHammer, set.RadiantWave, set.ThrowingDagger })
                 EditorUtility.SetDirty(alternative);
 
             // Strict max ranges (m) for ranged attacks.
@@ -367,6 +382,7 @@ namespace RiskOfMagic.Editor
             p.maxRange = 0f;
             p.dot = null;
             p.freezeDuration = 0f;
+            p.backstabCritical = false;
             EditorUtility.SetDirty(p);
         }
 
@@ -562,8 +578,98 @@ namespace RiskOfMagic.Editor
                 Character("Character_Druid", "Druide", "Corps à corps empoisonné, poisons cumulables.", new Color(0.25f, 0.55f, 0.2f),
                     100f, Movement("Movement_Druid", 7.2f, 1), claws, cloud, leap, bloom)
             };
+            BuildPaladinAndShadow(characters, p, vfx);
             BuildAlternativeSkills(characters, p, vfx);
             return characters;
+        }
+
+        /// <summary>Paladin (frontline support, holy damage) and Ombre (stealth assassin, backstabs).</summary>
+        private static void BuildPaladinAndShadow(List<CharacterDefinition> characters, ProjectileSet p, VfxSet vfx)
+        {
+            // Paladin
+            var hammer = Skill<MeleeComboSkill>("Paladin_BlessedHammer", "Marteau béni",
+                "2 coups (120% / 180%) ; chaque coup qui touche soigne de 3 PV les alliés à 10 m.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.6f, attackSpeed: true);
+            hammer.damageType = DamageType.Holy;
+            hammer.swingVfx = vfx.Swing;
+            hammer.healAlliesOnHit = 3f;
+            hammer.healRadius = 10f;
+            hammer.comboResetTime = 1.1f;
+            hammer.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 1.2f, radius = 2f, reach = 1.8f, hitDelay = 0.15f },
+                new MeleeComboSkill.Step { damageCoefficient = 1.8f, radius = 2.3f, reach = 1.9f, hitDelay = 0.2f, lunge = 3f }
+            };
+
+            var judgment = Skill<ProjectileSkill>("Paladin_Judgment", "Jugement", "Marteau de lumière : 300%, étourdit 1 s.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0.35f);
+            judgment.projectile = p.HolyHammer;
+            judgment.damageType = DamageType.Holy;
+            judgment.damageCoefficient = 3f;
+
+            var aegis = Skill<AegisSkill>("Paladin_Aegis", "Égide", "Vous et les alliés à 10 m : -50% de dégâts subis pendant 4 s.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
+            aegis.radius = 10f;
+            aegis.damageReduction = 0.5f;
+            aegis.duration = 4f;
+            aegis.pulseVfx = vfx.RallyPulse;
+            aegis.canCastWhileBusy = true;
+
+            var consecration = Skill<AreaSkill>("Paladin_Consecration", "Sol consacré",
+                "Zone de 8 m pendant 6 s : alliés soignés de 5% PV/s, ennemis 60% de dégâts/s.",
+                SkillActivationMode.Press, cooldown: 18f, cast: 0.4f);
+            consecration.center = AreaCenter.Caster;
+            consecration.followCaster = false;
+            consecration.radius = 8f;
+            consecration.ticks = 12;
+            consecration.tickInterval = 0.5f;
+            consecration.damageCoefficient = 0.3f;
+            consecration.damageType = DamageType.Holy;
+            consecration.allyHealPerTick = 0.025f;
+            consecration.tickVfx = vfx.RallyPulse;
+
+            // Shadow
+            var daggers = Skill<MeleeComboSkill>("Shadow_TwinDaggers", "Dagues jumelles",
+                "3 coups rapides (70/70/110%). Critique garanti dans le dos.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.28f, attackSpeed: true);
+            daggers.swingVfx = vfx.Swing;
+            daggers.backstabCritical = true;
+            daggers.comboResetTime = 0.7f;
+            daggers.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 0.7f, radius = 1.3f, reach = 1.4f, hitDelay = 0.05f },
+                new MeleeComboSkill.Step { damageCoefficient = 0.7f, radius = 1.3f, reach = 1.4f, hitDelay = 0.05f },
+                new MeleeComboSkill.Step { damageCoefficient = 1.1f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f, lunge = 4f }
+            };
+
+            var throwing = Skill<ProjectileSkill>("Shadow_ThrowingDaggers", "Dagues de lancer", "3 dagues en éventail : 3 × 100%. Critique garanti dans le dos.",
+                SkillActivationMode.Press, cooldown: 4f, cast: 0.25f);
+            throwing.projectile = p.ThrowingDagger;
+            throwing.damageCoefficient = 1f;
+            throwing.count = 3;
+            throwing.spreadAngle = 14f;
+
+            var veil = Skill<StealthSkill>("Shadow_ShadowVeil", "Voile d'ombre",
+                "Invisible 3 s : les ennemis vous perdent de vue, +30% de vitesse. La première attaque inflige +100%.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0f);
+            veil.duration = 3f;
+            veil.canCastWhileBusy = true;
+            veil.keepsSprint = true;
+            veil.castVfx = vfx.Blink;
+
+            var mark = Skill<MarkSkill>("Shadow_DeathMark", "Marque de mort",
+                "La cible visée subit +50% de dégâts de toutes sources pendant 6 s. Si elle meurt, la recharge est réinitialisée.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
+            mark.duration = 6f;
+            mark.markVfx = vfx.CursePulse;
+
+            foreach (var skill in new SkillDefinition[] { hammer, judgment, aegis, consecration, daggers, throwing, veil, mark })
+                EditorUtility.SetDirty(skill);
+
+            characters.Add(Character("Character_Paladin", "Paladin", "Soutien de première ligne : soins, protection, dégâts sacrés.",
+                new Color(0.95f, 0.85f, 0.45f), 140f, Movement("Movement_Paladin", 6.6f, 1), hammer, judgment, aegis, consecration));
+            characters.Add(Character("Character_Shadow", "Ombre", "Assassin furtif : invisibilité, critiques dans le dos, marque.",
+                new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 8f, 2), daggers, throwing, veil, mark));
         }
 
         /// <summary>One alternative per slot and character (locked by challenges, chosen in the lobby).</summary>
@@ -724,6 +830,89 @@ namespace RiskOfMagic.Editor
             SetAlternatives(characters[1], hammer, axe, parry, warCry);
             SetAlternatives(characters[2], shards, frostOrb, transfer, voidBeam);
             SetAlternatives(characters[3], thorns, brambles, root, epidemic);
+
+            // Paladin
+            var radiant = Skill<MeleeComboSkill>("Paladin_RadiantBlade", "Lame radieuse",
+                "3 coups (90/90/150%) ; le 3e projette une onde de lumière perforante (8 m, 150%).",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.45f, attackSpeed: true);
+            radiant.damageType = DamageType.Holy;
+            radiant.swingVfx = vfx.Swing;
+            radiant.comboResetTime = 0.9f;
+            radiant.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.7f, reach = 1.7f, hitDelay = 0.1f },
+                new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.7f, reach = 1.7f, hitDelay = 0.1f },
+                new MeleeComboSkill.Step { damageCoefficient = 1.5f, radius = 2f, reach = 1.8f, hitDelay = 0.12f, projectile = p.RadiantWave, projectileCoefficient = 1.5f }
+            };
+
+            var shieldThrow = Skill<ChainLightningSkill>("Paladin_ShieldThrow", "Bouclier projeté", "Le bouclier ricoche sur 4 ennemis : 200% chacun.",
+                SkillActivationMode.Press, cooldown: 6f, cast: 0.3f);
+            shieldThrow.range = 35f;
+            shieldThrow.maxBounces = 3;
+            shieldThrow.bounceRadius = 10f;
+            shieldThrow.damageType = DamageType.Holy;
+            shieldThrow.damageCoefficient = 2f;
+            shieldThrow.bounceFalloff = 1f;
+            shieldThrow.boltVfx = vfx.Lightning;
+
+            var crusade = Skill<DashSkill>("Paladin_CrusaderCharge", "Charge du croisé",
+                "Ruée de 12 m : 200% et recul aux ennemis, soigne de 10% les alliés traversés.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
+            crusade.direction = DashDirection.AimFlat;
+            crusade.speed = 30f;
+            crusade.duration = 0.4f;
+            crusade.damageCoefficient = 2f;
+            crusade.damageType = DamageType.Holy;
+            crusade.damageRadius = 2f;
+            crusade.contactKnockbackDistance = 4f;
+            crusade.allyHealOnContact = 0.1f;
+            crusade.castVfx = vfx.DashBurst;
+            crusade.ownerFovKick = 10f;
+
+            var intervention = Skill<DivineInterventionSkill>("Paladin_DivineIntervention", "Intervention divine",
+                "Relève les alliés à terre à 30 m (50% PV) et les protège 3 s. Seul : vous soigne de 50%.",
+                SkillActivationMode.Press, cooldown: 60f, cast: 0.5f);
+            intervention.reviveVfx = vfx.ShieldPulse;
+
+            // Shadow
+            var bleed = Dot("Dot_Bleed", DamageType.Bleed, tickFraction: 0.4f, interval: 0.5f, duration: 3f, maxStacks: 20);
+            var bleedingBlades = Skill<MeleeComboSkill>("Shadow_BleedingBlades", "Lames saignantes", "2 coups (90/120%) qui font saigner.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
+            bleedingBlades.swingVfx = vfx.Swing;
+            bleedingBlades.dot = bleed;
+            bleedingBlades.backstabCritical = true;
+            bleedingBlades.steps = new[]
+            {
+                new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.4f, reach = 1.5f, hitDelay = 0.06f },
+                new MeleeComboSkill.Step { damageCoefficient = 1.2f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f }
+            };
+
+            var smoke = Skill<AreaSkill>("Shadow_SmokeBomb", "Fumigène", "Nuage de 6 m : 150%, ennemis désorientés 2 s.",
+                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
+            smoke.center = AreaCenter.AimPoint;
+            smoke.maxRange = 25f;
+            smoke.radius = 6f;
+            smoke.ticks = 1;
+            smoke.damageCoefficient = 1.5f;
+            smoke.freezeDuration = 2f;
+            smoke.tickVfx = vfx.Area;
+
+            var shadowStep = Skill<ShadowStepSkill>("Shadow_ShadowStep", "Pas de l'ombre",
+                "Téléportation dans le dos de la cible visée (20 m) ; le coup suivant est un critique garanti.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0f);
+            shadowStep.range = 20f;
+            shadowStep.vfx = vfx.Blink;
+            shadowStep.canCastWhileBusy = true;
+
+            var bladeDance = Skill<BladeDanceSkill>("Shadow_BladeDance", "Danse des lames",
+                "1,5 s invulnérable en frappant 8 fois tous les ennemis à 6 m (8 × 120%).",
+                SkillActivationMode.Press, cooldown: 14f, cast: 0.2f);
+            bladeDance.hitVfx = vfx.Swing;
+
+            foreach (var skill in new SkillDefinition[] { radiant, shieldThrow, crusade, intervention, bleedingBlades, smoke, shadowStep, bladeDance })
+                EditorUtility.SetDirty(skill);
+            SetAlternatives(characters[4], radiant, shieldThrow, crusade, intervention);
+            SetAlternatives(characters[5], bleedingBlades, smoke, shadowStep, bladeDance);
         }
 
         private const string ChallengesFolder = Configs + "/Challenges";
@@ -736,6 +925,8 @@ namespace RiskOfMagic.Editor
             var warrior = characters[1];
             var arcanist = characters[2];
             var druid = characters[3];
+            var paladin = characters[4];
+            var shadow = characters[5];
             ItemDefinition Find(string file) => items.Find(i => i != null && i.name == file);
 
             var list = new List<ChallengeDefinition>
@@ -768,7 +959,19 @@ namespace RiskOfMagic.Editor
                 Challenge("Alt_Druid_Primary", "Druide : prédateur", "Avec le Druide, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, druid, druid.primaryAlt),
                 Challenge("Alt_Druid_Secondary", "Druide : premiers pas", "Avec le Druide, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, druid, druid.secondaryAlt),
                 Challenge("Alt_Druid_Utility", "Druide : enraciné", "Avec le Druide, atteindre l'étape 5.", ChallengeStat.MaxStage, 5, druid, druid.utilityAlt),
-                Challenge("Alt_Druid_Special", "Druide : pestilence", "Avec le Druide, empoisonner 500 ennemis (cumulé).", ChallengeStat.PoisonedEnemies, 500, druid, druid.specialAlt)
+                Challenge("Alt_Druid_Special", "Druide : pestilence", "Avec le Druide, empoisonner 500 ennemis (cumulé).", ChallengeStat.PoisonedEnemies, 500, druid, druid.specialAlt),
+
+                Challenge("Unlock_Paladin", "Croisade", "Atteindre l'étape 5.", ChallengeStat.MaxStage, 5, null, paladin),
+                Challenge("Unlock_Shadow", "Mille lames", "Tuer 1 000 ennemis (cumulé).", ChallengeStat.Kills, 1000, null, shadow),
+                Challenge("Alt_Paladin_Primary", "Paladin : premiers pas", "Avec le Paladin, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, paladin, paladin.primaryAlt),
+                Challenge("Alt_Paladin_Secondary", "Paladin : justicier", "Avec le Paladin, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, paladin, paladin.secondaryAlt),
+                Challenge("Alt_Paladin_Utility", "Paladin : rempart",
+                    "Avec le Paladin, survivre à un événement de téléporteur sans être mis à terre.", ChallengeStat.TeleporterEventsWithoutDown, 1, paladin, paladin.utilityAlt),
+                Challenge("Alt_Paladin_Special", "Paladin : élu", "Avec le Paladin, vaincre un boss.", ChallengeStat.BossKills, 1, paladin, paladin.specialAlt),
+                Challenge("Alt_Shadow_Primary", "Ombre : premiers pas", "Avec l'Ombre, atteindre l'étape 3.", ChallengeStat.MaxStage, 3, shadow, shadow.primaryAlt),
+                Challenge("Alt_Shadow_Secondary", "Ombre : chasseuse", "Avec l'Ombre, tuer 300 ennemis (cumulé).", ChallengeStat.Kills, 300, shadow, shadow.secondaryAlt),
+                Challenge("Alt_Shadow_Utility", "Ombre : insaisissable", "Avec l'Ombre, terminer une étape sans être mise à terre.", ChallengeStat.StagesWithoutDown, 1, shadow, shadow.utilityAlt),
+                Challenge("Alt_Shadow_Special", "Ombre : exécutrice", "Avec l'Ombre, tuer 20 élites (cumulé).", ChallengeStat.EliteKills, 20, shadow, shadow.specialAlt)
             };
             return list;
         }

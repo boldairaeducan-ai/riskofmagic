@@ -113,6 +113,11 @@ namespace RiskOfMagic.Combat.Projectiles
                         var info = damage;
                         info.Point = point;
                         info.Direction = direction;
+                        if (definition.backstabCritical && !info.IsCritical && RiskOfMagic.Skills.SkillContext.IsBehind(target.Health.transform, direction))
+                        {
+                            info.Amount *= 2f;
+                            info.IsCritical = true;
+                        }
                         target.ApplyDamage(info);
                         if (definition.dot != null)
                             DotSystem.Apply(target.Health, definition.dot, info);

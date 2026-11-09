@@ -238,6 +238,28 @@ namespace RiskOfMagic.Skills
             SkillExecuted?.Invoke((SkillSlot)slotIndex, definition);
         }
 
+        /// <summary>Server: refills the slot holding this skill, on the server and on the owner (cooldown reset).</summary>
+        public void RefillSkill(SkillDefinition definition)
+        {
+            if (!IsServer)
+                return;
+            for (int i = 0; i < SlotCount; i++)
+            {
+                if (slots[i] == null || slots[i].Definition != definition)
+                    continue;
+                slots[i].Refill();
+                if (!IsOwner)
+                    RefillRpc((byte)i);
+            }
+        }
+
+        [Rpc(SendTo.Owner)]
+        private void RefillRpc(byte slotIndex)
+        {
+            if (slotIndex < SlotCount)
+                slots[slotIndex]?.Refill();
+        }
+
         public override void OnNetworkDespawn() => StopAllCoroutines();
     }
 }

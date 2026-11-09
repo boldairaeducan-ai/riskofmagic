@@ -35,9 +35,9 @@ namespace RiskOfMagic.Skills
         public Vector3 BodyCenter => Transform.position + Vector3.up;
 
         /// <summary>Server side. coefficient 2.5 = 250% of base damage.</summary>
-        public DamageInfo CreateDamage(float coefficient, DamageType type, Vector3 point = default, Vector3 direction = default)
+        public DamageInfo CreateDamage(float coefficient, DamageType type, Vector3 point = default, Vector3 direction = default, bool forceCritical = false)
         {
-            float amount = Stats.RollDamage(coefficient, out bool isCritical);
+            float amount = Stats.RollDamage(coefficient, out bool isCritical, forceCritical);
             var info = DamageInfo.Create(amount, type, NetworkObject, Team, point, direction);
             info.IsCritical = isCritical;
             return info;
@@ -68,5 +68,24 @@ namespace RiskOfMagic.Skills
         }
 
         public bool IsSelf(Collider collider) => collider.transform.IsChildOf(Transform);
+
+        /// <summary>True when the attacker comes from behind the target (target facing roughly the same way).</summary>
+        public static bool IsBehind(Transform target, Vector3 attackDirection)
+        {
+            Vector3 facing = Vector3.ProjectOnPlane(target.forward, Vector3.up);
+            Vector3 direction = Vector3.ProjectOnPlane(attackDirection, Vector3.up);
+            return facing.sqrMagnitude > 0.001f && direction.sqrMagnitude > 0.001f && Vector3.Dot(facing.normalized, direction.normalized) > 0.3f;
+        }
+
+        /// <summary>Server: heals every standing player within radius of center.</summary>
+        public void HealAllies(Vector3 center, float radius, float flat, float maxHealthFraction = 0f)
+        {
+            foreach (var player in PlayerAvatar.All)
+            {
+                if (player == null || !player.IsStanding || (player.transform.position - center).sqrMagnitude > radius * radius)
+                    continue;
+                player.Health.Heal(flat + player.Health.Max * maxHealthFraction);
+            }
+        }
     }
 }

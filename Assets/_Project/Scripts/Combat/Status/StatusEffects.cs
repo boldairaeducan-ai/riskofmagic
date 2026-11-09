@@ -25,7 +25,13 @@ namespace RiskOfMagic.Combat
         /// <summary>Damage bonus aura (Bannière de guerre).</summary>
         Banner,
         /// <summary>+1% damage per stack until the end of the stage (Couronne des âmes).</summary>
-        SoulHarvest
+        SoulHarvest,
+        /// <summary>Invisible to enemies, faster; the first hit dealt is boosted and ends it (Voile d'ombre).</summary>
+        Stealth,
+        /// <summary>Takes more damage from every source (Marque de mort).</summary>
+        Marked,
+        /// <summary>The next hit dealt is a guaranteed critical (Pas de l'ombre).</summary>
+        Ambush
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -54,6 +60,8 @@ namespace RiskOfMagic.Combat
         [SerializeField] private float chillSpeedMultiplier = 0.7f;
         [SerializeField] private float channelingSpeedMultiplier = 0.5f;
         [SerializeField] private float bannerDamageBonus = 0.2f;
+        [SerializeField] private float stealthSpeedBonus = 0.3f;
+        [SerializeField] private float markedDamageTakenMultiplier = 1.5f;
 
         [Header("Buffs")]
         [SerializeField] private float rallyBonus = 0.4f;
@@ -73,7 +81,8 @@ namespace RiskOfMagic.Combat
                                               * (1f + GetStacks(StatusType.SoulHarvest) / 100f);
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f
             : (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
-              * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus);
+              * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus)
+              * (Has(StatusType.Stealth) ? 1f + stealthSpeedBonus : 1f);
         public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus)
                                               * (1f + GetStacks(StatusType.Adrenaline) / 100f);
 
@@ -136,7 +145,7 @@ namespace RiskOfMagic.Combat
         }
 
         public float ModifyIncomingDamage(Health self, in DamageInfo info, float amount)
-            => Has(StatusType.Curse) ? amount * curseDamageTakenMultiplier : amount;
+            => amount * (Has(StatusType.Curse) ? curseDamageTakenMultiplier : 1f) * (Has(StatusType.Marked) ? markedDamageTakenMultiplier : 1f);
 
         public bool TryPreventDeath(Health self, in DamageInfo info, out float healthFraction)
         {

@@ -30,6 +30,10 @@ namespace RiskOfMagic.Skills.Types
         [Min(0f)] public float tickInterval = 0.2f;
         public bool hitOncePerTarget;
         [Tooltip("Optional damage over time applied on each tick.")] public DotEffect dot;
+        [Min(0f), Tooltip("Enemies in the area are frozen (disoriented) this long on each tick.")] public float freezeDuration;
+
+        [Header("Allies")]
+        [Range(0f, 1f), Tooltip("Players in the area heal this fraction of their max health on each tick.")] public float allyHealPerTick;
 
         [Header("Knockback (enemies)")]
         [Min(0f), Tooltip("Distance enemies are pushed away from the center on each tick.")] public float knockbackDistance;
@@ -88,6 +92,12 @@ namespace RiskOfMagic.Skills.Types
                     yield break;
                 Vector3 tickCenter = GetCenter(context, target);
                 context.DamageArea(tickCenter + Vector3.up * 0.5f, radius, damageCoefficient, damageType, alreadyHit, dot);
+                if (freezeDuration > 0f)
+                    foreach (var health in SkillUtility.FindHostiles(context, tickCenter + Vector3.up * 0.5f, radius))
+                        if (health.TryGetComponent(out RiskOfMagic.Enemies.EnemyActor enemy))
+                            enemy.Freeze(freezeDuration);
+                if (allyHealPerTick > 0f)
+                    context.HealAllies(tickCenter, radius, 0f, allyHealPerTick);
                 if (knockbackDistance > 0f)
                     Knockback(context, tickCenter);
                 if (i < ticks - 1)

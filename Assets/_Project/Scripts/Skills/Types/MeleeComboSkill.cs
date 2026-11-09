@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Vfx;
 using UnityEngine;
@@ -18,6 +19,8 @@ namespace RiskOfMagic.Skills.Types
             [Min(0f)] public float reach;
             [Min(0f)] public float hitDelay;
             [Min(0f)] public float lunge;
+            [Tooltip("Optional projectile fired along the aim with this step (radiant wave).")] public RiskOfMagic.Combat.Projectiles.ProjectileDefinition projectile;
+            [Min(0f)] public float projectileCoefficient;
         }
 
         public DamageType damageType = DamageType.Physical;
@@ -30,6 +33,9 @@ namespace RiskOfMagic.Skills.Types
         [Min(0f)] public float comboResetTime = 0.9f;
         [Tooltip("Optional damage over time applied by every hit.")] public DotEffect dot;
         [Min(0f), Tooltip("Enemies hit are pushed this far (0 = none).")] public float knockbackDistance;
+        [Tooltip("Hits from behind are guaranteed criticals (per target).")] public bool backstabCritical;
+        [Min(0f), Tooltip("Flat heal for allies (caster included) when a swing hits something.")] public float healAlliesOnHit;
+        [Min(0f)] public float healRadius = 10f;
         public GameObject swingVfx;
 
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
@@ -48,6 +54,8 @@ namespace RiskOfMagic.Skills.Types
                 Vector3 flat = Vector3.ProjectOnPlane(activation.Direction, Vector3.up).normalized;
                 context.Motor.AddImpulse(flat * step.lunge);
             }
+            if (step.projectile != null)
+                context.PredictProjectile(step.projectile, activation.Origin + activation.Direction * 0.8f, activation.Direction);
             SpawnSwing(activation, step);
         }
 
@@ -63,8 +71,30 @@ namespace RiskOfMagic.Skills.Types
             if (!context.Avatar.IsAlive)
                 yield break;
             Vector3 center = context.Look.CameraPivot.position + direction * step.reach;
-            context.DamageArea(center, step.radius, step.damageCoefficient, damageType, null, dot);
+            int hits;
+            if (backstabCritical)
+            {
+                hits = 0;
+                foreach (var target in new List<Health>(SkillUtility.FindHostiles(context, center, step.radius)))
+                {
+                    Vector3 toTarget = target.transform.position - context.Transform.position;
+                    var info = context.CreateDamage(step.damageCoefficient, damageType, TargetFinder.Center(target), direction,
+                        SkillContext.IsBehind(target.transform, toTarget));
+                    target.ApplyDamage(info);
+                    if (dot != null)
+                        DotSystem.Apply(target, dot, info);
+                    hits++;
+                }
+            }
+            else
+            {
+                hits = context.DamageArea(center, step.radius, step.damageCoefficient, damageType, null, dot);
+            }
             SkillUtility.Knockback(context, context.Transform.position, step.reach + step.radius, knockbackDistance);
+            if (hits > 0 && healAlliesOnHit > 0f)
+                context.HealAllies(context.Transform.position, healRadius, healAlliesOnHit);
+            if (step.projectile != null)
+                context.FireProjectile(step.projectile, context.Look.CameraPivot.position + direction * 0.8f, direction, step.projectileCoefficient, damageType);
         }
 
         private Step GetStep(in SkillActivation activation) => steps[Mathf.Min(activation.Step, steps.Length - 1)];

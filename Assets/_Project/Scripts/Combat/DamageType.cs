@@ -8,6 +8,7 @@ namespace RiskOfMagic.Combat
         Lightning = 3,
         Arcane = 4,
         Poison = 5,
-        Bleed = 6
+        Bleed = 6,
+        Holy = 7
     }
 }

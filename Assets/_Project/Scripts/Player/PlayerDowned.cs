@@ -113,6 +113,17 @@ namespace RiskOfMagic.Player
             downed.Value = false;
         }
 
+        /// <summary>Server only: instant revive with a health fraction (Intervention divine).</summary>
+        public void ReviveNow(float healthFraction)
+        {
+            if (!IsServer || !IsDowned)
+                return;
+            revivers.Clear();
+            reviveProgress.Value = 0f;
+            downed.Value = false;
+            avatar.Health.Heal(avatar.Health.Max * Mathf.Clamp01(healthFraction));
+        }
+
         private void Revive()
         {
             revivers.Clear();
