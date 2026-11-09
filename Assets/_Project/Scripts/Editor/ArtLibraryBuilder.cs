@@ -42,6 +42,7 @@ namespace RiskOfMagic.Editor
             { StatusType.Stealth, ("Furtivité", true, false) },
             { StatusType.Marked, ("Marqué", true, true) },
             { StatusType.Ambush, ("Embuscade", true, false) },
+            { StatusType.RuneBlessing, ("Bénédiction runique", true, false) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()

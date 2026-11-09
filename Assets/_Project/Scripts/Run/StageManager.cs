@@ -201,6 +201,7 @@ namespace RiskOfMagic.Run
                 {
                     player.Status.Clear(StatusType.Withered); // cursed chests last one stage
                     player.Status.Clear(StatusType.SoulHarvest); // Couronne des âmes: per stage
+                    player.Status.Clear(StatusType.RuneBlessing); // map secret bonus: per stage
                 }
                 if (!player.IsAlive)
                     player.Health.Revive(1f);

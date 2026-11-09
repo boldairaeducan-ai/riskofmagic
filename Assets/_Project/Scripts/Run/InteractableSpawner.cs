@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using RiskOfMagic.Maps;
 using RiskOfMagic.Run.MapEvents;
+using RiskOfMagic.Run.Secrets;
 using Unity.Netcode;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -31,6 +32,9 @@ namespace RiskOfMagic.Run
         [SerializeField] private List<Entry> entries = new();
         [SerializeField, Tooltip("Count, weights and toggles come from Resources/MapEventsConfig.")]
         private List<MapEventEntry> mapEvents = new();
+        [Header("Map secret (needs a MapSecret + SecretAltar/SecretFragment SpawnSpots in the map)")]
+        [SerializeField] private NetworkObject secretAltarPrefab;
+        [SerializeField] private NetworkObject secretFragmentPrefab;
         [SerializeField, Min(0f)] private float minSpacing = 5f;
         [SerializeField, Min(0f)] private float playerSpawnClearance = 8f;
         [SerializeField, Tooltip("Off when a StageManager drives the stages.")] private bool spawnOnStart;
@@ -81,6 +85,44 @@ namespace RiskOfMagic.Run
                         break;
             }
             SpawnMapEvents(bounds);
+            SpawnSecret();
+        }
+
+        /// <summary>Altar on a random SecretAltar spot + fragments on distinct random SecretFragment spots.</summary>
+        private void SpawnSecret()
+        {
+            var secret = MapSecret.Current;
+            if (secret == null || secretAltarPrefab == null || secretFragmentPrefab == null || Random.value > secret.activeChance)
+                return;
+            if (!SpawnSpot.TryPick(SpawnSpotType.SecretAltar, out var altarPose))
+            {
+                Debug.LogWarning("[InteractableSpawner] MapSecret without any SecretAltar spot on the NavMesh.", this);
+                return;
+            }
+            var fragmentPoses = new List<Pose>();
+            for (int i = 0; i < secret.fragmentCount; i++)
+            {
+                if (!SpawnSpot.TryPick(SpawnSpotType.SecretFragment, out var pose,
+                        p => (p - altarPose.position).sqrMagnitude > 1f && fragmentPoses.TrueForAll(f => (f.position - p).sqrMagnitude > 1f),
+                        snapToNavMesh: false))
+                {
+                    Debug.LogWarning($"[InteractableSpawner] MapSecret needs {secret.fragmentCount} SecretFragment spots (found {fragmentPoses.Count}).", this);
+                    return;
+                }
+                fragmentPoses.Add(pose);
+            }
+
+            var altarInstance = Instantiate(secretAltarPrefab, altarPose.position, altarPose.rotation);
+            if (altarInstance.TryGetComponent(out SecretAltar altar))
+                altar.Setup(fragmentPoses.Count);
+            altarInstance.Spawn(true);
+            spawned.Add(altarInstance);
+            foreach (var pose in fragmentPoses)
+            {
+                var fragment = Instantiate(secretFragmentPrefab, pose.position, pose.rotation);
+                fragment.Spawn(true);
+                spawned.Add(fragment);
+            }
         }
 
         /// <summary>0..N distinct events per stage, weighted (MapEventsConfig).</summary>

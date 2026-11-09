@@ -10,7 +10,11 @@ namespace RiskOfMagic.Maps
     {
         Teleporter,
         Merchant,
-        Interactable
+        Interactable,
+        /// <summary>Hiding place of a secret's rune fragment (MapSecret). Not snapped to the NavMesh.</summary>
+        SecretFragment,
+        /// <summary>Candidate location of the secret's altar (MapSecret).</summary>
+        SecretAltar
     }
 
     /// <summary>
@@ -29,7 +33,7 @@ namespace RiskOfMagic.Maps
         private void OnEnable() => spots.Add(this);
         private void OnDisable() => spots.Remove(this);
 
-        public static bool TryPick(SpawnSpotType type, out Pose pose, Predicate<Vector3> filter = null)
+        public static bool TryPick(SpawnSpotType type, out Pose pose, Predicate<Vector3> filter = null, bool snapToNavMesh = true)
         {
             candidates.Clear();
             foreach (var spot in spots)
@@ -41,6 +45,11 @@ namespace RiskOfMagic.Maps
                 int index = Random.Range(0, candidates.Count);
                 var spot = candidates[index];
                 candidates.RemoveAt(index);
+                if (!snapToNavMesh)
+                {
+                    pose = new Pose(spot.transform.position, spot.transform.rotation);
+                    return true;
+                }
                 if (!NavMesh.SamplePosition(spot.transform.position, out var hit, 3f, NavMesh.AllAreas))
                     continue;
                 pose = new Pose(hit.position, spot.transform.rotation);
@@ -56,6 +65,8 @@ namespace RiskOfMagic.Maps
             {
                 SpawnSpotType.Teleporter => new Color(0.7f, 0.3f, 1f),
                 SpawnSpotType.Merchant => new Color(1f, 0.8f, 0.2f),
+                SpawnSpotType.SecretFragment => new Color(0.3f, 0.9f, 1f),
+                SpawnSpotType.SecretAltar => new Color(1f, 0.35f, 0.8f),
                 _ => new Color(0.3f, 1f, 0.5f)
             };
             Gizmos.DrawWireSphere(transform.position + Vector3.up, 1f);

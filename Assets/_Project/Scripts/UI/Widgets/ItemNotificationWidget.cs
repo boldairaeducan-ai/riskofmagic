@@ -25,12 +25,33 @@ namespace RiskOfMagic.UI
         {
             PlayerInventory.LocalItemGained += Show;
             MetaProgression.ChallengeCompleted += ShowChallenge;
+            HudAnnouncements.Raised += ShowMessage;
         }
 
         private void OnDisable()
         {
             PlayerInventory.LocalItemGained -= Show;
             MetaProgression.ChallengeCompleted -= ShowChallenge;
+            HudAnnouncements.Raised -= ShowMessage;
+        }
+
+        private void ShowMessage(string title, string description, Color color)
+        {
+            if (frame != null)
+                frame.color = color;
+            if (icon != null)
+            {
+                icon.sprite = theme != null ? theme.defaultItemIcon : null;
+                icon.color = color;
+            }
+            if (titleLabel != null)
+            {
+                titleLabel.text = title;
+                titleLabel.color = color;
+            }
+            if (descriptionLabel != null)
+                descriptionLabel.text = description;
+            shownAt = Time.time;
         }
 
         private void ShowChallenge(ChallengeDefinition challenge)

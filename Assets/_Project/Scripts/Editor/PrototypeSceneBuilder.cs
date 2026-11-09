@@ -211,10 +211,16 @@ namespace RiskOfMagic.Editor
             {
                 (MapEventType.PurificationTomb, tomb), (MapEventType.ChallengeAltar, altar), (MapEventType.CursedChest, cursedChest)
             };
+            // Map secrets: rune fragments + altar, placed on the map's SecretFragment/SecretAltar spots (MapSecret).
+            var secretAltar = BuildSecretAltarPrefab();
+            var secretFragment = BuildSecretFragmentPrefab();
+            prefabList.Add(new NetworkPrefab { Prefab = secretAltar });
+            prefabList.Add(new NetworkPrefab { Prefab = secretFragment });
+
             var gameSystems = BuildGameSystemsPrefab(cards, new[]
             {
                 (smallChest, 12), (largeChest, 3), (choiceChest, 3), (barrel, 3), (shrine, 2), (merchant, 1)
-            }, teleporter, mapEvents);
+            }, teleporter, mapEvents, secretAltar, secretFragment);
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
@@ -2276,6 +2282,72 @@ namespace RiskOfMagic.Editor
             return SavePrefab(root, Prefabs + "/MapEvent_ChallengeAltar.prefab");
         }
 
+        private static GameObject BuildSecretAltarPrefab()
+        {
+            var root = new GameObject("SecretAltar");
+            var stone = Mat("M_SecretAltar", new Color(0.22f, 0.22f, 0.27f));
+            var baseBlock = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            baseBlock.name = "Base";
+            baseBlock.transform.SetParent(root.transform, false);
+            baseBlock.transform.localPosition = new Vector3(0f, 0.35f, 0f);
+            baseBlock.transform.localScale = new Vector3(2.2f, 0.7f, 2.2f);
+            baseBlock.GetComponent<Renderer>().sharedMaterial = stone;
+            var stele = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            stele.name = "Stele";
+            stele.transform.SetParent(root.transform, false);
+            stele.transform.localPosition = new Vector3(0f, 1.6f, 0f);
+            stele.transform.localScale = new Vector3(0.9f, 1.9f, 0.35f);
+            stele.GetComponent<Renderer>().sharedMaterial = stone;
+            var runes = new Renderer[3];
+            for (int i = 0; i < runes.Length; i++)
+            {
+                var rune = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                rune.name = $"Rune{i}";
+                Object.DestroyImmediate(rune.GetComponent<Collider>());
+                rune.transform.SetParent(root.transform, false);
+                rune.transform.localPosition = new Vector3((i - 1) * 0.28f, 1.35f + (i % 2) * 0.35f, -0.19f);
+                rune.transform.localScale = new Vector3(0.14f, 0.3f, 0.04f);
+                runes[i] = rune.GetComponent<Renderer>();
+                runes[i].sharedMaterial = Mat("M_SecretRune", Color.white, unlit: true);
+            }
+
+            root.AddComponent<NetworkObject>();
+            var altar = root.AddComponent<RiskOfMagic.Run.Secrets.SecretAltar>();
+            SetProperties(altar, so =>
+            {
+                var list = so.FindProperty("runeRenderers");
+                list.arraySize = runes.Length;
+                for (int i = 0; i < runes.Length; i++)
+                    list.GetArrayElementAtIndex(i).objectReferenceValue = runes[i];
+            });
+            return SavePrefab(root, Prefabs + "/Secret_Altar.prefab");
+        }
+
+        private static GameObject BuildSecretFragmentPrefab()
+        {
+            var root = new GameObject("SecretFragment");
+            var trigger = root.AddComponent<SphereCollider>(); // interaction target
+            trigger.radius = 0.6f;
+            trigger.isTrigger = true; // found by the interaction raycast, never blocks
+            trigger.center = new Vector3(0f, 0.7f, 0f);
+            var visual = new GameObject("Visual").transform;
+            visual.SetParent(root.transform, false);
+            visual.localPosition = new Vector3(0f, 0.7f, 0f);
+            var shard = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            shard.name = "Shard";
+            Object.DestroyImmediate(shard.GetComponent<Collider>());
+            shard.transform.SetParent(visual, false);
+            shard.transform.localRotation = Quaternion.Euler(45f, 0f, 45f);
+            shard.transform.localScale = new Vector3(0.22f, 0.4f, 0.22f);
+            shard.GetComponent<Renderer>().sharedMaterial = Mat("M_SecretFragment", new Color(0.45f, 0.85f, 1f), unlit: true);
+            shard.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+
+            root.AddComponent<NetworkObject>();
+            var fragment = root.AddComponent<RiskOfMagic.Run.Secrets.SecretFragment>();
+            SetProperties(fragment, so => so.FindProperty("visual").objectReferenceValue = visual);
+            return SavePrefab(root, Prefabs + "/Secret_Fragment.prefab");
+        }
+
         private static GameObject BuildCursedChestPrefab()
         {
             var root = new GameObject("CursedChest");
@@ -2300,7 +2372,7 @@ namespace RiskOfMagic.Editor
         }
 
         private static GameObject BuildGameSystemsPrefab(List<SpawnCard> cards, (GameObject prefab, int count)[] entries, GameObject teleporter,
-            (MapEventType type, GameObject prefab)[] mapEvents)
+            (MapEventType type, GameObject prefab)[] mapEvents, GameObject secretAltar, GameObject secretFragment)
         {
             var root = new GameObject("GameSystems");
             root.AddComponent<NetworkObject>();
@@ -2332,6 +2404,8 @@ namespace RiskOfMagic.Editor
                     element.FindPropertyRelative("useSpawnSpots").boolValue = isMerchant;
                     element.FindPropertyRelative("spotType").enumValueIndex = (int)SpawnSpotType.Merchant;
                 }
+                so.FindProperty("secretAltarPrefab").objectReferenceValue = secretAltar.GetComponent<NetworkObject>();
+                so.FindProperty("secretFragmentPrefab").objectReferenceValue = secretFragment.GetComponent<NetworkObject>();
                 var events = so.FindProperty("mapEvents");
                 events.arraySize = mapEvents.Length;
                 for (int i = 0; i < mapEvents.Length; i++)

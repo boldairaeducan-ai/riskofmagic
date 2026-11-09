@@ -31,7 +31,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Takes more damage from every source (Marque de mort).</summary>
         Marked,
         /// <summary>The next hit dealt is a guaranteed critical (Pas de l'ombre).</summary>
-        Ambush
+        Ambush,
+        /// <summary>Map secret reward: more damage until the end of the stage.</summary>
+        RuneBlessing
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -62,6 +64,7 @@ namespace RiskOfMagic.Combat
         [SerializeField] private float bannerDamageBonus = 0.2f;
         [SerializeField] private float stealthSpeedBonus = 0.3f;
         [SerializeField] private float markedDamageTakenMultiplier = 1.5f;
+        [SerializeField] private float runeBlessingDamageBonus = 0.3f;
 
         [Header("Buffs")]
         [SerializeField] private float rallyBonus = 0.4f;
@@ -78,7 +81,8 @@ namespace RiskOfMagic.Combat
         public float MaxHealthMultiplier => Mathf.Max(0.05f, 1f - GetStacks(StatusType.Withered) / 100f);
         public float DamageDealtMultiplier => (Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f)
                                               * (Has(StatusType.Banner) ? 1f + bannerDamageBonus : 1f)
-                                              * (1f + GetStacks(StatusType.SoulHarvest) / 100f);
+                                              * (1f + GetStacks(StatusType.SoulHarvest) / 100f)
+                                              * (Has(StatusType.RuneBlessing) ? 1f + runeBlessingDamageBonus : 1f);
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f
             : (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
               * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus)
