@@ -65,25 +65,73 @@ namespace RiskOfMagic.Editor
             canvasGo.AddComponent<UnityEngine.UI.GraphicRaycaster>();
             var root = (RectTransform)canvasGo.transform;
 
-            H.Text(H.Rect("Title", root, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(1200f, 110f)), null,
+            var screenTitle = H.Text(H.Rect("Title", root, H.TopCenter, H.TopCenter, new Vector2(0f, -60f), new Vector2(1200f, 110f)), null,
                 "RISK OF MAGIC", 84f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
+            screenTitle.gameObject.SetActive(false);
 
-            // Home
-            var home = H.Rect("Home", root, H.Center, H.Center, new Vector2(0f, -40f), new Vector2(460f, 656f));
-            H.Themed(home, HudSprite.Panel, HudColor.Panel);
-            H.VerticalLayout(home.gameObject, 24, 14);
-            var solo = H.Button(home, "SoloButton", "Solo", 60f);
-            var host = H.Button(home, "HostButton", "Créer une partie en ligne", 60f);
-            H.LayoutHeight(H.Text(home, "JoinHeader", "Rejoindre avec un code", 20f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.Left, stretch: false).rectTransform, 28f);
-            var codeField = H.InputField(home, "JoinCode", "ABC123");
+            // Home: last played character on the right, title + text-only vertical menu on a dark band on the left.
+            var home = H.Stretch("Home", root);
+            home.gameObject.AddComponent<CanvasGroup>();
+            home.gameObject.AddComponent<FadeInOnEnable>();
+
+            var heroRect = H.Rect("Hero", home, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-60f, 0f), new Vector2(840f, 1050f));
+            heroRect.gameObject.AddComponent<UnityEngine.UI.RawImage>().raycastTarget = false;
+            var hero = heroRect.gameObject.AddComponent<CharacterPreview>();
+            H.Props(hero, so =>
+            {
+                so.FindProperty("transparentBackground").boolValue = true;
+                so.FindProperty("stagePosition").vector3Value = new Vector3(60f, -500f, 0f);
+                so.FindProperty("resolution").vector2IntValue = new Vector2Int(840, 1050);
+                so.FindProperty("rotationSpeed").floatValue = 12f;
+            });
+            var heroLabel = H.Text(H.Rect("HeroName", home, H.BottomRight, H.BottomRight, new Vector2(-100f, 90f), new Vector2(720f, 130f)), null,
+                string.Empty, 44f, HudFont.Title, HudColor.Text, TextAlignmentOptions.BottomRight);
+
+            var band = H.Rect("Band", home, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(700f, 0f));
+            band.anchorMin = Vector2.zero;
+            band.anchorMax = new Vector2(0f, 1f);
+            band.sizeDelta = new Vector2(700f, 0f);
+            H.Themed(band, null, HudColor.Panel);
+            var fade = H.Rect("Fade", band, new Vector2(1f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(120f, 0f));
+            fade.anchorMin = new Vector2(1f, 0f);
+            fade.anchorMax = Vector2.one;
+            fade.sizeDelta = new Vector2(120f, 0f);
+            H.Themed(fade, null, HudColor.Panel);
+            fade.gameObject.AddComponent<CanvasGroup>().alpha = 0.45f;
+
+            H.Text(H.Rect("GameTitle", home, H.TopLeft, H.TopLeft, new Vector2(110f, -110f), new Vector2(1000f, 110f)), null,
+                "RISK OF MAGIC", 92f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.MidlineLeft);
+            H.Text(H.Rect("Tagline", home, H.TopLeft, H.TopLeft, new Vector2(116f, -218f), new Vector2(900f, 36f)), null,
+                "Roguelite coopératif  ·  1 à 4 joueurs", 22f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineLeft);
+
+            var list = H.Rect("Menu", home, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(92f, -30f), new Vector2(540f, 5f * 72f));
+            H.VerticalLayout(list.gameObject, 0, 6f);
+            var solo = MenuEntry(list, theme, "SoloButton", "Jouer en solo", 40f, 66f);
+            var multiplayer = MenuEntry(list, theme, "MultiplayerButton", "Multijoueur", 40f, 66f);
+            var journal = MenuEntry(list, theme, "JournalButton", "Journal", 40f, 66f);
+            var options = MenuEntry(list, theme, "OptionsButton", "Options", 40f, 66f);
+            var quit = MenuEntry(list, theme, "QuitButton", "Quitter", 40f, 66f);
+
+            // Multiplayer: unfolds next to the list.
+            var online = H.Rect("Multiplayer", home, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(640f, 40f), new Vector2(440f, 300f));
+            H.Themed(online, HudSprite.Panel, HudColor.Panel, raycast: true);
+            online.gameObject.AddComponent<CanvasGroup>();
+            H.Props(online.gameObject.AddComponent<FadeInOnEnable>(), so => so.FindProperty("offset").vector2Value = new Vector2(-16f, 0f));
+            H.VerticalLayout(online.gameObject, 22, 10f);
+            var host = MenuEntry(online, theme, "HostButton", "Créer une partie en ligne", 28f, 50f);
+            H.LayoutHeight(H.Text(online, "JoinHeader", "Rejoindre avec un code", 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.BottomLeft, stretch: false).rectTransform, 30f);
+            var codeField = H.InputField(online, "JoinCode", "Code de la partie");
             codeField.text = string.Empty;
             codeField.characterLimit = 12;
-            var join = H.Button(home, "JoinButton", "Rejoindre", 56f);
-            var journal = H.Button(home, "JournalButton", "Journal", 52f);
-            var options = H.Button(home, "OptionsButton", "Options", 52f);
-            var quit = H.Button(home, "QuitButton", "Quitter", 52f);
-            var status = H.Text(H.Rect("Status", root, H.Center, H.Center, new Vector2(0f, -340f), new Vector2(1000f, 60f)), null,
-                string.Empty, 22f, HudFont.Body, HudColor.Danger, TextAlignmentOptions.Center);
+            var join = MenuEntry(online, theme, "JoinButton", "Rejoindre", 28f, 50f);
+            online.gameObject.SetActive(false);
+
+            var status = H.Text(H.Rect("Status", home, H.BottomLeft, H.BottomLeft, new Vector2(110f, 112f), new Vector2(1000f, 34f)), null,
+                string.Empty, 20f, HudFont.Body, HudColor.Danger, TextAlignmentOptions.MidlineLeft);
+            var profile = H.Text(H.Rect("Profile", home, H.BottomLeft, H.BottomLeft, new Vector2(110f, 64f), new Vector2(1100f, 32f)), null,
+                string.Empty, 19f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineLeft);
+            var version = H.Text(H.Rect("Version", home, H.BottomRight, H.BottomRight, new Vector2(-32f, 24f), new Vector2(300f, 28f)), null,
+                string.Empty, 15f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineRight);
 
             // Lobby
             var lobby = H.Stretch("Lobby", root);
@@ -154,7 +202,14 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("lobbyPrefab").objectReferenceValue = lobbyPrefab.GetComponent<LobbyState>();
                 so.FindProperty("homeScreen").objectReferenceValue = home.gameObject;
+                so.FindProperty("screenTitle").objectReferenceValue = screenTitle.gameObject;
                 so.FindProperty("soloButton").objectReferenceValue = solo;
+                so.FindProperty("multiplayerButton").objectReferenceValue = multiplayer;
+                so.FindProperty("multiplayerPanel").objectReferenceValue = online.gameObject;
+                so.FindProperty("profileLabel").objectReferenceValue = profile;
+                so.FindProperty("versionLabel").objectReferenceValue = version;
+                so.FindProperty("heroPreview").objectReferenceValue = hero;
+                so.FindProperty("heroLabel").objectReferenceValue = heroLabel;
                 so.FindProperty("hostButton").objectReferenceValue = host;
                 so.FindProperty("joinCodeField").objectReferenceValue = codeField;
                 so.FindProperty("joinButton").objectReferenceValue = join;
@@ -290,57 +345,230 @@ namespace RiskOfMagic.Editor
             return menu;
         }
 
-        /// <summary>Options screen: rows are created at runtime by OptionsMenu from the two templates.</summary>
+        /// <summary>
+        /// Options screen (main menu and pause menu): tabs, a scrolling page per tab and the row templates
+        /// (choice, slider, switch) cloned at runtime by OptionsMenu.
+        /// </summary>
         internal static OptionsMenu BuildOptions(RectTransform root)
         {
-            var panel = Panel(root, "Options", H.Center, H.Center, new Vector2(0f, -40f), new Vector2(900f, 900f), "Options");
+            var theme = H.UseTheme();
+            var panel = H.Rect("Options", root, H.Center, H.Center, Vector2.zero, new Vector2(1120f, 820f));
+            H.Themed(panel, HudSprite.Panel, HudColor.Panel, raycast: true);
+            panel.gameObject.AddComponent<CanvasGroup>();
+            H.Props(panel.gameObject.AddComponent<FadeInOnEnable>(), so => so.FindProperty("offset").vector2Value = new Vector2(0f, -18f));
 
-            var content = H.Rect("Content", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -66f), new Vector2(840f, 740f));
-            var layout = content.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
-            layout.spacing = 2f;
-            layout.childControlWidth = layout.childControlHeight = true;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = false;
-            layout.childAlignment = TextAnchor.UpperCenter;
+            H.Text(H.Rect("Title", panel, H.TopLeft, H.TopLeft, new Vector2(48f, -30f), new Vector2(600f, 60f)), null,
+                "Options", 42f, HudFont.Title, HudColor.Text, TextAlignmentOptions.MidlineLeft);
+            H.Text(H.Rect("Shortcuts", panel, H.TopRight, H.TopRight, new Vector2(-48f, -44f), new Vector2(560f, 32f)), null,
+                "Tab / LB · RB : onglet   ·   Échap : retour", 16f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineRight);
 
-            var header = H.Text(content, "HeaderTemplate", "Section", 24f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.BottomLeft, stretch: false);
-            H.LayoutHeight(header.rectTransform, 34f);
+            var tabBar = H.Rect("Tabs", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -100f), new Vector2(1040f, 52f));
+            var tabLayout = tabBar.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            tabLayout.spacing = 4f;
+            tabLayout.childControlWidth = tabLayout.childControlHeight = true;
+            tabLayout.childForceExpandWidth = tabLayout.childForceExpandHeight = true;
+            var tabTemplate = MenuEntry(tabBar, theme, "TabTemplate", "Onglet", 24f, 52f, underline: true).GetComponent<MenuButton>();
+            Line(panel, -156f);
 
-            var row = H.Rect("RowTemplate", content, H.Center, H.Center, Vector2.zero, new Vector2(0f, 34f));
-            H.LayoutHeight(row, 34f);
-            var label = H.Text(H.Rect("Label", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(10f, 0f), new Vector2(420f, 38f)), null,
-                "Option", 20f, HudFont.Body, HudColor.Text, TextAlignmentOptions.MidlineLeft);
-            var previous = H.Button(row, "Previous", "<", 0f);
-            Place(previous, new Vector2(1f, 0.5f), new Vector2(-330f, 0f), new Vector2(44f, 34f));
-            var value = H.Text(H.Rect("Value", row, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-58f, 0f), new Vector2(260f, 38f)), null,
-                "Valeur", 20f, HudFont.Body, HudColor.Accent, TextAlignmentOptions.Center);
-            var next = H.Button(row, "Next", ">", 0f);
-            Place(next, new Vector2(1f, 0.5f), new Vector2(-6f, 0f), new Vector2(44f, 34f));
-            var optionRow = row.gameObject.AddComponent<OptionRow>();
-            H.Props(optionRow, so =>
+            var viewport = H.Rect("Viewport", panel, H.TopCenter, H.TopCenter, new Vector2(0f, -168f), new Vector2(1040f, 470f));
+            viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
+            viewport.gameObject.AddComponent<UnityEngine.UI.Image>().color = Color.clear; // catches the scroll wheel
+            var page = H.Rect("PageTemplate", viewport, H.TopCenter, H.TopCenter, Vector2.zero, new Vector2(0f, 470f));
+            page.anchorMin = new Vector2(0f, 1f);
+            page.anchorMax = Vector2.one;
+            page.sizeDelta = new Vector2(0f, 470f);
+            var pageLayout = page.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
+            pageLayout.spacing = 4f;
+            pageLayout.childControlWidth = pageLayout.childControlHeight = true;
+            pageLayout.childForceExpandWidth = true;
+            pageLayout.childForceExpandHeight = false;
+            page.gameObject.AddComponent<UnityEngine.UI.ContentSizeFitter>().verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+            var scroll = viewport.gameObject.AddComponent<UnityEngine.UI.ScrollRect>();
+            scroll.content = page;
+            scroll.viewport = viewport;
+            scroll.horizontal = false;
+            scroll.scrollSensitivity = 30f;
+            scroll.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped;
+
+            // Row templates (kept outside the page template so pages don't clone them).
+            var templates = H.Rect("Templates", panel, H.Center, H.Center, Vector2.zero, new Vector2(1040f, 56f));
+            templates.gameObject.SetActive(false);
+            var knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+
+            // Choice: label  < value >
+            var choice = Row(templates, theme, "ChoiceTemplate", out var choiceLabel);
+            var previous = H.Button(choice, "Previous", "<", 0f);
+            Place(previous, new Vector2(1f, 0.5f), new Vector2(-340f, 0f), new Vector2(44f, 40f));
+            var value = H.Text(H.Rect("Value", choice, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-62f, 0f), new Vector2(272f, 40f)), null,
+                "Valeur", 21f, HudFont.Body, HudColor.Accent, TextAlignmentOptions.Center);
+            var next = H.Button(choice, "Next", ">", 0f);
+            Place(next, new Vector2(1f, 0.5f), new Vector2(-14f, 0f), new Vector2(44f, 40f));
+            var choiceRow = choice.gameObject.AddComponent<OptionRow>();
+            H.Props(choiceRow, so =>
             {
-                so.FindProperty("label").objectReferenceValue = label;
+                so.FindProperty("label").objectReferenceValue = choiceLabel;
                 so.FindProperty("valueLabel").objectReferenceValue = value;
                 so.FindProperty("previousButton").objectReferenceValue = previous;
                 so.FindProperty("nextButton").objectReferenceValue = next;
             });
 
-            var reset = H.Button(panel, "ResetButton", "Par défaut", 0f);
-            Place(reset, H.BottomCenter, new Vector2(-150f, 24f), new Vector2(260f, 56f));
-            var back = H.Button(panel, "BackButton", "Retour", 0f);
-            Place(back, H.BottomCenter, new Vector2(150f, 24f), new Vector2(260f, 56f));
+            // Slider: label  ━━━●━━  value
+            var sliderRowRect = Row(templates, theme, "SliderTemplate", out var sliderLabel);
+            var sliderRect = H.Rect("Slider", sliderRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-112f, 0f), new Vector2(300f, 28f));
+            var track = H.Rect("Background", sliderRect, H.Center, H.Center, Vector2.zero, new Vector2(0f, 6f));
+            track.anchorMin = new Vector2(0f, 0.5f);
+            track.anchorMax = new Vector2(1f, 0.5f);
+            track.sizeDelta = new Vector2(0f, 6f);
+            H.Themed(track, null, HudColor.BarBackground, raycast: true);
+            var fillArea = H.Stretch("FillArea", track);
+            var fill = H.Stretch("Fill", fillArea);
+            H.Themed(fill, null, HudColor.Accent);
+            var handleArea = H.Stretch("HandleArea", sliderRect);
+            handleArea.offsetMin = new Vector2(10f, 0f);
+            handleArea.offsetMax = new Vector2(-10f, 0f);
+            var handle = H.Rect("Handle", handleArea, H.Center, H.Center, Vector2.zero, new Vector2(22f, 22f));
+            handle.anchorMin = new Vector2(0f, 0f);
+            handle.anchorMax = new Vector2(0f, 1f);
+            handle.sizeDelta = new Vector2(22f, -6f); // the slider drives the x anchors; height = area - 6
+            var handleImage = H.Themed(handle, null, HudColor.Text, raycast: true);
+            handleImage.sprite = knob;
+            var slider = sliderRect.gameObject.AddComponent<UnityEngine.UI.Slider>();
+            slider.fillRect = fill;
+            slider.handleRect = handle;
+            slider.targetGraphic = handleImage;
+            slider.direction = UnityEngine.UI.Slider.Direction.LeftToRight;
+            var colors = slider.colors;
+            colors.highlightedColor = colors.selectedColor = theme.accentColor;
+            colors.pressedColor = theme.accentColor * 0.85f;
+            slider.colors = colors;
+            var sliderValue = H.Text(H.Rect("Value", sliderRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-14f, 0f), new Vector2(88f, 40f)), null,
+                "100%", 21f, HudFont.Body, HudColor.Accent, TextAlignmentOptions.MidlineRight);
+            var sliderRow = sliderRowRect.gameObject.AddComponent<OptionSliderRow>();
+            H.Props(sliderRow, so =>
+            {
+                so.FindProperty("label").objectReferenceValue = sliderLabel;
+                so.FindProperty("valueLabel").objectReferenceValue = sliderValue;
+                so.FindProperty("slider").objectReferenceValue = slider;
+            });
+
+            // Switch: label  Activé (●  )
+            var toggleRowRect = Row(templates, theme, "ToggleTemplate", out var toggleLabel);
+            var switchRect = H.Rect("Switch", toggleRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-14f, 0f), new Vector2(60f, 30f));
+            var switchImage = switchRect.gameObject.AddComponent<UnityEngine.UI.Image>();
+            switchImage.color = theme.barBackgroundColor;
+            var switchButton = switchRect.gameObject.AddComponent<UnityEngine.UI.Button>();
+            switchButton.targetGraphic = switchImage;
+            switchButton.transition = UnityEngine.UI.Selectable.Transition.None;
+            var switchKnob = H.Rect("Knob", switchRect, H.Center, H.Center, Vector2.zero, new Vector2(24f, 24f));
+            H.Themed(switchKnob, null, HudColor.Text).sprite = knob;
+            var state = H.Text(H.Rect("State", toggleRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-90f, 0f), new Vector2(180f, 40f)), null,
+                "Activé", 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineRight);
+            var toggleRow = toggleRowRect.gameObject.AddComponent<OptionToggleRow>();
+            H.Props(toggleRow, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("label").objectReferenceValue = toggleLabel;
+                so.FindProperty("stateLabel").objectReferenceValue = state;
+                so.FindProperty("button").objectReferenceValue = switchButton;
+                so.FindProperty("track").objectReferenceValue = switchImage;
+                so.FindProperty("knob").objectReferenceValue = switchKnob;
+                so.FindProperty("knobTravel").floatValue = 30f;
+            });
+
+            Line(panel, -650f);
+            var hint = H.Text(H.Rect("Hint", panel, H.TopLeft, H.TopLeft, new Vector2(48f, -660f), new Vector2(1024f, 60f)), null,
+                string.Empty, 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.TopLeft);
+
+            var reset = MenuEntry(panel, theme, "ResetButton", "Réinitialiser", 24f, 52f);
+            Place(reset, H.BottomLeft, new Vector2(36f, 26f), new Vector2(460f, 52f));
+            var back = MenuEntry(panel, theme, "BackButton", "Retour", 24f, 52f);
+            Place(back, H.BottomRight, new Vector2(-36f, 26f), new Vector2(220f, 52f));
 
             var menu = panel.gameObject.AddComponent<OptionsMenu>();
             H.Props(menu, so =>
             {
-                so.FindProperty("content").objectReferenceValue = content;
-                so.FindProperty("headerTemplate").objectReferenceValue = header;
-                so.FindProperty("rowTemplate").objectReferenceValue = optionRow;
+                so.FindProperty("tabTemplate").objectReferenceValue = tabTemplate;
+                so.FindProperty("scroll").objectReferenceValue = scroll;
+                so.FindProperty("pageTemplate").objectReferenceValue = page;
+                so.FindProperty("choiceTemplate").objectReferenceValue = choiceRow;
+                so.FindProperty("sliderTemplate").objectReferenceValue = sliderRow;
+                so.FindProperty("toggleTemplate").objectReferenceValue = toggleRow;
+                so.FindProperty("hintLabel").objectReferenceValue = hint;
                 so.FindProperty("resetButton").objectReferenceValue = reset;
+                so.FindProperty("resetLabel").objectReferenceValue = reset.GetComponent<MenuButton>().Text;
                 so.FindProperty("backButton").objectReferenceValue = back;
             });
             panel.gameObject.SetActive(false);
             return menu;
+        }
+
+        /// <summary>Option row: hover highlight + label on the left; the control is added by the caller on the right.</summary>
+        private static RectTransform Row(RectTransform parent, HudTheme theme, string name, out TextMeshProUGUI label)
+        {
+            var row = H.Rect(name, parent, H.Center, H.Center, Vector2.zero, new Vector2(1040f, 56f));
+            H.LayoutHeight(row, 56f);
+            var highlight = H.Stretch("Highlight", row).gameObject.AddComponent<UnityEngine.UI.Image>();
+            var color = theme.textColor;
+            color.a = 0f;
+            highlight.color = color;
+            highlight.raycastTarget = true; // hover anywhere on the row
+            label = H.Text(H.Rect("Label", row, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(20f, 0f), new Vector2(520f, 40f)), null,
+                "Option", 22f, HudFont.Body, HudColor.Text, TextAlignmentOptions.MidlineLeft);
+            var hint = row.gameObject.AddComponent<OptionHint>();
+            H.Props(hint, so => so.FindProperty("highlight").objectReferenceValue = highlight);
+            return row;
+        }
+
+        private static void Line(RectTransform panel, float y)
+        {
+            var line = H.Rect("Separator", panel, H.TopCenter, H.TopCenter, new Vector2(0f, y), new Vector2(1040f, 1f));
+            H.Themed(line, null, HudColor.Frame);
+        }
+
+        /// <summary>
+        /// Text-only menu entry (MenuButton): invisible hit area, label that slides on focus, accent bar on the left
+        /// (or underline for tabs).
+        /// </summary>
+        internal static UnityEngine.UI.Button MenuEntry(RectTransform parent, HudTheme theme, string name, string label, float fontSize, float height,
+            bool underline = false)
+        {
+            var rect = H.Rect(name, parent, H.Center, H.Center, Vector2.zero, new Vector2(0f, height));
+            H.LayoutHeight(rect, height);
+            var hit = rect.gameObject.AddComponent<UnityEngine.UI.Image>();
+            hit.color = Color.clear;
+            hit.raycastTarget = true;
+            var button = rect.gameObject.AddComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = hit;
+            button.transition = UnityEngine.UI.Selectable.Transition.None;
+
+            RectTransform bar;
+            if (underline)
+            {
+                bar = H.Rect("Accent", rect, H.BottomCenter, H.BottomCenter, Vector2.zero, new Vector2(0f, 3f));
+                bar.anchorMin = Vector2.zero;
+                bar.anchorMax = new Vector2(1f, 0f);
+                bar.sizeDelta = new Vector2(0f, 3f);
+            }
+            else
+                bar = H.Rect("Accent", rect, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(4f, height * 0.6f));
+            H.Themed(bar, null, HudColor.Accent);
+
+            var labelRect = H.Stretch("Label", rect);
+            if (!underline)
+                labelRect.offsetMin = new Vector2(22f, 0f);
+            var text = H.Text(labelRect, null, label, fontSize, HudFont.Title, HudColor.Text,
+                underline ? TextAlignmentOptions.Center : TextAlignmentOptions.MidlineLeft);
+
+            var entry = rect.gameObject.AddComponent<MenuButton>();
+            H.Props(entry, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("label").objectReferenceValue = labelRect;
+                so.FindProperty("text").objectReferenceValue = text;
+                so.FindProperty("accentBar").objectReferenceValue = bar;
+                so.FindProperty("slide").floatValue = underline ? 0f : 14f;
+            });
+            return button;
         }
 
         private static RectTransform Panel(RectTransform parent, string name, Vector2 anchor, Vector2 pivot, Vector2 position, Vector2 size, string title)

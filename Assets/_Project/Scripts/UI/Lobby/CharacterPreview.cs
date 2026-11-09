@@ -18,6 +18,8 @@ namespace RiskOfMagic.UI
         [SerializeField] private Color background = new(0.08f, 0.07f, 0.1f, 1f);
         [SerializeField] private Vector3 cameraOffset = new(0f, 1.15f, 3.6f);
         [SerializeField] private float lookHeight = 0.95f;
+        [SerializeField, Tooltip("Clear to transparent (the model floats over the menu).")] private bool transparentBackground;
+        [SerializeField] private bool showPedestal = true;
 
         private RawImage image;
         private RenderTexture texture;
@@ -49,7 +51,7 @@ namespace RiskOfMagic.UI
             camGo.transform.LookAt(stage.transform.position + Vector3.up * lookHeight);
             var cam = camGo.AddComponent<Camera>();
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = background;
+            cam.backgroundColor = transparentBackground ? Color.clear : background;
             cam.fieldOfView = 32f;
             cam.nearClipPlane = 0.1f;
             cam.farClipPlane = 25f;
@@ -69,6 +71,8 @@ namespace RiskOfMagic.UI
             rim.intensity = 2.5f;
             rim.color = new Color(0.6f, 0.7f, 1f);
 
+            if (!showPedestal)
+                return;
             var pedestal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             pedestal.name = "Pedestal";
             Destroy(pedestal.GetComponent<Collider>());
@@ -128,6 +132,19 @@ namespace RiskOfMagic.UI
             if (material.HasProperty("_BaseColor"))
                 material.SetColor("_BaseColor", color);
             return material;
+        }
+
+        // Only render while visible (several previews may exist in the menu).
+        private void OnEnable()
+        {
+            if (stage != null)
+                stage.SetActive(true);
+        }
+
+        private void OnDisable()
+        {
+            if (stage != null)
+                stage.SetActive(false);
         }
 
         private void Update()

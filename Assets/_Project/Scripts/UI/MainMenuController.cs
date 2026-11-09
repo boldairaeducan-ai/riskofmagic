@@ -24,7 +24,10 @@ namespace RiskOfMagic.UI
 
         [Header("Home")]
         [SerializeField] private GameObject homeScreen;
+        [SerializeField, Tooltip("Lobby title (the home and the menus have their own).")] private GameObject screenTitle;
         [SerializeField] private UnityEngine.UI.Button soloButton;
+        [SerializeField] private UnityEngine.UI.Button multiplayerButton;
+        [SerializeField, Tooltip("Create online / join by code, unfolded by the Multiplayer entry.")] private GameObject multiplayerPanel;
         [SerializeField] private UnityEngine.UI.Button hostButton;
         [SerializeField] private TMP_InputField joinCodeField;
         [SerializeField] private UnityEngine.UI.Button joinButton;
@@ -34,6 +37,10 @@ namespace RiskOfMagic.UI
         [SerializeField] private UnityEngine.UI.Button quitButton;
         [SerializeField] private OptionsMenu optionsMenu;
         [SerializeField] private TMP_Text statusLabel;
+        [SerializeField] private TMP_Text profileLabel;
+        [SerializeField] private TMP_Text versionLabel;
+        [SerializeField, Tooltip("Last played character, behind the menu.")] private CharacterPreview heroPreview;
+        [SerializeField] private TMP_Text heroLabel;
 
         [Header("Lobby")]
         [SerializeField] private GameObject lobbyScreen;
@@ -68,6 +75,11 @@ namespace RiskOfMagic.UI
             Cursor.visible = true;
 
             AddListener(soloButton, StartSolo);
+            AddListener(multiplayerButton, ToggleMultiplayer);
+            if (multiplayerPanel != null)
+                multiplayerPanel.SetActive(false);
+            if (versionLabel != null)
+                versionLabel.text = $"v{Application.version}";
             AddListener(hostButton, () => _ = HostOnline());
             AddListener(joinButton, () => _ = JoinOnline());
             AddListener(quitButton, Application.Quit);
@@ -167,16 +179,73 @@ namespace RiskOfMagic.UI
         {
             if (optionsMenu == null)
                 return;
-            homeScreen.SetActive(false);
-            optionsMenu.Open(() => homeScreen.SetActive(true));
+            ShowHome(false);
+            optionsMenu.Open(() => ShowHome(true, optionsButton));
         }
 
         private void OpenJournal()
         {
             if (journalMenu == null)
                 return;
-            homeScreen.SetActive(false);
-            journalMenu.Open(() => homeScreen.SetActive(true));
+            ShowHome(false);
+            journalMenu.Open(() => ShowHome(true, journalButton));
+        }
+
+        private void ToggleMultiplayer()
+        {
+            if (multiplayerPanel == null)
+                return;
+            bool open = !multiplayerPanel.activeSelf;
+            multiplayerPanel.SetActive(open);
+            var first = hostButton != null && hostButton.interactable ? hostButton.gameObject : null;
+            Select(open && first != null ? first : multiplayerButton != null ? multiplayerButton.gameObject : null);
+        }
+
+        private void ShowHome(bool visible, UnityEngine.UI.Button focus = null)
+        {
+            if (homeScreen != null)
+                homeScreen.SetActive(visible);
+            if (!visible)
+                return;
+            if (multiplayerPanel != null)
+                multiplayerPanel.SetActive(false);
+            RefreshHome();
+            var target = focus != null ? focus : soloButton;
+            Select(target != null ? target.gameObject : null);
+        }
+
+        /// <summary>Profile summary, last played character.</summary>
+        private void RefreshHome()
+        {
+            if (profileLabel != null)
+            {
+                long runs = MetaProgression.GetStat(ChallengeStat.Runs);
+                long wins = MetaProgression.GetStat(ChallengeStat.Victories);
+                int done = MetaProgression.Profile.completedChallenges.Count;
+                int total = MetaProgression.Challenges.Count;
+                float best = MetaProgression.Profile.bestVictoryTime;
+                string text = runs <= 0
+                    ? "Première aventure ? Bonne chance."
+                    : $"{runs} partie{(runs > 1 ? "s" : string.Empty)}   ·   {wins} victoire{(wins > 1 ? "s" : string.Empty)}   ·   défis {done}/{total}";
+                if (best > 0f)
+                    text += $"   ·   record {(int)(best / 60f)}:{(int)(best % 60f):00}";
+                profileLabel.text = text;
+            }
+
+            var catalog = GameCatalog.Instance;
+            var character = catalog != null ? catalog.GetCharacter(PlayerPrefs.GetInt(LobbyState.LastCharacterKey, 0)) : null;
+            if (character == null || !MetaProgression.IsUnlocked(character))
+                character = catalog != null ? catalog.GetCharacter(0) : null;
+            if (heroPreview != null)
+                heroPreview.Show(character);
+            if (heroLabel != null)
+                heroLabel.text = character != null ? $"{character.displayName}\n<size=55%><alpha=#90>{character.description}</size>" : string.Empty;
+        }
+
+        private static void Select(GameObject target)
+        {
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(target);
         }
 
         private void OnHosting()
@@ -284,6 +353,7 @@ namespace RiskOfMagic.UI
         {
             if (LobbyState.Instance != subscribedLobby)
                 Subscribe(LobbyState.Instance);
+            HandleBack();
 
             // Host left / connection lost while in the lobby.
             bool listening = NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening;
@@ -292,6 +362,19 @@ namespace RiskOfMagic.UI
                 ShowLobby(false);
                 SetStatus("La partie a été fermée.");
             }
+        }
+
+        /// <summary>Esc / B: folds the multiplayer panel, closes the journal (the options close themselves).</summary>
+        private void HandleBack()
+        {
+            var keyboard = UnityEngine.InputSystem.Keyboard.current;
+            var pad = UnityEngine.InputSystem.Gamepad.current;
+            if (!((keyboard != null && keyboard.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame)))
+                return;
+            if (journalMenu != null && journalMenu.gameObject.activeSelf)
+                journalMenu.Close();
+            else if (multiplayerPanel != null && multiplayerPanel.activeSelf && homeScreen != null && homeScreen.activeSelf)
+                ToggleMultiplayer();
         }
 
         private void Subscribe(LobbyState lobby)
@@ -345,7 +428,12 @@ namespace RiskOfMagic.UI
             if (hasMe && !sentInitialLoadout && catalog != null && catalog.GetCharacter(me.Character) != null)
             {
                 sentInitialLoadout = true;
-                lobby.SetLoadout(MetaProgression.GetLoadout(catalog.GetCharacter(me.Character)));
+                int last = PlayerPrefs.GetInt(LobbyState.LastCharacterKey, me.Character);
+                var lastCharacter = catalog.GetCharacter(last);
+                if (last != me.Character && lastCharacter != null && MetaProgression.IsUnlocked(lastCharacter))
+                    SelectCharacter(last); // also sends its loadout
+                else
+                    lobby.SetLoadout(MetaProgression.GetLoadout(catalog.GetCharacter(me.Character)));
             }
             var selected = hasMe && catalog != null ? catalog.GetCharacter(me.Character) : null;
             for (int i = 0; i < characterCards.Count && catalog != null; i++)
@@ -421,8 +509,11 @@ namespace RiskOfMagic.UI
 
         private void ShowLobby(bool lobby)
         {
-            if (homeScreen != null)
-                homeScreen.SetActive(!lobby);
+            if (!lobby)
+                sentInitialLoadout = false;
+            ShowHome(!lobby);
+            if (screenTitle != null)
+                screenTitle.SetActive(lobby);
             if (lobbyScreen != null)
                 lobbyScreen.SetActive(lobby);
             RefreshLobby();
@@ -433,9 +524,9 @@ namespace RiskOfMagic.UI
             busy = value;
             if (message != null)
                 SetStatus(message);
-            foreach (var button in new[] { soloButton, hostButton, joinButton })
+            foreach (var button in new[] { soloButton, multiplayerButton, hostButton, joinButton })
                 if (button != null)
-                    button.interactable = !value && (button == soloButton || OnlineSessions.IsAvailable);
+                    button.interactable = !value && (button == soloButton || button == multiplayerButton || OnlineSessions.IsAvailable);
         }
 
         private void SetStatus(string message)

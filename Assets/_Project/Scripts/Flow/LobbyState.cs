@@ -29,6 +29,8 @@ namespace RiskOfMagic.Flow
         private NetworkList<LobbyPlayer> players;
         private readonly NetworkVariable<DifficultyLevel> difficulty = new(DifficultyLevel.Normal);
 
+        public const string LastCharacterKey = "RiskOfMagic.LastCharacter";
+
         public static LobbyState Instance { get; private set; }
 
         /// <summary>Every peer.</summary>
@@ -100,6 +102,7 @@ namespace RiskOfMagic.Flow
         public void SelectCharacter(int characterIndex)
         {
             PlayerAvatar.PreferredCharacterIndex = characterIndex;
+            PlayerPrefs.SetInt(LastCharacterKey, characterIndex); // shown on the home screen, preselected next time
             SetCharacterRpc(characterIndex);
         }
 
