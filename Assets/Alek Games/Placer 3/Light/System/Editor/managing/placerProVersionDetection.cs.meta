@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: fe70c04bafac24649a1cdc799ad8a47b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284158
+  packageName: Placer 3 Light - Level Designer
+  packageVersion: 1.1.0
+  assetPath: Assets/Alek Games/Placer 3/Light/System/Editor/managing/placerProVersionDetection.cs
+  uploadId: 670725

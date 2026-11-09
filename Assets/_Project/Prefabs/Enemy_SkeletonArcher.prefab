@@ -436,6 +436,7 @@ MonoBehaviour:
   poisonedTint: {r: 0.35, g: 0.85, b: 0.25, a: 1}
   cursedTint: {r: 0.55, g: 0.25, b: 0.6, a: 1}
   phasedTint: {r: 0.9, g: 0.9, b: 1, a: 1}
+  flashOverbright: 1.5
 --- !u!114 &8815152300928645123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,12 +451,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyProjectileAttack
   ShowTopMostFoldoutHeaderGroup: 1
   range: 22
-  cooldown: 2
+  cooldown: 1.5384616
   maxHeightDifference: 15
   selectionWeight: 1
   animatorTrigger: Attack
   projectile: {fileID: 11400000, guid: 8f07c1bbed2ce804ea7bb702566497e3, type: 2}
-  damage: 12
+  damage: 13.799999
   damageType: 0
   windup: 0.7
   recovery: 0.3

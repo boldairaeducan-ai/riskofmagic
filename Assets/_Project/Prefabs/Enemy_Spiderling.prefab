@@ -436,6 +436,7 @@ MonoBehaviour:
   poisonedTint: {r: 0.35, g: 0.85, b: 0.25, a: 1}
   cursedTint: {r: 0.55, g: 0.25, b: 0.6, a: 1}
   phasedTint: {r: 0.9, g: 0.9, b: 1, a: 1}
+  flashOverbright: 1.5
 --- !u!114 &7139902028587542113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -450,11 +451,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyMeleeAttack
   ShowTopMostFoldoutHeaderGroup: 1
   range: 1.8
-  cooldown: 1.2
+  cooldown: 0.923077
   maxHeightDifference: 2.5
   selectionWeight: 1
   animatorTrigger: Attack
-  damage: 5
+  damage: 5.75
   damageType: 0
   windup: 0.35
   recovery: 0.4

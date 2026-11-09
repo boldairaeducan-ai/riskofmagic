@@ -438,6 +438,7 @@ MonoBehaviour:
   poisonedTint: {r: 0.35, g: 0.85, b: 0.25, a: 1}
   cursedTint: {r: 0.55, g: 0.25, b: 0.6, a: 1}
   phasedTint: {r: 0.9, g: 0.9, b: 1, a: 1}
+  flashOverbright: 1.5
 --- !u!114 &106001177859840098
 MonoBehaviour:
   m_ObjectHideFlags: 0

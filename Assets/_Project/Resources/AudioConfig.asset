@@ -23,6 +23,9 @@ MonoBehaviour:
   hitConfirm: {fileID: 11400000, guid: b8354496f9eeb104e9179a4ae2d12814, type: 2}
   criticalHitConfirm: {fileID: 11400000, guid: 8ba4a5c7ce9da0c42aa010b008b0477b, type: 2}
   killConfirm: {fileID: 11400000, guid: e1eca90112edd9340b699193d425ea17, type: 2}
+  enemyImpact: {fileID: 11400000, guid: 130e68a8ee8622645b6374d96921b2e5, type: 2}
+  enemyImpactCritical: {fileID: 11400000, guid: 0ba2fac420292024bba3ea1e1ebab343, type: 2}
+  enemyKillImpact: {fileID: 11400000, guid: 7005b1e15fda74b4087e4317b0a4a6ed, type: 2}
   playerHurt: {fileID: 11400000, guid: 70a2741ae2636f446af293c4da1e3dd4, type: 2}
   playerDowned: {fileID: 11400000, guid: 3d3a5c5c3c2a9144eb065b93b2997ef3, type: 2}
   playerRevived: {fileID: 11400000, guid: 60ed8d37e346f6142b6d80fa6cf46251, type: 2}

@@ -1,0 +1,321 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebc073136ae0f4d46bb48b9472b9dfad, type: 3}
+  m_Name: Placer Deafults
+  m_EditorClassIdentifier: 
+  SavePath: Assets/Alek Games/Placer 3/User Data/Profiles/
+  WorkColor: {r: 0, g: 1, b: 0, a: 1}
+  selectMethod: 0
+  WindowPos:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 400
+    height: 600
+  debugInfoMessages: 0
+  closeManagerAfterSelectingWindow: 1
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  AvoidedLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  PrefabPalette: {fileID: 11400000, guid: 7647b1e50e6550c4caee7eac0797a699, type: 2}
+  TextFont: {fileID: 11400000, guid: 2634770e92aec2e4380bcbe08997493b, type: 2}
+  painterVaues:
+  - name: trees
+    values:
+      paintMode: 1
+      palette: {fileID: 11400000, guid: 99c7de03c7fa1ef4cae4b6cdfb47d8a8, type: 2}
+      specificIndex: -1
+      holdActivation: 1
+      ignoreFirstHoldPlace: 0
+      holdActivationDistance: 4
+      rotateByDegrees: 0
+      placeGridSize: 0
+      planeProjection: 0
+      brushSize: 5
+      scatterCount: 8
+      scatterAvoidenceDistance: 1
+      massReplaceDestroyMode: 0
+      findCount: 2
+      spawnPreview: 1
+  - name: buildings
+    values:
+      paintMode: 1
+      palette: {fileID: 11400000, guid: 7647b1e50e6550c4caee7eac0797a699, type: 2}
+      specificIndex: 0
+      holdActivation: 1
+      ignoreFirstHoldPlace: 0
+      holdActivationDistance: 1.9
+      rotateByDegrees: 0
+      placeGridSize: 2
+      planeProjection: 1
+      brushSize: 5
+      scatterCount: 8
+      scatterAvoidenceDistance: 1
+      massReplaceDestroyMode: 0
+      findCount: 2
+      spawnPreview: 1
+  physicsPainterValues:
+  - name: normal speed
+    values:
+      palette: {fileID: 11400000, guid: a61ff7e880e98364a852493af913bff1, type: 2}
+      specificIndex: -1
+      holdActivation: 1
+      holdActivationDistance: 2
+      upOffset: 5
+      brushSize: 5
+      scatterCount: 8
+      scatterAvoidenceDistance: 1
+      keepInScene: 0
+      simulationDelta: 6
+      iterations: 6
+      iterationStep: 0.02
+  - name: super speed
+    values:
+      palette: {fileID: 11400000, guid: a61ff7e880e98364a852493af913bff1, type: 2}
+      specificIndex: -1
+      holdActivation: 1
+      holdActivationDistance: 2
+      upOffset: 5
+      brushSize: 5
+      scatterCount: 8
+      scatterAvoidenceDistance: 1
+      keepInScene: 0
+      simulationDelta: 2
+      iterations: 12
+      iterationStep: 0.02
+  - name: slow motion
+    values:
+      palette: {fileID: 11400000, guid: a61ff7e880e98364a852493af913bff1, type: 2}
+      specificIndex: -1
+      holdActivation: 1
+      holdActivationDistance: 2
+      upOffset: 5
+      brushSize: 5
+      scatterCount: 8
+      scatterAvoidenceDistance: 1
+      keepInScene: 0
+      simulationDelta: 8
+      iterations: 14
+      iterationStep: 0.002
+  bezierCurvesValues:
+  - name: trees
+    values:
+      spawnType: 1
+      wallPreset: {fileID: 11400000, guid: 588823373f1d08746a61f8b7b54ee86e, type: 2}
+      allowOverPoint: 0
+      palette: {fileID: 11400000, guid: 99c7de03c7fa1ef4cae4b6cdfb47d8a8, type: 2}
+      specificIndex: -1
+      minSpawnDistance: 4
+      snapToGround: 1
+      curveMode: 0
+      stepMode: 0
+      curveSteps: 0.01
+      fromCurveMinMaxDistances: []
+      curve:
+      - anchor: {x: 132.92822, y: 18.801622, z: 171.83035}
+        inT: {x: -3.30653, y: -1.0279512, z: -12.097504}
+        outT: {x: 3.30653, y: 1.0279512, z: 12.097504}
+      - anchor: {x: 156.2379, y: 20.541851, z: 183.38435}
+        inT: {x: -12.314373, y: -0.14397727, z: 4.2780337}
+        outT: {x: 11.00646, y: 0.12868541, z: -3.8236628}
+      - anchor: {x: 163.39084, y: 19.157785, z: 161.24759}
+        inT: {x: -11.626968, y: 0.5859745, z: 0.49937695}
+        outT: {x: 12.300838, y: -0.61993617, z: -0.5283196}
+      - anchor: {x: 175.80899, y: 19.55551, z: 182.54378}
+        inT: {x: -12.047063, y: -2.152902, z: -1.4857205}
+        outT: {x: 10.011596, y: 1.7891482, z: 1.2346936}
+      - anchor: {x: 183.18987, y: 22.696022, z: 163.68933}
+        inT: {x: 5.641483, y: 1.0716944, z: 8.484262}
+        outT: {x: -10.486334, y: -1.9920552, z: -15.770464}
+      - anchor: {x: 150.90202, y: 14.824013, z: 145.08603}
+        inT: {x: 14.401922, y: -1.9879978, z: 12.29925}
+        outT: {x: -22.754572, y: 3.1409721, z: -19.432417}
+      - anchor: {x: 111.90857, y: 32.535477, z: 102.81506}
+        inT: {x: 5.1239734, y: -15.894885, z: 25.027037}
+        outT: {x: -2.7490015, y: 8.527575, z: -13.426955}
+      - anchor: {x: 141.13354, y: 45.126442, z: 97.373825}
+        inT: {x: -16.459436, y: 0.8672389, z: -8.357648}
+        outT: {x: 0, y: 0, z: 0}
+    editValues:
+      curveTangentMode: 0
+      otherTangentMode: 0
+      previewSpawnBallsSize: 0
+  - name: walls
+    values:
+      spawnType: 0
+      wallPreset: {fileID: 11400000, guid: 588823373f1d08746a61f8b7b54ee86e, type: 2}
+      allowOverPoint: 0
+      palette: {fileID: 11400000, guid: 99c7de03c7fa1ef4cae4b6cdfb47d8a8, type: 2}
+      specificIndex: -1
+      minSpawnDistance: 0.1
+      snapToGround: 1
+      curveMode: 0
+      stepMode: 0
+      curveSteps: 0.01
+      fromCurveMinMaxDistances: []
+      curve:
+      - anchor: {x: 132.92822, y: 18.801622, z: 171.83035}
+        inT: {x: -3.30653, y: -1.0279512, z: -12.097504}
+        outT: {x: 3.30653, y: 1.0279512, z: 12.097504}
+      - anchor: {x: 156.2379, y: 20.541851, z: 183.38435}
+        inT: {x: -12.314373, y: -0.14397727, z: 4.2780337}
+        outT: {x: 11.00646, y: 0.12868541, z: -3.8236628}
+      - anchor: {x: 163.39084, y: 19.157785, z: 161.24759}
+        inT: {x: -11.626968, y: 0.5859745, z: 0.49937695}
+        outT: {x: 12.300838, y: -0.61993617, z: -0.5283196}
+      - anchor: {x: 175.80899, y: 19.55551, z: 182.54378}
+        inT: {x: -12.047063, y: -2.152902, z: -1.4857205}
+        outT: {x: 10.011596, y: 1.7891482, z: 1.2346936}
+      - anchor: {x: 183.18987, y: 22.696022, z: 163.68933}
+        inT: {x: 5.641483, y: 1.0716944, z: 8.484262}
+        outT: {x: -10.486334, y: -1.9920552, z: -15.770464}
+      - anchor: {x: 150.90202, y: 14.824013, z: 145.08603}
+        inT: {x: 14.747666, y: 4.2562194, z: -2.8863518}
+        outT: {x: 0, y: 0, z: 0}
+    editValues:
+      curveTangentMode: 0
+      otherTangentMode: 0
+      previewSpawnBallsSize: 0
+  terrainDetailPopulatorValues:
+  - name: tutorial grass
+    values:
+      detailILayer: 0
+      density: 6
+      zeroChance: 5
+      maxNormal: 45
+      minmaxHeight: {x: 0, y: 100}
+      obstacles:
+        serializedVersion: 2
+        m_Bits: 0
+      avoidedTerrainLayers:
+      - layerIndex: 1
+        avoidedWeightOver: 0.4
+  textSpawnerValues:
+  - name: clean
+    values:
+      font: {fileID: 11400000, guid: 2634770e92aec2e4380bcbe08997493b, type: 2}
+      text: 'how about leaving a review on this asset
+
+        it would surely help
+        a lot'
+      autoUpdate: 1
+      asPrefab: 1
+      addSpaceColliders: 0
+      betweenLettersSpace: 0.2
+      spaceLengh: 0.2
+      enterLengh: 0.3
+      randPosAdd: {x: 0, y: 0, z: 0}
+      randRotAdd: {x: 0, y: 0, z: 0}
+      minMaxScale: {x: 1, y: 1}
+      snapToGround: 0
+      normalAllighn: 0.2
+      groundLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      snapHeightOffset: 0.2
+      snapRayDir: {x: 0, y: -1, z: 0}
+  - name: messy
+    values:
+      font: {fileID: 11400000, guid: 2634770e92aec2e4380bcbe08997493b, type: 2}
+      text: 'how about leaving a review on this asset
+
+        it would surely help
+        a lot'
+      autoUpdate: 1
+      asPrefab: 1
+      addSpaceColliders: 0
+      betweenLettersSpace: 0.25
+      spaceLengh: 0.2
+      enterLengh: 0.3
+      randPosAdd: {x: 0.02, y: 0.02, z: 0.02}
+      randRotAdd: {x: 5, y: 20, z: 10}
+      minMaxScale: {x: 0.9, y: 1.1}
+      snapToGround: 0
+      normalAllighn: 0.2
+      groundLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      snapHeightOffset: 0.2
+      snapRayDir: {x: 0, y: -1, z: 0}
+  - name: ground snapping
+    values:
+      font: {fileID: 11400000, guid: 2634770e92aec2e4380bcbe08997493b, type: 2}
+      text: 'how about leaving a review on this asset
+
+        it would surely help
+        a lot'
+      autoUpdate: 1
+      asPrefab: 1
+      addSpaceColliders: 1
+      betweenLettersSpace: 0.2
+      spaceLengh: 0.2
+      enterLengh: 0.3
+      randPosAdd: {x: 0, y: 0, z: 0}
+      randRotAdd: {x: 0, y: 0, z: 0}
+      minMaxScale: {x: 1, y: 1}
+      snapToGround: 1
+      normalAllighn: 0.2
+      groundLayer:
+        serializedVersion: 2
+        m_Bits: 1
+      snapHeightOffset: 0.1
+      snapRayDir: {x: 0, y: -1, z: 0}
+  noiseSpawnerValues:
+  - name: 300x300 nice
+    values:
+      spawnOnAwakeWithRandSeed: 1
+      palette: {fileID: 11400000, guid: 7647b1e50e6550c4caee7eac0797a699, type: 2}
+      specificIndex: -1
+      noiseSpawnThreshold: 0.7
+      spawnChance: 100
+      avoidienceDistance: 5
+      addPosIfChanceFail: 1
+      placePosScale: 1
+      randPosOffset: 1
+      snapToGround: 1
+      callOnSpawned: 
+      autoCallSpawners: 0
+      atOnceSpawners: 5
+      perLoopWait: 75
+    noiseSettings:
+      width: 100
+      height: 100
+      seed: 0
+      scale: 15
+      octaves: 3
+      persistance: 0.8
+      lacunarity: 0.5
+      offset: {x: 0, y: 0}
+      proportionClamp01: 1
+  colorSpawnerValues:
+  - name: green
+    values:
+      colors:
+      - color: {r: 0.0067950487, g: 1, b: 0, a: 0}
+        colorDifAllowence: 0.25
+      xLen: 300
+      zLen: 300
+      temporarlyResetLights: 1
+      pointKeepChance: 100
+      pixelSkips: 0
+      offset: 2
+      cullMasks:
+        serializedVersion: 2
+        m_Bits: 4294967295
+      palette: {fileID: 11400000, guid: 99c7de03c7fa1ef4cae4b6cdfb47d8a8, type: 2}
+      specificIndex: -1
+  showWelcomeScreen: 0
+  projectOpened: 0
+  applicationClosesSinceAdValue: 1

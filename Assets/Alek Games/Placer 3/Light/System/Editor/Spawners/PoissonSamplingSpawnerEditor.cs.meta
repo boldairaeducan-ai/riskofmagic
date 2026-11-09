@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 5344a570edb2d3d498c7543a38a89358
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284158
+  packageName: Placer 3 Light - Level Designer
+  packageVersion: 1.1.0
+  assetPath: Assets/Alek Games/Placer 3/Light/System/Editor/Spawners/PoissonSamplingSpawnerEditor.cs
+  uploadId: 670725

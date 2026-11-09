@@ -16,17 +16,17 @@ MonoBehaviour:
   feminineName: 1
   isBoss: 0
   maxHealth: 50
-  moveSpeed: 7.5
+  moveSpeed: 8.625
   acceleration: 20
   angularSpeed: 540
   controlResistance: 0
   healthPerLevel: 0.3
   damagePerLevel: 0.2
-  detectionRange: 30
+  detectionRange: 42
   requireLineOfSight: 0
-  alertAlliesRadius: 10
+  alertAlliesRadius: 14
   movementStyle: 1
-  flankRadius: 5
+  flankRadius: 3.5
   flankAngle: {x: 140, y: 180}
   kiteRange: {x: 10, y: 24}
   retreatDistance: 8

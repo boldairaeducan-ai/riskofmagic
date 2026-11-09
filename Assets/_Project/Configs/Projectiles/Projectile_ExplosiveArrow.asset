@@ -19,7 +19,7 @@ MonoBehaviour:
   speed: 80
   gravity: 4
   lifetime: 2
-  maxRange: 70
+  maxRange: 45
   radius: 0.2
   homingTurnRate: 0
   pierceCount: 0

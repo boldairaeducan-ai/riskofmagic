@@ -437,6 +437,7 @@ MonoBehaviour:
   poisonedTint: {r: 0.35, g: 0.85, b: 0.25, a: 1}
   cursedTint: {r: 0.55, g: 0.25, b: 0.6, a: 1}
   phasedTint: {r: 0.9, g: 0.9, b: 1, a: 1}
+  flashOverbright: 1.5
 --- !u!114 &7781770986903336484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -451,12 +452,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyLungeAttack
   ShowTopMostFoldoutHeaderGroup: 1
   range: 7
-  cooldown: 1.8
+  cooldown: 1.3846154
   maxHeightDifference: 2.5
   selectionWeight: 1
   animatorTrigger: Attack
   minRange: 0
-  damage: 9
+  damage: 10.349999
   damageType: 0
   windup: 0.4
   dashSpeed: 16

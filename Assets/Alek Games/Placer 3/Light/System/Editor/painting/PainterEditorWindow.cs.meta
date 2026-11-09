@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 035b59e5444d8054db16a4dc2d21c7e8
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 284158
+  packageName: Placer 3 Light - Level Designer
+  packageVersion: 1.1.0
+  assetPath: Assets/Alek Games/Placer 3/Light/System/Editor/painting/PainterEditorWindow.cs
+  uploadId: 670725
