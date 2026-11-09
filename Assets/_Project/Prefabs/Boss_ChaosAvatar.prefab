@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 8404740734638812979}
   - component: {fileID: 1654135176627368201}
   - component: {fileID: 3749637548970610110}
+  - component: {fileID: 4336570144585569740}
   - component: {fileID: 5567149029073931859}
   m_Layer: 0
   m_Name: Boss_ChaosAvatar
@@ -324,6 +325,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &5341339368825160878
@@ -361,6 +363,7 @@ MonoBehaviour:
   cooldown: 3
   maxHeightDifference: 20
   selectionWeight: 1.5
+  animatorTrigger: Attack
   projectile: {fileID: 11400000, guid: 059470da34fb3a74db77a24ea1f1a752, type: 2}
   damage: 10
   damageType: 4
@@ -388,6 +391,7 @@ MonoBehaviour:
   cooldown: 9
   maxHeightDifference: 30
   selectionWeight: 2
+  animatorTrigger: Attack
   meteor: {fileID: 11400000, guid: 8068d34b56dd28944b60a59fefd91284, type: 2}
   damage: 45
   damageType: 1
@@ -418,6 +422,7 @@ MonoBehaviour:
   cooldown: 18
   maxHeightDifference: 20
   selectionWeight: 3
+  animatorTrigger: Attack
   minion: {fileID: 0}
   minionPool:
   - {fileID: 11400000, guid: 717186fed1171934fa850a74d440b86a, type: 2}
@@ -487,6 +492,20 @@ MonoBehaviour:
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
+--- !u!114 &4336570144585569740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3298363488891743114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98c1e25cb3d18a47824499dde80a21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.EnemyAnimationDriver
+  locomotionDamp: 0.1
+  pauseWhenFrozen: 1
 --- !u!114 &5567149029073931859
 MonoBehaviour:
   m_ObjectHideFlags: 0

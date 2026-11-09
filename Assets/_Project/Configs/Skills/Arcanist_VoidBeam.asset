@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 008fee4460115af4bbbdac01d36359bb, type: 3}
+  m_Name: Arcanist_VoidBeam
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BeamSkill
+  displayName: "Rayon du n\xE9ant"
+  description: "Rayon de 3 s qui traverse les ennemis : 80% 8 fois par seconde. Chaque
+    tick d\xE9clenche les objets (coef. 0,5). Ralentit de 50%."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 12
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: f621361b7e39b9644b00690c55467e7e, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  range: 40
+  beamRadius: 0.6
+  duration: 3
+  ticksPerSecond: 8
+  damageCoefficientPerTick: 0.8
+  damageType: 4
+  procCoefficient: 0.5
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  beamVfx: {fileID: 5492177243271413674, guid: 6f63b39098d30814eac4e8d01f24074d, type: 3}
+  impactVfx: {fileID: 1177601390897264972, guid: 30bb0790d26d618418b48a70a8d0d2f1, type: 3}

@@ -29,3 +29,4 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 51
   dot: {fileID: 0}
+  freezeDuration: 0

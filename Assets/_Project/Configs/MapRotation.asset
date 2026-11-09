@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Maps.MapRotation
   stages:
   - scenes:
-    - Prototype
+    - Map_GrimForest
   - scenes:
-    - Prototype
+    - Map_Necropolis
   - scenes:
-    - Prototype
+    - Map_MountainPeak
+  - scenes:
+    - Map_VolcanoTomb
+  - scenes:
+    - Map_ChaosSanctum

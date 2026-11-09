@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06c0ceb357e8b974dad344bb22955f86, type: 3}
+  m_Name: Archer_FrostArrow
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
+  displayName: "Fl\xE8che de givre"
+  description: "Charger : 200-400%, g\xE8le les ennemis touch\xE9s 1,5 s."
+  icon: {fileID: 0}
+  activationMode: 2
+  cooldown: 7
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.2
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 1ca9bbedb88035143987fdd47062354f, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  projectile: {fileID: 11400000, guid: 5e8491996e542fe43a9a628d30bc6da1, type: 2}
+  damageType: 2
+  damageCoefficient: 1.5
+  count: 1
+  spreadAngle: 0
+  muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}
+  burstCount: 1
+  burstInterval: 0.08
+  minChargeCoefficient: 2
+  maxChargeCoefficient: 4
+  minChargeScale: 1
+  maxChargeScale: 1.4

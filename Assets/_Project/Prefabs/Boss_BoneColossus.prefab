@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 6938256110528744877}
   - component: {fileID: 5277813318084499122}
   - component: {fileID: 5753798827100894089}
+  - component: {fileID: 2274009407986612554}
   - component: {fileID: 4569065483030518805}
   m_Layer: 0
   m_Name: Boss_BoneColossus
@@ -413,6 +414,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &1066653463074159405
@@ -450,6 +452,7 @@ MonoBehaviour:
   cooldown: 4.5
   maxHeightDifference: 5
   selectionWeight: 1.5
+  animatorTrigger: Attack
   slamDamage: 30
   slamRadius: 4
   windup: 1
@@ -486,6 +489,7 @@ MonoBehaviour:
   cooldown: 5
   maxHeightDifference: 15
   selectionWeight: 1
+  animatorTrigger: Attack
   projectile: {fileID: 11400000, guid: f2df1a5e255193548be78e9a766f6bb2, type: 2}
   damage: 30
   damageType: 0
@@ -515,6 +519,7 @@ MonoBehaviour:
   cooldown: 8
   maxHeightDifference: 5
   selectionWeight: 1
+  animatorTrigger: Attack
   minRange: 7
   damage: 32
   damageType: 0
@@ -552,6 +557,20 @@ MonoBehaviour:
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
+--- !u!114 &2274009407986612554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7418079970262472780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98c1e25cb3d18a47824499dde80a21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.EnemyAnimationDriver
+  locomotionDamp: 0.1
+  pauseWhenFrozen: 1
 --- !u!114 &4569065483030518805
 MonoBehaviour:
   m_ObjectHideFlags: 0

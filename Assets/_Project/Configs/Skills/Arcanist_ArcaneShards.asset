@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06c0ceb357e8b974dad344bb22955f86, type: 3}
+  m_Name: Arcanist_ArcaneShards
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
+  displayName: "\xC9clats arcaniques"
+  description: "Rafale de 3 projectiles rapides : 3 \xD7 60%."
+  icon: {fileID: 0}
+  activationMode: 1
+  cooldown: 0
+  maxStock: 1
+  castDuration: 0.45
+  scalesWithAttackSpeed: 1
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 37dccb941593c824c9e42e79fa35b38e, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  projectile: {fileID: 11400000, guid: 8d572a89e1d36d4449ff6ebc0fdb034a, type: 2}
+  damageType: 4
+  damageCoefficient: 0.6
+  count: 1
+  spreadAngle: 0
+  muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}
+  burstCount: 3
+  burstInterval: 0.08
+  minChargeCoefficient: 2
+  maxChargeCoefficient: 6
+  minChargeScale: 1
+  maxChargeScale: 1

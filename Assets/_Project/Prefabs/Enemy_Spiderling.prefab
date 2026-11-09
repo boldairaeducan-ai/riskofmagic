@@ -236,6 +236,7 @@ GameObject:
   - component: {fileID: 1646507726752918682}
   - component: {fileID: 7139902028587542113}
   - component: {fileID: 3143103211257535906}
+  - component: {fileID: 4613243345504346147}
   - component: {fileID: 7825184509057220101}
   m_Layer: 0
   m_Name: Enemy_Spiderling
@@ -411,6 +412,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &1646507726752918682
@@ -448,6 +450,7 @@ MonoBehaviour:
   cooldown: 1.2
   maxHeightDifference: 2.5
   selectionWeight: 1
+  animatorTrigger: Attack
   damage: 5
   damageType: 0
   windup: 0.35
@@ -482,6 +485,20 @@ MonoBehaviour:
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
+--- !u!114 &4613243345504346147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3119449972476557204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98c1e25cb3d18a47824499dde80a21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.EnemyAnimationDriver
+  locomotionDamp: 0.1
+  pauseWhenFrozen: 1
 --- !u!114 &7825184509057220101
 MonoBehaviour:
   m_ObjectHideFlags: 0

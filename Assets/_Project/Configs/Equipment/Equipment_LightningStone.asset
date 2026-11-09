@@ -25,6 +25,6 @@ MonoBehaviour:
   damageType: 3
   groundMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51
   boltVfx: {fileID: 5370805351732007781, guid: 544f549c20707744d88094a830b7f408, type: 3}
   impactVfx: {fileID: 4948897298884925427, guid: e5b9a7946e378d84baf4c778dc1edc29, type: 3}

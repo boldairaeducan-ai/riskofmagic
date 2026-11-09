@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1e98b7d64f46e42bfb1913709f5097, type: 3}
+  m_Name: Projectile_ExplosiveArrow
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileDefinition
+  visualPrefab: {fileID: 2518173436177442839, guid: e101eca9ccc333f48a88d33a2f9cafde, type: 3}
+  impactVfx: {fileID: 4948897298884925427, guid: e5b9a7946e378d84baf4c778dc1edc29, type: 3}
+  fireSound: {fileID: 11400000, guid: 57f8e6d7782012041925a6bfcb9975c3, type: 2}
+  impactSound: {fileID: 11400000, guid: 111e60f56648f474eaa0c61465638ca7, type: 2}
+  speed: 80
+  gravity: 4
+  lifetime: 2
+  maxRange: 70
+  radius: 0.2
+  homingTurnRate: 0
+  pierceCount: 0
+  explosionRadius: 4
+  explodeOnExpire: 0
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  dot: {fileID: 0}
+  freezeDuration: 0

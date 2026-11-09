@@ -348,6 +348,8 @@ GameObject:
   - component: {fileID: 2452467874262546346}
   - component: {fileID: 4892955854746476726}
   - component: {fileID: 5074790506438811546}
+  - component: {fileID: 7843214900399712355}
+  - component: {fileID: 6381010879871833403}
   - component: {fileID: 8969690943964524554}
   - component: {fileID: 7274623784837052463}
   - component: {fileID: 8138736217551154035}
@@ -573,6 +575,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &5999801138183389886
@@ -676,6 +679,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967291
   landingSpeed: 4
+  distanceFootsteps: 1
 --- !u!114 &5074790506438811546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,6 +693,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.PlayerRunStats
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &7843214900399712355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6260213830726793856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fc55565762303d408e635050b5f9721, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.PlayerAnimationDriver
+  modelRoot: {fileID: 0}
+  locomotionDamp: 0.08
+  groundProbe: 0.25
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+--- !u!114 &6381010879871833403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6260213830726793856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c97cf1dbf809a3744a474db83ad48367, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.FallRecovery
+  ShowTopMostFoldoutHeaderGroup: 1
+  damageFraction: 0.2
+  sampleInterval: 0.25
+  rewindSeconds: 1
+  historySeconds: 4
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  cameraTrauma: 0.5
 --- !u!114 &8969690943964524554
 MonoBehaviour:
   m_ObjectHideFlags: 0

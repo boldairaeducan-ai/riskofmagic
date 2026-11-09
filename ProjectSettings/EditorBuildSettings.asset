@@ -14,4 +14,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Maps/Map_New.unity
     guid: 39cae4cab6f93c04086bba9e89e5f8a5
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_GrimForest.unity
+    guid: 0484dbc4c6cd82e409547a1cb2a66924
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_Necropolis.unity
+    guid: d0a84c45b625d3947ac9a493095a1670
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_MountainPeak.unity
+    guid: 393cc83171e398b499a49b3446761ce2
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_VolcanoTomb.unity
+    guid: 7bb21ad0661c10f43a2fa6b2714b682f
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_ChaosSanctum.unity
+    guid: dae9e774247ee814992a49b29ec4d67c
   m_configObjects: {}

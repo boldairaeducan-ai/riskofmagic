@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efa37077b41a09b48924f625fc508787, type: 3}
+  m_Name: Druid_Brambles
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ConeControlSkill
+  displayName: Ronces
+  description: "C\xF4ne de ronces : immobilise 2 s et empoisonne."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 8
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 2897291182143897075, guid: c7edfe009a162bf4b8b6e430e374139a, type: 3}
+  castVfxAnchor: 1
+  castVfxScale: 8
+  castSound: {fileID: 11400000, guid: c3f1d217df14c8d408ce9427ac64d8fd, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  range: 15
+  coneAngle: 35
+  freezeDuration: 2
+  damageCoefficient: 0.5
+  damageType: 5
+  dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}

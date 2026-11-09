@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5805181c949e10742abdcc07d11d6e3b, type: 3}
+  m_Name: Warrior_WarCry
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.WarCrySkill
+  displayName: Cri de guerre
+  description: "Alli\xE9s \xE0 15 m : +40% vitesse d'attaque et de d\xE9placement
+    pendant 6 s, et rend 20 PV."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 20
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: dbe3e2565a9d47840b33beed36b2aed8, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0.2
+  radius: 15
+  buffDuration: 6
+  heal: 20
+  pulseVfx: {fileID: 8578036629237866541, guid: e55ac3b1e1a8cf74787d93d8a0ec5e86, type: 3}

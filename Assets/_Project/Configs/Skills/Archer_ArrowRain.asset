@@ -27,6 +27,7 @@ MonoBehaviour:
   castVfxAnchor: 1
   castVfxScale: 1
   castSound: {fileID: 11400000, guid: 0ce6ccff62f0d564b89a7e523f9db22a, type: 2}
+  animatorTrigger: Cast
   ownerFovKick: 0
   ownerFovKickDuration: 0.25
   ownerCameraTrauma: 0

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97c0c93c57baea840ba3f47b27cb1bfa, type: 3}
+  m_Name: Arcanist_Transfer
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BlinkSkill
+  displayName: Transfert
+  description: "T\xE9l\xE9portation de 15 m vers la vis\xE9e, \xE0 travers les ennemis."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 7
+  maxStock: 1
+  castDuration: 0
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 1
+  keepsSprint: 1
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 93ba49a8edd33624c91ae9c60c27442c, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  distance: 15
+  collisionRadius: 0.4
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  flattenDirection: 0
+  passThroughCharacters: 1
+  arrivalVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}

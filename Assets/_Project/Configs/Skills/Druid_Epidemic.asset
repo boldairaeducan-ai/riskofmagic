@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52455d9761cf661408ee6d2983fae927, type: 3}
+  m_Name: Druid_Epidemic
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.EpidemicSkill
+  displayName: "\xC9pid\xE9mie"
+  description: "Propage les poisons de l'ennemi vis\xE9 \xE0 tous les ennemis \xE0
+    10 m."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 10
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 79aaf5c6c2135d74aacc4649ca75e31b, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  poison: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  targetRange: 40
+  aimTolerance: 3
+  spreadRadius: 10
+  damageCoefficient: 1
+  minStacks: 1
+  spreadVfx: {fileID: 8782927124138761051, guid: cbcdc83588a0afe46b54e3052a2acf6a, type: 3}

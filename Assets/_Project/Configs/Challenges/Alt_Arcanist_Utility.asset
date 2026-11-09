@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8a0d59e9d209e5408162575bbdd08c0, type: 3}
+  m_Name: Alt_Arcanist_Utility
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Meta.ChallengeDefinition
+  displayName: 'Arcaniste : premiers pas'
+  description: "Avec l'Arcaniste, atteindre l'\xE9tape 3."
+  stat: 2
+  target: 3
+  character: {fileID: 11400000, guid: 6e7c756c928998a46857287b338830d6, type: 2}
+  reward: {fileID: 11400000, guid: 5ab85cce66fb1cf4caf627ac168e14dd, type: 2}
+  unlocksHardMode: 0

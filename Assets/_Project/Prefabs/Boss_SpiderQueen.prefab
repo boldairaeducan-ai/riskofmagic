@@ -238,6 +238,7 @@ GameObject:
   - component: {fileID: 1810615416909945979}
   - component: {fileID: 8984733251048141499}
   - component: {fileID: 8910687186576123203}
+  - component: {fileID: 4686532998419493017}
   - component: {fileID: 8199095464953144778}
   m_Layer: 0
   m_Name: Boss_SpiderQueen
@@ -413,6 +414,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &2836623310251008430
@@ -450,6 +452,7 @@ MonoBehaviour:
   cooldown: 2.2
   maxHeightDifference: 15
   selectionWeight: 1.5
+  animatorTrigger: Attack
   projectile: {fileID: 11400000, guid: 46a297e387e02b24f86339c2b6a8c573, type: 2}
   damage: 14
   damageType: 0
@@ -477,6 +480,7 @@ MonoBehaviour:
   cooldown: 15
   maxHeightDifference: 15
   selectionWeight: 3
+  animatorTrigger: Attack
   minion: {fileID: 11400000, guid: e4c4561124029ae459f603ce301fa4af, type: 2}
   minionPool: []
   countPerCast: 4
@@ -502,6 +506,7 @@ MonoBehaviour:
   cooldown: 6
   maxHeightDifference: 5
   selectionWeight: 1
+  animatorTrigger: Attack
   minRange: 4
   damage: 24
   damageType: 0
@@ -539,6 +544,20 @@ MonoBehaviour:
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
+--- !u!114 &4686532998419493017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8150368834718712095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98c1e25cb3d18a47824499dde80a21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.EnemyAnimationDriver
+  locomotionDamp: 0.1
+  pauseWhenFrozen: 1
 --- !u!114 &8199095464953144778
 MonoBehaviour:
   m_ObjectHideFlags: 0

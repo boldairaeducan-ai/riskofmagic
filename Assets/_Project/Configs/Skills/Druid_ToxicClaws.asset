@@ -28,6 +28,7 @@ MonoBehaviour:
   castVfxAnchor: 1
   castVfxScale: 1
   castSound: {fileID: 11400000, guid: f02dd34157876c240b847a952eed5da8, type: 2}
+  animatorTrigger: Cast
   ownerFovKick: 0
   ownerFovKickDuration: 0.25
   ownerCameraTrauma: 0
@@ -50,4 +51,5 @@ MonoBehaviour:
     lunge: 4
   comboResetTime: 0.8
   dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  knockbackDistance: 0
   swingVfx: {fileID: 7567192199689358438, guid: 8456f2fda818e0d458b34996233552c0, type: 3}

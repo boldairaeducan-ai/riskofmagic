@@ -22,6 +22,8 @@ MonoBehaviour:
   attackSpeed: 0.8
   critChance: 0.01
   movement: {fileID: 11400000, guid: e4824072f6dbb434da834a937166b5f1, type: 2}
+  modelPrefab: {fileID: 0}
+  viewModelPrefab: {fileID: 0}
   footstepSound: {fileID: 11400000, guid: b8f36be7f868e1043afd9b67301e0e2a, type: 2}
   jumpSound: {fileID: 11400000, guid: f942331ebfc86924889c21b2a45d6a5a, type: 2}
   landSound: {fileID: 11400000, guid: b0b1b0565f83aa64d915bc91d2a4372c, type: 2}
@@ -29,3 +31,7 @@ MonoBehaviour:
   secondary: {fileID: 11400000, guid: 781cedd5c0bb424459f9e191d52fe3f4, type: 2}
   utility: {fileID: 11400000, guid: e25d9e608b6b5c54b84abe0ae2440496, type: 2}
   special: {fileID: 11400000, guid: 18c23bc1a7785e748882861dba0996d0, type: 2}
+  primaryAlt: {fileID: 11400000, guid: 3cb4f731a6e8fd349a247cdd4e5dcb1a, type: 2}
+  secondaryAlt: {fileID: 11400000, guid: 864d1492c9370904bbdd7f5837f7fb9b, type: 2}
+  utilityAlt: {fileID: 11400000, guid: ffa5f0703bc11144f9a0d469f6ff1761, type: 2}
+  specialAlt: {fileID: 11400000, guid: 8aeeb3ba94598e045969a1315d636687, type: 2}

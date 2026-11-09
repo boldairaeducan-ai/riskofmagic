@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 2273032099996971697}
   - component: {fileID: 3422338357146998916}
   - component: {fileID: 4200301143639998176}
+  - component: {fileID: 2385746681235615782}
   - component: {fileID: 848269056640906546}
   m_Layer: 0
   m_Name: Boss_EmberDrake
@@ -195,6 +196,7 @@ MonoBehaviour:
   curseSpeedMultiplier: 0.9
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
+  channelingSpeedMultiplier: 0.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &7168913309488066991
@@ -232,6 +234,7 @@ MonoBehaviour:
   cooldown: 6
   maxHeightDifference: 5
   selectionWeight: 1.5
+  animatorTrigger: Attack
   angle: 55
   damagePerTick: 7
   damageType: 1
@@ -264,6 +267,7 @@ MonoBehaviour:
   cooldown: 7
   maxHeightDifference: 5
   selectionWeight: 1
+  animatorTrigger: Attack
   minRange: 6
   damage: 30
   damageType: 0
@@ -293,6 +297,7 @@ MonoBehaviour:
   cooldown: 5
   maxHeightDifference: 15
   selectionWeight: 1
+  animatorTrigger: Attack
   projectile: {fileID: 11400000, guid: b41819bcbc2900e499e26bd0911f735f, type: 2}
   damage: 28
   damageType: 1
@@ -330,6 +335,20 @@ MonoBehaviour:
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
+--- !u!114 &2385746681235615782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482100634768810665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c98c1e25cb3d18a47824499dde80a21d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.EnemyAnimationDriver
+  locomotionDamp: 0.1
+  pauseWhenFrozen: 1
 --- !u!114 &848269056640906546
 MonoBehaviour:
   m_ObjectHideFlags: 0
