@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Frappe sismique
   description: Bond puis onde de choc. 400%.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: aa017396a83df3347a6a0ddc4a1ec837, type: 3}
   activationMode: 0
   cooldown: 15
   maxStock: 1

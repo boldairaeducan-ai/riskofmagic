@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Orbe de givre
   description: "Orbe lent qui explose (4 m) : 300%, g\xE8le 2 s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3a71b148b3aeddc46a11b5b528ed0acc, type: 3}
   activationMode: 0
   cooldown: 7
   maxStock: 1

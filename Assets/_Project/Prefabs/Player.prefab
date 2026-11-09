@@ -749,9 +749,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.PlayerExperience
   ShowTopMostFoldoutHeaderGroup: 1
-  experiencePerGold: 1
-  firstLevelExperience: 20
-  levelGrowth: 1.55
+  experiencePerGold: 0.6
+  firstLevelExperience: 35
+  levelGrowth: 1.65
   maxLevel: 99
 --- !u!114 &8969690943964524554
 MonoBehaviour:

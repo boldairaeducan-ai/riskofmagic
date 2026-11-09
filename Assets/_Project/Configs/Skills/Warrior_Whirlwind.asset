@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Tourbillon
   description: 3 coups circulaires. 90% chacun.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f30d24ae22e16d847909033c850ab569, type: 3}
   activationMode: 0
   cooldown: 7
   maxStock: 1

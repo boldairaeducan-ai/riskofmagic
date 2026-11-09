@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DashSkill
   displayName: Roulade
   description: "Esquive rapide dans la direction de d\xE9placement."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4c2d00409c0b3494f9802468f35fd9b5, type: 3}
   activationMode: 0
   cooldown: 5
   maxStock: 1

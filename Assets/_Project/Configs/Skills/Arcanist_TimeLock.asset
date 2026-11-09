@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ConeControlSkill
   displayName: Blocage temporel
   description: Fige les ennemis devant soi pendant 4 s.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d59645c7fcb8ee146b3c19f7ae8ce288, type: 3}
   activationMode: 0
   cooldown: 14
   maxStock: 1

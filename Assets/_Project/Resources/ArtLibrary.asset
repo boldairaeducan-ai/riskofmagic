@@ -99,7 +99,19 @@ MonoBehaviour:
   - name: Boss
     rarity: 4
     icon: {fileID: 0}
-  elites: []
+  elites:
+  - name: "\xC9lite ardent"
+    affix: {fileID: 11400000, guid: 56dc108941771ed4aae007bac6e0c10c, type: 2}
+    icon: {fileID: 0}
+  - name: "\xC9lite glacial"
+    affix: {fileID: 11400000, guid: 53d80d11b0a7b4b4e85299fbd6e120a5, type: 2}
+    icon: {fileID: 0}
+  - name: "\xC9lite foudroyant"
+    affix: {fileID: 11400000, guid: 4297ea3a9a419bb49a7f3dfe402778b1, type: 2}
+    icon: {fileID: 0}
+  - name: "\xC9lite \xE9th\xE9r\xE9"
+    affix: {fileID: 11400000, guid: 461e7652f90f9534fa0c3afcb642b737, type: 2}
+    icon: {fileID: 0}
   dots:
   - name: Poison
     type: 5
@@ -110,6 +122,360 @@ MonoBehaviour:
   - name: "Br\xFBlure"
     type: 1
     icon: {fileID: 0}
-  vfx: []
-  projectiles: []
-  interactables: []
+  vfx:
+  - name: VFX_Impact
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_FrostBurst
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Area
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Swing
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Blink
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Lightning
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Explosion
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_FireBurst
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_ArcaneBurst
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_PoisonCloud
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_PoisonBurst
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_DashBurst
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_ShieldPulse
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_CursePulse
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_RallyPulse
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Shockwave
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_TimePulse
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Telegraph
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_GroundWave
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_VoidBeam
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_FirePatch
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Aura_Burning
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Aura_Blizzard
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Aura_Storm
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: VFX_Aura_Spectral
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  projectiles:
+  - name: Projectile_Arrow
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_PiercingArrow
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_FireBolt
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_FrostOrb
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_EnemyBolt
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ArcaneMissile
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_Firebomb
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ArcaneBolt
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_PoisonDart
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_SpiderSpit
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_Boulder
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ChaosBolt
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_Meteor
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_FireArrow
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_FrostArrow
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ExplosiveArrow
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_Axe
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ArcaneShard
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ArcaneFrostOrb
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_HolyHammer
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_RadiantWave
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Projectile_ThrowingDagger
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  interactables:
+  - name: ItemPickup
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Chest_Small
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Chest_Large
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Chest_Choice
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: EquipmentBarrel
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Merchant
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: HealingShrine
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: RunEndSeal
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Teleporter
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: MapEvent_PurificationTomb
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: MapEvent_ChallengeAltar
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: MapEvent_CursedChest
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1

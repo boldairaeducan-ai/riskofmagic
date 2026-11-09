@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: "Pluie de fl\xE8ches"
   description: "Zone cibl\xE9e frapp\xE9e 6 fois. 60% par impact."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 24e21225c777c594a92dca70a8ef818c, type: 3}
   activationMode: 0
   cooldown: 15
   maxStock: 1

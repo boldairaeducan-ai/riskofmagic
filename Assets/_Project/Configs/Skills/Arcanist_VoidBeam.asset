@@ -41,6 +41,6 @@ MonoBehaviour:
   procCoefficient: 0.5
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51
   beamVfx: {fileID: 5492177243271413674, guid: 6f63b39098d30814eac4e8d01f24074d, type: 3}
   impactVfx: {fileID: 1177601390897264972, guid: 30bb0790d26d618418b48a70a8d0d2f1, type: 3}

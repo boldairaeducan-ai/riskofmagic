@@ -22,7 +22,7 @@ MonoBehaviour:
   attackSpeed: 0.8
   critChance: 0.01
   movement: {fileID: 11400000, guid: 5a7b5fbf574897c438943a58a6e2068d, type: 2}
-  damagePerLevel: 0.2
+  damagePerLevel: 0.15
   healthPerLevel: 0.3
   regenPerLevel: 0.2
   modelPrefab: {fileID: 0}

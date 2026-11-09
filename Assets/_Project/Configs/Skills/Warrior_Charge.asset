@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DashSkill
   displayName: Charge
   description: "Fonce en avant, 200% aux ennemis percut\xE9s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 7e029ccd4fa2a9d4c849194f47c7028f, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

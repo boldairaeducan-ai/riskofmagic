@@ -15,15 +15,15 @@ MonoBehaviour:
   displayName: Projectile magique
   description: "Charger pour acqu\xE9rir jusqu'\xE0 6 cibles (un ennemi peut \xEAtre
     cibl\xE9 plusieurs fois). 110% par projectile."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 17399e1b9ea134c4d97cd1729668f3d6, type: 3}
   activationMode: 2
   cooldown: 0
   maxStock: 1
-  castDuration: 0.5
+  castDuration: 0.25
   scalesWithAttackSpeed: 1
   canCastWhileBusy: 0
   keepsSprint: 0
-  maxChargeTime: 2
+  maxChargeTime: 1.5
   castVfx: {fileID: 0}
   castVfxAnchor: 1
   castVfxScale: 1

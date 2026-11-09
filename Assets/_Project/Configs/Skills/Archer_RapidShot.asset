@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Tir rapide
   description: "Fl\xE8ches en continu. 100% de d\xE9g\xE2ts."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 5bbca44050388b340b33b3e6003ad454, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

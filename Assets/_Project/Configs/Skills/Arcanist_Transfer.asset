@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BlinkSkill
   displayName: Transfert
   description: "T\xE9l\xE9portation de 15 m vers la vis\xE9e, \xE0 travers les ennemis."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 7ef6a5009e4690c478d5ceaeb10b4b54, type: 3}
   activationMode: 0
   cooldown: 7
   maxStock: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
   collisionRadius: 0.4
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 4294967291
+    m_Bits: 51
   flattenDirection: 0
   passThroughCharacters: 1
   arrivalVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}

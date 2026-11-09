@@ -556,7 +556,7 @@ MonoBehaviour:
   cooldown: 1.5
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 51
+    m_Bits: 4294967291
   clearanceSamples: 10
   bodyCenterHeight: 0.9
   clearanceRadius: 0.35
