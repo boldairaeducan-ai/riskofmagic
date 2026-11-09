@@ -13,6 +13,7 @@ namespace RiskOfMagic.Items.Types
         public DamageType damageType = DamageType.Lightning;
         [Range(0f, 1f)] public float chance = 0.25f;
         [Min(0f), Tooltip("Fraction of the triggering hit.")] public float damageFraction = 0.8f;
+        [Min(0f)] public float damageFractionPerExtraStack;
         [Min(1)] public int targetsFirstStack = 3;
         [Min(0)] public int targetsPerExtraStack = 2;
         [Min(0f)] public float bounceRadius = 15f;
@@ -27,7 +28,7 @@ namespace RiskOfMagic.Items.Types
                 return;
 
             int targets = Mathf.RoundToInt(Stacked(targetsFirstStack, targetsPerExtraStack, stacks));
-            float amount = proc.Damage.Amount * damageFraction;
+            float amount = proc.Damage.Amount * Stacked(damageFraction, damageFractionPerExtraStack, stacks);
             hit.Clear();
             points.Clear();
             if (proc.Victim != null)

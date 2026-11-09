@@ -1134,13 +1134,41 @@ namespace RiskOfMagic.Editor
             // Boss
             var scale = Item<ItemDefinition>("Item_ColossusScale", "Écaille du colosse", "-15% de dégâts subis (dégressif).", ItemRarity.Boss,
                 Mod(StatType.DamageTakenReduction, 0.15f));
+            // Additions
+            var pendant = Item<HealOnHitItem>("Item_BloodPendant", "Pendentif sanguin", "Chaque coup soigne 1 PV (+1).", ItemRarity.Common);
+            pendant.healPerStack = 1f;
+            var vigorRoot = Item<ItemDefinition>("Item_VigorRoot", "Racine de vigueur", "+1,5 PV/s de régénération (+1,5).", ItemRarity.Common,
+                Mod(StatType.HealthRegen, 1.5f));
+            var amber = Item<ChainOnHitItem>("Item_AmberShard", "Éclat d'ambre",
+                "20% de chances : éclair en chaîne, 50% (+15%) des dégâts, 2 cibles (+1).", ItemRarity.Uncommon);
+            amber.chance = 0.2f;
+            amber.damageFraction = 0.5f;
+            amber.damageFractionPerExtraStack = 0.15f;
+            amber.targetsFirstStack = 2;
+            amber.targetsPerExtraStack = 1;
+            amber.boltVfx = vfx.Lightning;
+            var thorns = Item<ThornsItem>("Item_ThornBracelet", "Bracelet d'épines",
+                "Quand vous êtes touché : 200% (+100%) de vos dégâts de base renvoyés à l'attaquant. Recharge 15 s (-2 s).", ItemRarity.Uncommon);
+            thorns.vfx = vfx.Impact;
+            var voodoo = Item<CurseAreaOnKillItem>("Item_VoodooDoll", "Poupée vaudou",
+                "Un ennemi tué maudit les ennemis à 4 m (+1 m) pendant 4 s.", ItemRarity.Uncommon);
+            voodoo.vfx = vfx.CursePulse;
+            var cloak = Item<StatusWhenHitItem>("Item_FugitiveCloak", "Cape du fuyard",
+                "Quand vous êtes touché : +40% de vitesse de déplacement et d'attaque pendant 2 s (+1 s). Recharge 5 s.", ItemRarity.Uncommon);
+            cloak.status = StatusType.Rally;
+            cloak.vfx = vfx.RallyPulse;
+            var resonance = Item<CritSplashItem>("Item_ResonanceStone", "Pierre de résonance",
+                "Les coups critiques infligent 50% (+25%) de leurs dégâts autour de la cible (3 m).", ItemRarity.Uncommon);
+            resonance.vfx = vfx.ArcaneBurst;
+
             var bone = Item<ShockwaveEveryHitsItem>("Item_TitanBone", "Os de titan", "Toutes les 5 attaques : onde de choc de 300% (+150%) autour de soi.", ItemRarity.Boss);
             bone.vfx = vfx.Shockwave;
 
             var items = new List<ItemDefinition>
             {
                 gauntlet, boots, hawkEye, meat, fang, oak, dagger, executioner, breaker, adrenaline, whetstone,
-                fireOrb, feather, hourglass, storm, oil, quiver,
+                pendant, vigorRoot,
+                fireOrb, feather, hourglass, storm, oil, quiver, amber, thorns, voodoo, cloak, resonance,
                 horn, grimoire, twinBlade, frostRing, banner,
                 chaosEye, phoenix, comet, crown,
                 scale, bone
