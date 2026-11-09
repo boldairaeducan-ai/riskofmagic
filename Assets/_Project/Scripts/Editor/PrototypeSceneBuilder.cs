@@ -336,9 +336,9 @@ namespace RiskOfMagic.Editor
             Configure(set.Axe, speed: 45f, gravity: 4f, lifetime: 2f, radius: 0.5f, pierce: 10);
             Configure(set.ArcaneShard, speed: 90f, gravity: 0f, lifetime: 1.5f, radius: 0.15f);
             Configure(set.ArcaneFrostOrb, speed: 18f, gravity: 0f, lifetime: 2.5f, radius: 0.35f, explosion: 4f, explodeOnExpire: true);
-            set.FireArrow.maxRange = 70f;
-            set.FrostArrow.maxRange = 80f;
-            set.ExplosiveArrow.maxRange = 70f;
+            set.FireArrow.maxRange = 45f;
+            set.FrostArrow.maxRange = 50f;
+            set.ExplosiveArrow.maxRange = 45f;
             set.Axe.maxRange = 45f;
             set.ArcaneShard.maxRange = 55f;
             set.ArcaneFrostOrb.maxRange = 45f;
@@ -357,8 +357,8 @@ namespace RiskOfMagic.Editor
                 EditorUtility.SetDirty(alternative);
 
             // Strict max ranges (m) for ranged attacks.
-            set.Arrow.maxRange = 70f;
-            set.PiercingArrow.maxRange = 90f;
+            set.Arrow.maxRange = 45f;
+            set.PiercingArrow.maxRange = 60f;
             set.ArcaneBolt.maxRange = 60f; // homing curves: a bit above the 45 m lock range
             set.ArcaneMissile.maxRange = 60f;
             set.EnemyBolt.maxRange = 40f;

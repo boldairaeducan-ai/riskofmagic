@@ -44,10 +44,12 @@ namespace RiskOfMagic.Run.MapEvents
         public abstract void Interact(PlayerAvatar player);
 
         /// <summary>Server. Unlocked director card (+ optional elite affix) on the NavMesh around the event, hunting.</summary>
-        protected EnemyActor SpawnEnemy(Vector2 distance, EliteAffix elite = null)
+        protected EnemyActor SpawnEnemy(Vector2 distance, EliteAffix elite = null, SpawnCard forcedCard = null)
         {
             var director = CombatDirector.Instance;
-            var card = director != null ? director.PickUnlockedCard() : null;
+            var card = forcedCard != null ? forcedCard : director != null ? director.PickUnlockedCard() : null;
+            if (director == null)
+                return null;
             if (card == null)
                 return null;
             for (int attempt = 0; attempt < 8; attempt++)

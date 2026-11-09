@@ -33,8 +33,13 @@ namespace RiskOfMagic.Run.MapEvents
     {
         public bool enabled = true;
         [Min(0f)] public float weight = 1f;
-        [Min(0)] public int baseEnemies = 4;
-        [Min(0)] public int enemiesPerPlayer = 1;
+        [Min(1f), Tooltip("Budget = this × difficulty coefficient (grows with time, stages and players).")]
+        public float creditsPerCoefficient = 40f;
+        [Min(1f), Tooltip("An elite costs its spawn card cost × this. What the budget can't afford as elites comes as normal enemies.")]
+        public float eliteCostMultiplier = 3f;
+        [Min(1)] public int maxEnemies = 8;
+        [Range(0.2f, 1f), Tooltip("Share of the enemies in the first wave; the rest arrives when half of it is dead.")]
+        public float firstWaveShare = 0.6f;
         public Vector2 spawnDistance = new(8f, 14f);
         [Tooltip("One item per player.")] public RarityWeights reward = new(0f, 65f, 35f, 0f);
     }
