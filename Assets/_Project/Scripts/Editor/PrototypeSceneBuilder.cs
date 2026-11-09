@@ -94,6 +94,7 @@ namespace RiskOfMagic.Editor
 
             touchedAssets.Clear();
             PostProcessBuilder.EnsureSetup();
+            HitFeedbackBuilder.Ensure();
             var vfx = BuildVfx();
             var projectiles = BuildProjectiles(vfx);
             var items = BuildItems(projectiles, vfx);

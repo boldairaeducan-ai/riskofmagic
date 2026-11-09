@@ -55,6 +55,11 @@ namespace RiskOfMagic.Enemies
         private Renderer[] renderers;
         private MaterialPropertyBlock propertyBlock;
         private Color? currentTint;
+        private Color flashColor = Color.white;
+        private float flashUntil;
+        private float flashDuration;
+        private bool wasFlashing;
+        [SerializeField, Tooltip("Extra brightness at the peak of a hit flash (HDR, feeds the bloom).")] private float flashOverbright = 1.5f;
         private Collider[] colliders;
         private int pendingLevel = 1;
 
@@ -112,7 +117,7 @@ namespace RiskOfMagic.Enemies
         }
 
         private EliteAffix CurrentElite => Elite != null ? Elite : pendingElite;
-        private bool IsBoss => definition != null && definition.isBoss;
+        public bool IsBoss => definition != null && definition.isBoss;
         private float EliteHealthMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossHealthMultiplier : CurrentElite.healthMultiplier;
         private float EliteDamageMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossDamageMultiplier : CurrentElite.damageMultiplier;
         private float EliteGoldMultiplier => CurrentElite == null ? 1f : IsBoss ? CurrentElite.bossGoldMultiplier : CurrentElite.goldMultiplier;
@@ -174,6 +179,8 @@ namespace RiskOfMagic.Enemies
             colliders = GetComponentsInChildren<Collider>(true);
             renderers = GetComponentsInChildren<Renderer>(true);
             Status = GetComponent<StatusEffects>();
+            if (GetComponent<RiskOfMagic.Feedback.EnemyHitFeedback>() == null)
+                gameObject.AddComponent<RiskOfMagic.Feedback.EnemyHitFeedback>(); // cosmetic hit reactions, every peer
             if (definition == null)
                 Debug.LogError($"[EnemyActor] Missing EnemyDefinition on {name}.", this);
             Initialize(1);
@@ -257,8 +264,12 @@ namespace RiskOfMagic.Enemies
                 else if (Elite != null)
                     tint = Elite.tint;
             }
-            if (tint == currentTint)
+
+            float flash = flashUntil > Time.time && flashDuration > 0f ? (flashUntil - Time.time) / flashDuration : 0f;
+            bool flashing = flash > 0f;
+            if (!flashing && !wasFlashing && tint == currentTint)
                 return;
+            wasFlashing = flashing;
             currentTint = tint;
 
             propertyBlock ??= new MaterialPropertyBlock();
@@ -266,19 +277,34 @@ namespace RiskOfMagic.Enemies
             {
                 if (r == null)
                     continue;
-                if (tint.HasValue)
-                {
-                    r.GetPropertyBlock(propertyBlock);
-                    propertyBlock.SetColor(ColorId, tint.Value);
-                    propertyBlock.SetColor(BaseColorId, tint.Value);
-                    r.SetPropertyBlock(propertyBlock);
-                }
-                else
+                if (!flashing && !tint.HasValue)
                 {
                     r.SetPropertyBlock(null);
+                    continue;
                 }
+                Color color = tint ?? (r.sharedMaterial != null ? r.sharedMaterial.color : Color.white);
+                if (flashing)
+                {
+                    float k = flash * flash; // sharp attack, quick release
+                    color = Color.Lerp(color, flashColor, k) * (1f + k * flashOverbright); // HDR: also brightens textured models
+                }
+                r.GetPropertyBlock(propertyBlock);
+                propertyBlock.SetColor(ColorId, color);
+                propertyBlock.SetColor(BaseColorId, color);
+                r.SetPropertyBlock(propertyBlock);
             }
         }
+
+        /// <summary>Every peer, cosmetic: brief flash of every renderer (hit feedback).</summary>
+        public void Flash(Color color, float duration)
+        {
+            flashColor = color;
+            flashDuration = Mathf.Max(0.01f, duration);
+            flashUntil = Time.time + flashDuration;
+        }
+
+        /// <summary>Renderers currently showing this enemy (placeholder or model).</summary>
+        public IReadOnlyList<Renderer> Renderers => renderers;
 
         private void OnDied(DamageInfo killingBlow)
         {

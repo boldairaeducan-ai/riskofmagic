@@ -39,6 +39,10 @@ namespace RiskOfMagic.Audio
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent hitConfirm;
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent criticalHitConfirm;
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent killConfirm;
+        [Tooltip("At the hit point of any enemy hit (layered with the enemy's own hurt sound).")]
+        [SoundSlot(Cooldown = 0.03f, MaxSimultaneous = 4)] public SoundEvent enemyImpact;
+        [SoundSlot(Cooldown = 0.03f, MaxSimultaneous = 3)] public SoundEvent enemyImpactCritical;
+        [SoundSlot(Cooldown = 0.05f, MaxSimultaneous = 3)] public SoundEvent enemyKillImpact;
         [SoundSlot(false, Cooldown = 0.15f, MaxSimultaneous = 1)] public SoundEvent playerHurt;
         [SoundSlot(false)] public SoundEvent playerDowned;
         [SoundSlot(false)] public SoundEvent playerRevived;
