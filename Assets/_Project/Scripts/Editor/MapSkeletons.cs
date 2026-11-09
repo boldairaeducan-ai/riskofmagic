@@ -632,7 +632,7 @@ namespace RiskOfMagic.Editor
             RenderSettings.fogDensity = fogDensity;
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
             RenderSettings.ambientLight = ambient;
-            foreach (var light in Object.FindObjectsByType<Light>(FindObjectsSortMode.None))
+            foreach (var light in Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude))
             {
                 if (light.type != LightType.Directional)
                     continue;
