@@ -195,9 +195,10 @@ namespace RiskOfMagic.Audio
                 case TeleporterState.Charging:
                     AudioService.PlayAt(config.teleporterActivated, position);
                     bool final = StageManager.Instance != null && StageManager.Instance.IsFinalStage;
+                    var mapBoss = SceneMusic.Current != null ? SceneMusic.Current.BossTrack : null;
                     AudioService.SetOverrideMusic(final && config.finalBossMusic != null && config.finalBossMusic.clip != null
                         ? config.finalBossMusic
-                        : config.bossMusic);
+                        : mapBoss ?? config.bossMusic);
                     break;
                 case TeleporterState.Charged:
                     AudioService.PlayAt(config.teleporterCharged, position);

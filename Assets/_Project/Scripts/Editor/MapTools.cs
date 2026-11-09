@@ -164,6 +164,7 @@ namespace RiskOfMagic.Editor
             PrefabUtility.InstantiatePrefab(hud);
             new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
             spec.Atmosphere?.Invoke(level.transform);
+            AddMapMusic(spec.SceneName);
 
             Physics.SyncTransforms();
             surface.BuildNavMesh();
@@ -184,6 +185,30 @@ namespace RiskOfMagic.Editor
             }
             Debug.Log($"[Risk of Magic] Map created at {path} (in the build). Add '{spec.SceneName}' to {RotationPath} to play it.");
             return path;
+        }
+
+        private const string MusicFolder = "Assets/_Project/Audio/Music";
+
+        /// <summary>SceneMusic pointing to the map's music asset (created empty once, never overwritten: plug the clips there).</summary>
+        private static void AddMapMusic(string sceneName)
+        {
+            if (!AssetDatabase.IsValidFolder(MusicFolder))
+            {
+                Directory.CreateDirectory(MusicFolder);
+                AssetDatabase.Refresh();
+            }
+            string path = $"{MusicFolder}/{sceneName}_Music.asset";
+            var asset = AssetDatabase.LoadAssetAtPath<RiskOfMagic.Audio.MusicAsset>(path);
+            if (asset == null)
+            {
+                asset = ScriptableObject.CreateInstance<RiskOfMagic.Audio.MusicAsset>();
+                AssetDatabase.CreateAsset(asset, path);
+            }
+            var music = new GameObject("SceneMusic").AddComponent<RiskOfMagic.Audio.SceneMusic>();
+            var so = new SerializedObject(music);
+            so.FindProperty("slot").enumValueIndex = (int)RiskOfMagic.Audio.MusicSlot.Stage;
+            so.FindProperty("music").objectReferenceValue = asset;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         /// <summary>Replaces the rotation pools if it still is the default one (Prototype only); returns false otherwise.</summary>
