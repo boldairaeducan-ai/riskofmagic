@@ -15,8 +15,8 @@ namespace RiskOfMagic.Player
     public class PlayerExperience : NetworkBehaviour
     {
         [SerializeField, Min(0f), Tooltip("Experience per point of gold reward.")] private float experiencePerGold = 1f;
-        [SerializeField, Min(1f), Tooltip("Experience to go from level 1 to 2.")] private float firstLevelExperience = 20f;
-        [SerializeField, Min(1.01f), Tooltip("Each level needs this much more experience than the previous one.")] private float levelGrowth = 1.55f;
+        [SerializeField, Min(1f), Tooltip("Experience to go from level 1 to 2.")] private float firstLevelExperience = 35f;
+        [SerializeField, Min(1.01f), Tooltip("Each level needs this much more experience than the previous one.")] private float levelGrowth = 1.65f;
         [SerializeField, Min(1)] private int maxLevel = 99;
 
         private readonly NetworkVariable<float> experience = new();

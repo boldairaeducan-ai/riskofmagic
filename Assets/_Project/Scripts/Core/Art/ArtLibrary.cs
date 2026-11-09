@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using RiskOfMagic.Combat;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Items;
 using UnityEngine;
 
@@ -45,6 +46,22 @@ namespace RiskOfMagic.Core
             [Tooltip("Fallback icon of items of this rarity without their own icon.")] public Sprite icon;
         }
 
+        [Serializable]
+        public class EliteArt
+        {
+            [Tooltip("Do not edit.")] public string name;
+            public EliteAffix affix;
+            [Tooltip("Shown above elite enemies.")] public Sprite icon;
+        }
+
+        [Serializable]
+        public class DotArt
+        {
+            [Tooltip("Do not edit.")] public string name;
+            public DamageType type;
+            [Tooltip("Shown above enemies and in the player's status bar while the damage over time is active.")] public Sprite icon;
+        }
+
         [Header("Menus")]
         [Tooltip("Replaces the « RISK OF MAGIC » title of the main menu.")] public Sprite logo;
         [Tooltip("Full-screen image behind the main menu.")] public Sprite menuBackground;
@@ -55,6 +72,8 @@ namespace RiskOfMagic.Core
         [Header("Icons")]
         public List<StatusArt> statuses = new();
         public List<RarityArt> rarities = new();
+        public List<EliteArt> elites = new();
+        public List<DotArt> dots = new();
 
         [Header("Prefabs (applied by Build Prototype Scene)")]
         public List<PrefabArt> vfx = new();
@@ -110,6 +129,22 @@ namespace RiskOfMagic.Core
                 return item.icon;
             var rarityIcon = Instance != null ? Instance.GetRarityIcon(item.rarity) : null;
             return rarityIcon != null ? rarityIcon : fallback;
+        }
+
+        public Sprite GetEliteIcon(EliteAffix affix)
+        {
+            foreach (var entry in elites)
+                if (entry.affix == affix)
+                    return entry.icon;
+            return null;
+        }
+
+        public DotArt GetDot(DamageType type)
+        {
+            foreach (var entry in dots)
+                if (entry.type == type)
+                    return entry;
+            return null;
         }
 
         public Sprite GetRarityIcon(ItemRarity rarity)

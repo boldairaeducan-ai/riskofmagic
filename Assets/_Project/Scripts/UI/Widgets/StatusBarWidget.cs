@@ -23,6 +23,7 @@ namespace RiskOfMagic.UI
             public TMP_Text Letter, Stacks;
         }
 
+        private static readonly DamageType[] Dots = { DamageType.Fire, DamageType.Poison, DamageType.Bleed };
         private readonly List<Slot> slots = new();
         /// <summary>Per status: when the current duration started (reset when Until moves forward) and its Until.</summary>
         private readonly Dictionary<StatusType, (double start, double until)> timings = new();
@@ -61,6 +62,26 @@ namespace RiskOfMagic.UI
                     timing = (now, entry.Until); // new or refreshed
                 timings[entry.Type] = timing;
                 Fill(Get(used++), entry, art, now, timing.start);
+            }
+            // Damage over time (replicated mask: no stacks / duration).
+            foreach (var type in Dots)
+            {
+                if (Player.Health == null || !Player.Health.HasDot(type))
+                    continue;
+                var art = library != null ? library.GetDot(type) : null;
+                var slot = Get(used++);
+                Fill(slot, new StatusEntry { Stacks = 1, Until = double.MaxValue }, null, now, now);
+                var sprite = art != null ? art.icon : null;
+                var color = theme != null ? theme.dangerColor : Color.red;
+                if (slot.Icon != null)
+                {
+                    slot.Icon.sprite = sprite;
+                    slot.Icon.color = sprite != null ? Color.white : new Color(color.r, color.g, color.b, 0.25f);
+                }
+                if (slot.Letter != null)
+                    slot.Letter.text = sprite != null ? string.Empty : (art != null ? art.name : type.ToString()).Substring(0, 1);
+                if (slot.Frame != null)
+                    slot.Frame.color = color;
             }
             for (int i = used; i < slots.Count; i++)
                 slots[i].Root.gameObject.SetActive(false);

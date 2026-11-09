@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using RiskOfMagic.Combat;
 using RiskOfMagic.Core;
+using RiskOfMagic.Enemies.Elites;
 using RiskOfMagic.Items;
 using UnityEditor;
 using UnityEngine;
@@ -98,8 +99,31 @@ namespace RiskOfMagic.Editor
                 target.rarities.Add(new ArtLibrary.RarityArt { name = RarityNames.TryGetValue(rarity, out var n) ? n : rarity.ToString(), rarity = rarity });
                 dirty = true;
             }
+            foreach (var (type, name) in new[] { (DamageType.Poison, "Poison"), (DamageType.Bleed, "Saignement"), (DamageType.Fire, "Brûlure") })
+            {
+                if (target.GetDot(type) != null)
+                    continue;
+                target.dots.Add(new ArtLibrary.DotArt { name = name, type = type });
+                dirty = true;
+            }
             if (dirty)
                 EditorUtility.SetDirty(target);
+        }
+
+        /// <summary>One icon slot per elite affix (called by the builder).</summary>
+        public static void RegisterElite(EliteAffix affix, string displayName)
+        {
+            var entry = Library.elites.Find(e => e.affix == affix);
+            if (entry == null)
+            {
+                Library.elites.Add(new ArtLibrary.EliteArt { name = displayName, affix = affix });
+                EditorUtility.SetDirty(Library);
+            }
+            else if (entry.name != displayName)
+            {
+                entry.name = displayName;
+                EditorUtility.SetDirty(Library);
+            }
         }
 
         private static List<ArtLibrary.PrefabArt> ListFor(Category category) => category switch

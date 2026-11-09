@@ -69,6 +69,7 @@ namespace RiskOfMagic.Editor
             BuildPickupLabels(worldLayer);
             BuildDamageNumbers(worldLayer);
             BuildLockOn(worldLayer);
+            BuildEnemyStatusIcons(worldLayer);
 
             var gameplay = Stretch("Gameplay", rootRect);
             var gameplayGroup = gameplay.gameObject.AddComponent<CanvasGroup>();
@@ -681,6 +682,34 @@ namespace RiskOfMagic.Editor
             {
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("template").objectReferenceValue = template;
+            });
+        }
+
+        /// <summary>Elite / damage-over-time icons above enemies (ArtLibrary icons, colored initials otherwise).</summary>
+        private static void BuildEnemyStatusIcons(RectTransform parent)
+        {
+            var layer = Stretch("EnemyStatusIcons", parent);
+            var row = Rect("RowTemplate", layer, Center, Center, Vector2.zero, new Vector2(120f, 26f));
+            row.pivot = new Vector2(0.5f, 0f);
+            var layout = row.gameObject.AddComponent<UnityEngine.UI.HorizontalLayoutGroup>();
+            layout.spacing = 4f;
+            layout.childAlignment = TextAnchor.LowerCenter;
+            layout.childControlWidth = layout.childControlHeight = false;
+            layout.childForceExpandWidth = layout.childForceExpandHeight = false;
+            for (int i = 0; i < 4; i++)
+            {
+                var icon = Rect($"Icon{i}", row, Center, Center, Vector2.zero, new Vector2(24f, 24f));
+                var image = icon.gameObject.AddComponent<UnityEngine.UI.Image>();
+                image.raycastTarget = false;
+                image.preserveAspect = true;
+                var letter = Text(icon, "Letter", string.Empty, 15f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Center);
+                letter.fontStyle = FontStyles.Bold;
+            }
+            var widget = layer.gameObject.AddComponent<EnemyStatusIconsWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("rowTemplate").objectReferenceValue = row;
             });
         }
 

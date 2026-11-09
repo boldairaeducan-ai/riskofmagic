@@ -83,9 +83,11 @@ marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 | Curseur de souris (texture importée en *Cursor*) | `cursor`, `cursorHotspot` |
 | Icônes des statuts (barre de statuts du HUD, au-dessus du portrait) | `statuses` (13) |
 | Icônes de rareté (icône de secours des objets sans icône) | `rarities` (5) |
+| Icônes des élites (au-dessus des ennemis élites) | `elites` (4) |
+| Icônes des DoT : poison, saignement, brûlure (au-dessus des ennemis + barre de statuts) | `dots` (3) |
 
 ### 2.4 À prévoir (pas encore d'emplacement ni d'affichage)
-Icônes des élites, icônes des DoT (poison, saignement, brûlure), icônes des défis du journal.
+Icônes des défis du journal.
 
 ---
 

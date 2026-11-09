@@ -1033,6 +1033,9 @@ namespace RiskOfMagic.Editor
             c.description = description;
             c.bodyColor = color;
             c.maxHealth = health;
+            c.damagePerLevel = 0.15f; // RoR2: 0.2; lower because levels come faster here (see PlayerExperience)
+            c.healthPerLevel = 0.3f;
+            c.regenPerLevel = 0.2f;
             c.baseDamage = 10f;
             c.movement = movement;
             c.primary = primary;
@@ -2388,7 +2391,10 @@ namespace RiskOfMagic.Editor
 
             var all = new List<EliteAffix> { burning, blizzard, storm, spectral };
             foreach (var affix in all)
+            {
                 EditorUtility.SetDirty(affix);
+                ArtLibraryBuilder.RegisterElite(affix, $"Élite {affix.nameMasculine}");
+            }
             return all;
         }
 

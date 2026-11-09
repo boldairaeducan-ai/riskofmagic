@@ -23,7 +23,7 @@ namespace RiskOfMagic.Characters
         public MovementConfig movement;
 
         [Header("Per level (above 1, RoR2-style)")]
-        [Min(0f), Tooltip("Base damage gained per level (fraction of baseDamage).")] public float damagePerLevel = 0.2f;
+        [Min(0f), Tooltip("Base damage gained per level (fraction of baseDamage).")] public float damagePerLevel = 0.15f;
         [Min(0f), Tooltip("Max health gained per level (fraction of maxHealth).")] public float healthPerLevel = 0.3f;
         [Min(0f), Tooltip("Regen gained per level (fraction of healthRegen).")] public float regenPerLevel = 0.2f;
 
