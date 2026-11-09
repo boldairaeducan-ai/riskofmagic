@@ -39,8 +39,6 @@ namespace RiskOfMagic.UI
         [SerializeField] private TMP_Text statusLabel;
         [SerializeField] private TMP_Text profileLabel;
         [SerializeField] private TMP_Text versionLabel;
-        [SerializeField, Tooltip("Last played character, behind the menu.")] private CharacterPreview heroPreview;
-        [SerializeField] private TMP_Text heroLabel;
         [SerializeField, Tooltip("ArtLibrary.menuBackground")] private UnityEngine.UI.Image backgroundImage;
         [SerializeField, Tooltip("ArtLibrary.logo, replaces gameTitle")] private UnityEngine.UI.Image logoImage;
         [SerializeField] private TMP_Text gameTitle;
@@ -218,7 +216,7 @@ namespace RiskOfMagic.UI
             Select(target != null ? target.gameObject : null);
         }
 
-        /// <summary>Profile summary, last played character.</summary>
+        /// <summary>Profile summary.</summary>
         private void RefreshHome()
         {
             if (profileLabel != null)
@@ -235,15 +233,6 @@ namespace RiskOfMagic.UI
                     text += $"   ·   record {(int)(best / 60f)}:{(int)(best % 60f):00}";
                 profileLabel.text = text;
             }
-
-            var catalog = GameCatalog.Instance;
-            var character = catalog != null ? catalog.GetCharacter(PlayerPrefs.GetInt(LobbyState.LastCharacterKey, 0)) : null;
-            if (character == null || !MetaProgression.IsUnlocked(character))
-                character = catalog != null ? catalog.GetCharacter(0) : null;
-            if (heroPreview != null)
-                heroPreview.Show(character);
-            if (heroLabel != null)
-                heroLabel.text = character != null ? $"{character.displayName}\n<size=55%><alpha=#90>{character.description}</size>" : string.Empty;
         }
 
         private void ApplyArt()

@@ -34,12 +34,11 @@ namespace RiskOfMagic.Editor
         {
             var theme = H.UseTheme();
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-            var mainCamera = Camera.main;
-            if (mainCamera != null)
-            {
-                mainCamera.clearFlags = CameraClearFlags.SolidColor;
-                mainCamera.backgroundColor = new Color(0.06f, 0.05f, 0.08f);
-            }
+            // The 3D set (own camera, lights, atmosphere) replaces the default camera and light.
+            foreach (var go in scene.GetRootGameObjects())
+                if (go.GetComponent<Camera>() != null || go.GetComponent<Light>() != null)
+                    Object.DestroyImmediate(go);
+            PrefabUtility.InstantiatePrefab(MenuBackdropBuilder.GetOrCreate(), scene);
 
             // Network (persists into the game scene)
             var netGo = new GameObject("NetworkManager");
@@ -78,19 +77,6 @@ namespace RiskOfMagic.Editor
             var home = H.Stretch("Home", root);
             home.gameObject.AddComponent<CanvasGroup>();
             home.gameObject.AddComponent<FadeInOnEnable>();
-
-            var heroRect = H.Rect("Hero", home, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-60f, 0f), new Vector2(840f, 1050f));
-            heroRect.gameObject.AddComponent<UnityEngine.UI.RawImage>().raycastTarget = false;
-            var hero = heroRect.gameObject.AddComponent<CharacterPreview>();
-            H.Props(hero, so =>
-            {
-                so.FindProperty("transparentBackground").boolValue = true;
-                so.FindProperty("stagePosition").vector3Value = new Vector3(60f, -500f, 0f);
-                so.FindProperty("resolution").vector2IntValue = new Vector2Int(840, 1050);
-                so.FindProperty("rotationSpeed").floatValue = 12f;
-            });
-            var heroLabel = H.Text(H.Rect("HeroName", home, H.BottomRight, H.BottomRight, new Vector2(-100f, 90f), new Vector2(720f, 130f)), null,
-                string.Empty, 44f, HudFont.Title, HudColor.Text, TextAlignmentOptions.BottomRight);
 
             var band = H.Rect("Band", home, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), Vector2.zero, new Vector2(700f, 0f));
             band.anchorMin = Vector2.zero;
@@ -217,8 +203,6 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("multiplayerPanel").objectReferenceValue = online.gameObject;
                 so.FindProperty("profileLabel").objectReferenceValue = profile;
                 so.FindProperty("versionLabel").objectReferenceValue = version;
-                so.FindProperty("heroPreview").objectReferenceValue = hero;
-                so.FindProperty("heroLabel").objectReferenceValue = heroLabel;
                 so.FindProperty("backgroundImage").objectReferenceValue = background;
                 so.FindProperty("logoImage").objectReferenceValue = logo;
                 so.FindProperty("gameTitle").objectReferenceValue = gameTitle;

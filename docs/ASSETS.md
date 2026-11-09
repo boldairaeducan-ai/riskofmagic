@@ -76,7 +76,11 @@ marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 | Équipements | 3 | `icon` de chaque équipement (`Configs/Equipment`) |
 | Portraits de personnages | 6 | `portrait` de chaque personnage (`Configs/Characters`) — HUD + cartes du salon |
 
-### 2.3 `ArtLibrary`
+### 2.3 Décor du menu principal — `Prefabs/Menu/MenuBackdrop.prefab`
+Créé une fois (ruines, feu de camp, obélisque en placeholders), jamais écrasé : à habiller librement.
+Caméra, point visé, ciel, brouillard et lumière ambiante se règlent sur le composant `MenuBackdrop`.
+
+### 2.4 `ArtLibrary`
 | Quoi | Champ |
 |---|---|
 | Logo (remplace le titre de l'accueil), fond du menu, fond de l'écran de chargement | `logo`, `menuBackground`, `loadingBackground` |
@@ -86,7 +90,7 @@ marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 | Icônes des élites (au-dessus des ennemis élites) | `elites` (4) |
 | Icônes des DoT : poison, saignement, brûlure (au-dessus des ennemis + barre de statuts) | `dots` (3) |
 
-### 2.4 À prévoir (pas encore d'emplacement ni d'affichage)
+### 2.5 À prévoir (pas encore d'emplacement ni d'affichage)
 Icônes des défis du journal.
 
 ---

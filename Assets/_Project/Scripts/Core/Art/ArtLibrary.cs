@@ -64,7 +64,7 @@ namespace RiskOfMagic.Core
 
         [Header("Menus")]
         [Tooltip("Replaces the « RISK OF MAGIC » title of the main menu.")] public Sprite logo;
-        [Tooltip("Full-screen image behind the main menu.")] public Sprite menuBackground;
+        [Tooltip("Optional full-screen image covering the 3D menu set (Prefabs/Menu/MenuBackdrop).")] public Sprite menuBackground;
         [Tooltip("Full-screen image of the loading screen.")] public Sprite loadingBackground;
         [Tooltip("Texture imported as « Cursor ».")] public Texture2D cursor;
         public Vector2 cursorHotspot;
