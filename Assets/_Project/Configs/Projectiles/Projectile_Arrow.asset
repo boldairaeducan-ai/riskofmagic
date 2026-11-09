@@ -30,3 +30,4 @@ MonoBehaviour:
     m_Bits: 51
   dot: {fileID: 0}
   freezeDuration: 0
+  backstabCritical: 0

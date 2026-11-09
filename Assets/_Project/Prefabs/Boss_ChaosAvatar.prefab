@@ -326,6 +326,9 @@ MonoBehaviour:
   curseDamageTakenMultiplier: 1.3
   chillSpeedMultiplier: 0.7
   channelingSpeedMultiplier: 0.5
+  bannerDamageBonus: 0.2
+  stealthSpeedBonus: 0.3
+  markedDamageTakenMultiplier: 1.5
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &5341339368825160878
@@ -530,6 +533,11 @@ MonoBehaviour:
   turnSpeed: 540
   navMeshSnapDistance: 3
   wanderPause: {x: 2, y: 5}
+  surround: 1
+  maxSpacingAngle: 40
+  minRingRadius: 2.2
+  commitDistance: 2.5
+  avoidancePriorityRange: {x: 30, y: 70}
 --- !u!1 &4535546627600819261
 GameObject:
   m_ObjectHideFlags: 0

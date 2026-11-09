@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ShieldSkill
   displayName: Bouclier arcanique
   description: "Bloque 95% des d\xE9g\xE2ts pendant 3 s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 458adb709701e1546849e38d339c662a, type: 3}
   activationMode: 0
   cooldown: 10
   maxStock: 1

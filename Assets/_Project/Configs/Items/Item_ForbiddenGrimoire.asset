@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: Grimoire interdit
   description: "+1 charge (+1) \xE0 toutes les comp\xE9tences sauf la principale."
-  rarity: 3
+  rarity: 2
   pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721a22df73547a84ca091c21f7ff9216, type: 3}
+  m_Name: Shadow_ShadowStep
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ShadowStepSkill
+  displayName: Pas de l'ombre
+  description: "T\xE9l\xE9portation dans le dos de la cible vis\xE9e (20 m) ; le
+    coup suivant est un critique garanti."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 7
+  maxStock: 1
+  castDuration: 0
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 1
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 0da7138faa8368d4e9504d1df57b061a, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  range: 20
+  aimTolerance: 3
+  distanceBehind: 1.6
+  ambushDuration: 4
+  vfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}

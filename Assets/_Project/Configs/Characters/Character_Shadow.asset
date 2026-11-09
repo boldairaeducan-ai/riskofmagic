@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Shadow
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Ombre
+  description: "Assassin furtif : invisibilit\xE9, critiques dans le dos, marque."
+  bodyColor: {r: 0.3, g: 0.25, b: 0.4, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 85
+  healthRegen: 1
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: 17e3260445a7d894aa78bff7cca03469, type: 2}
+  damagePerLevel: 0.2
+  healthPerLevel: 0.3
+  regenPerLevel: 0.2
+  modelPrefab: {fileID: 0}
+  viewModelPrefab: {fileID: 0}
+  footstepSound: {fileID: 11400000, guid: 109aaf539e62ba247a20dbd76faf57dc, type: 2}
+  jumpSound: {fileID: 11400000, guid: d39779c638e12c44196711fc2ba21891, type: 2}
+  landSound: {fileID: 11400000, guid: f97e576707e6eb14a8a8cb2ad237b183, type: 2}
+  primary: {fileID: 11400000, guid: 2000b64f73a13064b92cc32881099e70, type: 2}
+  secondary: {fileID: 11400000, guid: 1eed02d5e1979c7429549b149cff8b52, type: 2}
+  utility: {fileID: 11400000, guid: aad56c4a0ec92094f9f7fabb05dc16d2, type: 2}
+  special: {fileID: 11400000, guid: 037af05f9f51a9d41893750604b35e18, type: 2}
+  primaryAlt: {fileID: 11400000, guid: 42f33eda046a28f488b5f4b4e0590109, type: 2}
+  secondaryAlt: {fileID: 11400000, guid: f4ecc83e9b3645340b7995301ca3b4af, type: 2}
+  utilityAlt: {fileID: 11400000, guid: 229cfb397f84bed4bac96e93e10dd57a, type: 2}
+  specialAlt: {fileID: 11400000, guid: d5976b7b1c33a0a44bef2204f6683865, type: 2}

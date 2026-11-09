@@ -27,6 +27,7 @@ MonoBehaviour:
   playerDowned: {fileID: 11400000, guid: 3d3a5c5c3c2a9144eb065b93b2997ef3, type: 2}
   playerRevived: {fileID: 11400000, guid: 60ed8d37e346f6142b6d80fa6cf46251, type: 2}
   playerDeath: {fileID: 11400000, guid: 35346665360ea1045a746abfe6caf9a8, type: 2}
+  levelUp: {fileID: 11400000, guid: b46b65f46f1e55646a6fd41531148be3, type: 2}
   goldGained: {fileID: 11400000, guid: 5a719463dc1ea1e448e318dfb907396d, type: 2}
   purchase: {fileID: 11400000, guid: c49b65e957ba97d49b70ca59b2283df1, type: 2}
   itemPickupCommon: {fileID: 11400000, guid: 62764ea053c40a44c8300a5cec869261, type: 2}

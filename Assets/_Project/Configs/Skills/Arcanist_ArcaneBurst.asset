@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Explosion arcanique
   description: 'Explosion autour de soi : 200%, repousse les ennemis.'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 337b27b1e51bebf4697e111b91d1084b, type: 3}
   activationMode: 0
   cooldown: 6
   maxStock: 1
@@ -42,6 +42,8 @@ MonoBehaviour:
   tickInterval: 0.2
   hitOncePerTarget: 0
   dot: {fileID: 0}
+  freezeDuration: 0
+  allyHealPerTick: 0
   knockbackDistance: 7
   knockbackDuration: 0.25
   casterUpwardVelocity: 0

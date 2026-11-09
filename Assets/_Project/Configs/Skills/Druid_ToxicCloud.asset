@@ -42,6 +42,8 @@ MonoBehaviour:
   tickInterval: 0.5
   hitOncePerTarget: 0
   dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  freezeDuration: 0
+  allyHealPerTick: 0
   knockbackDistance: 0
   knockbackDuration: 0.25
   casterUpwardVelocity: 0

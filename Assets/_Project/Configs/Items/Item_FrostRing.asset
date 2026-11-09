@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7dcaa910eb0de47838f67f9d7aee71, type: 3}
+  m_Name: Item_FrostRing
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.FreezeOnHitItem
+  displayName: Anneau de givre
+  description: 10% (+5%) de chances de geler 1,5 s et d'infliger 250% de givre.
+  rarity: 2
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  chanceFirstStack: 0.1
+  chancePerExtraStack: 0.05
+  freezeDuration: 1.5
+  damageCoefficient: 2.5
+  vfx: {fileID: 9132804375429166580, guid: faa32d8c81e7d0644ab69c0fc0b4948a, type: 3}

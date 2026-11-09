@@ -22,6 +22,9 @@ MonoBehaviour:
   attackSpeed: 1
   critChance: 0.01
   movement: {fileID: 11400000, guid: 7e2a1c53f1bf3df4c916c0a24bfc1c3b, type: 2}
+  damagePerLevel: 0.2
+  healthPerLevel: 0.3
+  regenPerLevel: 0.2
   modelPrefab: {fileID: 0}
   viewModelPrefab: {fileID: 0}
   footstepSound: {fileID: 11400000, guid: 6827b21eddf6aa245af332dc85e1aced, type: 2}

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1e98b7d64f46e42bfb1913709f5097, type: 3}
+  m_Name: Projectile_HolyHammer
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileDefinition
+  visualPrefab: {fileID: 8384957632874198450, guid: 2db0a18bdf9dd2241b4be6a90558203d, type: 3}
+  impactVfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}
+  fireSound: {fileID: 11400000, guid: 010381c3a9c109146ba6c210289b1eee, type: 2}
+  impactSound: {fileID: 11400000, guid: e3730cadc80d2a242bf74301c5589a71, type: 2}
+  speed: 55
+  gravity: 0
+  lifetime: 1.5
+  maxRange: 50
+  radius: 0.35
+  homingTurnRate: 0
+  pierceCount: 0
+  explosionRadius: 0
+  explodeOnExpire: 0
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  dot: {fileID: 0}
+  freezeDuration: 1
+  backstabCritical: 0

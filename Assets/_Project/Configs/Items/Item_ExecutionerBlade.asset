@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Item_ExecutionerBlade
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ExecutionerItem
   displayName: Lame du bourreau
-  description: "+20% (+20%) de d\xE9g\xE2ts contre les ennemis sous 30% de PV."
-  rarity: 1
+  description: "+30% (+30%) de d\xE9g\xE2ts contre les ennemis sous 30% de PV."
+  rarity: 0
   pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
   healthThreshold: 0.3
-  bonusPerStack: 0.2
+  bonusPerStack: 0.3
+  aboveThreshold: 0

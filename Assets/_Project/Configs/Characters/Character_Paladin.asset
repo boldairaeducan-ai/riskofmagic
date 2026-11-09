@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3d1bff8b346dda4eb4fdda07fac1f37, type: 3}
+  m_Name: Character_Paladin
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
+  displayName: Paladin
+  description: "Soutien de premi\xE8re ligne : soins, protection, d\xE9g\xE2ts sacr\xE9s."
+  bodyColor: {r: 0.95, g: 0.85, b: 0.45, a: 1}
+  portrait: {fileID: 0}
+  maxHealth: 140
+  healthRegen: 1
+  baseDamage: 10
+  attackSpeed: 1
+  critChance: 0.01
+  movement: {fileID: 11400000, guid: 34b63508e89bc4a40bfb1ba54e8cf70a, type: 2}
+  damagePerLevel: 0.2
+  healthPerLevel: 0.3
+  regenPerLevel: 0.2
+  modelPrefab: {fileID: 0}
+  viewModelPrefab: {fileID: 0}
+  footstepSound: {fileID: 11400000, guid: 09d27462ecebe044aa9b8e33c18c75b5, type: 2}
+  jumpSound: {fileID: 11400000, guid: a5c603973cb8c0c4faf0eb2f2bcf4e44, type: 2}
+  landSound: {fileID: 11400000, guid: 3e74e578786dcdb48a7abd45250408ce, type: 2}
+  primary: {fileID: 11400000, guid: e439a05c906fa8341a225a92881d1068, type: 2}
+  secondary: {fileID: 11400000, guid: 804882ba4eb16974e97249310a241c98, type: 2}
+  utility: {fileID: 11400000, guid: 6a3705d344d634c49b49102739130e49, type: 2}
+  special: {fileID: 11400000, guid: c0f9e1a94562eb34c80a7804c28d9bbc, type: 2}
+  primaryAlt: {fileID: 11400000, guid: c18a9535e7951264ca083d9c671ccdb2, type: 2}
+  secondaryAlt: {fileID: 11400000, guid: c1944798c016b5a4cb4b9ddfb7ab90db, type: 2}
+  utilityAlt: {fileID: 11400000, guid: 39d9886f72813ec42949fba79b8e7ea4, type: 2}
+  specialAlt: {fileID: 11400000, guid: 4050f1999596f244884de0d5a1b6b5e9, type: 2}

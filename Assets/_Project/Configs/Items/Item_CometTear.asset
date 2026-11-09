@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e77b95323bd16c84bac494d55d957b2d, type: 3}
+  m_Name: Item_CometTear
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.MeteorOnHitItem
+  displayName: "Larme de com\xE8te"
+  description: "8% (+4%) de chances qu'un coup appelle un m\xE9t\xE9ore : 500% dans
+    5 m."
+  rarity: 3
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  chanceFirstStack: 0.08
+  chancePerExtraStack: 0.04
+  damageCoefficient: 5
+  meteor: {fileID: 11400000, guid: 8068d34b56dd28944b60a59fefd91284, type: 2}
+  fallHeight: 25
+  fallTime: 0.8

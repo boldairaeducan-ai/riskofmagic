@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "\xC9clats arcaniques"
   description: "Rafale de 3 projectiles rapides : 3 \xD7 60%."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 9cf3ac0b624168545975e8923bfe94e3, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

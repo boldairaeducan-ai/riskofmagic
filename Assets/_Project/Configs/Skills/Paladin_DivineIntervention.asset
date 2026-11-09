@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 814861e120706a04a86b4c7ce4e4be95, type: 3}
+  m_Name: Paladin_DivineIntervention
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DivineInterventionSkill
+  displayName: Intervention divine
+  description: "Rel\xE8ve les alli\xE9s \xE0 terre \xE0 30 m (50% PV) et les prot\xE8ge
+    3 s. Seul : vous soigne de 50%."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 60
+  maxStock: 1
+  castDuration: 0.5
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 24af9a0ad7843e740a6c68f395caa6c2, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  radius: 30
+  reviveHealthFraction: 0.5
+  protectionReduction: 0.9
+  protectionDuration: 3
+  selfHealFraction: 0.5
+  reviveVfx: {fileID: 8354516694192447443, guid: 2429eb8912a3b9745b72beaf1482da5b, type: 3}

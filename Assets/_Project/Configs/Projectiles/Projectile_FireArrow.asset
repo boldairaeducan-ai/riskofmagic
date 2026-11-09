@@ -28,5 +28,6 @@ MonoBehaviour:
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  dot: {fileID: 0}
+  dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
   freezeDuration: 0
+  backstabCritical: 0

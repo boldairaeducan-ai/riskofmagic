@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ProjectileOnHitItem
   displayName: "Carquois enchant\xE9"
   description: "10% de chances : missile chercheur, 300% des d\xE9g\xE2ts (+300%)."
-  rarity: 2
+  rarity: 1
   pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []

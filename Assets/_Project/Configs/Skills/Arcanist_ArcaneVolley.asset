@@ -19,11 +19,11 @@ MonoBehaviour:
   activationMode: 2
   cooldown: 0
   maxStock: 1
-  castDuration: 0.25
+  castDuration: 0.5
   scalesWithAttackSpeed: 1
   canCastWhileBusy: 0
   keepsSprint: 0
-  maxChargeTime: 1.5
+  maxChargeTime: 2
   castVfx: {fileID: 0}
   castVfxAnchor: 1
   castVfxScale: 1

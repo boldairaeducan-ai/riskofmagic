@@ -38,17 +38,26 @@ MonoBehaviour:
     reach: 1.6
     hitDelay: 0.1
     lunge: 0
+    projectile: {fileID: 0}
+    projectileCoefficient: 0
   - damageCoefficient: 1
     radius: 1.6
     reach: 1.6
     hitDelay: 0.1
     lunge: 0
+    projectile: {fileID: 0}
+    projectileCoefficient: 0
   - damageCoefficient: 2
     radius: 2.2
     reach: 1.8
     hitDelay: 0.15
     lunge: 6
+    projectile: {fileID: 0}
+    projectileCoefficient: 0
   comboResetTime: 0.9
   dot: {fileID: 0}
   knockbackDistance: 0
+  backstabCritical: 0
+  healAlliesOnHit: 0
+  healRadius: 10
   swingVfx: {fileID: 7567192199689358438, guid: 8456f2fda818e0d458b34996233552c0, type: 3}

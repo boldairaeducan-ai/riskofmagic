@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a1e98b7d64f46e42bfb1913709f5097, type: 3}
+  m_Name: Projectile_RadiantWave
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.ProjectileDefinition
+  visualPrefab: {fileID: 1542289100475366540, guid: 3b01032b90eea75499d0db0272ea99e3, type: 3}
+  impactVfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}
+  fireSound: {fileID: 11400000, guid: cc6b2b81b34105445a5d7b35e2d420f9, type: 2}
+  impactSound: {fileID: 11400000, guid: 0914b145b2085f54ab20867b2fef5421, type: 2}
+  speed: 30
+  gravity: 0
+  lifetime: 0.4
+  maxRange: 8
+  radius: 0.9
+  homingTurnRate: 0
+  pierceCount: 20
+  explosionRadius: 0
+  explodeOnExpire: 0
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  dot: {fileID: 0}
+  freezeDuration: 0
+  backstabCritical: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.ItemDefinition
   displayName: "Bouclier de ch\xEAne"
   description: "Chaque coup re\xE7u est r\xE9duit de 5 (+5), jamais sous 1."
-  rarity: 1
+  rarity: 0
   pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers:

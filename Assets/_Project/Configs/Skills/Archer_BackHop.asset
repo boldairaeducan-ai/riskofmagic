@@ -41,5 +41,7 @@ MonoBehaviour:
   damageType: 0
   damageTickInterval: 0.05
   dot: {fileID: 0}
+  contactKnockbackDistance: 0
+  allyHealOnContact: 0
   startKnockbackRadius: 4
   startKnockbackDistance: 6

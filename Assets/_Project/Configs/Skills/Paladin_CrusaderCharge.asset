@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 303d0f0be29690b4d98df26fc786a340, type: 3}
+  m_Name: Paladin_CrusaderCharge
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DashSkill
+  displayName: "Charge du crois\xE9"
+  description: "Ru\xE9e de 12 m : 200% et recul aux ennemis, soigne de 10% les alli\xE9s
+    travers\xE9s."
+  icon: {fileID: 0}
+  activationMode: 0
+  cooldown: 8
+  maxStock: 1
+  castDuration: 0.3
+  scalesWithAttackSpeed: 0
+  canCastWhileBusy: 0
+  keepsSprint: 0
+  maxChargeTime: 1.5
+  castVfx: {fileID: 8132036637947505890, guid: 9a3c07ec3c6d4374d879ac37782d7ce4, type: 3}
+  castVfxAnchor: 1
+  castVfxScale: 1
+  castSound: {fileID: 11400000, guid: 69110c1f760a3c644b43a20748a0d3af, type: 2}
+  animatorTrigger: Cast
+  ownerFovKick: 10
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
+  direction: 1
+  speed: 30
+  duration: 0.4
+  ignoreGravity: 1
+  upwardVelocity: 0
+  damageCoefficient: 2
+  damageRadius: 2
+  damageType: 7
+  damageTickInterval: 0.05
+  dot: {fileID: 0}
+  contactKnockbackDistance: 4
+  allyHealOnContact: 0.1
+  startKnockbackRadius: 0
+  startKnockbackDistance: 0

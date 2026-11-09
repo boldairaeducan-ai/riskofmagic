@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.DotOnHitItem
   displayName: "Dague barbel\xE9e"
   description: '10% (+10%) de chances de faire saigner : 240% en 3 s.'
-  rarity: 1
+  rarity: 0
   pickupSound: {fileID: 0}
   icon: {fileID: 0}
   modifiers: []
