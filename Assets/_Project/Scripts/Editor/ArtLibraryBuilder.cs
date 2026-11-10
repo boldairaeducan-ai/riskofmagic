@@ -163,9 +163,14 @@ namespace RiskOfMagic.Editor
                 art = Object.Instantiate(entry.model);
             art.name = "Art";
             art.transform.SetParent(root.transform, false);
-            art.transform.localPosition = entry.offset;
             art.transform.localRotation = Quaternion.Euler(entry.rotation);
-            art.transform.localScale = Vector3.one * (entry.scale > 0f ? entry.scale : 1f);
+            // The placeholder root is often scaled (a 0.15 sphere for an arrow): the model keeps its own size.
+            Vector3 rootScale = root.transform.localScale;
+            float size = entry.scale > 0f ? entry.scale : 1f;
+            art.transform.localScale = new Vector3(size / Mathf.Max(0.0001f, rootScale.x), size / Mathf.Max(0.0001f, rootScale.y),
+                size / Mathf.Max(0.0001f, rootScale.z));
+            art.transform.localPosition = new Vector3(entry.offset.x / Mathf.Max(0.0001f, rootScale.x),
+                entry.offset.y / Mathf.Max(0.0001f, rootScale.y), entry.offset.z / Mathf.Max(0.0001f, rootScale.z));
             if (category != Category.Interactable)
                 foreach (var collider in art.GetComponentsInChildren<Collider>(true))
                     collider.enabled = false; // effects and projectiles must not block raycasts
