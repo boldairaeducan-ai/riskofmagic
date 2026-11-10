@@ -252,7 +252,7 @@ namespace RiskOfMagic.Editor
 
             if (All<MapLayout>().Length == 0 && All<LayoutVariantGroup>().Length > 0)
                 errors.Add("LayoutVariantGroups found but no MapLayout.");
-            foreach (var group in All<LayoutVariantGroup>().Where(g => g.transform.childCount < 2))
+            foreach (var group in All<LayoutVariantGroup>().Where(g => g.transform.childCount < (g.AllowNone ? 1 : 2)))
                 warnings.Add($"{group.name}: a variant group needs at least 2 children (or allowNone).");
 
             var spotsByType = All<SpawnSpot>().GroupBy(s => s.Type).ToDictionary(g => g.Key, g => g.Count());

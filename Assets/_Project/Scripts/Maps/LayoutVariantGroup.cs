@@ -11,6 +11,8 @@ namespace RiskOfMagic.Maps
     {
         [SerializeField, Tooltip("Adds a 'nothing' option.")] private bool allowNone;
 
+        public bool AllowNone => allowNone;
+
         public void Select(System.Random random)
         {
             int count = transform.childCount;
