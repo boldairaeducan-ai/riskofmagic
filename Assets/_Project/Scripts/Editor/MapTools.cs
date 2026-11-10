@@ -116,6 +116,8 @@ namespace RiskOfMagic.Editor
             Directory.CreateDirectory(MapsFolder);
             string path = ScenePathFor(spec.SceneName);
             var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+            if (Camera.main != null && Camera.main.TryGetComponent(out AudioListener sceneListener))
+                Object.DestroyImmediate(sceneListener); // the local player's camera is the only listener
 
             // Level root: everything walkable goes under it.
             var level = new GameObject("Level");

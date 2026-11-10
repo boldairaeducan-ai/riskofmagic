@@ -68,12 +68,30 @@ namespace RiskOfMagic.Player
                 PostProcessCamera.Enable(playerCamera, local);
                 playerCamera.enabled = local;
                 if (playerCamera.TryGetComponent(out AudioListener listener))
+                {
                     listener.enabled = local;
+                    if (local)
+                        DisableOtherListeners(listener);
+                }
             }
             if (local)
             {
                 SetCursorLocked(true);
                 CombatPostFx.Attach(GetComponent<PlayerAvatar>());
+            }
+        }
+
+        private readonly System.Collections.Generic.List<AudioListener> silencedListeners = new();
+
+        /// <summary>Exactly one listener: scene cameras (map default camera...) go quiet while the local player hears.</summary>
+        private void DisableOtherListeners(AudioListener mine)
+        {
+            foreach (var other in FindObjectsByType<AudioListener>(FindObjectsInactive.Exclude))
+            {
+                if (other == mine || !other.enabled)
+                    continue;
+                other.enabled = false;
+                silencedListeners.Add(other);
             }
         }
 
@@ -111,6 +129,10 @@ namespace RiskOfMagic.Player
         private void OnDestroy()
         {
             GameSettings.Changed -= ApplySettings;
+            foreach (var listener in silencedListeners)
+                if (listener != null)
+                    listener.enabled = true; // back to the scene camera (game over, leaving)
+            silencedListeners.Clear();
             if (isLocal)
                 SetCursorLocked(false);
         }
