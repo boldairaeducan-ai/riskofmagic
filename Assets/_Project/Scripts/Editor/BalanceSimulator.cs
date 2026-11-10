@@ -110,6 +110,8 @@ namespace RiskOfMagic.Editor
             float scalingPerMinute = difficulty.FindProperty("scalingPerMinute").floatValue;
             float playerFactorPerPlayer = difficulty.FindProperty("playerFactorPerPlayer").floatValue;
             float stageMultiplier = difficulty.FindProperty("stageMultiplier").floatValue;
+            var startProperty = difficulty.FindProperty("startingCoefficient");
+            float startingCoefficient = startProperty != null ? startProperty.floatValue : 1f;
             float levelStep = difficulty.FindProperty("levelStep").floatValue;
             float hardCredits = difficulty.FindProperty("hardDirectorCreditMultiplier").floatValue;
             float hardUnlock = difficulty.FindProperty("hardUnlockMultiplier").floatValue;
@@ -179,8 +181,8 @@ namespace RiskOfMagic.Editor
             {
                 float midMinutes = (s - 0.5f) * stageMinutes;
                 float stageFactor = Mathf.Pow(stageMultiplier, s - 1);
-                float coefficient = (playerFactor + midMinutes * timeFactor) * stageFactor;
-                float startCoefficient = (playerFactor + (s - 1) * stageMinutes * timeFactor) * stageFactor;
+                float coefficient = (playerFactor * startingCoefficient + midMinutes * timeFactor) * stageFactor;
+                float startCoefficient = (playerFactor * startingCoefficient + (s - 1) * stageMinutes * timeFactor) * stageFactor;
                 float progress = coefficient / playerFactor * (hard ? hardUnlock : 1f);
                 int enemyLevel = 1 + Mathf.FloorToInt((coefficient - playerFactor) / levelStep);
 
