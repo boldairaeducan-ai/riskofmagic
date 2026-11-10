@@ -18,7 +18,7 @@ namespace RiskOfMagic.Run
     public class RunDifficulty : NetworkBehaviour
     {
         [SerializeField] private DifficultyLevel startingDifficulty = DifficultyLevel.Normal;
-        [SerializeField] private float scalingPerMinute = 0.12f;
+        [SerializeField] private float scalingPerMinute = 0.1f;
         [SerializeField] private float playerFactorPerPlayer = 0.3f;
         [SerializeField] private float stageMultiplier = 1.08f;
         [SerializeField, Min(1f), Tooltip("Coefficient at the very start of a run (×player factor): stage 1 starts busy.")]
