@@ -68,6 +68,26 @@ namespace RiskOfMagic.Run
             return true;
         }
 
+        /// <summary>No solid geometry in a box of <paramref name="halfWidth"/> × <paramref name="height"/> standing on the point.</summary>
+        public static bool HasClearance(Vector3 position, float halfWidth, float height)
+        {
+            Vector3 center = position + Vector3.up * (0.3f + height * 0.5f); // above the ground it stands on
+            return !Physics.CheckBox(center, new Vector3(halfWidth, height * 0.5f, halfWidth), Quaternion.identity,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+        }
+
+        /// <summary>Walkable path from a player spawn (true when the map has no spawn point).</summary>
+        public static bool IsReachableFromSpawn(Vector3 position)
+        {
+            if (PlayerSpawnPoint.All.Count == 0)
+                return true;
+            if (!NavMesh.SamplePosition(PlayerSpawnPoint.All[0].transform.position, out var start, 4f, NavMesh.AllAreas)
+                || !NavMesh.SamplePosition(position, out var end, 3f, NavMesh.AllAreas))
+                return false;
+            var path = new NavMeshPath();
+            return NavMesh.CalculatePath(start.position, end.position, NavMesh.AllAreas, path) && path.status == NavMeshPathStatus.PathComplete;
+        }
+
         public static bool IsFarFrom(Vector3 position, IReadOnlyList<Vector3> others, float minDistance)
         {
             float sqr = minDistance * minDistance;

@@ -22,6 +22,8 @@ namespace RiskOfMagic.Run
     {
         [SerializeField] private Teleporter teleporterPrefab;
         [SerializeField, Min(0f)] private float teleporterMinDistanceFromSpawns = 45f;
+        [SerializeField, Min(0.5f), Tooltip("Free space needed around the teleporter (half width, height).")]
+        private Vector2 teleporterClearance = new(2.2f, 3f);
         [SerializeField, Min(1), Tooltip("Stages per loop; the last one is the final stage (final boss, victory or loop).")]
         private int stagesPerLoop = 5;
 
@@ -224,10 +226,13 @@ namespace RiskOfMagic.Run
                 return;
             }
 
+            // Never embedded in walls nor on an unreachable ledge.
+            System.Predicate<Vector3> valid = p => StageBounds.HasClearance(p, teleporterClearance.x, teleporterClearance.y)
+                                                   && StageBounds.IsReachableFromSpawn(p);
             Vector3 position;
-            if (SpawnSpot.TryPick(SpawnSpotType.Teleporter, out var spot))
+            if (SpawnSpot.TryPick(SpawnSpotType.Teleporter, out var spot, valid))
                 position = spot.position;
-            else if (!bounds.TryGetRandomPoint(out position, teleporterMinDistanceFromSpawns, attempts: 60) &&
+            else if (!bounds.TryGetRandomPoint(out position, teleporterMinDistanceFromSpawns, valid, attempts: 80) &&
                      !bounds.TryGetRandomPoint(out position, 0f, attempts: 60))
             {
                 Debug.LogError("[StageManager] No valid position for the teleporter.", this);
