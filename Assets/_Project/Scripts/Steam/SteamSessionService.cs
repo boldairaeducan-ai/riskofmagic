@@ -25,6 +25,7 @@ namespace RiskOfMagic.Steam
         private NetworkTransport localTransport;
 
         public string JoinCode => lobby.IsValid() ? Encode(lobby.m_SteamID) : null;
+        public string BackendName => "Steam";
 
         public async Task<string> HostAsync(int maxPlayers)
         {

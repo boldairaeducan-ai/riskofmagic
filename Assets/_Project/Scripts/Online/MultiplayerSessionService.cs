@@ -17,6 +17,7 @@ namespace RiskOfMagic.Online
         private ISession session;
 
         public string JoinCode => session?.Code;
+        public string BackendName => "Unity Relay";
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Register() => OnlineSessions.Register(new MultiplayerSessionService(), 0);

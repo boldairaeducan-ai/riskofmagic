@@ -155,7 +155,7 @@ namespace RiskOfMagic.UI
         {
             if (busy || OnlineSessions.Service == null)
                 return;
-            SetBusy(true, "Création de la partie en ligne...");
+            SetBusy(true, $"Création de la partie en ligne ({OnlineSessions.Service.BackendName})...");
             try
             {
                 await OnlineSessions.Service.HostAsync(maxPlayers);
@@ -179,7 +179,7 @@ namespace RiskOfMagic.UI
             string code = joinCodeField != null ? joinCodeField.text.Trim() : string.Empty;
             if (busy || OnlineSessions.Service == null || string.IsNullOrEmpty(code))
                 return;
-            SetBusy(true, "Connexion...");
+            SetBusy(true, $"Connexion ({OnlineSessions.Service.BackendName})...");
             try
             {
                 await OnlineSessions.Service.JoinAsync(code);

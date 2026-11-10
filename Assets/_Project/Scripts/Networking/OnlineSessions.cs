@@ -7,6 +7,9 @@ namespace RiskOfMagic.Networking
     {
         string JoinCode { get; }
 
+        /// <summary>Backend shown to the player ("Steam", "Unity").</summary>
+        string BackendName { get; }
+
         /// <summary>Creates a private online game and starts hosting. Returns the join code.</summary>
         Task<string> HostAsync(int maxPlayers);
 
