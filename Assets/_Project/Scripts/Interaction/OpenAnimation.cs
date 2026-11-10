@@ -20,7 +20,7 @@ namespace RiskOfMagic.Interaction
         [Range(0.1f, 1f), Tooltip("Automatic hold point of an open+close clip (0.45 = lid up).")] public float openCloseHoldFraction = 0.45f;
 
         private Animator[] animators;
-        private Animation[] legacy;
+        private UnityEngine.Animation[] legacy;
         private bool opened;
         private bool initialized;
         private Coroutine routine;
@@ -76,7 +76,7 @@ namespace RiskOfMagic.Interaction
             {
                 initialized = true;
                 animators = GetComponentsInChildren<Animator>(true);
-                legacy = GetComponentsInChildren<Animation>(true);
+                legacy = GetComponentsInChildren<UnityEngine.Animation>(true);
                 foreach (var animation in legacy)
                     animation.playAutomatically = false;
             }
