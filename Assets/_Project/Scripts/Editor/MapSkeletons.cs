@@ -684,6 +684,7 @@ namespace RiskOfMagic.Editor
             go.transform.position = basePosition + Vector3.up * (height * 0.5f);
             go.transform.localScale = new Vector3(diameter, height * 0.5f, diameter);
             go.GetComponent<Renderer>().sharedMaterial = material;
+            MapTools.UseMeshCollider(go);
             return go;
         }
 

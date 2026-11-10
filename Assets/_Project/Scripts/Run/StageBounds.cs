@@ -71,10 +71,17 @@ namespace RiskOfMagic.Run
         /// <summary>No solid geometry in a box of <paramref name="halfWidth"/> × <paramref name="height"/> standing on the point.</summary>
         public static bool HasClearance(Vector3 position, float halfWidth, float height)
         {
-            Vector3 center = position + Vector3.up * (0.3f + height * 0.5f); // above the ground it stands on
-            return !Physics.CheckBox(center, new Vector3(halfWidth, height * 0.5f, halfWidth), Quaternion.identity,
+            // Starts 0.8 m up so gentle slopes and the floor it stands on don't count; terrains never block.
+            Vector3 center = position + Vector3.up * (0.8f + height * 0.5f);
+            int count = Physics.OverlapBoxNonAlloc(center, new Vector3(halfWidth, height * 0.5f, halfWidth), clearanceHits, Quaternion.identity,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < count; i++)
+                if (clearanceHits[i] is not TerrainCollider)
+                    return false;
+            return true;
         }
+
+        private static readonly Collider[] clearanceHits = new Collider[16];
 
         /// <summary>Walkable path from a player spawn (true when the map has no spawn point).</summary>
         public static bool IsReachableFromSpawn(Vector3 position)

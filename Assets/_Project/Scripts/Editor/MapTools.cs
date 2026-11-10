@@ -227,6 +227,65 @@ namespace RiskOfMagic.Editor
             return true;
         }
 
+        /// <summary>
+        /// Primitive cylinders come with a CapsuleCollider: scaled flat (floors, daises) it becomes a huge sphere
+        /// the NavMesh is baked on. Swaps it for a MeshCollider of the cylinder.
+        /// </summary>
+        public static bool UseMeshCollider(GameObject go)
+        {
+            if (!go.TryGetComponent(out CapsuleCollider capsule) || !go.TryGetComponent(out MeshFilter filter) || filter.sharedMesh == null)
+                return false;
+            bool enabled = capsule.enabled;
+            Object.DestroyImmediate(capsule);
+            var mesh = go.AddComponent<MeshCollider>();
+            mesh.sharedMesh = filter.sharedMesh;
+            mesh.enabled = enabled;
+            return true;
+        }
+
+        [MenuItem("Tools/Risk of Magic/Maps/Fix Cylinder Colliders + Rebake NavMesh (open map)")]
+        public static void FixCollidersAndRebake()
+        {
+            var scene = EditorSceneManager.GetActiveScene();
+            int fixedCount = 0;
+            foreach (var capsule in Object.FindObjectsByType<CapsuleCollider>(FindObjectsInactive.Include))
+            {
+                var filter = capsule.GetComponent<MeshFilter>();
+                if (filter == null || filter.sharedMesh == null || !filter.sharedMesh.name.StartsWith("Cylinder"))
+                    continue;
+                Undo.RegisterFullObjectHierarchyUndo(capsule.gameObject, "Fix cylinder collider");
+                if (UseMeshCollider(capsule.gameObject))
+                    fixedCount++;
+            }
+            RebakeNavMesh(scene);
+            EditorSceneManager.SaveScene(scene);
+            Debug.Log($"[Map] {scene.name}: {fixedCount} cylinder collider(s) fixed, NavMesh rebaked and saved.");
+        }
+
+        [MenuItem("Tools/Risk of Magic/Maps/Rebake NavMesh (open map)")]
+        public static void RebakeOpenMap()
+        {
+            var scene = EditorSceneManager.GetActiveScene();
+            RebakeNavMesh(scene);
+            EditorSceneManager.SaveScene(scene);
+        }
+
+        private static void RebakeNavMesh(UnityEngine.SceneManagement.Scene scene)
+        {
+            Physics.SyncTransforms();
+            foreach (var surface in Object.FindObjectsByType<NavMeshSurface>(FindObjectsInactive.Exclude))
+            {
+                surface.BuildNavMesh();
+                if (surface.navMeshData == null || string.IsNullOrEmpty(scene.path))
+                    continue;
+                string navPath = Path.ChangeExtension(scene.path, null) + "_NavMesh.asset";
+                AssetDatabase.DeleteAsset(navPath);
+                AssetDatabase.CreateAsset(surface.navMeshData, navPath);
+                EditorUtility.SetDirty(surface);
+            }
+            EditorSceneManager.MarkSceneDirty(scene);
+        }
+
         [MenuItem("Tools/Risk of Magic/Maps/Validate Open Map")]
         public static void Validate()
         {
