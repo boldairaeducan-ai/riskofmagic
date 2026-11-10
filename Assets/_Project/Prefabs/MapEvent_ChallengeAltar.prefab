@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 7895371352872382904}
   - component: {fileID: 7178222499893601119}
   - component: {fileID: 1359851360004884297}
+  - component: {fileID: 5438786918693211531}
   m_Layer: 0
   m_Name: MapEvent_ChallengeAltar
   m_TagString: Untagged
@@ -169,6 +170,20 @@ MonoBehaviour:
   idleColor: {r: 1, g: 0.3, b: 0.2, a: 1}
   activeColor: {r: 1, g: 0.75, b: 0.2, a: 1}
   doneColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
+--- !u!114 &5438786918693211531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5731580210640414318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: MapEvent_ChallengeAltar
+  category: 2
 --- !u!1 &9095588015009481880
 GameObject:
   m_ObjectHideFlags: 0

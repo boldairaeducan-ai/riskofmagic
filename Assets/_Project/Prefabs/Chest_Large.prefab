@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4959178874472021236}
   - component: {fileID: 7388858619262182687}
   - component: {fileID: 6981111734293726678}
+  - component: {fileID: 3917356990583292556}
   m_Layer: 0
   m_Name: Chest_Large
   m_TagString: Untagged
@@ -89,6 +90,20 @@ MonoBehaviour:
   pickupPrefab: {fileID: 388672499120908948, guid: 5ad7226f07e18c8478a881ca391bc93e, type: 3}
   dropOffset: {x: 0, y: 0, z: 1.9599999}
   closedVisual: {fileID: 4165749152396157604}
+--- !u!114 &3917356990583292556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1356811735719026356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: Chest_Large
+  category: 2
 --- !u!1 &3936918142536346023
 GameObject:
   m_ObjectHideFlags: 0

@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 8084635388877880258}
   - component: {fileID: 8654363179131448074}
   - component: {fileID: 3960492116834998578}
+  - component: {fileID: 8535090389587266826}
   m_Layer: 0
   m_Name: VFX_Explosion
   m_TagString: Untagged
@@ -174,3 +175,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
   sound: {fileID: 11400000, guid: 87d6a3fccec5a8b449148d7316bb9205, type: 2}
+--- !u!114 &8535090389587266826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4948897298884925427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: VFX_Explosion
+  category: 0

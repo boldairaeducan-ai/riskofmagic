@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 7836960094516201896}
   - component: {fileID: 4508487684730176293}
   - component: {fileID: 8458002924967008852}
+  - component: {fileID: 7766336854815936150}
   m_Layer: 0
   m_Name: VFX_DashBurst
   m_TagString: Untagged
@@ -174,3 +175,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
   sound: {fileID: 11400000, guid: 0ef3ef42ca0de8e4d938e00e99d2ac35, type: 2}
+--- !u!114 &7766336854815936150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8132036637947505890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: VFX_DashBurst
+  category: 0

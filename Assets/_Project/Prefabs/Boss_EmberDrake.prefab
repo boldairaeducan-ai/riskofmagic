@@ -200,6 +200,7 @@ MonoBehaviour:
   bannerDamageBonus: 0.2
   stealthSpeedBonus: 0.3
   markedDamageTakenMultiplier: 1.5
+  runeBlessingDamageBonus: 0.3
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &7168913309488066991
@@ -243,6 +244,9 @@ MonoBehaviour:
   damagePerTick: 7
   damageType: 1
   dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
+  applyStatus: 0
+  status: 3
+  statusDuration: 1.2
   windup: 0.8
   duration: 2.2
   tickInterval: 0.25

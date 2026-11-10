@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2042373277172949851}
   - component: {fileID: 4609578771783130079}
   - component: {fileID: 5411615836176938989}
+  - component: {fileID: 2624432086942419391}
   m_Layer: 0
   m_Name: VFX_VoidBeam
   m_TagString: Untagged
@@ -207,3 +208,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
   sound: {fileID: 11400000, guid: 044e233235eceb844895c957f15256c7, type: 2}
+--- !u!114 &2624432086942419391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5492177243271413674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: VFX_VoidBeam
+  category: 0

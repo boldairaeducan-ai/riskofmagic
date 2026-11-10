@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52152a3e50c6e78419b24c1a4d2a0f8c, type: 3}
+  m_Name: Item_ResonanceStone
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.CritSplashItem
+  displayName: "Pierre de r\xE9sonance"
+  description: "Les coups critiques infligent 50% (+25%) de leurs d\xE9g\xE2ts autour
+    de la cible (3 m)."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  damageType: 4
+  damageFirstStack: 0.5
+  damagePerExtraStack: 0.25
+  radius: 3
+  vfx: {fileID: 1177601390897264972, guid: 30bb0790d26d618418b48a70a8d0d2f1, type: 3}

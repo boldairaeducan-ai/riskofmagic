@@ -32,9 +32,11 @@ MonoBehaviour:
   challengeAltar:
     enabled: 1
     weight: 1
-    baseEnemies: 4
-    enemiesPerPlayer: 1
-    spawnDistance: {x: 8, y: 14}
+    creditsPerCoefficient: 40
+    eliteCostMultiplier: 3
+    maxEnemies: 8
+    firstWaveShare: 0.6
+    spawnDistance: {x: 8, y: 18}
     reward:
       common: 0
       uncommon: 65
@@ -43,7 +45,7 @@ MonoBehaviour:
   cursedChest:
     enabled: 1
     weight: 1
-    maxHealthCostPercent: 20
+    maxHealthCostPercent: 25
     reward:
       common: 0
       uncommon: 0

@@ -79,9 +79,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Run.RunDifficulty
   ShowTopMostFoldoutHeaderGroup: 1
   startingDifficulty: 2
-  scalingPerMinute: 0.07
+  scalingPerMinute: 0.1
   playerFactorPerPlayer: 0.3
-  stageMultiplier: 1.15
+  stageMultiplier: 1.2
   levelStep: 0.33
   maxEnemyLevel: 99
   hardDirectorCreditMultiplier: 1.3
@@ -209,6 +209,8 @@ MonoBehaviour:
     prefab: {fileID: 7178222499893601119, guid: 5887f91a460033b4997ca6cd8641dfc6, type: 3}
   - type: 2
     prefab: {fileID: 6416417157256062603, guid: c29dd2599a1bcfa4b900bca3f156692c, type: 3}
+  secretAltarPrefab: {fileID: 5004395649366162441, guid: b2e9e54ad47fb664b8d37592e9b87d29, type: 3}
+  secretFragmentPrefab: {fileID: 9175876507067804456, guid: f6a8d0d77500e4b4da69f42d30737a59, type: 3}
   minSpacing: 5
   playerSpawnClearance: 8
   spawnOnStart: 0
@@ -227,4 +229,5 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   teleporterPrefab: {fileID: 5016159213148139374, guid: 34c8bc16614829046953a86d5715734f, type: 3}
   teleporterMinDistanceFromSpawns: 45
+  teleporterClearance: {x: 2.2, y: 3}
   stagesPerLoop: 5

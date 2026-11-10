@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2151444757538167434}
   - component: {fileID: 6416417157256062603}
   - component: {fileID: 7663432356984903915}
+  - component: {fileID: 6837278259706357664}
   m_Layer: 0
   m_Name: MapEvent_CursedChest
   m_TagString: Untagged
@@ -76,6 +77,20 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   closedVisual: {fileID: 4067747072148024455}
   dropOffset: {x: 0, y: 0, z: 1.8}
+--- !u!114 &6837278259706357664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548878742774106824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: MapEvent_CursedChest
+  category: 2
 --- !u!1 &4067747072148024455
 GameObject:
   m_ObjectHideFlags: 0

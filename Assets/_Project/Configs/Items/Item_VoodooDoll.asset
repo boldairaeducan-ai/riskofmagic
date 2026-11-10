@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b106208d19811a0429015fd4bb163845, type: 3}
+  m_Name: Item_VoodooDoll
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.CurseAreaOnKillItem
+  displayName: "Poup\xE9e vaudou"
+  description: "Un ennemi tu\xE9 maudit les ennemis \xE0 4 m (+1 m) pendant 4 s."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  radiusFirstStack: 4
+  radiusPerExtraStack: 1
+  curseDuration: 4
+  vfx: {fileID: 666047915649629285, guid: e28d37df24c893243a222bb9293b6972, type: 3}

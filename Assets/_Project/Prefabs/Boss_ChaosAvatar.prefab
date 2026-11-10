@@ -329,6 +329,7 @@ MonoBehaviour:
   bannerDamageBonus: 0.2
   stealthSpeedBonus: 0.3
   markedDamageTakenMultiplier: 1.5
+  runeBlessingDamageBonus: 0.3
   rallyBonus: 0.4
   warhornBonusPerStack: 0.15
 --- !u!114 &5341339368825160878
@@ -438,6 +439,8 @@ MonoBehaviour:
   windup: 1
   recovery: 0.5
   spawnVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}
+  onlyBelowHealth: 1
+  maxCasts: 0
 --- !u!114 &1654135176627368201
 MonoBehaviour:
   m_ObjectHideFlags: 0

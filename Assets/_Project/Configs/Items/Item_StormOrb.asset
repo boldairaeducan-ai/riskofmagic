@@ -21,6 +21,7 @@ MonoBehaviour:
   damageType: 3
   chance: 0.25
   damageFraction: 0.8
+  damageFractionPerExtraStack: 0
   targetsFirstStack: 3
   targetsPerExtraStack: 2
   bounceRadius: 15

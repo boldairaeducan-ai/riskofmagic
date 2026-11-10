@@ -305,6 +305,7 @@ GameObject:
   - component: {fileID: 7763265481672146840}
   - component: {fileID: 2321651546005709229}
   - component: {fileID: 5016159213148139374}
+  - component: {fileID: 1579031095945366269}
   m_Layer: 0
   m_Name: Teleporter
   m_TagString: Untagged
@@ -404,6 +405,20 @@ MonoBehaviour:
   - {fileID: 4363566375594380144}
   - {fileID: 5737153222626868189}
   - {fileID: 7011165736108263702}
+--- !u!114 &1579031095945366269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5342335848690350026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: Teleporter
+  category: 2
 --- !u!1 &7672871834919970814
 GameObject:
   m_ObjectHideFlags: 0

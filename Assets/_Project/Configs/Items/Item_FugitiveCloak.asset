@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e6e13a8a1f9a9a40b57bbe796e74798, type: 3}
+  m_Name: Item_FugitiveCloak
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.StatusWhenHitItem
+  displayName: Cape du fuyard
+  description: "Quand vous \xEAtes touch\xE9 : +40% de vitesse de d\xE9placement
+    et d'attaque pendant 2 s (+1 s). Recharge 5 s."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  status: 1
+  durationFirstStack: 2
+  durationPerExtraStack: 1
+  cooldown: 5
+  vfx: {fileID: 8578036629237866541, guid: e55ac3b1e1a8cf74787d93d8a0ec5e86, type: 3}

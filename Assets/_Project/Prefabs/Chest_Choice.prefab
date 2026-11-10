@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8550599343723458358}
   - component: {fileID: 4326383006089213346}
   - component: {fileID: 4074718478033808485}
+  - component: {fileID: 3556941986476212773}
   m_Layer: 0
   m_Name: Chest_Choice
   m_TagString: Untagged
@@ -90,6 +91,20 @@ MonoBehaviour:
   dropOffset: {x: 0, y: 0, z: 1.6800001}
   closedVisual: {fileID: 5246868511926726752}
   choiceCount: 3
+--- !u!114 &3556941986476212773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 674639811390683462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: Chest_Choice
+  category: 2
 --- !u!1 &2106221531082505650
 GameObject:
   m_ObjectHideFlags: 0

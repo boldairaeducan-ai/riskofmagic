@@ -467,6 +467,7 @@ GameObject:
   - component: {fileID: 4407379509184144395}
   - component: {fileID: 8147446891204956044}
   - component: {fileID: 4370160178620426212}
+  - component: {fileID: 7544599314042450412}
   m_Layer: 0
   m_Name: MapEvent_PurificationTomb
   m_TagString: Untagged
@@ -538,3 +539,17 @@ MonoBehaviour:
   purifyingColor: {r: 1, g: 0.85, b: 0.35, a: 1}
   healingColor: {r: 0.35, g: 1, b: 0.5, a: 1}
   healTick: 0.5
+--- !u!114 &7544599314042450412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6957036435833412514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: MapEvent_PurificationTomb
+  category: 2

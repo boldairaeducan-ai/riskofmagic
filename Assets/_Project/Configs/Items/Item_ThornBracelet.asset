@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e82cc2a1efa25d24689e85d5136be7b9, type: 3}
+  m_Name: Item_ThornBracelet
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ThornsItem
+  displayName: "Bracelet d'\xE9pines"
+  description: "Quand vous \xEAtes touch\xE9 : 200% (+100%) de vos d\xE9g\xE2ts de
+    base renvoy\xE9s \xE0 l'attaquant. Recharge 15 s (-2 s)."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  damageType: 0
+  damageFirstStack: 2
+  damagePerExtraStack: 1
+  cooldownFirstStack: 15
+  cooldownPerExtraStack: -2
+  minCooldown: 3
+  maxRange: 15
+  vfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}

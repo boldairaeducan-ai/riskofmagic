@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 6328747311182284462}
   - component: {fileID: 6134713598374761138}
   - component: {fileID: 5445364570542977555}
+  - component: {fileID: 4352450870812095654}
   m_Layer: 0
   m_Name: HealingShrine
   m_TagString: Untagged
@@ -193,3 +194,17 @@ MonoBehaviour:
   costMultiplierPerUse: 1.5
   purchaseSound: {fileID: 0}
   healFraction: 0.5
+--- !u!114 &4352450870812095654
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167870217981014404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: HealingShrine
+  category: 2

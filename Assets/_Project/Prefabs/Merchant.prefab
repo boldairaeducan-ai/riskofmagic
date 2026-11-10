@@ -303,6 +303,7 @@ GameObject:
   - component: {fileID: 6216726368705942750}
   - component: {fileID: 7213228828029503}
   - component: {fileID: 5955562484771399016}
+  - component: {fileID: 6985907003279444325}
   m_Layer: 0
   m_Name: Merchant
   m_TagString: Untagged
@@ -384,6 +385,20 @@ MonoBehaviour:
   rerollPriceMultiplier: 1.5
   costExponent: 1.25
   maxShoppingDistance: 8
+--- !u!114 &6985907003279444325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3449444235448972364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: Merchant
+  category: 2
 --- !u!1 &7721046913497913235
 GameObject:
   m_ObjectHideFlags: 0

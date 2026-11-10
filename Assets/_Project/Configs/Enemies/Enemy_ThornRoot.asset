@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92faed51aa22e3c45b720e10655ec169, type: 3}
+  m_Name: Enemy_ThornRoot
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyDefinition
+  displayName: "Racine \xE9pineuse"
+  feminineName: 1
+  isBoss: 0
+  maxHealth: 140
+  moveSpeed: 0
+  acceleration: 20
+  angularSpeed: 540
+  controlResistance: 0
+  healthPerLevel: 0.4
+  damagePerLevel: 0.2
+  detectionRange: 16.8
+  requireLineOfSight: 0
+  alertAlliesRadius: 14
+  movementStyle: 0
+  flankRadius: 4.2
+  flankAngle: {x: 100, y: 160}
+  kiteRange: {x: 10, y: 24}
+  retreatDistance: 8
+  wanderRadius: 6
+  wanderSpeedMultiplier: 0.4
+  goldReward: 0
+  despawnDelay: 2
+  modelPrefab: {fileID: 0}
+  spawnSound: {fileID: 11400000, guid: 67fdaf35b3b43604fa9bb30769675955, type: 2}
+  attackSound: {fileID: 11400000, guid: cf2555867ea589e4f9d37bdc9748581c, type: 2}
+  hurtSound: {fileID: 11400000, guid: 92f4a46fb5741ed4eb3662183625914e, type: 2}
+  deathSound: {fileID: 11400000, guid: d63e6157e2c05394aad5e8aecfb355b2, type: 2}

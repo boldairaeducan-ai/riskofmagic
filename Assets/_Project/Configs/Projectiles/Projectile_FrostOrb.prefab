@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 101513022289003432}
   - component: {fileID: 7948425573092681438}
   - component: {fileID: 8309547578897689918}
+  - component: {fileID: 4218878238906020266}
   m_Layer: 0
   m_Name: Projectile_FrostOrb
   m_TagString: Untagged
@@ -214,3 +215,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 740ad82065f1f614ea01b4973b4b7793, type: 3}
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.Projectiles.Projectile
+--- !u!114 &4218878238906020266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2812487204892222044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: Projectile_FrostOrb
+  category: 1

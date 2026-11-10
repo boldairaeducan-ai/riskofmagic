@@ -54,12 +54,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 813c792dd3a55f0458a5481f14ae0bac, type: 2}
   - {fileID: 11400000, guid: be6148452fed7af41ad1ed918eb79ec6, type: 2}
   - {fileID: 11400000, guid: 1257a87df1b5fe347a927aec52543210, type: 2}
+  - {fileID: 11400000, guid: cc3d0875d218dde42828505bb5f896d1, type: 2}
+  - {fileID: 11400000, guid: 69fb7bbcfe5b0da4f8eee92146e3432d, type: 2}
   - {fileID: 11400000, guid: e847634f2c575f646b93790e351bfe03, type: 2}
   - {fileID: 11400000, guid: 44c584c75778d324ba5b3540e41917e8, type: 2}
   - {fileID: 11400000, guid: 873c7428726a49e45923140f8267f063, type: 2}
   - {fileID: 11400000, guid: f14475e359a49d446b0a94933c3adfe1, type: 2}
   - {fileID: 11400000, guid: 1def82c03a07e454285aca95f1d3eb84, type: 2}
   - {fileID: 11400000, guid: 61910302117df9f43a1c6af89923303d, type: 2}
+  - {fileID: 11400000, guid: 7dab895b6782e3b478f90d45b2665264, type: 2}
+  - {fileID: 11400000, guid: 3c575d6eda6851a4d93d98a1019d2cee, type: 2}
+  - {fileID: 11400000, guid: e8bb82608ac74d64b945e4299db9ce79, type: 2}
+  - {fileID: 11400000, guid: bc75288ecfe42c941b48027da89004a7, type: 2}
+  - {fileID: 11400000, guid: 6c77fb6c0aec7cf42ac4030f17e767d9, type: 2}
   - {fileID: 11400000, guid: 7f1af99fba7d5194db6adb34001b6fc6, type: 2}
   - {fileID: 11400000, guid: b6cefab9d5a411642b204a0ad54a2ab3, type: 2}
   - {fileID: 11400000, guid: fa0126464b498b04dbe55fe3145c0c1c, type: 2}
@@ -145,5 +152,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ccb4b053cd2155649a1a6431cbe062d3, type: 2}
   - {fileID: 11400000, guid: 41229ddd944d9ad4aa55fc90b64ee468, type: 2}
   - {fileID: 11400000, guid: 9069530373b1f4a4fbef191aac3e8348, type: 2}
+  - {fileID: 11400000, guid: 27f2d07d061b0a84da5059be8a973dab, type: 2}
+  - {fileID: 11400000, guid: dd149cb71d537824186ac582802e74c5, type: 2}
+  - {fileID: 11400000, guid: 3ddb66c15cc399146b13da7b0e00fc9c, type: 2}
+  - {fileID: 11400000, guid: dc2c687e60f886c409cf3ec1d9e7f685, type: 2}
+  - {fileID: 11400000, guid: 526f39ef6c6f7a54c915feffae9ee1e2, type: 2}
   pickupPrefab: {fileID: 388672499120908948, guid: 5ad7226f07e18c8478a881ca391bc93e, type: 3}
   mapRotation: {fileID: 11400000, guid: e92c4f5dd357b5940876c54102df0387, type: 2}

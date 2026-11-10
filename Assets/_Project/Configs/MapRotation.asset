@@ -17,7 +17,6 @@ MonoBehaviour:
     - Map_GrimForest
   - scenes:
     - Map_Necropolis
-  - scenes:
     - Map_MountainPeak
   - scenes:
     - Map_VolcanoTomb

@@ -15,72 +15,77 @@ MonoBehaviour:
   logo: {fileID: 0}
   menuBackground: {fileID: 0}
   loadingBackground: {fileID: 0}
-  cursor: {fileID: 0}
+  cursor: {fileID: 2800000, guid: 39c146fcc73d9344dbb509870afb9415, type: 3}
   cursorHotspot: {x: 0, y: 0}
   statuses:
   - name: "Mal\xE9diction"
     status: 0
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: f6bbaa16fe1da104988720c13d65e19b, type: 3}
     visible: 1
     debuff: 1
   - name: Ralliement
     status: 1
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 513d2090ba754a7438ffc867ebc2e8f2, type: 3}
     visible: 1
     debuff: 0
   - name: Cor de guerre
     status: 2
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: acb43d362f712fa4ea5fc825e270b1e4, type: 3}
     visible: 1
     debuff: 0
   - name: Gel
     status: 3
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: d16ef7e8333a7c34782f9d8e921931d2, type: 3}
     visible: 1
     debuff: 1
   - name: "Fl\xE9trissement"
     status: 4
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 0eb749440e3c50c4492e3330cbc51aa9, type: 3}
     visible: 1
     debuff: 1
   - name: Canalisation
     status: 5
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 3713d9737316ec44eb30dfa35bbb5c81, type: 3}
     visible: 0
     debuff: 0
   - name: Enracinement
     status: 6
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 50b7e12fc9f9edc4e9b7dbaecdf1372b, type: 3}
     visible: 1
     debuff: 1
   - name: "Adr\xE9naline"
     status: 7
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: aff6a6d197ebc3145876a6a3117318c4, type: 3}
     visible: 1
     debuff: 0
   - name: "Banni\xE8re de guerre"
     status: 8
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 34f1b2269426bd8458a00b9cb3185bc5, type: 3}
     visible: 1
     debuff: 0
   - name: "Moisson d'\xE2mes"
     status: 9
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 8add1fab220686143932d80c15e39fb1, type: 3}
     visible: 1
     debuff: 0
   - name: "Furtivit\xE9"
     status: 10
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: ef9fda4cfefba8444893e5618720827a, type: 3}
     visible: 1
     debuff: 0
   - name: "Marqu\xE9"
     status: 11
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 619fbe1fc6dd3da4096b2e061321c2ff, type: 3}
     visible: 1
     debuff: 1
   - name: Embuscade
     status: 12
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: af72b21847e4cc745a9550417bf2dac1, type: 3}
+    visible: 1
+    debuff: 0
+  - name: "B\xE9n\xE9diction runique"
+    status: 13
+    icon: {fileID: 21300000, guid: c58fbdfde802f3c46806af29a6805f8a, type: 3}
     visible: 1
     debuff: 0
   rarities:
@@ -102,26 +107,26 @@ MonoBehaviour:
   elites:
   - name: "\xC9lite ardent"
     affix: {fileID: 11400000, guid: 56dc108941771ed4aae007bac6e0c10c, type: 2}
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: cb320a23f63271c4e852e4bd4284c1b7, type: 3}
   - name: "\xC9lite glacial"
     affix: {fileID: 11400000, guid: 53d80d11b0a7b4b4e85299fbd6e120a5, type: 2}
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 0d39a468e6627964bb65e5d7ed34ebbc, type: 3}
   - name: "\xC9lite foudroyant"
     affix: {fileID: 11400000, guid: 4297ea3a9a419bb49a7f3dfe402778b1, type: 2}
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 84f395b50849e234184f38da91b34431, type: 3}
   - name: "\xC9lite \xE9th\xE9r\xE9"
     affix: {fileID: 11400000, guid: 461e7652f90f9534fa0c3afcb642b737, type: 2}
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 7ef6a5009e4690c478d5ceaeb10b4b54, type: 3}
   dots:
   - name: Poison
     type: 5
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 9d99d011c762ace4c86ad318e1e624a3, type: 3}
   - name: Saignement
     type: 6
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: a75085037fd278148ab9bc1455cf53dc, type: 3}
   - name: "Br\xFBlure"
     type: 1
-    icon: {fileID: 0}
+    icon: {fileID: 21300000, guid: 85f6db0efa996b342ac40bb7aa6eb2f9, type: 3}
   vfx:
   - name: VFX_Impact
     model: {fileID: 0}
@@ -142,7 +147,7 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: VFX_Swing
-    model: {fileID: 0}
+    model: {fileID: 2060900179291159282, guid: ca6705a3f9070d14d819d179493bcfa0, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -160,7 +165,7 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: VFX_Explosion
-    model: {fileID: 0}
+    model: {fileID: 358637981425055526, guid: 8eb503696b886e04faff8fc0f480d473, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -202,7 +207,7 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: VFX_CursePulse
-    model: {fileID: 0}
+    model: {fileID: 3377181292992421420, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -275,19 +280,19 @@ MonoBehaviour:
     scale: 1
   projectiles:
   - name: Projectile_Arrow
-    model: {fileID: 0}
+    model: {fileID: 7689144012477797116, guid: ad1ae1938a2039e4292dd5278d0b7781, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 90, z: 90}
     scale: 1
   - name: Projectile_PiercingArrow
-    model: {fileID: 0}
+    model: {fileID: 2940241529925636610, guid: 7a3cc8e2504e49d42ba15b7b05fc288f, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: Projectile_FireBolt
-    model: {fileID: 0}
+    model: {fileID: 4950011398366637647, guid: b47ad05af5bffa94587c2de476295311, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -414,19 +419,19 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: Chest_Small
-    model: {fileID: 0}
+    model: {fileID: 8954518982097225188, guid: 3082097348be1d442841596a8a23e16a, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
-    scale: 1
+    scale: 0.85
   - name: Chest_Large
-    model: {fileID: 0}
+    model: {fileID: 2884705084735435304, guid: 78eae56a9b0bec644be557db7f85145c, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
-    scale: 1
+    scale: 1.15
   - name: Chest_Choice
-    model: {fileID: 0}
+    model: {fileID: 7784012661194530565, guid: 01c17eec7ac939240ac81f78eae21f4f, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
@@ -474,6 +479,48 @@ MonoBehaviour:
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
   - name: MapEvent_CursedChest
+    model: {fileID: 4454980991020990177, guid: a6461ca0d0d0c1f4a901e18b04b121e0, type: 3}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_CorruptedSylvan
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_LichKing
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_FrostWyvern
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_TitanSmith
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_VoidWeaver
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_Altar
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+  - name: Secret_Fragment
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}

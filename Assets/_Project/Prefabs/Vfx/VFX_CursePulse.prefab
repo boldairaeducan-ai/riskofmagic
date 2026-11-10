@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6848827719970202022}
   - component: {fileID: 3157316464785037267}
   - component: {fileID: 916607942908077467}
+  - component: {fileID: 2806908578069493559}
   m_Layer: 0
   m_Name: VFX_CursePulse
   m_TagString: Untagged
@@ -84,6 +85,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.EffectSound
   sound: {fileID: 11400000, guid: f7bc759cf6adcff42b6ad6ca518b65e2, type: 2}
+--- !u!114 &2806908578069493559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 666047915649629285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eabe2cbb78a27cc489289e8d6803a142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.ArtSlot
+  key: VFX_CursePulse
+  category: 0
 --- !u!1 &4030354880693404707
 GameObject:
   m_ObjectHideFlags: 0
