@@ -117,6 +117,7 @@ namespace RiskOfMagic.Player
 
         public override void OnNetworkSpawn()
         {
+            all.RemoveAll(p => p == null || p == this || (p.OwnerClientId == OwnerClientId && !p.IsSpawned)); // stale entries
             all.Add(this);
             Health.Died += OnDied;
             Health.Revived += OnRevived;
@@ -146,6 +147,15 @@ namespace RiskOfMagic.Player
                 Motor.Teleport(pose.position, pose.rotation);
             RequestCharacter(PreferredCharacterIndex);
             LocalPlayerSpawned?.Invoke(this);
+        }
+
+        /// <summary>Destroyed without a despawn (scene change, shutdown): never leave a ghost in the registry.</summary>
+        public override void OnDestroy()
+        {
+            all.Remove(this);
+            if (Local == this)
+                Local = null;
+            base.OnDestroy();
         }
 
         public override void OnNetworkDespawn()

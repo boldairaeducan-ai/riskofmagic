@@ -107,7 +107,11 @@ namespace RiskOfMagic.UI
             if (playerRowTemplate == null)
                 return;
 
-            var players = new List<PlayerAvatar>(PlayerAvatar.All);
+            // One row per client (a stale or duplicated avatar must never show twice).
+            var players = new List<PlayerAvatar>();
+            foreach (var candidate in PlayerAvatar.All)
+                if (candidate != null && candidate.IsSpawned && !players.Exists(p => p.OwnerClientId == candidate.OwnerClientId))
+                    players.Add(candidate);
             players.Sort((a, b) => a.OwnerClientId.CompareTo(b.OwnerClientId));
             foreach (var player in players)
             {
