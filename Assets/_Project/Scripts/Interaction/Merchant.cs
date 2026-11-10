@@ -11,7 +11,8 @@ namespace RiskOfMagic.Interaction
 {
     /// <summary>
     /// NPC shop: a few items + one equipment with prices by rarity (scaled by difficulty when the stage starts),
-    /// and a reroll whose price grows with each use. Purchases are validated by the server.
+    /// and a reroll whose price grows with each use. Only ONE purchase per merchant: the first buyer (server order)
+    /// gets it and the merchant leaves for everyone. Purchases are validated by the server.
     /// </summary>
     public class Merchant : NetworkBehaviour, IInteractable
     {
@@ -29,6 +30,10 @@ namespace RiskOfMagic.Interaction
         [SerializeField, Min(1f)] private float rerollPriceMultiplier = 1.5f;
         [SerializeField] private float costExponent = 1.25f;
 
+        [Header("Leaving")]
+        [SerializeField, Min(0f), Tooltip("Delay between the purchase and the merchant leaving.")] private float leaveDelay = 0.6f;
+        [SerializeField, Tooltip("Spawned where the merchant stood when it leaves (VfxNetwork).")] private GameObject leaveVfx;
+
         [Header("Interaction")]
         [SerializeField, Min(1f)] private float maxShoppingDistance = 8f;
 
@@ -36,6 +41,7 @@ namespace RiskOfMagic.Interaction
         private readonly NetworkVariable<int> equipmentStock = new(-1);
         private readonly NetworkVariable<int> rerolls = new();
         private readonly NetworkVariable<float> priceCoefficient = new(1f);
+        private readonly NetworkVariable<bool> sold = new();
 
         /// <summary>Raised on the shopper's machine.</summary>
         public static event Action<Merchant> LocalShopOpened;
@@ -57,6 +63,7 @@ namespace RiskOfMagic.Interaction
             equipmentStock.OnValueChanged += OnStockValueChanged;
             rerolls.OnValueChanged += OnStockValueChanged;
             priceCoefficient.OnValueChanged += OnPriceChanged;
+            sold.OnValueChanged += OnSoldChanged;
             if (!IsServer)
                 return;
             priceCoefficient.Value = Mathf.Pow(RunDifficulty.CurrentCoefficient, costExponent);
@@ -69,7 +76,10 @@ namespace RiskOfMagic.Interaction
             equipmentStock.OnValueChanged -= OnStockValueChanged;
             rerolls.OnValueChanged -= OnStockValueChanged;
             priceCoefficient.OnValueChanged -= OnPriceChanged;
+            sold.OnValueChanged -= OnSoldChanged;
         }
+
+        private void OnSoldChanged(bool previous, bool current) => StockChanged?.Invoke();
 
         // ---------------------------------------------------------------- Read (every peer)
 
@@ -101,8 +111,11 @@ namespace RiskOfMagic.Interaction
 
         // ---------------------------------------------------------------- Interaction
 
-        public bool CanInteract(PlayerAvatar player) => player.IsAlive;
-        public string GetPrompt(PlayerAvatar player) => $"[E] {displayName}";
+        /// <summary>Something was bought: closed for everyone, about to leave.</summary>
+        public bool IsSold => sold.Value;
+
+        public bool CanInteract(PlayerAvatar player) => player.IsAlive && !sold.Value;
+        public string GetPrompt(PlayerAvatar player) => sold.Value ? string.Empty : $"[E] {displayName} (un seul achat)";
 
         public void Interact(PlayerAvatar player)
         {
@@ -124,10 +137,11 @@ namespace RiskOfMagic.Interaction
         {
             var player = GetShopper(rpcParams);
             var item = GetItem(slot);
-            if (player == null || item == null || !player.Wallet.TrySpend(GetItemPrice(slot)))
+            if (sold.Value || player == null || item == null || !player.Wallet.TrySpend(GetItemPrice(slot)))
                 return;
             player.Inventory.AddItem(item);
             itemStock[slot] = -1;
+            Leave();
         }
 
         [Rpc(SendTo.Server)]
@@ -135,20 +149,36 @@ namespace RiskOfMagic.Interaction
         {
             var player = GetShopper(rpcParams);
             var equipment = GetEquipment();
-            if (player == null || equipment == null || player.Equipment == null || !player.Wallet.TrySpend(GetEquipmentPrice()))
+            if (sold.Value || player == null || equipment == null || player.Equipment == null || !player.Wallet.TrySpend(GetEquipmentPrice()))
                 return;
             player.Equipment.SetEquipment(equipment);
             equipmentStock.Value = -1;
+            Leave();
         }
 
         [Rpc(SendTo.Server)]
         private void RerollRpc(RpcParams rpcParams = default)
         {
             var player = GetShopper(rpcParams);
-            if (player == null || !player.Wallet.TrySpend(GetRerollPrice()))
+            if (sold.Value || player == null || !player.Wallet.TrySpend(GetRerollPrice()))
                 return;
             rerolls.Value++;
             RollStock();
+        }
+
+        /// <summary>Server: first purchase wins; the merchant despawns for everyone (open shop menus close).</summary>
+        private void Leave()
+        {
+            sold.Value = true;
+            StartCoroutine(LeaveAfterDelay());
+        }
+
+        private System.Collections.IEnumerator LeaveAfterDelay()
+        {
+            yield return new WaitForSeconds(leaveDelay);
+            RiskOfMagic.Vfx.VfxNetwork.Spawn(leaveVfx, transform.position, Quaternion.identity, 2f);
+            if (IsSpawned)
+                NetworkObject.Despawn();
         }
 
         private PlayerAvatar GetShopper(RpcParams rpcParams)

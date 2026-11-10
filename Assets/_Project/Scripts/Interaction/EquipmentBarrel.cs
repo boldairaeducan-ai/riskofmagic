@@ -22,6 +22,7 @@ namespace RiskOfMagic.Interaction
         {
             if (closedVisual != null)
                 closedVisual.SetActive(available);
+            OpenAnimation.Apply(this, available);
         }
     }
 }
