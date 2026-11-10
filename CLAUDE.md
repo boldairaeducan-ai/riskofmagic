@@ -104,6 +104,11 @@ clip-less slot as unset.
 parameters the controller has, names in `AnimParams`). Server-only cues reach clients via existing RPCs or
 `EnemyActor.BroadcastCue`.
 
+**First-person view.** Without a `viewModelPrefab`, `ProceduralViewModel` (owner only, under the camera) shows what
+`CharacterDefinition.proceduralViewModel` describes (`ViewModelDefinition`, created once per character in
+`Configs/ViewModels`: weapon per hand, rest poses, one `ViewMotion` per skill slot) and animates it by code: bob, sway,
+charge draw and a keyed motion per executed skill.
+
 **Rendering.** URP (Forward+, MSAA 4x, SSAO, HDR grading). `Editor/PostProcessBuilder` creates the volume profiles once in
 `Settings/PostProcess` (global grade + one mood per `Map_*` scene + main menu, never overwritten) and adds a `PostProcess`
 volume object to generated scenes; `PostProcessCamera.Enable` turns post on for screen cameras; `CombatPostFx` adds

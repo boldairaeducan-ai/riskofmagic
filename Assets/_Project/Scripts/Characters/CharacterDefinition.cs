@@ -31,6 +31,8 @@ namespace RiskOfMagic.Characters
         [Tooltip("Third-person body seen by other players (shadow only for its owner). Animator inside = driven by PlayerAnimationDriver.")]
         public GameObject modelPrefab;
         [Tooltip("First-person arms/weapon, parented to the owner's camera.")] public GameObject viewModelPrefab;
+        [Tooltip("Code-animated hands / weapons, used when there is no viewModelPrefab.")]
+        public RiskOfMagic.Animation.ViewModelDefinition proceduralViewModel;
 
         [Header("Audio")]
         [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepSound;

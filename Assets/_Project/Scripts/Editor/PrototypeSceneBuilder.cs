@@ -1054,6 +1054,7 @@ namespace RiskOfMagic.Editor
             c.secondary = secondary;
             c.utility = utility;
             c.special = special;
+            c.proceduralViewModel = ViewModelBuilder.GetOrCreate(file); // hands / weapons animated by code (created once)
             EditorUtility.SetDirty(c);
             return c;
         }

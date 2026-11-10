@@ -24,6 +24,7 @@ namespace RiskOfMagic.Animation
         private PlayerAvatar avatar;
         private GameObject model;
         private GameObject viewModel;
+        private ProceduralViewModel proceduralView;
         private Vector3 lastPosition;
         private Vector3 smoothedVelocity;
         private bool wasGrounded = true;
@@ -90,6 +91,9 @@ namespace RiskOfMagic.Animation
                 Destroy(model);
             if (viewModel != null)
                 Destroy(viewModel);
+            if (proceduralView != null)
+                Destroy(proceduralView.gameObject);
+            proceduralView = null;
             model = viewModel = null;
             animators.Clear();
 
@@ -112,6 +116,8 @@ namespace RiskOfMagic.Animation
                     r.shadowCastingMode = ShadowCastingMode.Off;
                 animators.AddFrom(viewModel);
             }
+            else if (character.proceduralViewModel != null && avatar.IsOwner)
+                proceduralView = ProceduralViewModel.Create(avatar, character.proceduralViewModel);
             avatar.SetPlaceholderVisible(model == null);
         }
 
@@ -177,6 +183,11 @@ namespace RiskOfMagic.Animation
         {
             animators.SetInteger(AnimParams.SkillSlot, (int)slot);
             animators.SetTrigger(skill.animatorTrigger);
+            if (proceduralView != null && avatar.Character != null)
+            {
+                var state = avatar.Skills != null ? avatar.Skills.GetSlot(slot) : null;
+                proceduralView.Play(slot, skill, avatar.Character.GetAlternative(slot) == skill, state != null ? state.Step : 0);
+            }
         }
 
         private void OnEquipmentActivated() => animators.SetTrigger(AnimParams.UseEquipment);
