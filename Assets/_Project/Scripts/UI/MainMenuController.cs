@@ -145,7 +145,7 @@ namespace RiskOfMagic.UI
             catch (Exception exception)
             {
                 Debug.LogException(exception);
-                SetStatus($"Échec de la création : {exception.Message}");
+                SetStatus($"Échec de la création : {OnlineError(exception)}");
             }
             finally
             {
@@ -169,12 +169,27 @@ namespace RiskOfMagic.UI
             catch (Exception exception)
             {
                 Debug.LogException(exception);
-                SetStatus($"Impossible de rejoindre : {exception.Message}");
+                SetStatus($"Impossible de rejoindre : {OnlineError(exception)}");
             }
             finally
             {
                 SetBusy(false);
             }
+        }
+
+        /// <summary>Readable reason for the usual online failures (the full exception stays in the log).</summary>
+        private static string OnlineError(Exception exception)
+        {
+            string text = exception.ToString();
+            if (text.Contains("UnityProjectNotLinked") || text.Contains("ICloudProjectId"))
+                return "le projet n'est pas relié à Unity Cloud (Project Settings → Services, puis refaire la build).";
+            if (text.Contains("Authentication") && text.Contains("Request"))
+                return "connexion aux services Unity impossible (réseau ou pare-feu).";
+            if (text.Contains("Relay") || text.Contains("Lobby"))
+                return "service Relay/Lobby indisponible (vérifier qu'ils sont activés sur le dashboard Unity).";
+            if (text.Contains("not found") || text.Contains("NotFound"))
+                return "aucune partie avec ce code.";
+            return exception.Message;
         }
 
         private void OpenOptions()

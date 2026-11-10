@@ -51,6 +51,15 @@ namespace RiskOfMagic.Online
             }
         }
 
+        private static string CommandLineValue(string flag)
+        {
+            var args = Environment.GetCommandLineArgs();
+            for (int i = 0; i < args.Length - 1; i++)
+                if (string.Equals(args[i], flag, StringComparison.OrdinalIgnoreCase))
+                    return args[i + 1];
+            return null;
+        }
+
         private static async Task EnsureSignedInAsync()
         {
             if (UnityServices.State == ServicesInitializationState.Uninitialized)
@@ -59,6 +68,11 @@ namespace RiskOfMagic.Online
 #if UNITY_EDITOR
                 // Several editor instances (Multiplayer Play Mode) must not share the same anonymous account.
                 options.SetProfile("editor" + UnityEngine.Random.Range(0, 1000000));
+#else
+                // Two builds on the same PC: launch one with "-profile 2" so they don't share the anonymous account.
+                string profile = CommandLineValue("-profile");
+                if (!string.IsNullOrEmpty(profile))
+                    options.SetProfile(profile);
 #endif
                 await UnityServices.InitializeAsync(options);
             }
