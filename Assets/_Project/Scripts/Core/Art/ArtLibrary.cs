@@ -17,6 +17,8 @@ namespace RiskOfMagic.Core
     {
         public const string ResourcePath = "ArtLibrary";
 
+        public enum Category : byte { Vfx, Projectile, Interactable }
+
         [Serializable]
         public class PrefabArt
         {
@@ -75,7 +77,7 @@ namespace RiskOfMagic.Core
         public List<EliteArt> elites = new();
         public List<DotArt> dots = new();
 
-        [Header("Prefabs (applied by Build Prototype Scene)")]
+        [Header("Prefabs (applied at runtime by ArtSlot: no rebuild needed)")]
         public List<PrefabArt> vfx = new();
         public List<PrefabArt> projectiles = new();
         public List<PrefabArt> interactables = new();
@@ -110,6 +112,20 @@ namespace RiskOfMagic.Core
             var library = Instance;
             if (library != null && library.cursor != null)
                 Cursor.SetCursor(library.cursor, library.cursorHotspot, CursorMode.Auto);
+        }
+
+        public PrefabArt Find(Category category, string key)
+        {
+            var list = category switch
+            {
+                Category.Vfx => vfx,
+                Category.Projectile => projectiles,
+                _ => interactables
+            };
+            foreach (var entry in list)
+                if (entry.name == key)
+                    return entry;
+            return null;
         }
 
         public StatusArt GetStatus(StatusType type)

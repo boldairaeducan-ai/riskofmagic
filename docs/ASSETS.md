@@ -3,7 +3,7 @@
 Chaque ligne indique **où brancher** l'asset. Rien n'est écrasé par les builders aux emplacements indiqués.
 Ne jamais modifier directement un prefab généré : passer par le champ de la définition (`icon`, `modelPrefab`…) ou par
 **`Resources/ArtLibrary.asset`** (*Tools → Risk of Magic → Select Art Library*), dont les emplacements sont créés par
-*Build Prototype Scene* et appliqués à chaque génération.
+*Build Prototype Scene* ; les modèles y sont lus en jeu (un nouveau Play suffit, pas de régénération).
 
 ---
 
