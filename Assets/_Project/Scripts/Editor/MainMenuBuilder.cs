@@ -117,7 +117,7 @@ namespace RiskOfMagic.Editor
             H.LayoutHeight(H.Text(online, "JoinHeader", "Rejoindre avec un code", 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.BottomLeft, stretch: false).rectTransform, 30f);
             var codeField = H.InputField(online, "JoinCode", "Code de la partie");
             codeField.text = string.Empty;
-            codeField.characterLimit = 12;
+            codeField.characterLimit = 16;
             var join = MenuEntry(online, theme, "JoinButton", "Rejoindre", 28f, 50f);
             online.gameObject.SetActive(false);
 
@@ -137,6 +137,11 @@ namespace RiskOfMagic.Editor
             copyRect.anchorMin = copyRect.anchorMax = copyRect.pivot = H.TopCenter;
             copyRect.anchoredPosition = new Vector2(360f, -180f);
             copyRect.sizeDelta = new Vector2(140f, 44f);
+            var invite = H.Button(lobby, "InviteButton", "Inviter des amis", 0f);
+            var inviteRect = (RectTransform)invite.transform;
+            inviteRect.anchorMin = inviteRect.anchorMax = inviteRect.pivot = H.TopCenter;
+            inviteRect.anchoredPosition = new Vector2(560f, -180f);
+            inviteRect.sizeDelta = new Vector2(220f, 44f);
 
             // Left column: players, difficulty (locked card shows its challenge).
             var playersPanel = Panel(lobby, "Players", H.Center, H.Center, new Vector2(-710f, 145f), new Vector2(420f, 290f), "Joueurs");
@@ -220,6 +225,7 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("lobbyScreen").objectReferenceValue = lobby.gameObject;
                 so.FindProperty("codeLabel").objectReferenceValue = code;
                 so.FindProperty("copyCodeButton").objectReferenceValue = copy;
+                so.FindProperty("inviteButton").objectReferenceValue = invite;
                 so.FindProperty("playersLabel").objectReferenceValue = players;
                 so.FindProperty("characterCardTemplate").objectReferenceValue = characterTemplate;
                 so.FindProperty("characterDescription").objectReferenceValue = characterInfo;

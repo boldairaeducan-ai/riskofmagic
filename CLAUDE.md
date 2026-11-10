@@ -23,7 +23,10 @@ Game-facing text (UI, item/skill names and descriptions) is in **French**; code,
   HUD widget is added. It never overwrites `UI/HudTheme.asset` (where art is plugged in).
 - Play from `Scenes/MainMenu` (Solo / online join code / lobby). Playing `Scenes/Prototype` directly still works for
   debugging (Host/Client-by-IP panel while disconnected; Esc = pause menu, `UI/PauseMenu`). Multi-instance tests use Multiplayer Play Mode.
-- Online play needs the **Multiplayer Services** package + a linked Unity Cloud project. `Scripts/Online` is a separate
+- Online play: **Steam** (`Scripts/Steam`, assembly compiled when Steamworks.NET + the community
+  SteamNetworkingSockets transport packages are installed; Steam must be running, `steam_appid.txt` = 480 for tests,
+  copied next to the build by `Editor/SteamAppIdCopy`) has priority over **Multiplayer Services**
+  (`OnlineSessions.Register(service, priority)`). Unity's backend needs the package + a linked Unity Cloud project. `Scripts/Online` is a separate
   assembly compiled only when that package is installed (`versionDefines` + `defineConstraints`); the runtime only knows
   `IOnlineSessionService` / `OnlineSessions`.
 - Unity generates `.meta` files and assets on the user's machine; they are committed by the user. Before pushing,

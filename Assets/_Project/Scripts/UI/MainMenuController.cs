@@ -47,6 +47,7 @@ namespace RiskOfMagic.UI
         [SerializeField] private GameObject lobbyScreen;
         [SerializeField] private TMP_Text codeLabel;
         [SerializeField] private UnityEngine.UI.Button copyCodeButton;
+        [SerializeField, Tooltip("Steam: opens the friend invite overlay.")] private UnityEngine.UI.Button inviteButton;
         [SerializeField] private TMP_Text playersLabel;
         [SerializeField, Tooltip("Cloned per character.")] private LobbyCard characterCardTemplate;
         [SerializeField] private CharacterPreview characterPreview;
@@ -92,6 +93,8 @@ namespace RiskOfMagic.UI
             if (optionsMenu != null)
                 optionsMenu.gameObject.SetActive(false);
             AddListener(copyCodeButton, () => GUIUtility.systemCopyBuffer = OnlineSessions.Service?.JoinCode ?? string.Empty);
+            AddListener(inviteButton, () => OnlineSessions.InviteFriends?.Invoke());
+            OnlineSessions.JoinRequested += OnJoinRequested;
             if (normalCard != null)
                 AddListener(normalCard.Button, () => SetDifficulty(DifficultyLevel.Normal));
             if (hardCard != null)
@@ -102,7 +105,7 @@ namespace RiskOfMagic.UI
             BuildCharacterCards();
             BuildSkillCards();
             SetStatus(GameFlow.PendingMessage ?? (OnlineSessions.IsAvailable ? string.Empty
-                : "Jeu en ligne indisponible : installez le package Multiplayer Services."));
+                : "Jeu en ligne indisponible : lancez Steam (ou installez Multiplayer Services)."));
             GameFlow.PendingMessage = null;
             if (hostButton != null)
                 hostButton.interactable = OnlineSessions.IsAvailable;
@@ -110,9 +113,27 @@ namespace RiskOfMagic.UI
                 joinButton.interactable = OnlineSessions.IsAvailable;
 
             ShowLobby(NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening);
+            if (!string.IsNullOrEmpty(OnlineSessions.PendingJoinCode))
+                OnJoinRequested(); // started from a Steam invite
         }
 
-        private void OnDestroy() => Subscribe(null);
+        private void OnDestroy()
+        {
+            Subscribe(null);
+            OnlineSessions.JoinRequested -= OnJoinRequested;
+        }
+
+        /// <summary>Steam invite accepted (overlay or launch argument): join right away from the home screen.</summary>
+        private void OnJoinRequested()
+        {
+            string code = OnlineSessions.PendingJoinCode;
+            if (string.IsNullOrEmpty(code) || busy || (NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening))
+                return;
+            OnlineSessions.PendingJoinCode = null;
+            if (joinCodeField != null)
+                joinCodeField.text = code;
+            _ = JoinOnline();
+        }
 
         // ---------------------------------------------------------------- Home
 
@@ -427,6 +448,8 @@ namespace RiskOfMagic.UI
             }
             if (copyCodeButton != null)
                 copyCodeButton.gameObject.SetActive(!string.IsNullOrEmpty(OnlineSessions.Service?.JoinCode));
+            if (inviteButton != null)
+                inviteButton.gameObject.SetActive(OnlineSessions.InviteFriends != null);
 
             if (!hasLobby)
             {

@@ -19,7 +19,7 @@ namespace RiskOfMagic.Online
         public string JoinCode => session?.Code;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Register() => OnlineSessions.Service = new MultiplayerSessionService();
+        private static void Register() => OnlineSessions.Register(new MultiplayerSessionService(), 0);
 
         public async Task<string> HostAsync(int maxPlayers)
         {

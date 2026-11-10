@@ -1,0 +1,38 @@
+{
+    "name": "RiskOfMagic.Steam",
+    "rootNamespace": "RiskOfMagic.Steam",
+    "references": [
+        "RiskOfMagic.Runtime",
+        "Unity.Netcode.Runtime",
+        "com.rlabrecque.steamworks.net",
+        "SteamNetworkingSockets Transport for Netcode for GameObjects"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "ROM_STEAMWORKS",
+        "ROM_STEAM_TRANSPORT"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.rlabrecque.steamworks.net",
+            "expression": "",
+            "define": "ROM_STEAMWORKS"
+        },
+        {
+            "name": "com.community.netcode.transport.steamnetworkingsockets",
+            "expression": "",
+            "define": "ROM_STEAM_TRANSPORT"
+        }
+    ],
+    "noEngineReferences": false
+}
