@@ -485,6 +485,9 @@ namespace RiskOfMagic.UI
                 else
                     lobby.SetLoadout(MetaProgression.GetLoadout(catalog.GetCharacter(me.Character)));
             }
+            // On the host the selection RPC runs immediately (and refreshes re-entrantly): read the state again
+            // so this pass doesn't overwrite the UI with the previous character.
+            hasMe = lobby.TryGetLocalPlayer(out me);
             var selected = hasMe && catalog != null ? catalog.GetCharacter(me.Character) : null;
             for (int i = 0; i < characterCards.Count && catalog != null; i++)
             {
