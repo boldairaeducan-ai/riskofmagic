@@ -70,7 +70,7 @@ namespace RiskOfMagic.UI
             }
 
             var player = PlayerAvatar.Local;
-            if (player == null || !player.IsAlive || !merchant.IsInRange(player))
+            if (player == null || !player.IsAlive || !merchant.IsSpawned || merchant.IsSold || !merchant.IsInRange(player))
             {
                 Close();
                 return;

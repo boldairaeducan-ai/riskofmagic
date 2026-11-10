@@ -57,6 +57,7 @@ namespace RiskOfMagic.Run.MapEvents
         {
             if (closedVisual != null)
                 closedVisual.SetActive(!opened.Value);
+            RiskOfMagic.Interaction.OpenAnimation.Apply(this, !opened.Value);
         }
     }
 }
