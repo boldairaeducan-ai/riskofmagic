@@ -247,6 +247,7 @@ namespace RiskOfMagic.Editor
         public static void FixCollidersAndRebake()
         {
             var scene = EditorSceneManager.GetActiveScene();
+            Selection.activeObject = null; // colliders are replaced: don't leave the inspector on them
             int fixedCount = 0;
             foreach (var capsule in Object.FindObjectsByType<CapsuleCollider>(FindObjectsInactive.Include))
             {

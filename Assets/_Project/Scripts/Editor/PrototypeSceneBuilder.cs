@@ -87,6 +87,7 @@ namespace RiskOfMagic.Editor
             }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo() || !HudBuilder.EnsureTextMeshPro())
                 return;
+            Selection.activeObject = null; // the inspector would keep showing objects the build destroys (harmless errors)
 
             foreach (var folder in new[] { ChallengesFolder, SkillsFolder, CharactersFolder, ProjectilesFolder, EnemiesFolder, ItemsFolder, EquipmentFolder, VfxFolder, Materials, Scenes, ResourcesFolder })
                 Directory.CreateDirectory(folder);
