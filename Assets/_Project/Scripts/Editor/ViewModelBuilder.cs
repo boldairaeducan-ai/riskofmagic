@@ -41,21 +41,25 @@ namespace RiskOfMagic.Editor
 
         private static void Fill(ViewModelDefinition view, string character)
         {
-            // Rest poses assume weapons modelled upright (+Y): adjust restEuler in the asset if a model lies differently.
-            var right = new Vector3(0.3f, -0.3f, 0.5f);
-            var left = new Vector3(-0.3f, -0.3f, 0.5f);
+            // Measured on the Medieval Fantasy Weapon Pack: grip at the origin, blade / handle along +Y, real-world size
+            // (sword 1.2 m, bow 1.46 m with its belly on +X, arrow 0.78 m, shields 0.6-0.8 m thin on Z).
+            // Euler (x, y, z): +x tips the weapon forward, +z leans it towards the screen center for the right hand.
+            var right = new Vector3(0.26f, -0.3f, 0.5f);
+            var left = new Vector3(-0.26f, -0.3f, 0.5f);
             switch (character)
             {
                 case "Archer":
-                    Hand(view.offHand, "BowOne", new Vector3(-0.24f, -0.2f, 0.55f), new Vector3(0f, 0f, 8f));
-                    Hand(view.mainHand, "ArrowOne", new Vector3(0.2f, -0.24f, 0.45f), new Vector3(85f, -5f, 0f));
+                    // Bow upright in the left hand, belly turned away (+X → forward), string towards the player.
+                    Hand(view.offHand, "BowOne", new Vector3(-0.2f, -0.22f, 0.6f), new Vector3(0f, -90f, -12f), 0.55f);
+                    // Arrow pointing forward from the right hand (+Y → forward).
+                    Hand(view.mainHand, "ArrowOne", new Vector3(0.12f, -0.2f, 0.42f), new Vector3(90f, -6f, 0f), 0.7f);
                     view.motions = new[] { ViewMotion.BowShot, ViewMotion.BowShot, ViewMotion.Lower, ViewMotion.BowShot };
                     view.alternativeMotions = new[] { ViewMotion.BowShot, ViewMotion.BowShot, ViewMotion.Lower, ViewMotion.BowShot };
                     view.gloveColor = new Color(0.3f, 0.4f, 0.22f);
                     break;
                 case "Warrior":
-                    Hand(view.mainHand, "SwordOne", right, new Vector3(20f, -10f, -6f));
-                    Hand(view.offHand, "ShieldOne", new Vector3(-0.32f, -0.28f, 0.48f), new Vector3(0f, 25f, 0f));
+                    Hand(view.mainHand, "SwordOne", right, new Vector3(50f, -10f, 18f), 0.6f);
+                    Hand(view.offHand, "ShieldOne", new Vector3(-0.36f, -0.34f, 0.55f), new Vector3(0f, 20f, 0f), 0.55f);
                     view.motions = new[] { ViewMotion.Swing, ViewMotion.Spin, ViewMotion.Guard, ViewMotion.Slam };
                     view.alternativeMotions = new[] { ViewMotion.Overhead, ViewMotion.Throw, ViewMotion.Guard, ViewMotion.CastBoth };
                     view.gloveColor = new Color(0.45f, 0.42f, 0.4f);
@@ -75,15 +79,16 @@ namespace RiskOfMagic.Editor
                     view.gloveColor = new Color(0.25f, 0.45f, 0.2f);
                     break;
                 case "Paladin":
-                    Hand(view.mainHand, "BluntOne", right, new Vector3(20f, -10f, -6f));
-                    Hand(view.offHand, "ShieldTwo", new Vector3(-0.32f, -0.28f, 0.48f), new Vector3(0f, 25f, 0f));
+                    Hand(view.mainHand, "BluntOne", right, new Vector3(45f, -10f, 15f), 0.7f);
+                    Hand(view.offHand, "ShieldTwo", new Vector3(-0.38f, -0.36f, 0.58f), new Vector3(0f, 20f, 0f), 0.45f);
                     view.motions = new[] { ViewMotion.Swing, ViewMotion.Cast, ViewMotion.Guard, ViewMotion.Slam };
                     view.alternativeMotions = new[] { ViewMotion.Swing, ViewMotion.Guard, ViewMotion.Guard, ViewMotion.CastBoth };
                     view.gloveColor = new Color(0.8f, 0.7f, 0.4f);
                     break;
                 case "Shadow":
-                    Hand(view.mainHand, "SwordThree", right, new Vector3(35f, -15f, -10f), 0.6f);
-                    Hand(view.offHand, "SwordThree", left, new Vector3(35f, 15f, 10f), 0.6f);
+                    // Daggers: the slimmest sword, scaled to ~40 cm, held point forward.
+                    Hand(view.mainHand, "SwordThree", right, new Vector3(70f, -8f, 10f), 0.35f);
+                    Hand(view.offHand, "SwordThree", left, new Vector3(70f, 8f, -10f), 0.35f);
                     view.motions = new[] { ViewMotion.ThrustAlternate, ViewMotion.Throw, ViewMotion.Lower, ViewMotion.Thrust };
                     view.alternativeMotions = new[] { ViewMotion.ThrustAlternate, ViewMotion.Throw, ViewMotion.Lower, ViewMotion.Spin };
                     view.gloveColor = new Color(0.15f, 0.15f, 0.2f);

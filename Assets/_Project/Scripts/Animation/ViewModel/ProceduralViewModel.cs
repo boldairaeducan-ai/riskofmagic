@@ -268,7 +268,7 @@ namespace RiskOfMagic.Animation
                 mainPos += new Vector3(bow ? -0.06f : 0.04f, bow ? 0.1f : 0.06f, -0.22f) * draw
                            + (Vector3)(Random.insideUnitCircle * (0.004f * draw * draw)); // tension tremble at full draw
                 if (bow)
-                    offPos += new Vector3(0.14f, 0.1f, 0.08f) * draw; // x is mirrored below: towards the center
+                    offPos += new Vector3(-0.14f, 0.1f, 0.08f) * draw; // left hand: negative x = towards the center (mirrored)
                 else
                     mainEuler += new Vector3(-30f, 0f, 0f) * draw;
             }
