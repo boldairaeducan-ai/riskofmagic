@@ -164,7 +164,8 @@ namespace RiskOfMagic.Enemies
         public float AttackSpeedMultiplier => Status != null ? Status.AttackSpeedMultiplier : 1f;
 
         public uint GoldReward => definition != null && !IsIllusion
-            ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * EliteGoldMultiplier * RunDifficulty.CurrentCoefficient))
+            ? (uint)Mathf.Max(0, Mathf.RoundToInt(definition.goldReward * EliteGoldMultiplier * RunDifficulty.CurrentCoefficient
+                                                    * RiskOfMagic.Core.GameBalance.Instance.economy.enemyGoldMultiplier))
             : 0u;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]

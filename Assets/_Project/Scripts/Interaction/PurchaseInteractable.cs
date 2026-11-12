@@ -16,7 +16,7 @@ namespace RiskOfMagic.Interaction
         [SerializeField] private string displayName = "Coffre";
         [SerializeField] private uint baseCost = 25;
         [SerializeField] private bool scaleWithDifficulty = true;
-        [SerializeField] private float costExponent = 1.25f;
+        private static float costExponent => RiskOfMagic.Core.GameBalance.Instance.economy.costExponent;
         [SerializeField, Min(0), Tooltip("0 = infinite")] private int maxUses = 1;
         [SerializeField, Min(1f)] private float costMultiplierPerUse = 1f;
         [SerializeField, SoundSlot(Optional = true), Tooltip("Empty = AudioConfig.purchase.")] private SoundEvent purchaseSound;

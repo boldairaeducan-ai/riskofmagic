@@ -28,7 +28,7 @@ namespace RiskOfMagic.Interaction
         [SerializeField] private int equipmentPrice = 80;
         [SerializeField] private int rerollBasePrice = 15;
         [SerializeField, Min(1f)] private float rerollPriceMultiplier = 1.5f;
-        [SerializeField] private float costExponent = 1.25f;
+        private static float costExponent => RiskOfMagic.Core.GameBalance.Instance.economy.costExponent;
 
         [Header("Leaving")]
         [SerializeField, Min(0f), Tooltip("Delay between the purchase and the merchant leaving.")] private float leaveDelay = 0.6f;

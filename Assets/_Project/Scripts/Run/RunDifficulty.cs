@@ -40,7 +40,7 @@ namespace RiskOfMagic.Run
         public static float CurrentDirectorCreditMultiplier => IsHard ? Instance.hardDirectorCreditMultiplier : 1f;
         public static float CurrentDetectionMultiplier => IsHard ? Instance.hardDetectionMultiplier : 1f;
         public static float CurrentUnlockMultiplier => IsHard ? Instance.hardUnlockMultiplier : 1f;
-        private static bool IsHard => Instance != null && Instance.IsSpawned && Instance.difficulty.Value == DifficultyLevel.Hard;
+        public static bool IsHard => Instance != null && Instance.IsSpawned && Instance.difficulty.Value == DifficultyLevel.Hard;
 
         public static int CurrentEnemyLevel => Instance != null && Instance.IsSpawned ? Instance.EnemyLevel : 1;
 

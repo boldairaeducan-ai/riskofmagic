@@ -72,6 +72,47 @@ namespace RiskOfMagic.Core
         }
 
         [Serializable]
+        public class InteractableCost
+        {
+            [Tooltip("Generated prefab name (Chest_Small, Chest_Large, Chest_Choice, EquipmentBarrel, HealingShrine, Merchant).")]
+            public string name;
+            [Min(1)] public int credits = 15;
+            [Min(0f), Tooltip("Relative chance to be picked among the affordable ones.")] public float weight = 1f;
+            [Min(0), Tooltip("Always spawned this many times (outside the budget).")] public int guaranteed;
+        }
+
+        [Serializable]
+        public class EconomyBalance
+        {
+            [Min(0.01f), Tooltip("Enemy gold multiplier (experience is not affected).")] public float enemyGoldMultiplier = 0.75f;
+            [Min(0f), Tooltip("Prices = base × difficulty coefficient ^ this (chests, shrines, merchant).")] public float costExponent = 1.4f;
+
+            [Header("Interactables per stage: a credit budget spent at random")]
+            public float normalCredits = 220f;
+            public float hardCredits = 140f;
+            [Tooltip("Budget growth per stage after the first (0.25 = +25 % per stage).")] public float normalGrowthPerStage = 0.25f;
+            public float hardGrowthPerStage = 0.2f;
+            [Tooltip("Budget growth per extra player.")] public float perExtraPlayer = 0.3f;
+            public InteractableCost[] costs =
+            {
+                new() { name = "Chest_Small", credits = 15, weight = 6f },
+                new() { name = "Chest_Large", credits = 30, weight = 1.5f },
+                new() { name = "Chest_Choice", credits = 30, weight = 1.2f },
+                new() { name = "EquipmentBarrel", credits = 10, weight = 1.5f },
+                new() { name = "HealingShrine", credits = 15, weight = 1f },
+                new() { name = "Merchant", credits = 1, weight = 0f, guaranteed = 1 },
+            };
+
+            public InteractableCost Find(string prefabName)
+            {
+                foreach (var cost in costs)
+                    if (cost != null && cost.name == prefabName)
+                        return cost;
+                return null;
+            }
+        }
+
+        [Serializable]
         public class EnemyBalance
         {
             [Min(0.1f), Tooltip("Damage multiplier of regular (non-boss) enemies.")] public float regularDamageMultiplier = 1.15f;
@@ -85,6 +126,7 @@ namespace RiskOfMagic.Core
         [Tooltip("Player levels (experience = gold reward × experiencePerGold).")] public ExperienceBalance experience = new();
         [Tooltip("Status effect strengths (players and enemies).")] public StatusBalance statuses = new();
         [Tooltip("Global multipliers on top of each enemy's attack data.")] public EnemyBalance enemies = new();
+        [Tooltip("Gold, prices and the number of chests per stage.")] public EconomyBalance economy = new();
 
         private static GameBalance instance;
 

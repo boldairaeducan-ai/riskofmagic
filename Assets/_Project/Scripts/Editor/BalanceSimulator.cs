@@ -131,11 +131,20 @@ namespace RiskOfMagic.Editor
             var entries = spawner.FindProperty("entries");
             float chestCount = 0f, chestCostSum = 0f;
             var rarity = new float[4];
+            // Expected count of each interactable from the stage budget (GameBalance.economy), stage 1.
+            var economy = balance.economy;
+            float budget = (hard ? economy.hardCredits : economy.normalCredits) * (1f + economy.perExtraPlayer * (players - 1));
+            float weightedCost = 0f;
+            foreach (var option in economy.costs)
+                if (option != null && option.weight > 0f)
+                    weightedCost += option.weight * option.credits;
             for (int i = 0; i < entries.arraySize; i++)
             {
                 var entry = entries.GetArrayElementAtIndex(i);
                 var prefab = entry.FindPropertyRelative("prefab").objectReferenceValue as Unity.Netcode.NetworkObject;
-                int count = entry.FindPropertyRelative("count").intValue;
+                var costEntry = prefab != null ? economy.Find(prefab.name) : null;
+                float count = costEntry == null ? entry.FindPropertyRelative("count").intValue
+                    : costEntry.guaranteed + (weightedCost > 0f ? budget * costEntry.weight / weightedCost : 0f);
                 var chest = prefab != null ? prefab.GetComponent<ChestInteractable>() : null;
                 if (chest == null || count <= 0)
                     continue;
@@ -150,7 +159,7 @@ namespace RiskOfMagic.Editor
             }
             float avgChestBaseCost = chestCount > 0f ? chestCostSum / chestCount : 30f;
             float rarityTotal = rarity.Sum();
-            const float chestCostExponent = 1.25f;
+            float chestCostExponent = economy.costExponent;
 
             // Expected value of one chest item
             var perItem = ExpectedItem(catalog, rarity, rarityTotal);
@@ -206,7 +215,7 @@ namespace RiskOfMagic.Editor
                 float spawnsPerSecond = creditsPerSecond / cost;
                 float stageSeconds = stageMinutes * 60f;
                 float kills = spawnsPerSecond * stageSeconds + populationCredits * Mathf.Sqrt(coefficient) / cost;
-                float stageGold = kills * gold * coefficient; // every player gets the full reward
+                float stageGold = kills * gold * coefficient * economy.enemyGoldMultiplier; // every player gets the full reward
                 totalGold += stageGold;
 
                 // Items: gold spent on chests (cost locked at spawn), capped by the chests of the map shared by the team

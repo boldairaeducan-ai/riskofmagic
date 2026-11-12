@@ -76,14 +76,7 @@ namespace RiskOfMagic.Run
                 return;
             }
 
-            foreach (var entry in entries)
-            {
-                if (entry.prefab == null)
-                    continue;
-                for (int i = 0; i < entry.count; i++)
-                    if (!TrySpawn(entry.prefab, entry.useSpawnSpots, entry.spotType, bounds))
-                        break;
-            }
+            SpawnInteractables(bounds);
             SpawnMapEvents(bounds);
             SpawnSecret();
         }
@@ -123,6 +116,61 @@ namespace RiskOfMagic.Run
                 fragment.Spawn(true);
                 spawned.Add(fragment);
             }
+        }
+
+        /// <summary>
+        /// Guaranteed ones (merchant), then a credit budget (GameBalance.economy: difficulty, stage, players) spent on
+        /// random affordable interactables, weighted. Entries without a cost in GameBalance use their fixed count.
+        /// </summary>
+        private void SpawnInteractables(StageBounds bounds)
+        {
+            var economy = RiskOfMagic.Core.GameBalance.Instance.economy;
+            var pool = new List<(Entry entry, RiskOfMagic.Core.GameBalance.InteractableCost cost)>();
+            foreach (var entry in entries)
+            {
+                if (entry.prefab == null)
+                    continue;
+                var cost = economy.Find(entry.prefab.name);
+                int fixedCount = cost != null ? cost.guaranteed : entry.count;
+                for (int i = 0; i < fixedCount; i++)
+                    if (!TrySpawn(entry.prefab, entry.useSpawnSpots, entry.spotType, bounds))
+                        break;
+                if (cost != null && cost.weight > 0f)
+                    pool.Add((entry, cost));
+            }
+
+            bool hard = RunDifficulty.IsHard;
+            int stage = StageManager.Instance != null ? Mathf.Max(1, StageManager.Instance.StageNumber) : 1;
+            int players = Mathf.Max(1, RiskOfMagic.Player.PlayerAvatar.All.Count);
+            float budget = (hard ? economy.hardCredits : economy.normalCredits)
+                           * (1f + (hard ? economy.hardGrowthPerStage : economy.normalGrowthPerStage) * (stage - 1))
+                           * (1f + economy.perExtraPlayer * (players - 1));
+            int spawnedCount = 0;
+            for (int guard = 0; guard < 200 && pool.Count > 0; guard++)
+            {
+                float total = 0f;
+                foreach (var option in pool)
+                    if (option.cost.credits <= budget)
+                        total += option.cost.weight;
+                if (total <= 0f)
+                    break;
+                float roll = Random.value * total;
+                foreach (var option in pool)
+                {
+                    if (option.cost.credits > budget)
+                        continue;
+                    roll -= option.cost.weight;
+                    if (roll > 0f)
+                        continue;
+                    budget -= option.cost.credits;
+                    if (TrySpawn(option.entry.prefab, option.entry.useSpawnSpots, option.entry.spotType, bounds))
+                        spawnedCount++;
+                    else
+                        pool.Remove(option); // no room left for it
+                    break;
+                }
+            }
+            Debug.Log($"[InteractableSpawner] Stage {stage}: {spawnedCount} interactables from the budget ({(hard ? "hard" : "normal")}, {players} player(s)).");
         }
 
         /// <summary>0..N distinct events per stage, weighted (MapEventsConfig).</summary>

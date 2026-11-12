@@ -78,7 +78,8 @@ namespace RiskOfMagic.Player
                 level.Value = newLevel;
         }
 
-        private void OnEnemyKilled(EnemyActor enemy, DamageInfo killingBlow) => AddExperience(enemy.GoldReward * experiencePerGold);
+        private void OnEnemyKilled(EnemyActor enemy, DamageInfo killingBlow) => AddExperience(enemy.GoldReward / Mathf.Max(0.01f, RiskOfMagic.Core.GameBalance.Instance.economy.enemyGoldMultiplier)
+                                        * experiencePerGold); // experience ignores the gold multiplier
 
         private void OnLevelChanged(int previous, int current) => LevelChanged?.Invoke(current);
     }
