@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "Charge du crois\xE9"
   description: "Ru\xE9e de 12 m : 200% et recul aux ennemis, soigne de 10% les alli\xE9s
     travers\xE9s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e429059f9aef8e34cac4cc51768ddf12, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

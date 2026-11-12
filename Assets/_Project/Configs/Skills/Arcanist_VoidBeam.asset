@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "Rayon du n\xE9ant"
   description: "Rayon de 3 s qui traverse les ennemis : 80% 8 fois par seconde. Chaque
     tick d\xE9clenche les objets (coef. 0,5). Ralentit de 50%."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 307cda7e77c621247a6e5dd40e8fbbec, type: 3}
   activationMode: 0
   cooldown: 12
   maxStock: 1

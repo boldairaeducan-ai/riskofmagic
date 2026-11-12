@@ -39,6 +39,26 @@ namespace RiskOfMagic.Core
                     collider.enabled = false; // effects and projectiles must not block raycasts
             foreach (var behaviour in art.GetComponentsInChildren<Unity.Netcode.NetworkBehaviour>(true))
                 behaviour.enabled = false; // a model is visual only
+            if (category == ArtLibrary.Category.Vfx && TryGetComponent(out RiskOfMagic.Vfx.TimedEffect timed))
+                FitParticlesToLifetime(art, timed);
+        }
+
+        /// <summary>
+        /// Effect packs often loop their particles. A short-lived effect plays them once and lives until they fade;
+        /// an effect that must persist longer than one cycle (telegraph, fire patch) keeps looping and is cut on release.
+        /// </summary>
+        private static void FitParticlesToLifetime(GameObject art, RiskOfMagic.Vfx.TimedEffect timed)
+        {
+            float end = 0f;
+            foreach (var system in art.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                var main = system.main;
+                if (main.duration < timed.Lifetime)
+                    continue;
+                main.loop = false;
+                end = Mathf.Max(end, main.startDelay.constantMax + main.duration + main.startLifetime.constantMax);
+            }
+            timed.ExtendLifetime(Mathf.Min(end, 4f));
         }
     }
 }

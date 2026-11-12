@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Cri de guerre
   description: "Alli\xE9s \xE0 15 m : +40% vitesse d'attaque et de d\xE9placement
     pendant 6 s, et rend 20 PV."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b2a3a45fda3b8774aa4c547c4297bd28, type: 3}
   activationMode: 0
   cooldown: 20
   maxStock: 1

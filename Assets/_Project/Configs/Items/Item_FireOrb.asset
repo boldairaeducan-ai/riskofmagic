@@ -17,7 +17,7 @@ MonoBehaviour:
     s."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 213232a13a18d944383332f9e4cc3528, type: 3}
   modifiers: []
   dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
   radiusFirstStack: 4

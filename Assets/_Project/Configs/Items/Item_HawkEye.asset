@@ -16,7 +16,7 @@ MonoBehaviour:
   description: +10% chances de coup critique (+10%).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: e2270c99d67c5824eb93d75390f42737, type: 3}
   modifiers:
   - stat: 6
     valuePerStack: 0.1

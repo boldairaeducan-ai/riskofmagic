@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "Chaque coup re\xE7u est r\xE9duit de 5 (+5), jamais sous 1."
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 302b4dea97d5ec843923598abe23f69a, type: 3}
   modifiers:
   - stat: 9
     valuePerStack: 5

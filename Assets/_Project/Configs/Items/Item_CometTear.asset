@@ -17,7 +17,7 @@ MonoBehaviour:
     5 m."
   rarity: 3
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1fe784c0346a64742a9ab94ab0dd7617, type: 3}
   modifiers: []
   chanceFirstStack: 0.08
   chancePerExtraStack: 0.04

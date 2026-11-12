@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
   displayName: Griffes toxiques
   description: "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne : 0,6 % des PV max/s par cumul (15 max), relanc\xE9 \xE0 chaque coup."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: fcb97d3bbd579d8428c606143979edb2, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

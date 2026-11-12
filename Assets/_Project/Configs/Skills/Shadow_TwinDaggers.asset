@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
   displayName: Dagues jumelles
   description: 3 coups rapides (70/70/110%). Critique garanti dans le dos.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 7f71768ede4f5614d9fee8cd9cd6cbb5, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

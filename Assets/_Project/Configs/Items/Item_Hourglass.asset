@@ -16,7 +16,7 @@ MonoBehaviour:
   description: -12% temps de recharge (multiplicatif).
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 145ee4ceb3e1cfd468a64c3d119ed1ca, type: 3}
   modifiers:
   - stat: 7
     valuePerStack: 0.12

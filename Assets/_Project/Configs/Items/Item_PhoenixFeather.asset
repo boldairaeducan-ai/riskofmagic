@@ -16,6 +16,6 @@ MonoBehaviour:
   description: "\xC0 la mort, ressuscite avec 50% des PV. Consomm\xE9e."
   rarity: 3
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d8c469ffa7234a840a620d0be2bb29f5, type: 3}
   modifiers: []
   reviveHealthFraction: 0.5

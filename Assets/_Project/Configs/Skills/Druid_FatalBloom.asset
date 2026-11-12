@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Floraison fatale
   description: "Fait \xE9clater tous les poisons \xE0 25 m : 150% des d\xE9g\xE2ts
     de poison restants, instantan\xE9ment."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c08ad3b5abe325e4abd198c17cae0319, type: 3}
   activationMode: 0
   cooldown: 10
   maxStock: 1

@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Danse des lames
   description: "1,5 s invuln\xE9rable en frappant 8 fois tous les ennemis \xE0 6
     m (8 \xD7 120%)."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 47077642d68a2924c8a317e159578f92, type: 3}
   activationMode: 0
   cooldown: 14
   maxStock: 1

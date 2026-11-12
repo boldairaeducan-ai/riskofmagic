@@ -17,7 +17,7 @@ MonoBehaviour:
     (max +60%)."
   rarity: 3
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 894054b659cfc494e96f0ed0c9f394bf, type: 3}
   modifiers: []
   percentPerKillPerStack: 1
   maxPercent: 60

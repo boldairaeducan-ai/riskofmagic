@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Parade
   description: "Bloque 100% des d\xE9g\xE2ts pendant 1 s, puis contre-attaque : 200%
     autour de soi."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cbd64a19ce7b824499a7d3c5033bda2a, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

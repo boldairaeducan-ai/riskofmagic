@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Corne de ralliement
   description: "+40% vitesse d'attaque et de d\xE9placement pendant 8 s, pour soi
     et les alli\xE9s \xE0 25 m."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3ce1bcbc1fca53140ab144226fe5b547, type: 3}
   cooldown: 45
   activateSound: {fileID: 11400000, guid: ef178d9fffabd3e4db2791d4cd306f6a, type: 2}
   radius: 25

@@ -16,7 +16,7 @@ MonoBehaviour:
   description: +25 PV max (+25).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 2b908f5f20beff14fa10bdef4506d4d1, type: 3}
   modifiers:
   - stat: 3
     valuePerStack: 25

@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Chaque coup soigne 1 PV (+1).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 77d7018450196774a99cc2be5ed47a3f, type: 3}
   modifiers: []
   healPerStack: 1

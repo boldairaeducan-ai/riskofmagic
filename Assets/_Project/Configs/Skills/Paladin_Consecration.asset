@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "Sol consacr\xE9"
   description: "Zone de 8 m pendant 6 s : alli\xE9s soign\xE9s de 5% PV/s, ennemis
     60% de d\xE9g\xE2ts/s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cd402ed8b8d9a8b42be3e9bcd40f7735, type: 3}
   activationMode: 0
   cooldown: 18
   maxStock: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "Les ennemis tu\xE9s explosent : 150% (+75%) dans 6 m (+1,5 m)."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f2c3c96b934bafa4abdf9a6b0ca2e760, type: 3}
   modifiers: []
   damageType: 1
   coefficientFirstStack: 1.5

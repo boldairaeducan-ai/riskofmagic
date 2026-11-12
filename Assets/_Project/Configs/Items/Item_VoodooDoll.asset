@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "Un ennemi tu\xE9 maudit les ennemis \xE0 4 m (+1 m) pendant 4 s."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1b6057b8d4dcc964894086495cb7b54b, type: 3}
   modifiers: []
   radiusFirstStack: 4
   radiusPerExtraStack: 1

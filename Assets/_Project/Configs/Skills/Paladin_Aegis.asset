@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\xC9gide"
   description: "Vous et les alli\xE9s \xE0 10 m : -50% de d\xE9g\xE2ts subis pendant
     4 s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 6402e62a7d64d494ca6f3fd91f490099, type: 3}
   activationMode: 0
   cooldown: 12
   maxStock: 1

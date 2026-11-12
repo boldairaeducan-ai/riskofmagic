@@ -12,6 +12,11 @@ namespace RiskOfMagic.Vfx
         private float age;
         private Vector3 startScale;
 
+        public float Lifetime => lifetime;
+
+        /// <summary>Lets plugged-in art (particle systems) finish before the effect is released.</summary>
+        public void ExtendLifetime(float seconds) => lifetime = Mathf.Max(lifetime, seconds);
+
         public void Restart()
         {
             age = 0f;

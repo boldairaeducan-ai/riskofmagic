@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "Les alli\xE9s \xE0 12 m (+4 m), vous compris, infligent +20% de d\xE9g\xE2ts."
   rarity: 2
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 45483fed0e4221d4c8f7bd6b92baf04e, type: 3}
   modifiers: []
   radiusFirstStack: 12
   radiusPerExtraStack: 4

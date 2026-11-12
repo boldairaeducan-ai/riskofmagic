@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Vol\xE9e explosive"
   description: "3 fl\xE8ches qui explosent : 3 \xD7 250% dans 4 m."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f1745b33a8cfa5946a1d25ff66177fe9, type: 3}
   activationMode: 0
   cooldown: 12
   maxStock: 1

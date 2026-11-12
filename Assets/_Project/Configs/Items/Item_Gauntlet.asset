@@ -16,7 +16,7 @@ MonoBehaviour:
   description: +15% vitesse d'attaque (+15%).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d90b0dfed1b3cc84693092ad13bfe3c4, type: 3}
   modifiers:
   - stat: 0
     valuePerStack: 0.15

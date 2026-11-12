@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.DashSkill
   displayName: "Bond arri\xE8re"
   description: "Saut de 12 m vers l'arri\xE8re, repousse les ennemis proches."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c17805f8911a60848b487c77559dffc4, type: 3}
   activationMode: 0
   cooldown: 6
   maxStock: 1

@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: "\xC9pid\xE9mie"
   description: "Propage les poisons de l'ennemi vis\xE9 \xE0 tous les ennemis \xE0
     10 m."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8b044196943a2314598f53d5b97b74d6, type: 3}
   activationMode: 0
   cooldown: 10
   maxStock: 1

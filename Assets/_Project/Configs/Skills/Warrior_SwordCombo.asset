@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
   displayName: "Combo d'\xE9p\xE9e"
   description: Trois coups (100/100/200%), le dernier frappe fort.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 39408151f011eea4fb2ef49b81a753ff, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

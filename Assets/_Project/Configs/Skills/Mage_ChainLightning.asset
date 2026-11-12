@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ChainLightningSkill
   displayName: "Cha\xEEne d'\xE9clairs"
   description: "\xC9clair rebondissant sur 4 ennemis. 300%."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 4409646a5d92cb24090a1f2908152a91, type: 3}
   activationMode: 0
   cooldown: 10
   maxStock: 1

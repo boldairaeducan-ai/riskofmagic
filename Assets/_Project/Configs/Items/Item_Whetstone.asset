@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "+8% de d\xE9g\xE2ts (+8%)."
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0b46af7ed3d786c4cb3ba2893e3a1392, type: 3}
   modifiers:
   - stat: 1
     valuePerStack: 0.08

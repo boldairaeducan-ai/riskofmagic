@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Trait de feu
   description: 3 charges. 160%, petite explosion.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d96217c38f85a6f4a9f62698f41a9822, type: 3}
   activationMode: 1
   cooldown: 1.6
   maxStock: 3

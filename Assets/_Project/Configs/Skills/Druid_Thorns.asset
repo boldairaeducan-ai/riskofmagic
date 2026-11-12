@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "\xC9pines"
   description: "Projectiles \xE0 distance : 70% + poison."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 7e55dad170b82e54d9ef2f91f42835ef, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

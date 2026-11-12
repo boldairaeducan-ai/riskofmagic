@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "25% de chances : \xE9clair sur 3 ennemis (+2), 80% des d\xE9g\xE2ts."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 99d42591f717a4046871bf94360362ad, type: 3}
   modifiers: []
   damageType: 3
   chance: 0.25

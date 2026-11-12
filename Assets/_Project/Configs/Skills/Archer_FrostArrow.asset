@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Fl\xE8che de givre"
   description: "Charger : 200-400%, g\xE8le les ennemis touch\xE9s 1,5 s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1e28fea69828b3e40a2859de96dd3328, type: 3}
   activationMode: 2
   cooldown: 7
   maxStock: 1

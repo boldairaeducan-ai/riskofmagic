@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Equipment.LightningStrikeEquipment
   displayName: Pierre de foudre
   description: "La foudre frappe 3 fois la zone vis\xE9e : 500% chaque."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 59b442e247231ae4c8c4c4f93ca51b00, type: 3}
   cooldown: 30
   activateSound: {fileID: 11400000, guid: d35fc698c9d3c1c41b7b3341b3262fe2, type: 2}
   range: 60

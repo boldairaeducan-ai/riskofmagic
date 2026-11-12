@@ -17,7 +17,7 @@ MonoBehaviour:
     2 cibles (+1)."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 632c7767ebf48d24c910a98544d8f70b, type: 3}
   modifiers: []
   damageType: 3
   chance: 0.2

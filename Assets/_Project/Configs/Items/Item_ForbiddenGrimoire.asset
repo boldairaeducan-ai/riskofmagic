@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "+1 charge (+1) \xE0 toutes les comp\xE9tences sauf la principale."
   rarity: 2
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b3643c799b823214b8e626a4efd51a12, type: 3}
   modifiers:
   - stat: 11
     valuePerStack: 1

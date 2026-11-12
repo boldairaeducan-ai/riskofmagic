@@ -17,7 +17,7 @@ MonoBehaviour:
     (+1). Tout est perdu en subissant des d\xE9g\xE2ts."
   rarity: 2
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c21bc93bda534fe4b8972ac4496921f4, type: 3}
   modifiers: []
   maxStacksFirst: 5
   maxStacksPerExtra: 1

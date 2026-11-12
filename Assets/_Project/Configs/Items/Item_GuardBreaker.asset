@@ -17,7 +17,7 @@ MonoBehaviour:
     PV."
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 1985b1e01973d504c8339c792cba7673, type: 3}
   modifiers: []
   healthThreshold: 0.9
   bonusPerStack: 0.75

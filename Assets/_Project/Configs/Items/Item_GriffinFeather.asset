@@ -16,7 +16,7 @@ MonoBehaviour:
   description: +1 saut (+1).
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: ec965db1c67d8774bb6153abc65b0449, type: 3}
   modifiers:
   - stat: 8
     valuePerStack: 1

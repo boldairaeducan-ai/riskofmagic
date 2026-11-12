@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
   displayName: Marteau de guerre
   description: '2 coups lents : 250% en zone (3 m), repousse.'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 18ab64efb429d0a4fa851d9bcb32335b, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

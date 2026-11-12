@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Nuage toxique
   description: "Nuage cibl\xE9 pendant 5 s : 30% par tick + poison."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 392d9a50697c09d44b9caf19efd2d4eb, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

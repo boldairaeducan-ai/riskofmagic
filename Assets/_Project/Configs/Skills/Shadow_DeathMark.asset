@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Marque de mort
   description: "La cible vis\xE9e subit +50% de d\xE9g\xE2ts de toutes sources pendant
     6 s. Si elle meurt, la recharge est r\xE9initialis\xE9e."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b52ccd1805ef43a4da1cf310fa6785cf, type: 3}
   activationMode: 0
   cooldown: 12
   maxStock: 1

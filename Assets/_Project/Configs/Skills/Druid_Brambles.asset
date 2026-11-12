@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ConeControlSkill
   displayName: Ronces
   description: "C\xF4ne de ronces : immobilise 2 s et empoisonne."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 240cd37c2acc0a6489aa01993e78d981, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

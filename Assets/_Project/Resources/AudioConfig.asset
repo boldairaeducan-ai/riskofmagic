@@ -23,6 +23,13 @@ MonoBehaviour:
   hitConfirm: {fileID: 11400000, guid: b8354496f9eeb104e9179a4ae2d12814, type: 2}
   criticalHitConfirm: {fileID: 11400000, guid: 8ba4a5c7ce9da0c42aa010b008b0477b, type: 2}
   killConfirm: {fileID: 11400000, guid: e1eca90112edd9340b699193d425ea17, type: 2}
+  playerFootstep: {fileID: 11400000, guid: d94bc9c6d8da4a8293197483ed12ed98, type: 2}
+  footstepDirt: {fileID: 11400000, guid: 0a8fd246cc56491f84ef53b119abfd24, type: 2}
+  footstepSand: {fileID: 11400000, guid: a02ea5757ae24c2ea1285f8f38814f91, type: 2}
+  footstepRock: {fileID: 11400000, guid: 188aeda19a724741abaa613ee33b69eb, type: 2}
+  footstepWater: {fileID: 11400000, guid: 72a0f0f7e1a0476281178f2e8f18529c, type: 2}
+  playerJump: {fileID: 11400000, guid: 21a58da90b394fecb62d9ddaa5017cb7, type: 2}
+  playerLand: {fileID: 11400000, guid: 63534b259cfa43199fee5ac6e00126e7, type: 2}
   enemyImpact: {fileID: 11400000, guid: 130e68a8ee8622645b6374d96921b2e5, type: 2}
   enemyImpactCritical: {fileID: 11400000, guid: 0ba2fac420292024bba3ea1e1ebab343, type: 2}
   enemyKillImpact: {fileID: 11400000, guid: 7005b1e15fda74b4087e4317b0a4a6ed, type: 2}

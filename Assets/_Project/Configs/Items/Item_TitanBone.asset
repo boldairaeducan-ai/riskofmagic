@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 'Toutes les 5 attaques : onde de choc de 300% (+150%) autour de soi.'
   rarity: 4
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 333e7435b7d88d44b9dc0df723e24a97, type: 3}
   modifiers: []
   hitsRequired: 5
   coefficientFirstStack: 3

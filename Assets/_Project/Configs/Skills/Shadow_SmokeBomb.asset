@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: "Fumig\xE8ne"
   description: "Nuage de 6 m : 150%, ennemis d\xE9sorient\xE9s 2 s."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: bd450c4b5ed35264b9902dde31bdcc8f, type: 3}
   activationMode: 0
   cooldown: 8
   maxStock: 1

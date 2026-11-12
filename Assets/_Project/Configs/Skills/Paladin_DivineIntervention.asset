@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Intervention divine
   description: "Rel\xE8ve les alli\xE9s \xE0 terre \xE0 30 m (50% PV) et les prot\xE8ge
     3 s. Seul : vous soigne de 50%."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 781b89c0ec968e64fb0855495bd49698, type: 3}
   activationMode: 0
   cooldown: 60
   maxStock: 1

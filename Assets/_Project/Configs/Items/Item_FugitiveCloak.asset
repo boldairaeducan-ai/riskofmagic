@@ -17,7 +17,7 @@ MonoBehaviour:
     et d'attaque pendant 2 s (+1 s). Recharge 5 s."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 58644335529c4f64ea5d6a977a2dd690, type: 3}
   modifiers: []
   status: 1
   durationFirstStack: 2

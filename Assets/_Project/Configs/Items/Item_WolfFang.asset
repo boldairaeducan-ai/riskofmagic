@@ -16,7 +16,7 @@ MonoBehaviour:
   description: Tuer un ennemi soigne 8 PV (+6).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 104ab116c33ea3b4193fea2da8acf85a, type: 3}
   modifiers: []
   healFirstStack: 8
   healPerExtraStack: 6

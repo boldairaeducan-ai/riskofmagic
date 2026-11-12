@@ -16,7 +16,7 @@ MonoBehaviour:
   description: +25 % de vitesse en sprint (+25 %).
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c833acdcf24d4454fb87a17a5ba4f5ca, type: 3}
   modifiers:
   - stat: 12
     valuePerStack: 0.25

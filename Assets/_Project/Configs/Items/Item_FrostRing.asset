@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 10% (+5%) de chances de geler 1,5 s et d'infliger 250% de givre.
   rarity: 2
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 3c6c6bdf1890c4b44842f1a6fdbb580c, type: 3}
   modifiers: []
   chanceFirstStack: 0.1
   chancePerExtraStack: 0.05

@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "+1,5 PV/s de r\xE9g\xE9n\xE9ration (+1,5)."
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: d8d1558a05461c84f87f9cca22eb201d, type: 3}
   modifiers:
   - stat: 5
     valuePerStack: 1.5

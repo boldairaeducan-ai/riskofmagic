@@ -16,7 +16,7 @@ MonoBehaviour:
   description: '10% (+10%) de chances de faire saigner : 240% en 3 s.'
   rarity: 0
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f67a1c0135d3c084b9ac978e98a4039a, type: 3}
   modifiers: []
   dot: {fileID: 11400000, guid: e49438e4e59c6574cb055f258d6a0e29, type: 2}
   chanceFirstStack: 0.1

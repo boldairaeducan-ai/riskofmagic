@@ -15,7 +15,7 @@ MonoBehaviour:
   displayName: Voile d'ombre
   description: "Invisible 3 s : les ennemis vous perdent de vue, +30% de vitesse.
     La premi\xE8re attaque inflige +100%."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 94e9f3665a5f7fc408a7724e1f7eda73, type: 3}
   activationMode: 0
   cooldown: 10
   maxStock: 1

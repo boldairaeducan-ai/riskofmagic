@@ -17,7 +17,7 @@ MonoBehaviour:
     de la cible (3 m)."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 91bf174d5ed4a5a4ab40b4d8541bef7d, type: 3}
   modifiers: []
   damageType: 4
   damageFirstStack: 0.5

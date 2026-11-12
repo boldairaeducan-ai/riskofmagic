@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Fl\xE8ches enflamm\xE9es"
   description: "Tirs plus lents : 160% + br\xFBlure."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c05206f2898706944816b2dfa9e34f7e, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1

@@ -16,7 +16,7 @@ MonoBehaviour:
   description: "-15% de d\xE9g\xE2ts subis (d\xE9gressif)."
   rarity: 4
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: c40c7dd254a2ee94c88a40affd85c57a, type: 3}
   modifiers:
   - stat: 10
     valuePerStack: 0.15

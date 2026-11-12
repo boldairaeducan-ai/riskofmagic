@@ -17,7 +17,7 @@ MonoBehaviour:
     base renvoy\xE9s \xE0 l'attaquant. Recharge 15 s (-2 s)."
   rarity: 1
   pickupSound: {fileID: 0}
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: cc4176fd72f0e7e4bb4602b08887a7d4, type: 3}
   modifiers: []
   damageType: 0
   damageFirstStack: 2

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Orbe de givre
   description: Charger un orbe explosif. 150-500%.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 2be001183b97ed64a8bc997eee8654d9, type: 3}
   activationMode: 2
   cooldown: 7
   maxStock: 1

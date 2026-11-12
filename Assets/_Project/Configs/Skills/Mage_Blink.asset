@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BlinkSkill
   displayName: Transfert
   description: "T\xE9l\xE9portation dans la direction vis\xE9e."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 326f171a756b2dc4789432658fc986c9, type: 3}
   activationMode: 0
   cooldown: 7
   maxStock: 1

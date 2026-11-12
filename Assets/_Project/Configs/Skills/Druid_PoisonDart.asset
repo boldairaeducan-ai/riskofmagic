@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Dard empoisonn\xE9"
   description: 'Dards rapides : 70% + poison (0,6 % des PV max/s par cumul, 15 max).'
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: bcdba771b9ffa8842976a21e3c633d91, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1
