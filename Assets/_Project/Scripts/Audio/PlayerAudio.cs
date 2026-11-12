@@ -74,7 +74,7 @@ namespace RiskOfMagic.Audio
         public void PlayFootstep()
         {
             if (avatar.Character != null)
-                AudioService.PlayAt(avatar.Character.footstepSound, transform.position);
+                AudioService.PlayAt(AudioService.Config != null ? AudioService.Config.playerFootstep : null, transform.position);
         }
     }
 }

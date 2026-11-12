@@ -35,7 +35,6 @@ namespace RiskOfMagic.Characters
         public RiskOfMagic.Animation.ViewModelDefinition proceduralViewModel;
 
         [Header("Audio")]
-        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepSound;
         public SoundEvent jumpSound;
         public SoundEvent landSound;
 
