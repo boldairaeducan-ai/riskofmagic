@@ -43,7 +43,6 @@ orbe de givre arcanique, marteau sacré, onde radieuse, dague de lancer.
 Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée, Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos.
 
 ### 1.6 Personnages — sons communs à tous : `AudioConfig.playerFootstep`, `playerJump`, `playerLand` (3)
-Archer, Guerrier, Arcaniste, Druide, Paladin, Ombre.
 
 ### 1.7 Équipements — `activateSound` (3)
 Corne de ralliement, Tome sombre, Pierre de foudre.
