@@ -23,13 +23,13 @@ Ne jamais modifier directement un prefab généré : passer par le champ de la d
 
 Emplacements générés vides dans `Assets/_Project/Audio/Sounds/` par *Create Audio Slots* (ou *Build Prototype Scene*).
 
-### 1.1 Sons globaux — `Resources/AudioConfig.asset` (28)
+### 1.1 Sons globaux — `Resources/AudioConfig.asset` (32)
 | Catégorie | Sons |
 |---|---|
 | Interface | clic, survol |
 | Combat (joueur local) | coup confirmé, coup critique confirmé, kill confirmé, joueur touché, mis à terre, réanimé, mort, passage de niveau (discret) |
 | Impacts sur les ennemis (3D, au point touché) | impact, impact critique, impact de kill |
-| Personnages (communs à tous) | pas, saut, atterrissage |
+| Personnages (communs à tous) | pas (générique + terre, sable, roche, eau selon le sol), saut, atterrissage |
 | Économie & objets | or gagné, achat, ramassage d'objet ×5 (commun, inhabituel, rare, légendaire, boss) |
 | Partie | téléporteur activé, téléporteur chargé, téléporteur prêt, game over, victoire |
 
@@ -60,6 +60,7 @@ Boss secrets : Sylvain corrompu, Roi-liche, Wyverne des glaces, Forgeron titanes
 
 ### 1.6 Personnages
 Pas de son propre : pas, saut et atterrissage sont communs (voir 1.1).
+Sol → type de pas : `Resources/SurfaceLibrary.asset` (couches de terrain, textures, matériaux ; *Tools → Risk of Magic → Audio → Update Surface Library*) et composant `SurfaceTag` (volumes d'eau, ponts…).
 
 ### 1.7 Équipements — `activateSound` (3)
 Corne de ralliement, Tome sombre, Pierre de foudre.

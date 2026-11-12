@@ -39,8 +39,12 @@ namespace RiskOfMagic.Audio
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent hitConfirm;
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent criticalHitConfirm;
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent killConfirm;
-        [Tooltip("Footsteps of every character (one shared sound).")]
+        [Tooltip("Footsteps of every character on an unknown surface (and fallback of the surfaces below).")]
         [SoundSlot(MaxSimultaneous = 8)] public SoundEvent playerFootstep;
+        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepDirt;
+        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepSand;
+        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepRock;
+        [SoundSlot(MaxSimultaneous = 8)] public SoundEvent footstepWater;
         [Tooltip("Jump of every character.")] [SoundSlot(MaxSimultaneous = 4)] public SoundEvent playerJump;
         [Tooltip("Landing of every character (after a real fall).")] [SoundSlot(MaxSimultaneous = 4)] public SoundEvent playerLand;
         [Tooltip("At the hit point of any enemy hit (layered with the enemy's own hurt sound).")]
@@ -76,6 +80,20 @@ namespace RiskOfMagic.Audio
         [Tooltip("Final stage event (avatar). Empty clip = bossMusic.")] public MusicTrack finalBossMusic = new();
         public MusicTrack victoryMusic = new() { loop = false };
         public MusicTrack gameOverMusic = new() { loop = false };
+
+        /// <summary>Footstep of a surface; empty slot = the generic footstep.</summary>
+        public SoundEvent GetFootstep(SurfaceType surface)
+        {
+            var specific = surface switch
+            {
+                SurfaceType.Dirt => footstepDirt,
+                SurfaceType.Sand => footstepSand,
+                SurfaceType.Rock => footstepRock,
+                SurfaceType.Water => footstepWater,
+                _ => null
+            };
+            return AudioService.Pick(specific, playerFootstep);
+        }
 
         public SoundEvent GetItemPickup(ItemRarity rarity) => rarity switch
         {
