@@ -1,21 +1,35 @@
 # Risk of Magic — liste des assets à produire
 
-Chaque ligne indique **où brancher** l'asset. Rien n'est écrasé par les builders aux emplacements indiqués.
+Chaque ligne indique **où brancher** l'asset. Rien n'est écrasé par les builders aux emplacements indiqués : les configs
+(personnages, compétences, objets, ennemis, attaques…) ne sont remplies qu'à leur création, puis gardent tes réglages.
 Ne jamais modifier directement un prefab généré : passer par le champ de la définition (`icon`, `modelPrefab`…) ou par
 **`Resources/ArtLibrary.asset`** (*Tools → Risk of Magic → Select Art Library*), dont les emplacements sont créés par
 *Build Prototype Scene* ; les modèles y sont lus en jeu (un nouveau Play suffit, pas de régénération).
 
+### Packs déjà dans le projet
+| Pack | Utilisé pour | État |
+|---|---|---|
+| `GameLair/MedievalFantasyWeaponPack` | Armes à la première personne (`Configs/ViewModels`) | Branché |
+| `Low Poly Chest Animated` | Coffres (petit, grand, du choix, maudit) via `ArtLibrary.interactables` ; animation d'ouverture jouée à l'achat | Branché |
+| `Hovl Studio/Magic effects pack` | Candidats pour `ArtLibrary.vfx` (impacts, explosions, auras, téléportation) | À brancher |
+| `500FreeSkillIcons` | Candidats pour les icônes de compétences / objets | En partie branché |
+| `Fantasy Cursor Pack` | `ArtLibrary.cursor` | À brancher |
+| `LowPolyDungeonsLite`, `URP GanzSe Free Camping Props`, `LowPolyWeapons` | Décors des cartes, décor du menu | À utiliser en level design |
+| `Alek Games/Placer 3` | Outil de placement de props (level design) | Outil |
+
 ---
 
-## 1. Audio (~206 emplacements, tous en `SoundEvent` : un ou plusieurs clips tirés au hasard)
+## 1. Audio (~240 emplacements, tous en `SoundEvent` : un ou plusieurs clips tirés au hasard)
 
 Emplacements générés vides dans `Assets/_Project/Audio/Sounds/` par *Create Audio Slots* (ou *Build Prototype Scene*).
 
-### 1.1 Sons globaux — `Resources/AudioConfig.asset` (22)
+### 1.1 Sons globaux — `Resources/AudioConfig.asset` (28)
 | Catégorie | Sons |
 |---|---|
 | Interface | clic, survol |
 | Combat (joueur local) | coup confirmé, coup critique confirmé, kill confirmé, joueur touché, mis à terre, réanimé, mort, passage de niveau (discret) |
+| Impacts sur les ennemis (3D, au point touché) | impact, impact critique, impact de kill |
+| Personnages (communs à tous) | pas, saut, atterrissage |
 | Économie & objets | or gagné, achat, ramassage d'objet ×5 (commun, inhabituel, rare, légendaire, boss) |
 | Partie | téléporteur activé, téléporteur chargé, téléporteur prêt, game over, victoire |
 
@@ -39,10 +53,13 @@ Flèche, flèche perforante, trait de feu, orbe de givre, trait ennemi, missile 
 crachat d'araignée, rocher, trait du chaos, météore, flèche enflammée, flèche de givre, flèche explosive, hache, éclat arcanique,
 orbe de givre arcanique, marteau sacré, onde radieuse, dague de lancer.
 
-### 1.5 Ennemis — `spawnSound`, `attackSound`, `hurtSound`, `deathSound` (11 × 4 = 44)
-Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée, Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos.
+### 1.5 Ennemis — `spawnSound`, `attackSound`, `hurtSound`, `deathSound` (17 × 4 = 68)
+Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée, Racine épineuse ·
+Boss : Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos ·
+Boss secrets : Sylvain corrompu, Roi-liche, Wyverne des glaces, Forgeron titanesque, Tisseur du néant.
 
-### 1.6 Personnages — sons communs à tous : `AudioConfig.playerFootstep`, `playerJump`, `playerLand` (3)
+### 1.6 Personnages
+Pas de son propre : pas, saut et atterrissage sont communs (voir 1.1).
 
 ### 1.7 Équipements — `activateSound` (3)
 Corne de ralliement, Tome sombre, Pierre de foudre.
@@ -53,7 +70,7 @@ Impact, explosion de givre, zone, coup d'arme, téléportation, éclair, explosi
 marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 
 ### 1.9 Optionnels (vides = son par défaut)
-`pickupSound` par objet (26), `purchaseSound` par objet interactif, sons d'interface surchargés par bouton (`UiSoundTrigger`).
+`pickupSound` par objet (36), `purchaseSound` par objet interactif, sons d'interface surchargés par bouton (`UiSoundTrigger`).
 
 ---
 
@@ -71,7 +88,7 @@ marqueur au sol, onde sismique, rayon du néant, flaque de feu.
 | Quoi | Nombre | Où |
 |---|---|---|
 | Compétences | 48 | `icon` de chaque compétence (`Configs/Skills`) |
-| Objets | 26 | `icon` de chaque objet (`Configs/Items`) — 11 communs, 6 inhabituels, 5 rares, 4 légendaires, 2 boss |
+| Objets | 36 | `icon` de chaque objet (`Configs/Items`) — 14 communs, 11 inhabituels, 5 rares, 4 légendaires, 2 boss |
 | Équipements | 3 | `icon` de chaque équipement (`Configs/Equipment`) |
 | Portraits de personnages | 6 | `portrait` de chaque personnage (`Configs/Characters`) — HUD + cartes du salon |
 
@@ -84,7 +101,7 @@ Caméra, point visé, ciel, brouillard et lumière ambiante se règlent sur le c
 |---|---|
 | Logo (remplace le titre de l'accueil), fond du menu, fond de l'écran de chargement | `logo`, `menuBackground`, `loadingBackground` |
 | Curseur de souris (texture importée en *Cursor*) | `cursor`, `cursorHotspot` |
-| Icônes des statuts (barre de statuts du HUD, au-dessus du portrait) | `statuses` (13) |
+| Icônes des statuts (barre de statuts du HUD, au-dessus du portrait) | `statuses` (14, dont Bénédiction runique) |
 | Icônes de rareté (icône de secours des objets sans icône) | `rarities` (5) |
 | Icônes des élites (au-dessus des ennemis élites) | `elites` (4) |
 | Icônes des DoT : poison, saignement, brûlure (au-dessus des ennemis + barre de statuts) | `dots` (3) |
@@ -96,22 +113,32 @@ Icônes des défis du journal.
 
 ## 3. Modèles 3D
 
-### 3.1 Personnages — `modelPrefab` (vue 3e personne) + `viewModelPrefab` (bras/arme en vue FPS) (6 × 2 = 12)
+### 3.1 Personnages — `modelPrefab` (vue 3e personne, vu par les autres joueurs) (6)
 Archer, Guerrier, Arcaniste, Druide, Paladin, Ombre.
 
-### 3.2 Ennemis — `modelPrefab` de chaque définition (11)
-Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée · Boss : Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos.
+### 3.1 bis Vue à la première personne
+Par défaut : armes du pack animées par le code (`Configs/ViewModels/ViewModel_<Perso>` : arme par main, pose, mouvement
+par compétence, gants). Plus tard, de vrais bras animés dans `viewModelPrefab` remplacent ce système pour le personnage.
+
+### 3.2 Ennemis — `modelPrefab` de chaque définition (17)
+Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée, Racine épineuse (invoquée par le Sylvain) ·
+Boss : Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos ·
+Boss secrets : Sylvain corrompu, Roi-liche, Wyverne des glaces, Forgeron titanesque, Tisseur du néant.
 Échelle 1, pieds au pivot ; les hitbox (tête = point faible) restent celles du prefab généré.
 
 ### 3.3 Objets interactifs — `ArtLibrary.interactables` (modèle imbriqué à la génération, remplace les primitives)
 Petit coffre, grand coffre, coffre du choix, coffre maudit, tonneau d'équipement, autel de soin, marchand, téléporteur,
-sceau de victoire (obélisque), tombe à purifier, autel de défi, objet au sol (orbe flottant générique).
+sceau de victoire (obélisque), tombe à purifier, autel de défi, objet au sol (orbe flottant générique),
+autel runique et fragment de rune (secrets).
+Un modèle animé de coffre / tonneau est tenu fermé, puis joue son ouverture à l'achat (`OpenAnimation`).
 
 ### 3.4 Projectiles — `ArtLibrary.projectiles` (22, liste en 1.4), ou directement `visualPrefab` de la définition (conservé)
 
 ### 3.5 Cartes (level design, à ta charge) — `Scenes/Maps`
-Grim Forest, Necropolis, Mountain Peak, Volcano Tomb, Chaos Sanctum : terrains et textures, arbres, ruines, rochers, bâtiments,
-temple, statues, lave, skybox, éclairage, post-process.
+Grim Forest, Necropolis, Mountain Peak, Volcano Tomb, Chaos Sanctum (objectif : 2 cartes par étape) : terrains et textures,
+arbres, ruines, rochers, bâtiments, temple, statues, lave, skybox, éclairage. Post-process : un profil d'ambiance par carte
+(`Settings/PostProcess`). Blockout : kit et palette (*Tools → Risk of Magic → Blockout → Palette*), secrets
+(*Tools → Risk of Magic → Secrets*), vérification (*Validate Maps*).
 
 ---
 
@@ -120,9 +147,10 @@ temple, statues, lave, skybox, éclairage, post-process.
 | Pour | États / clips à prévoir |
 |---|---|
 | Chaque personnage (3e pers.) | idle, locomotion (blend `MoveX`/`MoveY`/`Speed`), sprint, saut, chute, atterrissage, touché, à terre, mort, réanimation, équipement, **1 clip par compétence** (8 par perso, `animatorTrigger`) |
-| Chaque personnage (bras FPS) | idle, marche/sprint, attaque/lancement par compétence (8), équipement, touché |
+| Chaque personnage (bras FPS, optionnel) | idle, marche/sprint, attaque/lancement par compétence (8), équipement, touché — en attendant, animation procédurale des armes |
 | Chaque ennemi | apparition, idle, locomotion, **1 clip par attaque** (`AttackIndex` : 1 pour les ennemis, 3 pour les boss), touché, esquive, bond, gelé, mort |
-| Boss en plus | Colosse : frappe sismique, lancer, charge · Reine : crachat, invocation, bond · Drake : souffle, charge, boule de feu · Avatar : salve, météores, invocation, séparation |
+| Boss en plus | Colosse : frappe sismique (un bond procédural existe déjà), lancer, charge · Reine : crachat, invocation, bond · Drake : souffle, charge, boule de feu · Avatar : salve, météores, invocation, séparation |
+| Boss secrets | Sylvain : ronces, graines, enracinement · Liche : salve de givre, relever les morts, zone maudite · Wyverne : souffle, piqué, avalanche · Forgeron : marteau, enclume, éruptions, rage · Tisseur : traits, téléportation, rayons, failles |
 | Évènements d'animation (optionnel) | `PlaySound`, `PlayVfx`, `Footstep` via `AnimationEventRelay` |
 
 ---
@@ -136,6 +164,7 @@ temple, statues, lave, skybox, éclairage, post-process.
 | Compétences & buffs | Blink, DashBurst, ShieldPulse, CursePulse, RallyPulse, TimePulse |
 | Auras d'élites | Aura_Burning, Aura_Blizzard, Aura_Storm, Aura_Spectral |
 | Météo | neige du blizzard (Mountain Peak) |
+| Retours de coups | étincelles d'impact (matériau `Materials/M_HitSpark`, réglages dans `Resources/HitFeedback`) |
 | À prévoir | traînées des projectiles (22), effet de passage de niveau (discret), effet d'invisibilité (Ombre), feedback de mise à terre/réanimation, lumière du téléporteur, effet de ramassage d'objet par rareté |
 
 ---
