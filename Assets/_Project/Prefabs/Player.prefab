@@ -572,17 +572,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.StatusEffects
   ShowTopMostFoldoutHeaderGroup: 1
-  curseDamageDealtMultiplier: 0.5
-  curseSpeedMultiplier: 0.9
-  curseDamageTakenMultiplier: 1.3
-  chillSpeedMultiplier: 0.7
-  channelingSpeedMultiplier: 0.5
-  bannerDamageBonus: 0.2
-  stealthSpeedBonus: 0.3
-  markedDamageTakenMultiplier: 1.5
-  runeBlessingDamageBonus: 0.3
-  rallyBonus: 0.4
-  warhornBonusPerStack: 0.15
 --- !u!114 &5999801138183389886
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -750,10 +739,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.PlayerExperience
   ShowTopMostFoldoutHeaderGroup: 1
-  experiencePerGold: 0.6
-  firstLevelExperience: 35
-  levelGrowth: 1.65
-  maxLevel: 99
 --- !u!114 &8969690943964524554
 MonoBehaviour:
   m_ObjectHideFlags: 0

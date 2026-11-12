@@ -410,17 +410,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.StatusEffects
   ShowTopMostFoldoutHeaderGroup: 1
-  curseDamageDealtMultiplier: 0.5
-  curseSpeedMultiplier: 0.9
-  curseDamageTakenMultiplier: 1.3
-  chillSpeedMultiplier: 0.7
-  channelingSpeedMultiplier: 0.5
-  bannerDamageBonus: 0.2
-  stealthSpeedBonus: 0.3
-  markedDamageTakenMultiplier: 1.5
-  runeBlessingDamageBonus: 0.3
-  rallyBonus: 0.4
-  warhornBonusPerStack: 0.15
 --- !u!114 &2836623310251008430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -453,21 +442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyProjectileAttack
   ShowTopMostFoldoutHeaderGroup: 1
-  range: 24
-  cooldown: 2.2
-  maxHeightDifference: 15
-  selectionWeight: 1.5
-  animatorTrigger: Attack
-  projectile: {fileID: 11400000, guid: 46a297e387e02b24f86339c2b6a8c573, type: 2}
-  damage: 14
-  damageType: 0
-  windup: 0.6
-  recovery: 0.3
-  muzzleOffset: {x: 0, y: 1.4, z: 0.6}
-  aimHeight: 1
-  count: 1
-  spreadAngle: 0
-  homing: 0
+  data: {fileID: 11400000, guid: 9d0d190c05e20194c8dd5e752009cc04, type: 2}
 --- !u!114 &1810615416909945979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,21 +456,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemySummonAttack
   ShowTopMostFoldoutHeaderGroup: 1
-  range: 30
-  cooldown: 15
-  maxHeightDifference: 15
-  selectionWeight: 3
-  animatorTrigger: Attack
-  minion: {fileID: 11400000, guid: e4c4561124029ae459f603ce301fa4af, type: 2}
-  minionPool: []
-  countPerCast: 4
-  maxAlive: 8
-  spawnDistance: {x: 2, y: 5}
-  windup: 1
-  recovery: 0.5
-  spawnVfx: {fileID: 8782927124138761051, guid: cbcdc83588a0afe46b54e3052a2acf6a, type: 3}
-  onlyBelowHealth: 1
-  maxCasts: 0
+  data: {fileID: 11400000, guid: dfa36803817bfa34a877c89c77a6c003, type: 2}
 --- !u!114 &8984733251048141499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,23 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyLungeAttack
   ShowTopMostFoldoutHeaderGroup: 1
-  range: 12
-  cooldown: 6
-  maxHeightDifference: 5
-  selectionWeight: 1
-  animatorTrigger: Attack
-  minRange: 4
-  damage: 24
-  damageType: 0
-  windup: 0.5
-  dashSpeed: 22
-  dashDuration: 0.45
-  recovery: 0.8
-  hitRadius: 1.8
-  hitHeight: 0.9
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 4294967291
+  data: {fileID: 11400000, guid: bdb2bfd46dfaffb48b78c685e397f328, type: 2}
 --- !u!114 &8910687186576123203
 MonoBehaviour:
   m_ObjectHideFlags: 0

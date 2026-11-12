@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2842f52d2a2764e4e844bc304e9d4b8e, type: 3}
   m_Name: uiHover
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.SoundEvent
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: cb231dc76449c8e46989b1203a51c32d, type: 3}
+  - {fileID: 0}
   category: 1
   volume: {x: 0.9, y: 1}
   pitch: {x: 0.95, y: 1.05}

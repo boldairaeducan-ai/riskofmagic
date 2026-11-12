@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5153491155a6c0049b40af6049172975, type: 3}
+  m_Name: ViewModel_Paladin
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.ViewModelDefinition
+  mainHand:
+    prefab: {fileID: 4708944413874578667, guid: 35bb3f29741616446bd7ecd9b72e7f7b, type: 3}
+    restPosition: {x: 0.26, y: -0.3, z: 0.5}
+    restEuler: {x: 45, y: -10, z: 15}
+    scale: 0.7
+    showGlove: 1
+    gloveOffset: {x: 0, y: 0, z: 0}
+  offHand:
+    prefab: {fileID: 4293756316760274988, guid: 7c56232770c0aaf49a44306bb91e6fc0, type: 3}
+    restPosition: {x: -0.38, y: -0.36, z: 0.58}
+    restEuler: {x: 0, y: 20, z: 0}
+    scale: 0.45
+    showGlove: 1
+    gloveOffset: {x: 0, y: 0, z: 0}
+  gloveColor: {r: 0.8, g: 0.7, b: 0.4, a: 1}
+  gloveSize: 0.09
+  motions: 01070a0c
+  alternativeMotions: 010a0a08
+  drawWhileCharging: 1
+  motionSpeed: 1
+  motionAmplitude: 1
+  bobAmount: 0.012
+  swayAmount: 0.02
+  sprintLower: 0.07

@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Prototype.unity
     guid: 2a20f0d42db548745892d4c1bc2a1223
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Project/Scenes/Maps/Map_New.unity
     guid: 39cae4cab6f93c04086bba9e89e5f8a5
   - enabled: 1
@@ -29,4 +29,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Maps/Map_ChaosSanctum.unity
     guid: dae9e774247ee814992a49b29ec4d67c
+  - enabled: 1
+    path: Assets/_Project/Scenes/Maps/Map_Forest.unity
+    guid: 537ab44386d0de54d955af2905938b42
   m_configObjects: {}

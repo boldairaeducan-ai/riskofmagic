@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d40d10a40b1640443842bd00ed946784, type: 3}
+  m_Name: Boss_SpiderQueen_Projectile
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.ProjectileAttackData
+  range: 24
+  cooldown: 2.2
+  maxHeightDifference: 15
+  selectionWeight: 1.5
+  animatorTrigger: Attack
+  projectile: {fileID: 11400000, guid: 46a297e387e02b24f86339c2b6a8c573, type: 2}
+  damage: 14
+  damageType: 0
+  windup: 0.6
+  recovery: 0.3
+  muzzleOffset: {x: 0, y: 1.4, z: 0.6}
+  aimHeight: 1
+  count: 1
+  spreadAngle: 0
+  homing: 0

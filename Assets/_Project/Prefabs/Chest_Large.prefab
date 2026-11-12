@@ -78,7 +78,6 @@ MonoBehaviour:
   displayName: Grand coffre
   baseCost: 50
   scaleWithDifficulty: 1
-  costExponent: 1.25
   maxUses: 1
   costMultiplierPerUse: 1
   purchaseSound: {fileID: 0}

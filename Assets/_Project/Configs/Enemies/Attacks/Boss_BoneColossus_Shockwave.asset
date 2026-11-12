@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f988dad09d8cefe44977989702d64cbd, type: 3}
+  m_Name: Boss_BoneColossus_Shockwave
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.ShockwaveAttackData
+  range: 7
+  cooldown: 4.5
+  maxHeightDifference: 5
+  selectionWeight: 1.5
+  animatorTrigger: Attack
+  slamDamage: 30
+  slamRadius: 4
+  windup: 1
+  recovery: 0.8
+  waveDamage: 20
+  waveMaxRadius: 25
+  waveSpeed: 14
+  waveThickness: 1.5
+  jumpClearance: 0.5
+  damageType: 0
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  telegraphVfx: {fileID: 4324665907855486958, guid: 6457f40adc6c36a458482adb1ecbd5fb, type: 3}
+  slamVfx: {fileID: 8397292198886616640, guid: 2b96e947d7c7a2845834195f79f0e045, type: 3}
+  waveVfx: {fileID: 7000775859274829138, guid: efce8c6cf5e987d4aafec94a314eb1c5, type: 3}

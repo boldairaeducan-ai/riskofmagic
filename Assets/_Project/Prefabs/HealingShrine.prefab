@@ -189,7 +189,6 @@ MonoBehaviour:
   displayName: Autel de soin
   baseCost: 15
   scaleWithDifficulty: 1
-  costExponent: 1.25
   maxUses: 3
   costMultiplierPerUse: 1.5
   purchaseSound: {fileID: 0}

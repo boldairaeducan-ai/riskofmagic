@@ -27,6 +27,7 @@ MonoBehaviour:
   regenPerLevel: 0.2
   modelPrefab: {fileID: 0}
   viewModelPrefab: {fileID: 0}
+  proceduralViewModel: {fileID: 11400000, guid: 75cb15ccebb77094eb19d9a798f7b228, type: 2}
   footstepSound: {fileID: 11400000, guid: 109aaf539e62ba247a20dbd76faf57dc, type: 2}
   jumpSound: {fileID: 11400000, guid: d39779c638e12c44196711fc2ba21891, type: 2}
   landSound: {fileID: 11400000, guid: f97e576707e6eb14a8a8cb2ad237b183, type: 2}

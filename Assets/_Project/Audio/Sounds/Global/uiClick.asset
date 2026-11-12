@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2842f52d2a2764e4e844bc304e9d4b8e, type: 3}
   m_Name: uiClick
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Audio.SoundEvent
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: c230389cdba1a4d47bda71c4d0e2b6f9, type: 3}
   category: 1
   volume: {x: 0.9, y: 1}
   pitch: {x: 0.95, y: 1.05}

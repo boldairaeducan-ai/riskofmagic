@@ -409,17 +409,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Combat.StatusEffects
   ShowTopMostFoldoutHeaderGroup: 1
-  curseDamageDealtMultiplier: 0.5
-  curseSpeedMultiplier: 0.9
-  curseDamageTakenMultiplier: 1.3
-  chillSpeedMultiplier: 0.7
-  channelingSpeedMultiplier: 0.5
-  bannerDamageBonus: 0.2
-  stealthSpeedBonus: 0.3
-  markedDamageTakenMultiplier: 1.5
-  runeBlessingDamageBonus: 0.3
-  rallyBonus: 0.4
-  warhornBonusPerStack: 0.15
 --- !u!114 &3776237270044165813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,20 +441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.EnemyMeleeAttack
   ShowTopMostFoldoutHeaderGroup: 1
-  range: 2
-  cooldown: 1.1538461
-  maxHeightDifference: 2.5
-  selectionWeight: 1
-  animatorTrigger: Attack
-  damage: 13.799999
-  damageType: 0
-  windup: 0.5
-  recovery: 0.4
-  hitOffset: {x: 0, y: 1, z: 1}
-  hitRadius: 1
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 4294967291
+  data: {fileID: 11400000, guid: 63c3bb9e2471dc441a8961870c4c90ad, type: 2}
 --- !u!114 &7419306564217369602
 MonoBehaviour:
   m_ObjectHideFlags: 0

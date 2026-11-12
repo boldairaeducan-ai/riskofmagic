@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5153491155a6c0049b40af6049172975, type: 3}
+  m_Name: ViewModel_Warrior
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Animation.ViewModelDefinition
+  mainHand:
+    prefab: {fileID: 7765039258374207770, guid: 430cae0e0724fe34bb278ca3c4611b19, type: 3}
+    restPosition: {x: 0.26, y: -0.3, z: 0.5}
+    restEuler: {x: 50, y: -10, z: 18}
+    scale: 0.6
+    showGlove: 1
+    gloveOffset: {x: 0, y: 0, z: 0}
+  offHand:
+    prefab: {fileID: 8225021697395699067, guid: b01612824a7543c4abc3e7e781eb9c8b, type: 3}
+    restPosition: {x: -0.36, y: -0.34, z: 0.55}
+    restEuler: {x: 0, y: 20, z: 0}
+    scale: 0.55
+    showGlove: 1
+    gloveOffset: {x: 0, y: 0, z: 0}
+  gloveColor: {r: 0.45, g: 0.42, b: 0.4, a: 1}
+  gloveSize: 0.09
+  motions: 01030a0c
+  alternativeMotions: 02090a08
+  drawWhileCharging: 1
+  motionSpeed: 1
+  motionAmplitude: 1
+  bobAmount: 0.012
+  swayAmount: 0.02
+  sprintLower: 0.07

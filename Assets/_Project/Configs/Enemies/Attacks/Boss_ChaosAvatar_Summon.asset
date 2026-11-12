@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f96be3ef00be3642ab53e852d18d82b, type: 3}
+  m_Name: Boss_ChaosAvatar_Summon
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Enemies.SummonAttackData
+  range: 40
+  cooldown: 18
+  maxHeightDifference: 20
+  selectionWeight: 3
+  animatorTrigger: Attack
+  minion: {fileID: 0}
+  minionPool:
+  - {fileID: 11400000, guid: 717186fed1171934fa850a74d440b86a, type: 2}
+  - {fileID: 11400000, guid: 383ab157cda000c41bc6a9ff97347dac, type: 2}
+  - {fileID: 11400000, guid: f76b001995dd2ef43bf3e208053f3b74, type: 2}
+  countPerCast: 3
+  maxAlive: 6
+  spawnDistance: {x: 2, y: 5}
+  windup: 1
+  recovery: 0.5
+  spawnVfx: {fileID: 4117752146252650662, guid: 8e99a48f82c83aa4f89a1ebe9a4bb69f, type: 3}
+  onlyBelowHealth: 1
+  maxCasts: 0

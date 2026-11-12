@@ -383,7 +383,8 @@ MonoBehaviour:
   equipmentPrice: 80
   rerollBasePrice: 15
   rerollPriceMultiplier: 1.5
-  costExponent: 1.25
+  leaveDelay: 0.6
+  leaveVfx: {fileID: 0}
   maxShoppingDistance: 8
 --- !u!114 &6985907003279444325
 MonoBehaviour:
