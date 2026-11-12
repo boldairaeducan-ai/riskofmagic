@@ -1151,6 +1151,8 @@ namespace RiskOfMagic.Editor
             // Additions
             var pendant = Item<HealOnHitItem>("Item_BloodPendant", "Pendentif sanguin", "Chaque coup soigne 1 PV (+1).", ItemRarity.Common);
             pendant.healPerStack = 1f;
+            var courierDraught = Item<ItemDefinition>("Item_CourierDraught", "Breuvage du coursier",
+                "+25 % de vitesse en sprint (+25 %).", ItemRarity.Common, Mod(StatType.SprintSpeed, 0.25f));
             var vigorRoot = Item<ItemDefinition>("Item_VigorRoot", "Racine de vigueur", "+1,5 PV/s de régénération (+1,5).", ItemRarity.Common,
                 Mod(StatType.HealthRegen, 1.5f));
             var amber = Item<ChainOnHitItem>("Item_AmberShard", "Éclat d'ambre",
@@ -1181,7 +1183,7 @@ namespace RiskOfMagic.Editor
             var items = new List<ItemDefinition>
             {
                 gauntlet, boots, hawkEye, meat, fang, oak, dagger, executioner, breaker, adrenaline, whetstone,
-                pendant, vigorRoot,
+                pendant, vigorRoot, courierDraught,
                 fireOrb, feather, hourglass, storm, oil, quiver, amber, thorns, voodoo, cloak, resonance,
                 horn, grimoire, twinBlade, frostRing, banner,
                 chaosEye, phoenix, comet, crown,

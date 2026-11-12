@@ -326,7 +326,7 @@ namespace RiskOfMagic.Editor
         {
             const float size = 100f;
             const float spacing = 12f;
-            string[] keys = { "Clic G", "Clic D", "Maj", "R" };
+            string[] keys = { "Clic G", "Clic D", "A", "R" };
 
             var bar = Rect("SkillBar", parent, BottomCenter, BottomCenter, new Vector2(0f, 40f), new Vector2(size * 4f + spacing * 3f, size));
             var slots = new SkillSlotWidget[4];

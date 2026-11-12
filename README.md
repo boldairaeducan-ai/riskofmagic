@@ -42,9 +42,9 @@ Terrains, materials and NavMesh assets are generated next to the scenes (`Scenes
 | Move | WASD (ZQSD on AZERTY) | Left stick |
 | Look | Mouse | Right stick |
 | Jump | Space | A |
-| Sprint (toggle) | Left Ctrl | L3 |
+| Sprint (toggle) | Left Shift | L3 |
 | Primary / Secondary | LMB / RMB | RT / LT |
-| Utility / Special | Left Shift / R | LB / RB |
+| Utility / Special | Q (A on AZERTY) / R | LB / RB |
 | Interact | E | X |
 | Pause menu (solo: real pause; online: overlay) | Esc | Start |
 
@@ -68,7 +68,7 @@ Terrains, materials and NavMesh assets are generated next to the scenes (`Scenes
 - **Enemies** — `EnemyActor` (definition, level scaling, `Killed` server event), `EnemyBrain` (detection, persistent aggro, movement styles Direct / Flank / Kite, leaps), `EnemyDodge` (sidesteps when hit or aimed at), `EnemyLeap`, `EnemyAttack` base + `EnemyMeleeAttack` / `EnemyLungeAttack` (bound, charge) / `EnemyArtilleryAttack` (telegraphed lob) / `EnemyProjectileAttack`.
 
 ## Paladin & Ombre
-| | Clic G | Clic D | Maj | R |
+| | Clic G | Clic D | Q (A on AZERTY) | R |
 |---|---|---|---|---|
 | **Paladin** (140 PV, holy) | Marteau béni (heals allies on hit) / *Lame radieuse* | Jugement (stun) / *Bouclier projeté* | Égide (-50% damage, allies) / *Charge du croisé* | Sol consacré (heal + damage zone) / *Intervention divine* |
 | **Ombre** (85 PV, 2 jumps) | Dagues jumelles (backstab crits) / *Lames saignantes* | Dagues de lancer / *Fumigène* | Voile d'ombre (stealth) / *Pas de l'ombre* | Marque de mort / *Danse des lames* |

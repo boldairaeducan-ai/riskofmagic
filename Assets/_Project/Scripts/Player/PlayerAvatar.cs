@@ -250,6 +250,7 @@ namespace RiskOfMagic.Player
 
             Stats.Recalculate(Character, Inventory, Status, Level);
             Motor.SpeedMultiplier = Stats.MoveSpeedMultiplier;
+            Motor.SprintBonus = Stats.SprintSpeedBonus;
             Motor.ExtraJumps = Stats.ExtraJumps;
             if (Skills != null)
                 Skills.SetBonusCharges(Stats.BonusSkillCharges);

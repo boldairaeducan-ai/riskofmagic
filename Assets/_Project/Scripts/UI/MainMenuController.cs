@@ -63,7 +63,7 @@ namespace RiskOfMagic.UI
         private readonly List<LobbyCard> characterCards = new();
         private readonly List<LobbyCard> skillCards = new(); // index = slot * 2 + (alternative ? 1 : 0)
         private bool sentInitialLoadout;
-        private static readonly string[] SlotKeys = { "Clic G", "Clic D", "Maj", "R" };
+        private static readonly string[] SlotKeys = { "Clic G", "Clic D", "A", "R" };
         private LobbyState subscribedLobby;
         private bool busy;
 

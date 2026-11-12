@@ -22,10 +22,13 @@ namespace RiskOfMagic.Characters
         public float FlatDamageReduction { get; private set; }
         public float DamageTakenMultiplier { get; private set; } = 1f;
         public int BonusSkillCharges { get; private set; }
+        /// <summary>Added to the movement config's sprint multiplier.</summary>
+        public float SprintSpeedBonus { get; private set; }
 
         public void Recalculate(CharacterDefinition definition, PlayerInventory inventory, StatusEffects status, int level = 1)
         {
             int levelsAboveOne = Mathf.Max(0, level - 1);
+            float sprintBonus = 0f;
             float attackSpeedBonus = 0f, damageBonus = 0f, moveBonus = 0f, healthFlat = 0f, healthPercent = 0f, regen = 0f, crit = 0f, flatReduction = 0f;
             float cooldown = 1f, damageTaken = 1f;
             int jumps = 0, charges = 0;
@@ -57,6 +60,7 @@ namespace RiskOfMagic.Characters
                             case StatType.FlatDamageReduction: flatReduction += value; break;
                             case StatType.DamageTakenReduction: damageTaken *= Mathf.Pow(1f - Mathf.Clamp01(modifier.valuePerStack), stacks); break;
                             case StatType.BonusSkillCharges: charges += Mathf.RoundToInt(value); break;
+                            case StatType.SprintSpeed: sprintBonus += value; break;
                         }
                     }
                 }
@@ -77,6 +81,7 @@ namespace RiskOfMagic.Characters
             FlatDamageReduction = flatReduction;
             DamageTakenMultiplier = damageTaken;
             BonusSkillCharges = charges;
+            SprintSpeedBonus = sprintBonus;
         }
 
         /// <summary>Server side. coefficient 2.5 = "250% damage".</summary>

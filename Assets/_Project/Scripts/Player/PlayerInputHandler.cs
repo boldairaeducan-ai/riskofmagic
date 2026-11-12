@@ -59,7 +59,7 @@ namespace RiskOfMagic.Player
             lookStick = map.AddAction("LookStick", InputActionType.Value, "<Gamepad>/rightStick");
 
             jump = AddButton("Jump", "<Keyboard>/space", "<Gamepad>/buttonSouth");
-            sprint = AddButton("Sprint", "<Keyboard>/leftCtrl", "<Gamepad>/leftStickPress");
+            sprint = AddButton("Sprint", "<Keyboard>/leftShift", "<Gamepad>/leftStickPress");
             toggleCursor = AddButton("ToggleCursor", "<Keyboard>/escape", "<Gamepad>/start");
             interact = AddButton("Interact", "<Keyboard>/e", "<Gamepad>/buttonWest");
             equipment = AddButton("Equipment", "<Keyboard>/f", "<Gamepad>/dpad/up");
@@ -68,11 +68,24 @@ namespace RiskOfMagic.Player
             {
                 AddButton("Primary", "<Mouse>/leftButton", "<Gamepad>/rightTrigger"),
                 AddButton("Secondary", "<Mouse>/rightButton", "<Gamepad>/leftTrigger"),
-                AddButton("Utility", "<Keyboard>/leftShift", "<Gamepad>/leftShoulder"),
+                AddButton("Utility", "<Keyboard>/q", "<Gamepad>/leftShoulder"), // physical key: A on AZERTY
                 AddButton("Special", "<Keyboard>/r", "<Gamepad>/rightShoulder")
             };
 
             enabled = false;
+        }
+
+        /// <summary>Keyboard / mouse key of a skill slot, in the player's keyboard layout ("A" on AZERTY for Q).</summary>
+        public string GetSkillKeyLabel(int slot)
+        {
+            if (skills == null || slot < 0 || slot >= skills.Length)
+                return string.Empty;
+            if (slot == 0)
+                return "Clic G";
+            if (slot == 1)
+                return "Clic D";
+            string label = skills[slot].GetBindingDisplayString(0);
+            return string.IsNullOrEmpty(label) ? string.Empty : label.ToUpperInvariant();
         }
 
         private InputAction AddButton(string actionName, params string[] bindings)

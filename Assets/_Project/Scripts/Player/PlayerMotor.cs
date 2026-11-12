@@ -38,6 +38,8 @@ namespace RiskOfMagic.Player
         public Vector3 Velocity => velocity + externalVelocity;
         /// <summary>Multiplicative modifier for buffs, items, skills.</summary>
         public float SpeedMultiplier { get; set; } = 1f;
+        /// <summary>Added to the sprint multiplier (items).</summary>
+        public float SprintBonus { get; set; }
         /// <summary>Added to MovementConfig.maxJumps (items).</summary>
         public int ExtraJumps { get; set; }
 
@@ -108,7 +110,7 @@ namespace RiskOfMagic.Player
                 Landed?.Invoke();
 
             // Horizontal
-            float speed = config.walkSpeed * SpeedMultiplier * (IsSprinting ? config.sprintMultiplier : 1f);
+            float speed = config.walkSpeed * SpeedMultiplier * (IsSprinting ? config.sprintMultiplier + SprintBonus : 1f);
             Vector3 wish = transform.right * moveInput.x + transform.forward * moveInput.y;
             wish = Vector3.ClampMagnitude(wish, 1f) * speed;
             Vector3 horizontal = new(velocity.x, 0f, velocity.z);

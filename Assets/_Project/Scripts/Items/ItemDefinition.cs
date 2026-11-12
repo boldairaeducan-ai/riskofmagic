@@ -32,7 +32,9 @@ namespace RiskOfMagic.Items
         /// <summary>Multiplicative per stack: 0.15 = -15%, then -15% of the rest...</summary>
         DamageTakenReduction,
         /// <summary>Extra charges on every skill except the primary.</summary>
-        BonusSkillCharges
+        BonusSkillCharges,
+        /// <summary>Added to the sprint multiplier (0.25 = sprinting 25 % of base speed faster).</summary>
+        SprintSpeed
     }
 
     [Serializable]

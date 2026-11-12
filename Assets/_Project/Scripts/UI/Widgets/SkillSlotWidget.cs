@@ -26,7 +26,10 @@ namespace RiskOfMagic.UI
         {
             player = avatar;
             if (keyLabel != null)
-                keyLabel.text = keyText;
+            {
+                string bound = Player != null && Player.Input != null ? Player.Input.GetSkillKeyLabel((int)slot) : null;
+                keyLabel.text = string.IsNullOrEmpty(bound) ? keyText : bound; // follows the bindings and keyboard layout
+            }
             RefreshDefinition();
         }
 
