@@ -23,6 +23,7 @@ namespace RiskOfMagic.UI
         [SerializeField] private OptionRow choiceTemplate;
         [SerializeField] private OptionSliderRow sliderTemplate;
         [SerializeField] private OptionToggleRow toggleTemplate;
+        [SerializeField, Tooltip("Raccourcis tab: one per rebindable action.")] private OptionKeyRow keyTemplate;
         [SerializeField] private TMP_Text hintLabel;
         [SerializeField] private Button resetButton;
         [SerializeField] private TMP_Text resetLabel;
@@ -73,6 +74,8 @@ namespace RiskOfMagic.UI
             if (resetArmedUntil > 0f && Time.unscaledTime > resetArmedUntil)
                 DisarmReset();
 
+            if (RiskOfMagic.Player.GameInput.MenuKeysBlocked)
+                return; // the key belongs to the rebind (Escape cancels it)
             var keyboard = Keyboard.current;
             var pad = Gamepad.current;
             if (PauseMenu.Instance == null && ((keyboard != null && keyboard.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame)))
@@ -111,6 +114,8 @@ namespace RiskOfMagic.UI
             choiceTemplate.gameObject.SetActive(false);
             sliderTemplate.gameObject.SetActive(false);
             toggleTemplate.gameObject.SetActive(false);
+            if (keyTemplate != null)
+                keyTemplate.gameObject.SetActive(false);
 
             AddTab("Affichage");
             var resolutions = Screen.resolutions
@@ -158,6 +163,10 @@ namespace RiskOfMagic.UI
                 () => GameSettings.StickSensitivity, v => GameSettings.StickSensitivity = v, v => $"×{v:0.00}");
             AddToggle("Inverser l'axe vertical", "Pousser vers le haut fait regarder vers le bas.",
                 () => GameSettings.InvertY, v => GameSettings.InvertY = v);
+
+            AddTab("Raccourcis");
+            foreach (var binding in RiskOfMagic.Player.GameInput.Rebindables)
+                AddKey(binding);
 
             AddTab("Interface");
             AddToggle("Chiffres de dégâts", "Affiche les dégâts infligés au-dessus des ennemis.",
@@ -253,6 +262,16 @@ namespace RiskOfMagic.UI
             refreshers.Add(row.Refresh);
         }
 
+        private void AddKey(RiskOfMagic.Player.GameInput.Rebindable binding)
+        {
+            if (keyTemplate == null)
+                return;
+            var row = AddRow(keyTemplate, "Cliquez sur la touche puis appuyez sur la nouvelle (Échap pour annuler). "
+                                          + "Une touche déjà utilisée est échangée avec l'ancienne. Manette non modifiable.");
+            row.Setup(binding);
+            refreshers.Add(row.Refresh);
+        }
+
         /// <summary>Two clicks: the first arms the button ("Confirmer ?"), the second resets.</summary>
         private void OnReset()
         {
@@ -265,6 +284,7 @@ namespace RiskOfMagic.UI
             }
             DisarmReset();
             GameSettings.ResetToDefaults();
+            RiskOfMagic.Player.GameInput.ResetAll(); // shortcuts too
             RefreshAll();
         }
 

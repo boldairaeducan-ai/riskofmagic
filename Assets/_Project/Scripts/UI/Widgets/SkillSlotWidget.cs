@@ -25,15 +25,28 @@ namespace RiskOfMagic.UI
         public void Bind(PlayerAvatar avatar)
         {
             player = avatar;
-            if (keyLabel != null)
-            {
-                string bound = Player != null && Player.Input != null ? Player.Input.GetSkillKeyLabel((int)slot) : null;
-                keyLabel.text = string.IsNullOrEmpty(bound) ? keyText : bound; // follows the bindings and keyboard layout
-            }
+            RefreshKey();
+            RiskOfMagic.Player.GameInput.BindingsChanged -= RefreshKey;
+            RiskOfMagic.Player.GameInput.BindingsChanged += RefreshKey;
             RefreshDefinition();
         }
 
-        public void Unbind() => player = null;
+        public void Unbind()
+        {
+            player = null;
+            RiskOfMagic.Player.GameInput.BindingsChanged -= RefreshKey;
+        }
+
+        private void OnDestroy() => RiskOfMagic.Player.GameInput.BindingsChanged -= RefreshKey;
+
+        /// <summary>Follows the bindings (Options → Raccourcis) and the keyboard layout.</summary>
+        private void RefreshKey()
+        {
+            if (keyLabel == null)
+                return;
+            string bound = RiskOfMagic.Player.GameInput.SkillKey((int)slot);
+            keyLabel.text = string.IsNullOrEmpty(bound) ? keyText : bound;
+        }
 
         public void RefreshDefinition()
         {

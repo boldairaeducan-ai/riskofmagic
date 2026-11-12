@@ -63,7 +63,6 @@ namespace RiskOfMagic.UI
         private readonly List<LobbyCard> characterCards = new();
         private readonly List<LobbyCard> skillCards = new(); // index = slot * 2 + (alternative ? 1 : 0)
         private bool sentInitialLoadout;
-        private static readonly string[] SlotKeys = { "Clic G", "Clic D", "A", "R" };
         private LobbyState subscribedLobby;
         private bool busy;
 
@@ -549,11 +548,11 @@ namespace RiskOfMagic.UI
 
                 baseCard.gameObject.SetActive(baseSkill != null);
                 if (baseSkill != null)
-                    baseCard.Set($"<size=75%>{SlotKeys[slot]}</size>  {baseSkill.displayName}", baseSkill.description, baseSkill.icon, neutral, !usingAlt, null);
+                    baseCard.Set($"<size=75%>{RiskOfMagic.Player.GameInput.SkillKey(slot)}</size>  {baseSkill.displayName}", baseSkill.description, baseSkill.icon, neutral, !usingAlt, null);
 
                 altCard.gameObject.SetActive(altSkill != null);
                 if (altSkill != null)
-                    altCard.Set($"<size=75%>{SlotKeys[slot]} · alt.</size>  {altSkill.displayName}", altSkill.description, altSkill.icon, neutral, usingAlt,
+                    altCard.Set($"<size=75%>{RiskOfMagic.Player.GameInput.SkillKey(slot)} · alt.</size>  {altSkill.displayName}", altSkill.description, altSkill.icon, neutral, usingAlt,
                         LockText(altSkill));
             }
         }

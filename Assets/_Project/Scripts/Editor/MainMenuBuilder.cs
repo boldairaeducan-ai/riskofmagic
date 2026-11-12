@@ -478,6 +478,30 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("knobTravel").floatValue = 30f;
             });
 
+            // Key binding: action  [category]  [ key ]
+            var keyRowRect = Row(templates, theme, "KeyTemplate", out var keyLabelText);
+            var category = H.Text(H.Rect("Category", keyRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-250f, 0f), new Vector2(180f, 40f)), null,
+                "Catégorie", 16f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.MidlineRight);
+            var keyRect = H.Rect("Key", keyRowRect, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-14f, 0f), new Vector2(220f, 40f));
+            var keyImage = keyRect.gameObject.AddComponent<UnityEngine.UI.Image>();
+            keyImage.color = theme.buttonColor;
+            var keyButton = keyRect.gameObject.AddComponent<UnityEngine.UI.Button>();
+            keyButton.targetGraphic = keyImage;
+            var keyColors = keyButton.colors;
+            keyColors.highlightedColor = keyColors.selectedColor = new Color(1.25f, 1.15f, 0.9f, 1f);
+            keyButton.colors = keyColors;
+            var keyText = H.Text(keyRect, "Label", "Touche", 20f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Center);
+            var keyRow = keyRowRect.gameObject.AddComponent<OptionKeyRow>();
+            H.Props(keyRow, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("label").objectReferenceValue = keyLabelText;
+                so.FindProperty("categoryLabel").objectReferenceValue = category;
+                so.FindProperty("keyButton").objectReferenceValue = keyButton;
+                so.FindProperty("keyBackground").objectReferenceValue = keyImage;
+                so.FindProperty("keyLabel").objectReferenceValue = keyText;
+            });
+
             Line(panel, -650f);
             var hint = H.Text(H.Rect("Hint", panel, H.TopLeft, H.TopLeft, new Vector2(48f, -660f), new Vector2(1024f, 60f)), null,
                 string.Empty, 18f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.TopLeft);
@@ -496,6 +520,7 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("choiceTemplate").objectReferenceValue = choiceRow;
                 so.FindProperty("sliderTemplate").objectReferenceValue = sliderRow;
                 so.FindProperty("toggleTemplate").objectReferenceValue = toggleRow;
+                so.FindProperty("keyTemplate").objectReferenceValue = keyRow;
                 so.FindProperty("hintLabel").objectReferenceValue = hint;
                 so.FindProperty("resetButton").objectReferenceValue = reset;
                 so.FindProperty("resetLabel").objectReferenceValue = reset.GetComponent<MenuButton>().Text;
