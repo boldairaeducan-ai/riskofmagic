@@ -7,13 +7,15 @@ namespace RiskOfMagic.Enemies
 {
     public class EnemyMeleeAttack : EnemyAttack
     {
-        [SerializeField] private float damage = 10f;
-        [SerializeField] private DamageType damageType = DamageType.Physical;
-        [SerializeField, Min(0f)] private float windup = 0.5f;
-        [SerializeField, Min(0f)] private float recovery = 0.4f;
-        [SerializeField] private Vector3 hitOffset = new(0f, 1f, 1f);
-        [SerializeField, Min(0.1f)] private float hitRadius = 1f;
-        [SerializeField] private LayerMask hitMask = Physics.DefaultRaycastLayers;
+        private MeleeAttackData D => data as MeleeAttackData ?? (MeleeAttackData)(data = ScriptableObject.CreateInstance<MeleeAttackData>());
+
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private Vector3 hitOffset => D.hitOffset;
+        private float hitRadius => D.hitRadius;
+        private LayerMask hitMask => D.hitMask;
 
         protected override IEnumerator Perform(PlayerAvatar target)
         {

@@ -14,10 +14,10 @@ namespace RiskOfMagic.Player
     [RequireComponent(typeof(PlayerAvatar))]
     public class PlayerExperience : NetworkBehaviour
     {
-        [SerializeField, Min(0f), Tooltip("Experience per point of gold reward.")] private float experiencePerGold = 0.6f;
-        [SerializeField, Min(1f), Tooltip("Experience to go from level 1 to 2.")] private float firstLevelExperience = 35f;
-        [SerializeField, Min(1.01f), Tooltip("Each level needs this much more experience than the previous one.")] private float levelGrowth = 1.65f;
-        [SerializeField, Min(1)] private int maxLevel = 99;
+        private float experiencePerGold => RiskOfMagic.Core.GameBalance.Instance.experience.experiencePerGold;
+        private float firstLevelExperience => RiskOfMagic.Core.GameBalance.Instance.experience.firstLevelExperience;
+        private float levelGrowth => RiskOfMagic.Core.GameBalance.Instance.experience.levelGrowth;
+        private int maxLevel => RiskOfMagic.Core.GameBalance.Instance.experience.maxLevel;
 
         private readonly NetworkVariable<float> experience = new();
         private readonly NetworkVariable<int> level = new(1);

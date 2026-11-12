@@ -157,7 +157,9 @@ namespace RiskOfMagic.Enemies
         public float DamageMultiplier => (definition != null ? 1f + definition.damagePerLevel * (Level - 1) : 1f)
                                          * EliteDamageMultiplier
                                          * (IsIllusion ? IllusionDamageMultiplier : 1f)
-                                         * (Status != null ? Status.DamageDealtMultiplier : 1f);
+                                         * (Status != null ? Status.DamageDealtMultiplier : 1f)
+                                         * (IsBoss ? RiskOfMagic.Core.GameBalance.Instance.enemies.bossDamageMultiplier
+                                             : RiskOfMagic.Core.GameBalance.Instance.enemies.regularDamageMultiplier);
         public float MoveSpeedMultiplier => Status != null ? Status.MoveSpeedMultiplier : 1f;
         public float AttackSpeedMultiplier => Status != null ? Status.AttackSpeedMultiplier : 1f;
 

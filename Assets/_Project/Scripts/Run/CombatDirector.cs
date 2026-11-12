@@ -23,36 +23,26 @@ namespace RiskOfMagic.Run
     {
         [SerializeField] private List<SpawnCard> cards = new();
 
-        [Header("Credits")]
-        [SerializeField] private float creditMultiplier = 1f;
-        [SerializeField] private float startingCredits = 40f;
+        private float creditMultiplier => RiskOfMagic.Core.GameBalance.Instance.director.creditMultiplier;
+        private float startingCredits => RiskOfMagic.Core.GameBalance.Instance.director.startingCredits;
 
         [Header("Stage population")]
         [SerializeField, Tooltip("Off when a StageManager drives the stages.")] private bool populateOnStart;
-        [SerializeField, Min(0f), Tooltip("Credits spent on idle enemies at stage start (scaled by sqrt(difficulty coefficient)).")]
-        private float stagePopulationCredits = 110f;
-        [SerializeField, Min(0f)] private float populationMinDistanceFromSpawns = 45f;
-        [SerializeField, Min(0f)] private float populationMinSpacing = 6f;
+        private float stagePopulationCredits => RiskOfMagic.Core.GameBalance.Instance.director.stagePopulationCredits;
+        private float populationMinDistanceFromSpawns => RiskOfMagic.Core.GameBalance.Instance.director.populationMinDistanceFromSpawns;
+        private float populationMinSpacing => RiskOfMagic.Core.GameBalance.Instance.director.populationMinSpacing;
 
-        [Header("Waves")]
-        [SerializeField, Tooltip("Outside events, wave enemies know a player immediately instead of waiting for detection.")]
-        private bool wavesHuntPlayers;
-        [SerializeField] private Vector2 waveInterval = new(8f, 15f);
-        [SerializeField, Min(1)] private int maxSpawnsPerWave = 4;
-        [SerializeField, Min(1)] private int maxAliveEnemies = 22;
+        private bool wavesHuntPlayers => RiskOfMagic.Core.GameBalance.Instance.director.wavesHuntPlayers;
+        private Vector2 waveInterval => RiskOfMagic.Core.GameBalance.Instance.director.waveInterval;
+        private int maxSpawnsPerWave => RiskOfMagic.Core.GameBalance.Instance.director.maxSpawnsPerWave;
+        private int maxAliveEnemies => RiskOfMagic.Core.GameBalance.Instance.director.maxAliveEnemies;
 
-        [Header("Elites")]
-        [SerializeField, Min(0f), Tooltip("Run progress (like SpawnCard.minCoefficient) from which waves can be elite.")]
-        private float eliteMinProgress = 1.5f;
-        [SerializeField, Range(0f, 1f), Tooltip("Chance for a wave to be elite (same affix), if the boosted cost is affordable.")]
-        private float eliteWaveChance = 0.35f;
+        private float eliteMinProgress => RiskOfMagic.Core.GameBalance.Instance.director.eliteMinProgress;
+        private float eliteWaveChance => RiskOfMagic.Core.GameBalance.Instance.director.eliteWaveChance;
 
-        [Header("Placement")]
-        [SerializeField, Tooltip("Normal waves: distance band to the NEAREST living player.")]
-        private Vector2 farSpawnDistance = new(45f, 90f);
-        [SerializeField, Tooltip("Event waves (teleporter): distance band around a random living player.")]
-        private float minSpawnDistance = 25f;
-        [SerializeField] private float maxSpawnDistance = 50f;
+        private Vector2 farSpawnDistance => RiskOfMagic.Core.GameBalance.Instance.director.farSpawnDistance;
+        private float minSpawnDistance => RiskOfMagic.Core.GameBalance.Instance.director.minSpawnDistance;
+        private float maxSpawnDistance => RiskOfMagic.Core.GameBalance.Instance.director.maxSpawnDistance;
         [SerializeField] private float navMeshSampleRadius = 6f;
         [SerializeField, Min(1)] private int placementAttempts = 8;
 

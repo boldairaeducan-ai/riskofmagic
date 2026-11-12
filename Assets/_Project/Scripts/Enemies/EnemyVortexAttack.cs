@@ -10,20 +10,22 @@ namespace RiskOfMagic.Enemies
     /// <summary>Rifts near the players that pull them in and hurt them at the core.</summary>
     public class EnemyVortexAttack : EnemyAttack
     {
-        [SerializeField, Min(1)] private int riftsPerPlayer = 1;
-        [SerializeField] private Vector2 offsetFromPlayer = new(3f, 6f);
-        [SerializeField, Min(1f)] private float pullRadius = 9f;
-        [SerializeField, Min(0.5f)] private float coreRadius = 2f;
-        [SerializeField, Tooltip("Pull speed (m/s) added per second at the edge, stronger near the core.")] private float pullStrength = 9f;
-        [SerializeField] private float coreDamagePerTick = 6f;
-        [SerializeField] private DamageType damageType = DamageType.Arcane;
-        [SerializeField, Min(0.5f)] private float duration = 4f;
-        [SerializeField, Min(0.1f)] private float tick = 0.25f;
-        [SerializeField, Min(0f)] private float windup = 0.9f;
-        [SerializeField, Min(0f)] private float recovery = 0.5f;
-        [SerializeField] private GameObject telegraphVfx;
-        [SerializeField, Tooltip("Pulsed at each rift, scaled by the core radius.")] private GameObject riftVfx;
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
+        private VortexAttackData D => data as VortexAttackData ?? (VortexAttackData)(data = ScriptableObject.CreateInstance<VortexAttackData>());
+
+        private int riftsPerPlayer => D.riftsPerPlayer;
+        private Vector2 offsetFromPlayer => D.offsetFromPlayer;
+        private float pullRadius => D.pullRadius;
+        private float coreRadius => D.coreRadius;
+        private float pullStrength => D.pullStrength;
+        private float coreDamagePerTick => D.coreDamagePerTick;
+        private DamageType damageType => D.damageType;
+        private float duration => D.duration;
+        private float tick => D.tick;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject telegraphVfx => D.telegraphVfx;
+        private GameObject riftVfx => D.riftVfx;
+        private LayerMask groundMask => D.groundMask;
 
         private readonly List<PlayerAvatar> players = new();
         private readonly List<Vector3> rifts = new();

@@ -23,30 +23,29 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyEruptionAttack : EnemyAttack
     {
-        [SerializeField] private EruptionPattern pattern = EruptionPattern.UnderPlayers;
-        [SerializeField] private float damage = 25f;
-        [SerializeField] private DamageType damageType = DamageType.Physical;
-        [SerializeField, Min(0.3f)] private float radius = 2.5f;
-        [SerializeField, Min(0f)] private float windup = 0.6f;
-        [SerializeField, Min(0.2f), Tooltip("Marker → impact. Keep it under the telegraph VFX lifetime.")] private float delay = 1.2f;
-        [SerializeField, Min(0f), Tooltip("Line: delay between two consecutive impacts.")] private float stepDelay = 0.12f;
-        [SerializeField, Min(1), Tooltip("Line/Ring: impacts. UnderPlayers: extra impacts around each player.")] private int count = 6;
-        [SerializeField, Min(0f), Tooltip("Line: distance between impacts. Ring: ring radius. UnderPlayers: extra impact offset.")]
-        private float spacing = 3f;
-        [SerializeField, Min(0f)] private float recovery = 0.8f;
-        [SerializeField] private bool applyStatus;
-        [SerializeField] private StatusType status = StatusType.Chilled;
-        [SerializeField, Min(0.1f)] private float statusDuration = 1.5f;
-        [Header("Lingering hazard (0 = none)")]
-        [SerializeField, Min(0f)] private float hazardDuration;
-        [SerializeField] private float hazardDamagePerTick = 5f;
-        [SerializeField, Min(0.1f)] private float hazardTick = 0.5f;
-        [SerializeField, Tooltip("Respawned every vfx lifetime while the hazard lasts.")] private GameObject hazardVfx;
-        [SerializeField, Min(0.1f)] private float hazardVfxLifetime = 3f;
-        [Header("VFX")]
-        [SerializeField] private GameObject telegraphVfx;
-        [SerializeField] private GameObject impactVfx;
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
+        private EruptionAttackData D => data as EruptionAttackData ?? (EruptionAttackData)(data = ScriptableObject.CreateInstance<EruptionAttackData>());
+
+        private EruptionPattern pattern => D.pattern;
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float radius => D.radius;
+        private float windup => D.windup;
+        private float delay => D.delay;
+        private float stepDelay => D.stepDelay;
+        private int count => D.count;
+        private float spacing => D.spacing;
+        private float recovery => D.recovery;
+        private bool applyStatus => D.applyStatus;
+        private StatusType status => D.status;
+        private float statusDuration => D.statusDuration;
+        private float hazardDuration => D.hazardDuration;
+        private float hazardDamagePerTick => D.hazardDamagePerTick;
+        private float hazardTick => D.hazardTick;
+        private GameObject hazardVfx => D.hazardVfx;
+        private float hazardVfxLifetime => D.hazardVfxLifetime;
+        private GameObject telegraphVfx => D.telegraphVfx;
+        private GameObject impactVfx => D.impactVfx;
+        private LayerMask groundMask => D.groundMask;
 
         private readonly List<PlayerAvatar> players = new();
         private readonly List<Vector3> points = new();

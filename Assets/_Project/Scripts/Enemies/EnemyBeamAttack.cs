@@ -10,19 +10,21 @@ namespace RiskOfMagic.Enemies
     /// <summary>Rotating beams around the boss (a cross by default): thin preview lines, then damaging sweeps.</summary>
     public class EnemyBeamAttack : EnemyAttack
     {
-        [SerializeField, Min(1)] private int beams = 4;
-        [SerializeField, Min(2f)] private float length = 22f;
-        [SerializeField, Min(0.2f), Tooltip("Half width of the damaging band.")] private float halfWidth = 1f;
-        [SerializeField] private float rotationSpeed = 35f;
-        [SerializeField, Min(0.2f)] private float duration = 4f;
-        [SerializeField, Min(0.05f)] private float tick = 0.15f;
-        [SerializeField] private float damagePerTick = 6f;
-        [SerializeField] private DamageType damageType = DamageType.Arcane;
-        [SerializeField] private float height = 1.2f;
-        [SerializeField, Min(0f)] private float windup = 1.2f;
-        [SerializeField, Min(0f)] private float recovery = 0.8f;
-        [SerializeField, Tooltip("Thin line during the windup.")] private GameObject previewVfx;
-        [SerializeField] private GameObject beamVfx;
+        private BeamAttackData D => data as BeamAttackData ?? (BeamAttackData)(data = ScriptableObject.CreateInstance<BeamAttackData>());
+
+        private int beams => D.beams;
+        private float length => D.length;
+        private float halfWidth => D.halfWidth;
+        private float rotationSpeed => D.rotationSpeed;
+        private float duration => D.duration;
+        private float tick => D.tick;
+        private float damagePerTick => D.damagePerTick;
+        private DamageType damageType => D.damageType;
+        private float height => D.height;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject previewVfx => D.previewVfx;
+        private GameObject beamVfx => D.beamVfx;
 
         private readonly List<PlayerAvatar> players = new();
         private readonly HashSet<Health> hitThisTick = new();

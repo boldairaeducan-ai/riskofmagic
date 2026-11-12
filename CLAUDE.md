@@ -17,8 +17,13 @@ Game-facing text (UI, item/skill names and descriptions) is in **French**; code,
 - **Tools → Risk of Magic → Build Prototype Scene** (`Editor/PrototypeSceneBuilder.cs`) regenerates almost every
   asset: configs (characters, skills, projectiles, DoTs, items, equipment, enemies, spawn cards), prefabs, VFX,
   materials, `Resources/GameCatalog`, the `NetworkPrefabs` list, the `Prototype` and `MainMenu` scenes and build settings.
-  Gameplay values live in this builder: tuning done by hand in the generated assets is overwritten on the next run,
-  so persistent balance changes go into the builder (or code defaults).
+  Configs are **seeded once**: the builder creates them with its default values, then on later runs every field an
+  existing asset already has is restored after the build (`RestoreUserValues`), so tuning lives in the assets
+  (new fields still get the builder's value). Balance changes are made by editing the `.asset` files (YAML) or, for new
+  content, in the builder. *Tools → Risk of Magic → Balance* resets selected configs (or all) to the builder defaults.
+  Global constants are in `Resources/GameBalance.asset` (`GameBalance`: difficulty, director, experience, statuses,
+  enemy damage / attack-rate multipliers); enemy attack tuning is in `Configs/Enemies/Attacks/*.asset`
+  (`EnemyAttackData` subclasses, one per attack type: `EnemyXAttack` ↔ `XAttackData`, referenced by the component).
 - **Tools → Risk of Magic → Rebuild HUD Prefab** (`Editor/HudBuilder.cs`) rebuilds `UI/HUD.prefab`; needed whenever a
   HUD widget is added. It never overwrites `UI/HudTheme.asset` (where art is plugged in).
 - Play from `Scenes/MainMenu` (Solo / online join code / lobby). Playing `Scenes/Prototype` directly still works for

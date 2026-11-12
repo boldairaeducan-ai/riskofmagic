@@ -14,17 +14,18 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyArtilleryAttack : EnemyAttack
     {
-        [SerializeField] private ProjectileDefinition projectile;
-        [SerializeField] private float damage = 14f;
-        [SerializeField] private DamageType damageType = DamageType.Fire;
-        [SerializeField, Min(0f), Tooltip("Too close: the brain backs off instead.")] private float minRange = 5f;
-        [SerializeField, Min(0f)] private float windup = 0.8f;
-        [SerializeField, Min(0.2f)] private float flightTime = 1.1f;
-        [SerializeField, Min(0f)] private float recovery = 0.6f;
-        [SerializeField] private Vector3 muzzleOffset = new(0f, 1.8f, 0.3f);
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
-        [SerializeField, Tooltip("Ground marker, replicated via VfxNetwork, scaled by the explosion radius.")]
-        private GameObject telegraphVfx;
+        private ArtilleryAttackData D => data as ArtilleryAttackData ?? (ArtilleryAttackData)(data = ScriptableObject.CreateInstance<ArtilleryAttackData>());
+
+        private ProjectileDefinition projectile => D.projectile;
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float minRange => D.minRange;
+        private float windup => D.windup;
+        private float flightTime => D.flightTime;
+        private float recovery => D.recovery;
+        private Vector3 muzzleOffset => D.muzzleOffset;
+        private LayerMask groundMask => D.groundMask;
+        private GameObject telegraphVfx => D.telegraphVfx;
 
         public override bool IsInRange(Transform target)
         {

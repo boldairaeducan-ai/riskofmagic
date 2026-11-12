@@ -13,14 +13,14 @@ namespace RiskOfMagic.Enemies
     [RequireComponent(typeof(EnemyActor))]
     public abstract class EnemyAttack : NetworkBehaviour
     {
-        [SerializeField, Min(0f)] protected float range = 2f;
-        [SerializeField, Min(0f)] protected float cooldown = 1.5f;
-        [SerializeField, Min(0f), Tooltip("Max vertical gap with the target (prevents hitting through platforms).")]
-        protected float maxHeightDifference = 2.5f;
-        [SerializeField, Min(0f), Tooltip("Multi-attack enemies: relative chance to pick this attack among the ready ones.")]
-        protected float selectionWeight = 1f;
-        [SerializeField, Tooltip("Animator trigger at the attack start (every peer), with the AttackIndex int parameter.")]
-        private string animatorTrigger = "Attack";
+        protected float range => Base.range;
+        protected float cooldown => Base.cooldown;
+        protected float maxHeightDifference => Base.maxHeightDifference;
+        protected float selectionWeight => Base.selectionWeight;
+        private string animatorTrigger => Base.animatorTrigger;
+
+        [SerializeField, Tooltip("Tuning of this attack (Configs/Enemies/Attacks, shared by any enemy using it).")]
+        protected EnemyAttackData data;
 
         private float readyTime;
         private Coroutine routine;
@@ -28,6 +28,11 @@ namespace RiskOfMagic.Enemies
         /// <summary>Raised on every peer when an attack starts (animation, telegraph VFX).</summary>
         public event Action AttackStarted;
 
+        /// <summary>Tuning asset (null = the class defaults).</summary>
+        public EnemyAttackData Data => data;
+        private EnemyAttackData fallback;
+        /// <summary>Base fields of the data asset, or defaults when none is assigned.</summary>
+        private EnemyAttackData Base => data != null ? data : fallback ??= ScriptableObject.CreateInstance<EnemyAttackData>();
         public float Range => range;
         public float SelectionWeight => selectionWeight;
         public string AnimatorTrigger => animatorTrigger;
@@ -77,7 +82,9 @@ namespace RiskOfMagic.Enemies
         {
             yield return Perform(target);
             IsAttacking = false;
-            readyTime = Time.time + cooldown * CooldownMultiplier / Mathf.Max(0.1f, Actor.AttackSpeedMultiplier);
+            var balance = RiskOfMagic.Core.GameBalance.Instance.enemies;
+            float globalRate = Actor.IsBoss ? balance.bossAttackRateMultiplier : balance.regularAttackRateMultiplier;
+            readyTime = Time.time + cooldown * CooldownMultiplier / Mathf.Max(0.1f, Actor.AttackSpeedMultiplier * globalRate);
             routine = null;
         }
 

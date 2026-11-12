@@ -94,6 +94,8 @@ namespace RiskOfMagic.Editor
             AssetDatabase.Refresh();
 
             touchedAssets.Clear();
+            userSnapshots.Clear();
+            BalanceTools.EnsureGameBalance();
             PostProcessBuilder.EnsureSetup();
             HitFeedbackBuilder.Ensure();
             var vfx = BuildVfx();
@@ -228,6 +230,7 @@ namespace RiskOfMagic.Editor
             prefabList.Add(new NetworkPrefab { Prefab = gameSystems });
             EditorUtility.SetDirty(prefabList);
 
+            RestoreUserValues(); // tuning done in existing configs wins over the builder's defaults
             DeleteObsoleteAssets(ItemsFolder);
             ArtLibraryBuilder.Save();
             var hud = HudBuilder.GetOrBuild();
@@ -1978,8 +1981,6 @@ namespace RiskOfMagic.Editor
         }
 
         // Regular enemies (not bosses): more aggressive than their base values below.
-        private const float RegularAttackRate = 1.3f;   // cooldowns / 1.3
-        private const float RegularDamage = 1.15f;
         private const float RegularSpeed = 1.15f;
         private const float RegularDetection = 1.4f;
         private const float RegularFlankRadius = 0.7f;  // flankers commit closer, sooner
@@ -1995,16 +1996,7 @@ namespace RiskOfMagic.Editor
                 def.flankRadius *= RegularFlankRadius;
                 def.alertAlliesRadius *= RegularDetection;
                 EditorUtility.SetDirty(def);
-                foreach (var enemyAttack in root.GetComponents<EnemyAttack>())
-                    SetProperties(enemyAttack, so =>
-                    {
-                        var cooldown = so.FindProperty("cooldown");
-                        if (cooldown != null)
-                            cooldown.floatValue /= RegularAttackRate;
-                        var damage = so.FindProperty("damage");
-                        if (damage != null)
-                            damage.floatValue *= RegularDamage;
-                    });
+                // Damage and attack rate: GameBalance.enemies multipliers, applied at runtime.
             }
             if (dodge != null)
                 SetProperties(root.AddComponent<EnemyDodge>(), dodge);
@@ -2661,23 +2653,92 @@ namespace RiskOfMagic.Editor
                 : ArtLibraryBuilder.Category.None;
         }
 
-        private static T Asset<T>(string path) where T : ScriptableObject
+        private static T Asset<T>(string path) where T : ScriptableObject => (T)AssetByType(typeof(T), path);
+
+        /// <summary>
+        /// Loads the config at path, or creates it. Existing configs are "seeded once": the builder may write its default
+        /// values into them during the build, but <see cref="RestoreUserValues"/> puts back every field the asset already
+        /// had, so tuning done in the assets is never lost (new fields still get the builder's value).
+        /// </summary>
+        private static ScriptableObject AssetByType(System.Type type, string path)
         {
             touchedAssets.Add(path);
-            var existing = AssetDatabase.LoadAssetAtPath<T>(path);
-            if (existing != null)
-                return existing;
             var main = AssetDatabase.LoadMainAssetAtPath(path);
+            if (main != null && type.IsInstanceOfType(main))
+            {
+                SnapshotUserValues((ScriptableObject)main, path);
+                return (ScriptableObject)main;
+            }
             if (main != null)
             {
                 // Only replace an asset of a genuinely different type, never one whose script failed to load.
                 if (main is not ScriptableObject other || other.GetType() == typeof(ScriptableObject) || other.GetType() == typeof(MonoBehaviour))
-                    throw new System.InvalidOperationException($"[Risk of Magic] {path} could not be loaded as {typeof(T).Name} (script error?). Build aborted.");
+                    throw new System.InvalidOperationException($"[Risk of Magic] {path} could not be loaded as {type.Name} (script error?). Build aborted.");
                 AssetDatabase.DeleteAsset(path);
             }
-            var asset = ScriptableObject.CreateInstance<T>();
+            var asset = ScriptableObject.CreateInstance(type);
             AssetDatabase.CreateAsset(asset, path);
             return asset;
+        }
+
+        // ---------------------------------------------------------------- Seed-once configs
+
+        private sealed class UserSnapshot
+        {
+            public ScriptableObject Asset;
+            public ScriptableObject Copy;
+            public HashSet<string> FieldsInFile;
+        }
+
+        private static readonly Dictionary<string, UserSnapshot> userSnapshots = new();
+
+        private static void SnapshotUserValues(ScriptableObject asset, string path)
+        {
+            if (userSnapshots.ContainsKey(path) || asset is GameCatalog || asset is NetworkPrefabsList || BalanceTools.IsMarkedForReset(path))
+                return;
+            var fields = new HashSet<string>();
+            string file = Path.Combine(Directory.GetCurrentDirectory(), path);
+            if (File.Exists(file))
+                foreach (string line in File.ReadAllLines(file))
+                {
+                    // Top-level fields of the serialized object: two spaces, name, colon.
+                    if (line.Length > 3 && line[0] == ' ' && line[1] == ' ' && line[2] != ' ' && line[2] != '-')
+                    {
+                        int colon = line.IndexOf(':');
+                        if (colon > 2)
+                            fields.Add(line.Substring(2, colon - 2));
+                    }
+                }
+            fields.Remove("m_Script");
+            fields.Remove("m_Name");
+            userSnapshots[path] = new UserSnapshot { Asset = asset, Copy = Object.Instantiate(asset), FieldsInFile = fields };
+        }
+
+        /// <summary>End of the build: every field an existing config already had gets its tuned value back.</summary>
+        private static void RestoreUserValues()
+        {
+            foreach (var snapshot in userSnapshots.Values)
+            {
+                if (snapshot.Asset == null || snapshot.Copy == null)
+                    continue;
+                var source = new SerializedObject(snapshot.Copy);
+                var target = new SerializedObject(snapshot.Asset);
+                var property = source.GetIterator();
+                if (property.NextVisible(true))
+                {
+                    do
+                    {
+                        if (snapshot.FieldsInFile.Contains(property.name))
+                            target.CopyFromSerializedProperty(property);
+                    }
+                    while (property.NextVisible(false));
+                }
+                target.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(snapshot.Asset);
+                Object.DestroyImmediate(snapshot.Copy);
+            }
+            userSnapshots.Clear();
+            BalanceTools.ClearResetMarks();
         }
 
         private static GameObject SavePrefab(GameObject root, string path)
@@ -2717,8 +2778,35 @@ namespace RiskOfMagic.Editor
             AssetDatabase.SaveAssetIfDirty(prefab);
         }
 
+        private const string AttacksFolder = EnemiesFolder + "/Attacks";
+
+        /// <summary>
+        /// The data asset of an attack being built (Configs/Enemies/Attacks/&lt;Enemy&gt;_&lt;Attack&gt;[n].asset), created on first
+        /// use and assigned to the component. Data type by convention: EnemyXAttack → XAttackData.
+        /// </summary>
+        private static EnemyAttackData AttackData(EnemyAttack attack)
+        {
+            if (attack.Data != null)
+                return attack.Data;
+            string typeName = attack.GetType().Name; // EnemyShockwaveAttack
+            var dataType = attack.GetType().Assembly.GetType($"RiskOfMagic.Enemies.{typeName.Substring("Enemy".Length)}Data")
+                           ?? typeof(EnemyAttackData);
+            var same = attack.GetComponents(attack.GetType());
+            int index = System.Array.IndexOf(same, attack);
+            string label = typeName.Substring("Enemy".Length).Replace("Attack", string.Empty);
+            string path = $"{AttacksFolder}/{attack.gameObject.name}_{label}{(index > 0 ? (index + 1).ToString() : string.Empty)}.asset";
+            Directory.CreateDirectory(AttacksFolder);
+            var data = (EnemyAttackData)AssetByType(dataType, path);
+            var so = new SerializedObject(attack);
+            so.FindProperty("data").objectReferenceValue = data;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return data;
+        }
+
         private static void SetProperties(Object target, System.Action<SerializedObject> edit)
         {
+            if (target is EnemyAttack attack)
+                target = AttackData(attack); // attack tuning lives in a shared data asset, not in the prefab
             var so = new SerializedObject(target);
             edit(so);
             so.ApplyModifiedPropertiesWithoutUndo();

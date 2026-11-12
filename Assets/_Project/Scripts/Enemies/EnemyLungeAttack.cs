@@ -14,16 +14,18 @@ namespace RiskOfMagic.Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     public class EnemyLungeAttack : EnemyAttack
     {
-        [SerializeField, Min(0f), Tooltip("Too close: the brain keeps approaching instead.")] private float minRange;
-        [SerializeField] private float damage = 10f;
-        [SerializeField] private DamageType damageType = DamageType.Physical;
-        [SerializeField, Min(0f)] private float windup = 0.45f;
-        [SerializeField, Min(0.1f)] private float dashSpeed = 18f;
-        [SerializeField, Min(0.05f)] private float dashDuration = 0.35f;
-        [SerializeField, Min(0f)] private float recovery = 0.6f;
-        [SerializeField, Min(0.1f)] private float hitRadius = 1.3f;
-        [SerializeField] private float hitHeight = 0.9f;
-        [SerializeField] private LayerMask hitMask = Physics.DefaultRaycastLayers;
+        private LungeAttackData D => data as LungeAttackData ?? (LungeAttackData)(data = ScriptableObject.CreateInstance<LungeAttackData>());
+
+        private float minRange => D.minRange;
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float windup => D.windup;
+        private float dashSpeed => D.dashSpeed;
+        private float dashDuration => D.dashDuration;
+        private float recovery => D.recovery;
+        private float hitRadius => D.hitRadius;
+        private float hitHeight => D.hitHeight;
+        private LayerMask hitMask => D.hitMask;
 
         private readonly HashSet<Health> alreadyHit = new();
         private NavMeshAgent agent;

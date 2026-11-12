@@ -11,16 +11,18 @@ namespace RiskOfMagic.Enemies
     /// <summary>Spawns minions around the enemy (same level), already hunting the target. Capped by alive minions.</summary>
     public class EnemySummonAttack : EnemyAttack
     {
-        [SerializeField] private SpawnCard minion;
-        [SerializeField, Tooltip("Optional: random card per minion instead of `minion`.")] private SpawnCard[] minionPool = new SpawnCard[0];
-        [SerializeField, Min(1)] private int countPerCast = 4;
-        [SerializeField, Min(1)] private int maxAlive = 8;
-        [SerializeField] private Vector2 spawnDistance = new(2f, 5f);
-        [SerializeField, Min(0f)] private float windup = 1f;
-        [SerializeField, Min(0f)] private float recovery = 0.5f;
-        [SerializeField, Tooltip("Spawned at each minion (VfxNetwork).")] private GameObject spawnVfx;
-        [SerializeField, Range(0.05f, 1f), Tooltip("Only cast below this health fraction (1 = always).")] private float onlyBelowHealth = 1f;
-        [SerializeField, Min(0), Tooltip("Max casts per life (0 = unlimited).")] private int maxCasts;
+        private SummonAttackData D => data as SummonAttackData ?? (SummonAttackData)(data = ScriptableObject.CreateInstance<SummonAttackData>());
+
+        private SpawnCard minion => D.minion;
+        private SpawnCard[] minionPool => D.minionPool;
+        private int countPerCast => D.countPerCast;
+        private int maxAlive => D.maxAlive;
+        private Vector2 spawnDistance => D.spawnDistance;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject spawnVfx => D.spawnVfx;
+        private float onlyBelowHealth => D.onlyBelowHealth;
+        private int maxCasts => D.maxCasts;
 
         private int casts;
 

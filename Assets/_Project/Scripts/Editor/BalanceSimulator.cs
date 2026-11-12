@@ -105,22 +105,21 @@ namespace RiskOfMagic.Editor
                 return;
             }
 
-            // Difficulty (RunDifficulty serialized values)
-            var difficulty = new SerializedObject(systems.GetComponent<RunDifficulty>());
-            float scalingPerMinute = difficulty.FindProperty("scalingPerMinute").floatValue;
-            float playerFactorPerPlayer = difficulty.FindProperty("playerFactorPerPlayer").floatValue;
-            float stageMultiplier = difficulty.FindProperty("stageMultiplier").floatValue;
-            var startProperty = difficulty.FindProperty("startingCoefficient");
-            float startingCoefficient = startProperty != null ? startProperty.floatValue : 1f;
-            float levelStep = difficulty.FindProperty("levelStep").floatValue;
-            float hardCredits = difficulty.FindProperty("hardDirectorCreditMultiplier").floatValue;
-            float hardUnlock = difficulty.FindProperty("hardUnlockMultiplier").floatValue;
+            // Difficulty, director and experience: Resources/GameBalance
+            var balance = RiskOfMagic.Core.GameBalance.Instance;
+            float scalingPerMinute = balance.difficulty.scalingPerMinute;
+            float playerFactorPerPlayer = balance.difficulty.playerFactorPerPlayer;
+            float stageMultiplier = balance.difficulty.stageMultiplier;
+            float startingCoefficient = balance.difficulty.startingCoefficient;
+            float levelStep = balance.difficulty.levelStep;
+            float hardCredits = balance.difficulty.hardDirectorCreditMultiplier;
+            float hardUnlock = balance.difficulty.hardUnlockMultiplier;
             int difficultyValue = hard ? (int)DifficultyLevel.Hard : (int)DifficultyLevel.Normal;
 
             // Director
             var director = new SerializedObject(systems.GetComponent<CombatDirector>());
-            float creditMultiplier = director.FindProperty("creditMultiplier").floatValue;
-            float populationCredits = director.FindProperty("stagePopulationCredits").floatValue;
+            float creditMultiplier = balance.director.creditMultiplier;
+            float populationCredits = balance.director.stagePopulationCredits;
             var cards = new List<SpawnCard>();
             var cardList = director.FindProperty("cards");
             for (int i = 0; i < cardList.arraySize; i++)
@@ -161,16 +160,9 @@ namespace RiskOfMagic.Editor
             float primaryDps = PrimaryDps(character.primary);
 
             // Experience
-            var experienceComponent = player.GetComponent<PlayerExperience>();
-            if (experienceComponent == null)
-            {
-                error = "Prefab du joueur obsolète (sans PlayerExperience) : relance Tools → Risk of Magic → Build Prototype Scene.";
-                return;
-            }
-            var experience = new SerializedObject(experienceComponent);
-            float xpPerGold = experience.FindProperty("experiencePerGold").floatValue;
-            float firstLevel = experience.FindProperty("firstLevelExperience").floatValue;
-            float growth = experience.FindProperty("levelGrowth").floatValue;
+            float xpPerGold = balance.experience.experiencePerGold;
+            float firstLevel = balance.experience.firstLevelExperience;
+            float growth = balance.experience.levelGrowth;
 
             float playerFactor = 1f + playerFactorPerPlayer * (players - 1);
             float timeFactor = scalingPerMinute * difficultyValue * Mathf.Pow(playerFactor, 0.2f);

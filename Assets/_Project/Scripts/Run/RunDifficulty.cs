@@ -18,18 +18,16 @@ namespace RiskOfMagic.Run
     public class RunDifficulty : NetworkBehaviour
     {
         [SerializeField] private DifficultyLevel startingDifficulty = DifficultyLevel.Normal;
-        [SerializeField] private float scalingPerMinute = 0.1f;
-        [SerializeField] private float playerFactorPerPlayer = 0.3f;
-        [SerializeField] private float stageMultiplier = 1.08f;
-        [SerializeField, Min(1f), Tooltip("Coefficient at the very start of a run (×player factor): stage 1 starts busy.")]
-        private float startingCoefficient = 1.25f;
-        [SerializeField] private float levelStep = 0.33f;
-        [SerializeField] private int maxEnemyLevel = 99;
+        private float scalingPerMinute => RiskOfMagic.Core.GameBalance.Instance.difficulty.scalingPerMinute;
+        private float playerFactorPerPlayer => RiskOfMagic.Core.GameBalance.Instance.difficulty.playerFactorPerPlayer;
+        private float stageMultiplier => RiskOfMagic.Core.GameBalance.Instance.difficulty.stageMultiplier;
+        private float startingCoefficient => RiskOfMagic.Core.GameBalance.Instance.difficulty.startingCoefficient;
+        private float levelStep => RiskOfMagic.Core.GameBalance.Instance.difficulty.levelStep;
+        private int maxEnemyLevel => RiskOfMagic.Core.GameBalance.Instance.difficulty.maxEnemyLevel;
 
-        [Header("Hard mode (time scaling is already x1.5 through the difficulty value)")]
-        [SerializeField] private float hardDirectorCreditMultiplier = 1.3f;
-        [SerializeField] private float hardDetectionMultiplier = 1.25f;
-        [SerializeField, Tooltip("Enemy variety unlocks as if the run were this much further.")] private float hardUnlockMultiplier = 1.2f;
+        private float hardDirectorCreditMultiplier => RiskOfMagic.Core.GameBalance.Instance.difficulty.hardDirectorCreditMultiplier;
+        private float hardDetectionMultiplier => RiskOfMagic.Core.GameBalance.Instance.difficulty.hardDetectionMultiplier;
+        private float hardUnlockMultiplier => RiskOfMagic.Core.GameBalance.Instance.difficulty.hardUnlockMultiplier;
 
         private readonly NetworkVariable<double> runStartTime = new();
         /// <summary>Server time when the solo pause started (0 = running): the run clock is frozen meanwhile.</summary>

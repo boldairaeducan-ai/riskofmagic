@@ -14,16 +14,18 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyRootRegenAttack : EnemyAttack
     {
-        [SerializeField] private SpawnCard rootCard;
-        [SerializeField, Min(1)] private int rootCount = 3;
-        [SerializeField] private Vector2 rootDistance = new(4f, 7f);
-        [SerializeField, Range(0f, 0.2f), Tooltip("Max health healed per second while at least one root lives.")] private float healPerSecond = 0.03f;
-        [SerializeField, Min(1f)] private float channelDuration = 8f;
-        [SerializeField, Range(0.1f, 1f), Tooltip("Only below this health fraction.")] private float onlyBelowHealth = 0.75f;
-        [SerializeField, Min(0f)] private float windup = 0.8f;
-        [SerializeField, Min(0f)] private float recovery = 0.6f;
-        [SerializeField] private GameObject spawnVfx;
-        [SerializeField, Tooltip("Pulsed on the boss while it regenerates.")] private GameObject healVfx;
+        private RootRegenAttackData D => data as RootRegenAttackData ?? (RootRegenAttackData)(data = ScriptableObject.CreateInstance<RootRegenAttackData>());
+
+        private SpawnCard rootCard => D.rootCard;
+        private int rootCount => D.rootCount;
+        private Vector2 rootDistance => D.rootDistance;
+        private float healPerSecond => D.healPerSecond;
+        private float channelDuration => D.channelDuration;
+        private float onlyBelowHealth => D.onlyBelowHealth;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject spawnVfx => D.spawnVfx;
+        private GameObject healVfx => D.healVfx;
 
         private readonly List<EnemyActor> roots = new();
 

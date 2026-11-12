@@ -14,17 +14,19 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyMeteorAttack : EnemyAttack
     {
-        [SerializeField] private ProjectileDefinition meteor;
-        [SerializeField] private float damage = 45f;
-        [SerializeField] private DamageType damageType = DamageType.Fire;
-        [SerializeField, Min(0f)] private float windup = 0.6f;
-        [SerializeField, Min(0.3f), Tooltip("Time between the ground marker and the impact.")] private float fallTime = 1.6f;
-        [SerializeField, Min(0)] private int extraMeteorsPerPlayer = 2;
-        [SerializeField] private Vector2 extraOffset = new(5f, 11f);
-        [SerializeField, Min(5f)] private float fallHeight = 35f;
-        [SerializeField, Min(0f)] private float recovery = 0.6f;
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
-        [SerializeField] private GameObject telegraphVfx;
+        private MeteorAttackData D => data as MeteorAttackData ?? (MeteorAttackData)(data = ScriptableObject.CreateInstance<MeteorAttackData>());
+
+        private ProjectileDefinition meteor => D.meteor;
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float windup => D.windup;
+        private float fallTime => D.fallTime;
+        private int extraMeteorsPerPlayer => D.extraMeteorsPerPlayer;
+        private Vector2 extraOffset => D.extraOffset;
+        private float fallHeight => D.fallHeight;
+        private float recovery => D.recovery;
+        private LayerMask groundMask => D.groundMask;
+        private GameObject telegraphVfx => D.telegraphVfx;
 
         /// <summary>Phase tuning: extra meteors per player on top of the serialized value.</summary>
         public int BonusMeteors { get; set; }

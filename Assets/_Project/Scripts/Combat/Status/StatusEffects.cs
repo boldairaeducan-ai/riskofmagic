@@ -53,22 +53,19 @@ namespace RiskOfMagic.Combat
     /// </summary>
     public class StatusEffects : NetworkBehaviour, IHealthHooks
     {
-        [Header("Curse")]
-        [SerializeField] private float curseDamageDealtMultiplier = 0.5f;
-        [SerializeField] private float curseSpeedMultiplier = 0.9f;
-        [SerializeField] private float curseDamageTakenMultiplier = 1.3f;
+        private float curseDamageDealtMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.curseDamageDealtMultiplier;
+        private float curseSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.curseSpeedMultiplier;
+        private float curseDamageTakenMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.curseDamageTakenMultiplier;
 
-        [Header("Chilled")]
-        [SerializeField] private float chillSpeedMultiplier = 0.7f;
-        [SerializeField] private float channelingSpeedMultiplier = 0.5f;
-        [SerializeField] private float bannerDamageBonus = 0.2f;
-        [SerializeField] private float stealthSpeedBonus = 0.3f;
-        [SerializeField] private float markedDamageTakenMultiplier = 1.5f;
-        [SerializeField] private float runeBlessingDamageBonus = 0.3f;
+        private float chillSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.chillSpeedMultiplier;
+        private float channelingSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.channelingSpeedMultiplier;
+        private float bannerDamageBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.bannerDamageBonus;
+        private float stealthSpeedBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.stealthSpeedBonus;
+        private float markedDamageTakenMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.markedDamageTakenMultiplier;
+        private float runeBlessingDamageBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.runeBlessingDamageBonus;
 
-        [Header("Buffs")]
-        [SerializeField] private float rallyBonus = 0.4f;
-        [SerializeField] private float warhornBonusPerStack = 0.15f;
+        private float rallyBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.rallyBonus;
+        private float warhornBonusPerStack => RiskOfMagic.Core.GameBalance.Instance.statuses.warhornBonusPerStack;
 
         private NetworkList<StatusEntry> entries;
 

@@ -12,17 +12,19 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyHauntAttack : EnemyAttack
     {
-        [SerializeField, Min(0.5f)] private float radius = 3.5f;
-        [SerializeField, Min(0f)] private float speed = 3.2f;
-        [SerializeField, Min(0.5f)] private float duration = 8f;
-        [SerializeField, Min(0.1f)] private float tick = 0.4f;
-        [SerializeField] private float damagePerTick = 4f;
-        [SerializeField] private DamageType damageType = DamageType.Arcane;
-        [SerializeField, Min(0.1f)] private float curseDuration = 2f;
-        [SerializeField, Min(0f)] private float windup = 0.7f;
-        [SerializeField, Min(0f)] private float recovery = 0.4f;
-        [SerializeField, Tooltip("Pulsed at the zone every tick, scaled by the radius.")] private GameObject zoneVfx;
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
+        private HauntAttackData D => data as HauntAttackData ?? (HauntAttackData)(data = ScriptableObject.CreateInstance<HauntAttackData>());
+
+        private float radius => D.radius;
+        private float speed => D.speed;
+        private float duration => D.duration;
+        private float tick => D.tick;
+        private float damagePerTick => D.damagePerTick;
+        private DamageType damageType => D.damageType;
+        private float curseDuration => D.curseDuration;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject zoneVfx => D.zoneVfx;
+        private LayerMask groundMask => D.groundMask;
 
         protected override IEnumerator Perform(PlayerAvatar target)
         {

@@ -8,16 +8,18 @@ namespace RiskOfMagic.Enemies
 {
     public class EnemyProjectileAttack : EnemyAttack
     {
-        [SerializeField] private ProjectileDefinition projectile;
-        [SerializeField] private float damage = 8f;
-        [SerializeField] private DamageType damageType = DamageType.Physical;
-        [SerializeField, Min(0f)] private float windup = 0.7f;
-        [SerializeField, Min(0f)] private float recovery = 0.3f;
-        [SerializeField] private Vector3 muzzleOffset = new(0f, 1.4f, 0.6f);
-        [SerializeField] private float aimHeight = 1f;
-        [SerializeField, Min(1)] private int count = 1;
-        [SerializeField, Range(0f, 120f), Tooltip("Horizontal fan of the volley (degrees).")] private float spreadAngle;
-        [SerializeField, Tooltip("Projectiles home on the target (ProjectileDefinition.homingTurnRate).")] private bool homing;
+        private ProjectileAttackData D => data as ProjectileAttackData ?? (ProjectileAttackData)(data = ScriptableObject.CreateInstance<ProjectileAttackData>());
+
+        private ProjectileDefinition projectile => D.projectile;
+        private float damage => D.damage;
+        private DamageType damageType => D.damageType;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private Vector3 muzzleOffset => D.muzzleOffset;
+        private float aimHeight => D.aimHeight;
+        private int count => D.count;
+        private float spreadAngle => D.spreadAngle;
+        private bool homing => D.homing;
 
         protected override IEnumerator Perform(PlayerAvatar target)
         {

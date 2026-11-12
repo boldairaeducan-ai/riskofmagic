@@ -9,10 +9,12 @@ namespace RiskOfMagic.Enemies
     /// <summary>Teleports to a NavMesh point around the target (repositioning between attacks).</summary>
     public class EnemyBlinkAttack : EnemyAttack
     {
-        [SerializeField] private Vector2 distanceFromTarget = new(7f, 12f);
-        [SerializeField, Min(0f)] private float windup = 0.35f;
-        [SerializeField, Min(0f)] private float recovery = 0.3f;
-        [SerializeField] private GameObject blinkVfx;
+        private BlinkAttackData D => data as BlinkAttackData ?? (BlinkAttackData)(data = ScriptableObject.CreateInstance<BlinkAttackData>());
+
+        private Vector2 distanceFromTarget => D.distanceFromTarget;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
+        private GameObject blinkVfx => D.blinkVfx;
 
         protected override IEnumerator Perform(PlayerAvatar target)
         {

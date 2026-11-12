@@ -13,22 +13,24 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyConeAttack : EnemyAttack
     {
-        [SerializeField, Range(5f, 180f)] private float angle = 50f;
-        [SerializeField] private float damagePerTick = 6f;
-        [SerializeField] private DamageType damageType = DamageType.Fire;
-        [SerializeField] private DotEffect dot;
-        [SerializeField, Tooltip("Status applied to each target hit by a tick.")] private bool applyStatus;
-        [SerializeField] private StatusType status = StatusType.Chilled;
-        [SerializeField, Min(0.1f)] private float statusDuration = 1.2f;
-        [SerializeField, Min(0f)] private float windup = 0.8f;
-        [SerializeField, Min(0.1f)] private float duration = 2f;
-        [SerializeField, Min(0.05f)] private float tickInterval = 0.25f;
-        [SerializeField, Min(0f)] private float recovery = 0.8f;
-        [SerializeField, Range(0f, 1f)] private float trackingFactor = 0.12f;
-        [SerializeField] private float originHeight = 1.2f;
-        [SerializeField] private LayerMask hitMask = Physics.DefaultRaycastLayers;
-        [SerializeField, Tooltip("Ground marker during the windup (VfxNetwork).")] private GameObject telegraphVfx;
-        [SerializeField, Tooltip("Spawned along the cone each tick (VfxNetwork).")] private GameObject tickVfx;
+        private ConeAttackData D => data as ConeAttackData ?? (ConeAttackData)(data = ScriptableObject.CreateInstance<ConeAttackData>());
+
+        private float angle => D.angle;
+        private float damagePerTick => D.damagePerTick;
+        private DamageType damageType => D.damageType;
+        private DotEffect dot => D.dot;
+        private bool applyStatus => D.applyStatus;
+        private StatusType status => D.status;
+        private float statusDuration => D.statusDuration;
+        private float windup => D.windup;
+        private float duration => D.duration;
+        private float tickInterval => D.tickInterval;
+        private float recovery => D.recovery;
+        private float trackingFactor => D.trackingFactor;
+        private float originHeight => D.originHeight;
+        private LayerMask hitMask => D.hitMask;
+        private GameObject telegraphVfx => D.telegraphVfx;
+        private GameObject tickVfx => D.tickVfx;
 
         private readonly List<Health> targets = new();
 

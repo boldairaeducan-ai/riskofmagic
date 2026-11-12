@@ -13,27 +13,25 @@ namespace RiskOfMagic.Enemies
     /// </summary>
     public class EnemyShockwaveAttack : EnemyAttack
     {
-        [Header("Slam")]
-        [SerializeField] private float slamDamage = 30f;
-        [SerializeField, Min(0f)] private float slamRadius = 4f;
-        [SerializeField, Min(0f)] private float windup = 1f;
-        [SerializeField, Min(0f)] private float recovery = 0.8f;
+        private ShockwaveAttackData D => data as ShockwaveAttackData ?? (ShockwaveAttackData)(data = ScriptableObject.CreateInstance<ShockwaveAttackData>());
 
-        [Header("Wave")]
-        [SerializeField] private float waveDamage = 20f;
-        [SerializeField, Min(1f)] private float waveMaxRadius = 25f;
-        [SerializeField, Min(0.1f), Tooltip("Must match the ExpandingRing VFX speed.")] private float waveSpeed = 14f;
-        [SerializeField, Min(0.1f)] private float waveThickness = 1.5f;
-        [SerializeField, Min(0f), Tooltip("Players higher than this above the ground are jumping over the wave.")]
-        private float jumpClearance = 0.5f;
-        [SerializeField] private DamageType damageType = DamageType.Physical;
-        [SerializeField] private LayerMask hitMask = Physics.DefaultRaycastLayers;
-        [SerializeField] private LayerMask groundMask = Physics.DefaultRaycastLayers;
+        private float slamDamage => D.slamDamage;
+        private float slamRadius => D.slamRadius;
+        private float windup => D.windup;
+        private float recovery => D.recovery;
 
-        [Header("VFX (VfxNetwork)")]
-        [SerializeField] private GameObject telegraphVfx;
-        [SerializeField] private GameObject slamVfx;
-        [SerializeField, Tooltip("ExpandingRing prefab, scaled by the max radius.")] private GameObject waveVfx;
+        private float waveDamage => D.waveDamage;
+        private float waveMaxRadius => D.waveMaxRadius;
+        private float waveSpeed => D.waveSpeed;
+        private float waveThickness => D.waveThickness;
+        private float jumpClearance => D.jumpClearance;
+        private DamageType damageType => D.damageType;
+        private LayerMask hitMask => D.hitMask;
+        private LayerMask groundMask => D.groundMask;
+
+        private GameObject telegraphVfx => D.telegraphVfx;
+        private GameObject slamVfx => D.slamVfx;
+        private GameObject waveVfx => D.waveVfx;
 
         private static readonly RaycastHit[] groundHits = new RaycastHit[8];
         private readonly HashSet<Health> slamHit = new();
