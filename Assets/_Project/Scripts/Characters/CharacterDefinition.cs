@@ -35,8 +35,6 @@ namespace RiskOfMagic.Characters
         public RiskOfMagic.Animation.ViewModelDefinition proceduralViewModel;
 
         [Header("Audio")]
-        public SoundEvent jumpSound;
-        public SoundEvent landSound;
 
         [Header("Skills")]
         public SkillDefinition primary;

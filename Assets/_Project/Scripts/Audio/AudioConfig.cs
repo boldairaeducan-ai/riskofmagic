@@ -41,6 +41,8 @@ namespace RiskOfMagic.Audio
         [SoundSlot(false, Cooldown = 0.04f, MaxSimultaneous = 3)] public SoundEvent killConfirm;
         [Tooltip("Footsteps of every character (one shared sound).")]
         [SoundSlot(MaxSimultaneous = 8)] public SoundEvent playerFootstep;
+        [Tooltip("Jump of every character.")] [SoundSlot(MaxSimultaneous = 4)] public SoundEvent playerJump;
+        [Tooltip("Landing of every character (after a real fall).")] [SoundSlot(MaxSimultaneous = 4)] public SoundEvent playerLand;
         [Tooltip("At the hit point of any enemy hit (layered with the enemy's own hurt sound).")]
         [SoundSlot(Cooldown = 0.03f, MaxSimultaneous = 4)] public SoundEvent enemyImpact;
         [SoundSlot(Cooldown = 0.03f, MaxSimultaneous = 3)] public SoundEvent enemyImpactCritical;

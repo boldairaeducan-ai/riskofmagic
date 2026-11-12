@@ -50,9 +50,9 @@ namespace RiskOfMagic.Audio
                 : Physics.Raycast(position + Vector3.up * 0.1f, Vector3.down, 0.1f + groundProbe, groundMask, QueryTriggerInteraction.Ignore);
 
             if (grounded && !wasGrounded && -verticalSpeed >= landingSpeed)
-                AudioService.PlayAt(character.landSound, position);
+                AudioService.PlayAt(AudioService.Config != null ? AudioService.Config.playerLand : null, position);
             else if (!grounded && wasGrounded && delta.y / dt > 1.5f)
-                AudioService.PlayAt(character.jumpSound, position);
+                AudioService.PlayAt(AudioService.Config != null ? AudioService.Config.playerJump : null, position);
 
             verticalSpeed = delta.y / dt;
             wasGrounded = grounded;

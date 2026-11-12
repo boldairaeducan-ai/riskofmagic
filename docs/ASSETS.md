@@ -42,7 +42,7 @@ orbe de givre arcanique, marteau sacré, onde radieuse, dague de lancer.
 ### 1.5 Ennemis — `spawnSound`, `attackSound`, `hurtSound`, `deathSound` (11 × 4 = 44)
 Goule, Loup spectral, Lame d'ombre, Ogre, Pyromancien, Squelette archer, Araignée, Colosse d'os, Reine araignée, Drake de braise, Avatar du chaos.
 
-### 1.6 Personnages — `jumpSound`, `landSound` (6 × 2 = 12) ; pas : un seul son commun `AudioConfig.playerFootstep`
+### 1.6 Personnages — sons communs à tous : `AudioConfig.playerFootstep`, `playerJump`, `playerLand` (3)
 Archer, Guerrier, Arcaniste, Druide, Paladin, Ombre.
 
 ### 1.7 Équipements — `activateSound` (3)
