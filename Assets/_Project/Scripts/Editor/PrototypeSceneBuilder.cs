@@ -328,10 +328,17 @@ namespace RiskOfMagic.Editor
 
             set.Poison = Asset<DotEffect>(ProjectilesFolder + "/Dot_Poison.asset");
             set.Poison.damageType = DamageType.Poison;
-            set.Poison.tickDamageFraction = 0.25f;
+            // Poison: 0.6 % max health/s per stack (max 15 = 9 %/s), refreshed by every application;
+            // half on bosses / elites, reduced on players (0.5 %/s, max 4).
+            set.Poison.tickDamageFraction = 0.25f; // unused in % max health mode
             set.Poison.tickInterval = 0.5f;
-            set.Poison.duration = 4f;
-            set.Poison.maxStacks = 10;
+            set.Poison.duration = 6f;
+            set.Poison.maxStacks = 15;
+            set.Poison.maxHealthPerSecond = 0.006f;
+            set.Poison.bossAndEliteFactor = 0.5f;
+            set.Poison.playerMaxHealthPerSecond = 0.005f;
+            set.Poison.playerMaxStacks = 4;
+            set.Poison.refreshAllStacks = true;
             EditorUtility.SetDirty(set.Poison);
 
             Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
@@ -533,7 +540,7 @@ namespace RiskOfMagic.Editor
 
             // Druid (poison, damage over time)
             var claws = Skill<MeleeComboSkill>("Druid_ToxicClaws", "Griffes toxiques",
-                "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne (8 ticks de 25%, cumulable 10 fois).",
+                "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne : 0,6 % des PV max/s par cumul (15 max), relancé à chaque coup.",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
             claws.damageType = DamageType.Poison;
             claws.dot = p.Poison;
@@ -1579,6 +1586,7 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("cooldown").floatValue = 4.5f;
                 so.FindProperty("selectionWeight").floatValue = 1.5f;
                 so.FindProperty("maxHeightDifference").floatValue = 5f;
+                so.FindProperty("jumpHeight").floatValue = 3f; // leaps, lands on the slam
                 so.FindProperty("slamDamage").floatValue = 30f;
                 so.FindProperty("slamRadius").floatValue = 4f;
                 so.FindProperty("windup").floatValue = 1f;

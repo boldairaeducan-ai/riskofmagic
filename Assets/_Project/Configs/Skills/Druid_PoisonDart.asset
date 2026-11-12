@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Druid_PoisonDart
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Dard empoisonn\xE9"
-  description: 'Dards rapides : 70% + poison (8 ticks de 25%, cumulable 10 fois).'
+  description: 'Dards rapides : 70% + poison (0,6 % des PV max/s par cumul, 15 max).'
   icon: {fileID: 0}
   activationMode: 1
   cooldown: 0

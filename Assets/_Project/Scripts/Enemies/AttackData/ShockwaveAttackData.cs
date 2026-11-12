@@ -8,6 +8,8 @@ namespace RiskOfMagic.Enemies
     [CreateAssetMenu(menuName = "Risk of Magic/Enemies/ShockwaveAttackData", fileName = "ShockwaveAttackData")]
     public class ShockwaveAttackData : EnemyAttackData
     {
+        [Min(0f), Tooltip("Cosmetic leap during the windup, landing on the slam (0 = no leap).")] public float jumpHeight;
+        [Range(0f, 0.6f), Tooltip("Share of the windup spent crouching before the leap.")] public float crouchShare = 0.25f;
         public float slamDamage = 30f;
         [Min(0f)] public float slamRadius = 4f;
         [Min(0f)] public float windup = 1f;

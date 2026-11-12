@@ -15,6 +15,52 @@ namespace RiskOfMagic.Enemies
     {
         private ShockwaveAttackData D => data as ShockwaveAttackData ?? (ShockwaveAttackData)(data = ScriptableObject.CreateInstance<ShockwaveAttackData>());
 
+        private float jumpHeight => D.jumpHeight;
+        private float crouchShare => D.crouchShare;
+        private RiskOfMagic.Feedback.EnemyHitFeedback feedback;
+        private Coroutine hop;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            AttackStarted += OnAttackStarted;
+        }
+
+        /// <summary>Every peer: crouch, leap, and land exactly when the slam hits (cosmetic, the body follows).</summary>
+        private void OnAttackStarted()
+        {
+            if (jumpHeight <= 0f || windup <= 0.05f)
+                return;
+            if (feedback == null)
+                feedback = GetComponent<RiskOfMagic.Feedback.EnemyHitFeedback>();
+            if (feedback == null)
+                return;
+            if (hop != null)
+                StopCoroutine(hop);
+            hop = StartCoroutine(Hop());
+        }
+
+        private IEnumerator Hop()
+        {
+            float crouch = windup * crouchShare;
+            float air = windup - crouch;
+            for (float t = 0f; t < crouch; t += Time.deltaTime)
+            {
+                feedback.SetExtraOffset(Vector3.down * (0.12f * jumpHeight * Mathf.SmoothStep(0f, 1f, t / crouch)));
+                yield return null;
+            }
+            feedback.Punch(-0.15f); // stretch on take-off
+            for (float t = 0f; t < air; t += Time.deltaTime)
+            {
+                float s = t / air;
+                feedback.SetExtraOffset(Vector3.up * (jumpHeight * 4f * s * (1f - s)));
+                yield return null;
+            }
+            feedback.SetExtraOffset(Vector3.zero);
+            feedback.Punch(0.3f); // heavy landing
+            hop = null;
+        }
+
         private float slamDamage => D.slamDamage;
         private float slamRadius => D.slamRadius;
         private float windup => D.windup;

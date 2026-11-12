@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Druid_ToxicClaws
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MeleeComboSkill
   displayName: Griffes toxiques
-  description: Combo de 3 coups de griffes (80/80/140%), chacun empoisonne (8 ticks
-    de 25%, cumulable 10 fois).
+  description: "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne : 0,6 % des PV max/s par cumul (15 max), relanc\xE9 \xE0 chaque coup."
   icon: {fileID: 0}
   activationMode: 1
   cooldown: 0

@@ -31,12 +31,28 @@ namespace RiskOfMagic.Combat
         /// <summary>Server only. Adds one stack of <paramref name="effect"/> based on the applying hit.</summary>
         public static void Apply(Health target, DotEffect effect, in DamageInfo hit)
         {
-            if (target == null || effect == null || !target.IsAlive || !target.IsServer || hit.Amount <= 0f)
+            bool percent = effect != null && effect.maxHealthPerSecond > 0f;
+            if (target == null || effect == null || !target.IsAlive || !target.IsServer || (hit.Amount <= 0f && !percent))
                 return;
             EnsureRunner();
 
+            int maxStacks = effect.maxStacks;
             var tick = hit;
-            tick.Amount = hit.Amount * effect.tickDamageFraction;
+            if (percent)
+            {
+                // Poison: % of the target's max health per second per stack, weaker on bosses / elites / players.
+                float perSecond = effect.maxHealthPerSecond;
+                if (target.TryGetComponent(out RiskOfMagic.Player.PlayerAvatar _))
+                {
+                    perSecond = effect.playerMaxHealthPerSecond;
+                    maxStacks = effect.playerMaxStacks;
+                }
+                else if (target.TryGetComponent(out RiskOfMagic.Enemies.EnemyActor enemy) && (enemy.IsBoss || enemy.IsElite))
+                    perSecond *= effect.bossAndEliteFactor;
+                tick.Amount = Mathf.Max(0.01f, target.Max * perSecond * effect.tickInterval);
+            }
+            else
+                tick.Amount = hit.Amount * effect.tickDamageFraction;
             tick.Type = effect.damageType;
             tick.IsCritical = false;
             tick.ProcCoefficient = 0f;
@@ -53,9 +69,22 @@ namespace RiskOfMagic.Combat
                     oldest = i;
             }
 
+            if (effect.refreshAllStacks)
+                for (int i = 0; i < dots.Count; i++)
+                {
+                    if (dots[i].Target != target || dots[i].Effect != effect)
+                        continue;
+                    var stack = dots[i];
+                    stack.EndTime = now + effect.duration; // keep attacking to keep it going
+                    dots[i] = stack;
+                }
+
             var dot = new Dot { Target = target, Effect = effect, Tick = tick, NextTick = now + effect.tickInterval, EndTime = now + effect.duration };
-            if (stacks >= effect.maxStacks && oldest >= 0)
-                dots[oldest] = dot;
+            if (stacks >= maxStacks && oldest >= 0)
+            {
+                if (!effect.refreshAllStacks)
+                    dots[oldest] = dot; // at the cap: the oldest stack is replaced (refreshed)
+            }
             else
                 dots.Add(dot);
             RefreshMask(target);

@@ -136,6 +136,23 @@ namespace RiskOfMagic.Feedback
 
         // ---------------------------------------------------------------- Animation
 
+        private Vector3 extraOffset;
+
+        /// <summary>Cosmetic body offset in world meters (attack hops), added to the hit reactions. Every peer.</summary>
+        public void SetExtraOffset(Vector3 worldOffset)
+        {
+            CollectParts();
+            extraOffset = worldOffset;
+        }
+
+        /// <summary>Cosmetic squash-and-stretch kick (landing). Every peer.</summary>
+        public void Punch(float amount)
+        {
+            CollectParts();
+            squashAmount = amount;
+            squashTime = 0f;
+        }
+
         private void LateUpdate()
         {
             if (parts.Count == 0)
@@ -178,7 +195,8 @@ namespace RiskOfMagic.Feedback
                 if (part.Transform == null)
                     continue;
                 Vector3 position = Vector3.Scale(part.Position, squash) * shrink;
-                part.Transform.localPosition = recoilRotation * position + recoilOffset + jitter;
+                part.Transform.localPosition = recoilRotation * position + recoilOffset + jitter
+                                               + transform.InverseTransformVector(extraOffset);
                 part.Transform.localRotation = recoilRotation * part.Rotation;
                 part.Transform.localScale = Vector3.Scale(part.Scale, squash) * shrink;
             }

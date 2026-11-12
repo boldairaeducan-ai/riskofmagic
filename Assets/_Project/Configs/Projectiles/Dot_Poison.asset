@@ -15,5 +15,10 @@ MonoBehaviour:
   damageType: 5
   tickDamageFraction: 0.25
   tickInterval: 0.5
-  duration: 4
-  maxStacks: 10
+  duration: 6
+  maxStacks: 15
+  maxHealthPerSecond: 0.006
+  bossAndEliteFactor: 0.5
+  playerMaxHealthPerSecond: 0.005
+  playerMaxStacks: 4
+  refreshAllStacks: 1
