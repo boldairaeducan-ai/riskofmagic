@@ -145,7 +145,9 @@ Chaque ligne associe un clip à un **déclencheur** envoyé par le jeu :
 Chaque squelette oriente ses os à sa façon : une rotation « locale à l'os » qui marche sur un modèle est fausse sur un
 autre. Avec **Alignment = Hand Grip** (par défaut pour les mains), l'outil ignore les axes de l'os. Il calcule un repère
 « poing fermé » à partir de la pose du modèle :
-- l'axe **Y local de l'arme** traverse le poing dans la direction du pouce : branches de l'arc, lame, manche du bâton ;
+- la **plus grande dimension de l'arme** (lame, branches de l'arc, manche), du côté où elle s'étend, est détectée
+  automatiquement et traverse le poing dans la direction du pouce. Les armes de n'importe quel pack sont donc tenues
+  pareil ;
 - son axe **−Z** remonte le long du bras vers le corps : la corde de l'arc côté archer.
 
 Le centre du poing est placé un peu après le poignet.

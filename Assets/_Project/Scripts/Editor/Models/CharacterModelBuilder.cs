@@ -79,6 +79,7 @@ namespace RiskOfMagic.Editor.Models
                 return;
             }
             var weapon = (GameObject)PrefabUtility.InstantiatePrefab(attachment.prefab, bone);
+            weapon.transform.localScale = Vector3.one;
             if (attachment.alignment == CharacterModelRecipe.AttachAlignment.HandGrip)
                 PlaceInFist(instance.transform, animator, bone, attachment, weapon.transform);
             else
@@ -112,7 +113,45 @@ namespace RiskOfMagic.Editor.Models
             var grip = Quaternion.LookRotation(fingers, thumb);
             float handLength = forearm.magnitude * 0.35f;
             weapon.position = hand.position + fingers * handLength + grip * attachment.localPosition;
-            weapon.rotation = grip * Quaternion.Euler(attachment.localEulerAngles);
+            weapon.rotation = grip * Quaternion.Euler(attachment.localEulerAngles) * LongAxisToUp(weapon);
+        }
+
+        /// <summary>
+        /// Rotation bringing the weapon's longest dimension (blade, limbs, shaft), on the side where its mesh extends, onto
+        /// local +Y: weapons from any pack are then held the same way (Y = thumb direction). Identity for a bow already
+        /// modelled along Y.
+        /// </summary>
+        private static Quaternion LongAxisToUp(Transform weapon)
+        {
+            var renderers = weapon.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length == 0)
+                return Quaternion.identity;
+            // Bounds in the weapon's own space (independent of where it currently is).
+            var toLocal = weapon.worldToLocalMatrix;
+            bool any = false;
+            var bounds = new Bounds();
+            foreach (var r in renderers)
+            {
+                var b = r.bounds;
+                for (int i = 0; i < 8; i++)
+                {
+                    Vector3 corner = b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                    Vector3 local = toLocal.MultiplyPoint3x4(corner);
+                    if (!any)
+                        bounds = new Bounds(local, Vector3.zero);
+                    else
+                        bounds.Encapsulate(local);
+                    any = true;
+                }
+            }
+            Vector3 size = bounds.size;
+            int axis = size.x >= size.y && size.x >= size.z ? 0 : size.y >= size.z ? 1 : 2;
+            float center = bounds.center[axis];
+            float extent = Mathf.Max(0.0001f, size[axis] * 0.5f);
+            float sign = Mathf.Abs(center) / extent < 0.2f ? 1f : Mathf.Sign(center); // grip in the middle (bow): keep +
+            Vector3 longDir = Vector3.zero;
+            longDir[axis] = sign;
+            return Quaternion.FromToRotation(longDir, Vector3.up);
         }
 
         private static Transform FindByName(Transform root, string name)
@@ -185,15 +224,25 @@ namespace RiskOfMagic.Editor.Models
             var machine = controller.layers[0].stateMachine;
 
             // Locomotion: 1D blend on Speed (idle → walk → run).
-            var locomotion = controller.CreateBlendTreeInController("Locomotion", out var tree, 0);
-            tree.blendType = BlendTreeType.Simple1D;
-            tree.blendParameter = "Speed";
-            tree.useAutomaticThresholds = false;
-            tree.AddChild(recipe.idle, 0f);
+            // Built by hand and saved inside the controller (children set before saving, so they are persisted).
+            var tree = new BlendTree
+            {
+                name = "Locomotion",
+                blendType = BlendTreeType.Simple1D,
+                blendParameter = "Speed",
+                useAutomaticThresholds = false,
+                hideFlags = HideFlags.HideInHierarchy
+            };
+            var children = new System.Collections.Generic.List<ChildMotion> { new() { motion = recipe.idle, threshold = 0f, timeScale = 1f } };
             if (recipe.walk != null)
-                tree.AddChild(recipe.walk, recipe.walkSpeed);
+                children.Add(new ChildMotion { motion = recipe.walk, threshold = recipe.walkSpeed, timeScale = 1f });
             if (recipe.run != null)
-                tree.AddChild(recipe.run, recipe.runSpeed);
+                children.Add(new ChildMotion { motion = recipe.run, threshold = Mathf.Max(recipe.runSpeed, recipe.walkSpeed + 0.1f), timeScale = 1f });
+            tree.children = children.ToArray();
+            AssetDatabase.AddObjectToAsset(tree, controller);
+            EditorUtility.SetDirty(tree);
+            var locomotion = machine.AddState("Locomotion");
+            locomotion.motion = tree;
             machine.defaultState = locomotion;
 
             // Air: Jump → Fall (loop) → Land/Locomotion when grounded again.
