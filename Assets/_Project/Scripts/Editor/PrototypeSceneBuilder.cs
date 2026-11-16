@@ -1441,6 +1441,11 @@ namespace RiskOfMagic.Editor
         private static EnemyActor BuildGhoul()
         {
             var def = EnemyDef("Enemy_Ghoul", "Goule", health: 70f, speed: 6f, gold: 8, detection: 30f, feminine: true);
+            // Frog Marauder (AngeloMaN87): humanoid without clips, animated by ProceduralHumanoidMotion.
+            if (def.modelPrefab == null)
+                def.modelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/AngeloMaN87/Inca Pack (Pixelated Texture)/Prefabs/FrogMarauder.prefab");
+            if (def.modelHeight <= 0f)
+                def.modelHeight = 1.8f;
             var root = EnemyBase("Enemy_Ghoul", def, new Color(0.75f, 0.2f, 0.2f), out _);
             var attack = root.AddComponent<EnemyMeleeAttack>();
             SetProperties(attack, so =>

@@ -7,6 +7,7 @@ namespace RiskOfMagic.Animation
     /// <summary>
     /// Spawns EnemyDefinition.modelPrefab (placeholder hidden, hitboxes kept) and drives its Animator on every peer:
     /// locomotion from movement, attacks (per-EnemyAttack trigger + AttackIndex), hit, dodge/leap cues, death, freeze.
+    /// A humanoid model without Animator Controller is animated by code instead (ProceduralHumanoidMotion).
     /// </summary>
     [RequireComponent(typeof(EnemyActor))]
     public class EnemyAnimationDriver : MonoBehaviour
@@ -22,6 +23,7 @@ namespace RiskOfMagic.Animation
         private Vector3 lastPosition;
         private Vector3 smoothedVelocity;
         private bool spawned;
+        private ProceduralHumanoidMotion procedural;
 
         private void Awake()
         {
@@ -35,13 +37,33 @@ namespace RiskOfMagic.Animation
             {
                 var model = Instantiate(prefab, transform);
                 model.transform.localPosition = Vector3.zero;
-                model.transform.localRotation = Quaternion.identity;
+                model.transform.localRotation = prefab.transform.localRotation;
+                FitHeight(model, actor.Definition.modelHeight);
                 actor.UseModel(model);
-                animators.AddFrom(model);
+                if (ProceduralHumanoidMotion.CanDrive(model))
+                    procedural = model.AddComponent<ProceduralHumanoidMotion>();
+                else
+                    animators.AddFrom(model);
             }
             // Animators placed directly in the prefab by hand also work.
             if (animators.Count == 0)
                 animators.AddFrom(gameObject);
+        }
+
+        /// <summary>Scales the model so its renderers are <paramref name="height"/> tall (0 = as authored).</summary>
+        private static void FitHeight(GameObject model, float height)
+        {
+            if (height <= 0f)
+                return;
+            var renderers = model.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length == 0)
+                return;
+            var bounds = renderers[0].bounds;
+            foreach (var r in renderers)
+                bounds.Encapsulate(r.bounds);
+            float current = bounds.size.y / Mathf.Max(0.0001f, model.transform.lossyScale.y);
+            if (current > 0.01f)
+                model.transform.localScale *= height / current;
         }
 
         // Start: EnemyActor.Awake (Health) has run whatever the component order.
@@ -90,6 +112,13 @@ namespace RiskOfMagic.Animation
             if (velocity.sqrMagnitude > 2500f)
                 velocity = Vector3.zero;
             smoothedVelocity = Vector3.Lerp(smoothedVelocity, velocity, 1f - Mathf.Exp(-12f * dt));
+            if (procedural != null)
+            {
+                Vector3 flat = new(smoothedVelocity.x, 0f, smoothedVelocity.z);
+                procedural.SetLocomotion(flat.magnitude, actor.Definition != null ? actor.Definition.moveSpeed : 5f);
+                procedural.SetDead(actor.IsSpawned && !actor.Health.IsAlive);
+                procedural.SetFrozen(actor.IsFrozen);
+            }
             if (animators.Count == 0)
                 return;
 
@@ -108,12 +137,17 @@ namespace RiskOfMagic.Animation
         {
             animators.SetInteger(AnimParams.AttackIndex, index);
             animators.SetTrigger(attack.AnimatorTrigger);
+            if (procedural != null)
+                procedural.PlayAttack(attack.WindupTime, attack.RecoveryTime);
         }
 
         private void OnDamaged(DamageInfo info)
         {
-            if (!info.IgnoreModifiers && actor.Health.IsAlive)
-                animators.SetTrigger(AnimParams.Hit);
+            if (info.IgnoreModifiers || !actor.Health.IsAlive)
+                return;
+            animators.SetTrigger(AnimParams.Hit);
+            if (procedural != null)
+                procedural.PlayHit();
         }
 
         // Dodge/leap run on the server: relay them to every peer.

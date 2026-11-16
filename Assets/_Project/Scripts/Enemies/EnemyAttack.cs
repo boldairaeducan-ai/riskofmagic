@@ -36,6 +36,10 @@ namespace RiskOfMagic.Enemies
         public float Range => range;
         public float SelectionWeight => selectionWeight;
         public string AnimatorTrigger => animatorTrigger;
+        /// <summary>Seconds between the attack start and its hit (code-driven animation timing).</summary>
+        public virtual float WindupTime => 0.4f;
+        /// <summary>Seconds after the hit before the attacker is free again.</summary>
+        public virtual float RecoveryTime => 0.4f;
         /// <summary>Server. Phase tuning (ChaosAvatar): &lt; 1 = more frequent.</summary>
         public float CooldownMultiplier { get; set; } = 1f;
         /// <summary>Disabled attacks are never picked (phase-gated attacks).</summary>

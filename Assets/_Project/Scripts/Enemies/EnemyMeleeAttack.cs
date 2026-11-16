@@ -12,6 +12,8 @@ namespace RiskOfMagic.Enemies
         private float damage => D.damage;
         private DamageType damageType => D.damageType;
         private float windup => D.windup;
+        public override float WindupTime => D.windup;
+        public override float RecoveryTime => D.recovery;
         private float recovery => D.recovery;
         private Vector3 hitOffset => D.hitOffset;
         private float hitRadius => D.hitRadius;

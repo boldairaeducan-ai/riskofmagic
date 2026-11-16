@@ -50,6 +50,8 @@ namespace RiskOfMagic.Enemies
 
         [Header("Model (optional, replaces the placeholder capsule; hitboxes stay)")]
         [Tooltip("Animator inside = driven by EnemyAnimationDriver. Authored at scale 1, feet at the pivot.")] public GameObject modelPrefab;
+        [Min(0f), Tooltip("Model scaled to this height in meters (0 = as authored). A humanoid model without Animator Controller is animated by code.")]
+        public float modelHeight;
 
         [Header("Audio")]
         public SoundEvent spawnSound;
