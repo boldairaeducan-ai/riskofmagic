@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 133ca6c3544f47b3a9c2ad957fac7f66, type: 3}
+  m_Name: Model_Archer
+  m_EditorClassIdentifier: RiskOfMagic.Editor::RiskOfMagic.Editor.Models.CharacterModelRecipe
+  sourceModel: {fileID: 3531937366093068781, guid: 82265a6ec6e53a74486f316ae0396608, type: 3}
+  height: 1.8
+  rotation: {x: 0, y: 0, z: 0}
+  attachments:
+  - prefab: {fileID: 5689215608645113600, guid: 6d826ac466fcafb49879a5e5a942e557, type: 3}
+    bone: 17
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    scale: 1
+  outputFolder: Assets/_Project/Prefabs/Models
+  targetCharacter: {fileID: 11400000, guid: 18c40f11efbd2ca4ba6517b02d1ca0e8, type: 2}
+  targetEnemy: {fileID: 0}
+  idle: {fileID: 0}
+  walk: {fileID: 0}
+  walkSpeed: 3
+  run: {fileID: 0}
+  runSpeed: 7
+  jump: {fileID: 0}
+  fall: {fileID: 0}
+  land: {fileID: 0}
+  hit: {fileID: 0}
+  death: {fileID: 0}
+  downed: {fileID: 0}
+  revive: {fileID: 0}
+  useEquipment: {fileID: 0}
+  actionsUpperBodyOnly: 1
+  actions:
+  - trigger: Cast
+    index: 0
+    clip: {fileID: 0}
+    speed: 1
+  - trigger: Cast
+    index: -1
+    clip: {fileID: 0}
+    speed: 1

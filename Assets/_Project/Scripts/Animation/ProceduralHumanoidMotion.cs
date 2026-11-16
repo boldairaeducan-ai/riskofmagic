@@ -12,6 +12,14 @@ namespace RiskOfMagic.Animation
     /// </summary>
     public class ProceduralHumanoidMotion : MonoBehaviour
     {
+        public enum AttackStyle
+        {
+            /// <summary>One arm raised above the head, then a downward blow (alternates hands).</summary>
+            Swing,
+            /// <summary>Bow: left arm forward, right arm draws then releases.</summary>
+            Shoot
+        }
+
         [Header("Locomotion")]
         [Tooltip("Meters per full step cycle (two steps).")] public float strideLength = 1.6f;
         public float legSwing = 32f;
@@ -64,6 +72,7 @@ namespace RiskOfMagic.Animation
         private float time;
         private float attackStart = -10f, attackWindup, attackRecovery;
         private bool attackRight = true;
+        private AttackStyle attackStyle;
         private float hitTime = -10f;
         private float deathTime = -1f;
 
@@ -153,12 +162,14 @@ namespace RiskOfMagic.Animation
             dead = value;
         }
 
-        public void PlayAttack(float windup, float recovery)
+        public void PlayAttack(float windup, float recovery, AttackStyle style = AttackStyle.Swing)
         {
             attackStart = time;
             attackWindup = Mathf.Max(0.1f, windup);
             attackRecovery = Mathf.Max(0.1f, recovery);
-            attackRight = !attackRight;
+            attackStyle = style;
+            if (style == AttackStyle.Swing)
+                attackRight = !attackRight;
         }
 
         public void PlayHit() => hitTime = time;
@@ -213,8 +224,37 @@ namespace RiskOfMagic.Animation
             Pitch(Bone.RightLowerLeg, Mathf.Max(0f, -c) * kneeBend * moveWeight + 4f);
 
             // Arms: hang, swing opposite to the legs, then the attack overrides one arm.
+            if (attackStyle == AttackStyle.Shoot && ApplyShoot(breathe))
+                return;
             ApplyArm(Bone.LeftUpperArm, Bone.LeftLowerArm, leftArmDown, s * armSwing * moveWeight, breathe, !attackRight);
             ApplyArm(Bone.RightUpperArm, Bone.RightLowerArm, rightArmDown, -s * armSwing * moveWeight, breathe, attackRight);
+        }
+
+        /// <summary>Bow shot: both arms raised forward, the right hand draws to the chest then releases.</summary>
+        private bool ApplyShoot(float breathe)
+        {
+            float t = time - attackStart;
+            float total = attackWindup + attackRecovery;
+            if (t < 0f || t > total)
+                return false;
+            // Raise quickly, hold, lower at the end.
+            float raise = Mathf.Min(Mathf.Clamp01(t / 0.08f), Mathf.Clamp01((total - t) / 0.15f));
+            float draw = t < attackWindup ? Mathf.SmoothStep(0f, 1f, t / attackWindup) : 0f; // released at the end of the windup
+            if (bones[(int)Bone.LeftUpperArm] != null)
+            {
+                RotateModelSpace(bones[(int)Bone.LeftUpperArm], leftArmDown);
+                Pitch(Bone.LeftUpperArm, -85f * raise + breathe);
+                Yaw(Bone.LeftUpperArm, 10f * raise);
+            }
+            if (bones[(int)Bone.RightUpperArm] != null)
+            {
+                RotateModelSpace(bones[(int)Bone.RightUpperArm], rightArmDown);
+                Pitch(Bone.RightUpperArm, -80f * raise);
+                Yaw(Bone.RightUpperArm, -25f * raise * draw);
+                Pitch(Bone.RightLowerArm, -110f * raise * draw);
+            }
+            Yaw(Bone.Spine, -12f * raise);
+            return true;
         }
 
         private void ApplyArm(Bone upper, Bone lower, Quaternion down, float swing, float breathe, bool attacking)

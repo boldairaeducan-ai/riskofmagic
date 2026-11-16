@@ -25,6 +25,7 @@ namespace RiskOfMagic.Animation
         private GameObject model;
         private GameObject viewModel;
         private ProceduralViewModel proceduralView;
+        private ProceduralHumanoidMotion procedural;
         private Vector3 lastPosition;
         private Vector3 smoothedVelocity;
         private bool wasGrounded = true;
@@ -94,6 +95,7 @@ namespace RiskOfMagic.Animation
             if (proceduralView != null)
                 Destroy(proceduralView.gameObject);
             proceduralView = null;
+            procedural = null;
             model = viewModel = null;
             animators.Clear();
 
@@ -101,11 +103,15 @@ namespace RiskOfMagic.Animation
             {
                 model = Instantiate(character.modelPrefab, modelRoot);
                 model.transform.localPosition = Vector3.zero;
-                model.transform.localRotation = Quaternion.identity;
+                model.transform.localRotation = character.modelPrefab.transform.localRotation;
                 if (avatar.IsOwner)
                     foreach (var r in model.GetComponentsInChildren<Renderer>(true))
                         r.shadowCastingMode = ShadowCastingMode.ShadowsOnly; // own body: shadow only in first person
-                animators.AddFrom(model);
+                // No Animator Controller (model without clips yet): animated by code.
+                if (ProceduralHumanoidMotion.CanDrive(model))
+                    procedural = model.AddComponent<ProceduralHumanoidMotion>();
+                else
+                    animators.AddFrom(model);
             }
             if (character.viewModelPrefab != null && avatar.IsOwner && avatar.Look.Camera != null)
             {
@@ -146,6 +152,13 @@ namespace RiskOfMagic.Animation
             if (velocity.sqrMagnitude > 2500f)
                 velocity = Vector3.zero; // teleport
             smoothedVelocity = Vector3.Lerp(smoothedVelocity, velocity, 1f - Mathf.Exp(-15f * dt));
+            if (procedural != null)
+            {
+                var movement = avatar.Character != null ? avatar.Character.movement : null;
+                float reference = movement != null ? movement.walkSpeed * movement.sprintMultiplier : 8f;
+                procedural.SetLocomotion(new Vector2(smoothedVelocity.x, smoothedVelocity.z).magnitude, reference);
+                procedural.SetDead(!avatar.IsAlive || avatar.IsDowned);
+            }
             if (animators.Count == 0)
                 return;
 
@@ -173,8 +186,11 @@ namespace RiskOfMagic.Animation
 
         private void OnDamaged(DamageInfo info)
         {
-            if (!info.IgnoreModifiers)
-                animators.SetTrigger(AnimParams.Hit);
+            if (info.IgnoreModifiers)
+                return;
+            animators.SetTrigger(AnimParams.Hit);
+            if (procedural != null)
+                procedural.PlayHit();
         }
 
         private void OnRevived() => animators.SetTrigger(AnimParams.Revive);
@@ -183,6 +199,13 @@ namespace RiskOfMagic.Animation
         {
             animators.SetInteger(AnimParams.SkillSlot, (int)slot);
             animators.SetTrigger(skill.animatorTrigger);
+            if (procedural != null)
+            {
+                bool ranged = skill is RiskOfMagic.Skills.Types.ProjectileSkill || skill is RiskOfMagic.Skills.Types.HomingVolleySkill
+                              || skill is RiskOfMagic.Skills.Types.BolasSkill;
+                procedural.PlayAttack(ranged ? 0.18f : 0.12f, ranged ? 0.25f : 0.3f,
+                    ranged ? ProceduralHumanoidMotion.AttackStyle.Shoot : ProceduralHumanoidMotion.AttackStyle.Swing);
+            }
             if (proceduralView != null && avatar.Character != null)
             {
                 var state = avatar.Skills != null ? avatar.Skills.GetSlot(slot) : null;

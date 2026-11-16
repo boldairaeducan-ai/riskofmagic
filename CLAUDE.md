@@ -107,7 +107,9 @@ clip-less slot as unset.
 **Animation.** Cosmetic only. `PlayerAnimationDriver` / `EnemyAnimationDriver` spawn the `modelPrefab` (+ player
 `viewModelPrefab`) of the definitions and drive their Animators on every peer through `AnimatorBridge` (only sets the
 parameters the controller has, names in `AnimParams`). Server-only cues reach clients via existing RPCs or
-`EnemyActor.BroadcastCue`.
+`EnemyActor.BroadcastCue`. Models are set up with `CharacterModelRecipe` assets (`Configs/Models`, editor-only, button
+« Construire le modèle »: prefab variant with weapons on humanoid bones + generated Animator Controller, assigned to the
+definition; see `docs/ANIMATION.md`). A humanoid model without controller is animated by `ProceduralHumanoidMotion`.
 
 **First-person view.** Without a `viewModelPrefab`, `ProceduralViewModel` (owner only, under the camera) shows what
 `CharacterDefinition.proceduralViewModel` describes (`ViewModelDefinition`, created once per character in
