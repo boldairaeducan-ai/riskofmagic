@@ -1,29 +1,28 @@
 using RiskOfMagic.Flow;
 using RiskOfMagic.Player;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace RiskOfMagic.UI
 {
     /// <summary>
     /// Full-screen cover during map loads (Netcode scene loads: lobby → stage 1, stage → stage): shown as soon as the
     /// load starts, hidden once the local player has been placed on a spawn point of the new map (or after a safety
-    /// timeout). Hides the scene camera and the spawn/NavMesh setup. Built at runtime, persistent, no setup needed.
-    /// Art: ArtLibrary.loadingBackground (Resources/ArtLibrary).
+    /// timeout). Hides the scene camera and the spawn/NavMesh setup. Created at runtime (persistent UIDocument on the menu
+    /// panel, UI/Menus/LoadingScreen.uxml, drawn above every other menu). Art: ArtLibrary.loadingBackground.
     /// </summary>
     public class LoadingScreen : MonoBehaviour
     {
         private const float MinVisibleTime = 0.4f;
         private const float FallbackAfterPlayerSeen = 2.5f;
         private const float MaxVisibleTime = 25f;
-        private const float FadeSpeed = 3f;
+        private const string VisibleClass = "loading--visible";
 
         private static LoadingScreen instance;
 
-        private CanvasGroup group;
-        private TMP_Text label;
+        private VisualElement screen;
+        private Label label;
         private NetworkSceneManager subscribedTo;
         private bool visible;
         private bool placed;
@@ -36,10 +35,22 @@ namespace RiskOfMagic.UI
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Create()
         {
+            var assets = MenuUiAssets.Instance;
+            if (assets == null || assets.panelSettings == null || assets.loadingScreen == null)
+            {
+                Debug.LogWarning("[Risk of Magic] Loading screen disabled: Resources/MenuUI is missing (run Build Prototype Scene).");
+                return;
+            }
             var go = new GameObject("LoadingScreen");
+            go.SetActive(false); // configure the document before it builds its tree
             DontDestroyOnLoad(go);
+            var document = go.AddComponent<UIDocument>();
+            document.panelSettings = assets.panelSettings;
+            document.visualTreeAsset = assets.loadingScreen;
+            document.sortingOrder = 1000f; // above the main menu and the pause menu
             instance = go.AddComponent<LoadingScreen>();
-            instance.Build();
+            go.SetActive(true);
+            instance.Build(document.rootVisualElement);
         }
 
         /// <summary>Shows the cover now (also called automatically on Netcode scene loads).</summary>
@@ -51,8 +62,8 @@ namespace RiskOfMagic.UI
             instance.placed = false;
             instance.playerSeenAt = -1f;
             instance.shownAt = Time.unscaledTime;
-            instance.label.text = message;
-            instance.group.blocksRaycasts = true;
+            MenuUi.SetText(instance.label, message);
+            instance.SetVisible(true);
         }
 
         /// <summary>The local player was moved to a spawn point of the current map.</summary>
@@ -62,42 +73,24 @@ namespace RiskOfMagic.UI
                 instance.placed = true;
         }
 
-        private void Build()
+        private void Build(VisualElement root)
         {
-            var canvas = gameObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 1000;
-            var scaler = gameObject.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920f, 1080f);
-            gameObject.AddComponent<GraphicRaycaster>();
-            group = gameObject.AddComponent<CanvasGroup>();
-            group.alpha = 0f;
-            group.blocksRaycasts = false;
-            group.interactable = false;
-
-            var background = new GameObject("Background", typeof(RectTransform), typeof(Image));
-            background.transform.SetParent(transform, false);
-            var backgroundRect = (RectTransform)background.transform;
-            backgroundRect.anchorMin = Vector2.zero;
-            backgroundRect.anchorMax = Vector2.one;
-            backgroundRect.offsetMin = backgroundRect.offsetMax = Vector2.zero;
-            var backgroundImage = background.GetComponent<Image>();
+            screen = MenuUi.Require<VisualElement>(root, "loadingScreen");
+            label = MenuUi.Require<Label>(root, "label");
             var art = RiskOfMagic.Core.ArtLibrary.Instance != null ? RiskOfMagic.Core.ArtLibrary.Instance.loadingBackground : null;
-            backgroundImage.sprite = art;
-            backgroundImage.preserveAspect = false;
-            backgroundImage.color = art != null ? Color.white : new Color(0.04f, 0.035f, 0.05f, 1f);
+            var background = root.Q("background");
+            MenuUi.SetImage(background, art);
+            MenuUi.SetShown(background, art != null);
+            SetVisible(false);
+        }
 
-            var text = new GameObject("Label", typeof(RectTransform));
-            text.transform.SetParent(transform, false);
-            var textRect = (RectTransform)text.transform;
-            textRect.anchorMin = textRect.anchorMax = new Vector2(0.5f, 0.5f);
-            textRect.sizeDelta = new Vector2(1200f, 120f);
-            label = text.AddComponent<TextMeshProUGUI>();
-            label.alignment = TextAlignmentOptions.Center;
-            label.fontSize = 48f;
-            label.color = new Color(0.92f, 0.88f, 0.8f);
-            label.text = "Chargement…";
+        /// <summary>Fades in / out (USS transition) and blocks the pointer only while visible.</summary>
+        private void SetVisible(bool value)
+        {
+            if (screen == null)
+                return;
+            screen.EnableInClassList(VisibleClass, value);
+            screen.pickingMode = value ? PickingMode.Position : PickingMode.Ignore;
         }
 
         private void Update()
@@ -114,16 +107,14 @@ namespace RiskOfMagic.UI
                 if (elapsed > MinVisibleTime && (placed || fallback || disconnected || elapsed > MaxVisibleTime))
                 {
                     visible = false;
-                    group.blocksRaycasts = false;
+                    SetVisible(false);
                 }
-                else if (label != null)
+                else
                 {
                     int dots = 1 + (int)(elapsed * 2f) % 3;
-                    label.text = "Chargement" + new string('.', dots);
+                    MenuUi.SetText(label, "Chargement" + new string('.', dots));
                 }
             }
-
-            group.alpha = Mathf.MoveTowards(group.alpha, visible ? 1f : 0f, (visible ? 10f : FadeSpeed) * Time.unscaledDeltaTime);
         }
 
         private void SubscribeToSceneEvents()

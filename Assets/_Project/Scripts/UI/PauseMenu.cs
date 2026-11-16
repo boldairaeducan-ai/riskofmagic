@@ -1,42 +1,38 @@
 using RiskOfMagic.Player;
 using RiskOfMagic.Run;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace RiskOfMagic.UI
 {
     /// <summary>
-    /// In-game pause menu (Esc / Start). Solo (host alone): the game really pauses (timeScale 0, run clock frozen).
-    /// Online: overlay only, the game goes on. Abandon (host) ends the run as a defeat (summary screen).
+    /// In-game pause menu (Esc / Start), UI Toolkit (UI/Menus/PauseMenu.uxml) on a UIDocument inside the HUD.
+    /// Solo (host alone): the game really pauses (timeScale 0, run clock frozen). Online: overlay only, the game goes on.
+    /// Abandon (host) ends the run as a defeat (summary screen).
     /// </summary>
     public class PauseMenu : HudWidget
     {
-        [SerializeField] private CanvasGroup group;
-        [SerializeField] private GameObject mainPanel;
-        [SerializeField] private TMP_Text subtitleLabel;
-        [SerializeField] private Button resumeButton;
-        [SerializeField] private Button optionsButton;
-        [SerializeField] private Button abandonButton;
-        [SerializeField] private Button menuButton;
-        [SerializeField] private Button quitButton;
-        [SerializeField, Tooltip("Debug builds only, host.")] private Button forceWaveButton;
-        [SerializeField] private OptionsMenu options;
+        [SerializeField] private UIDocument document;
+        [SerializeField, Tooltip("Empty = Resources/MenuUI.")] private MenuUiAssets assets;
 
-        [Header("Confirmation")]
-        [SerializeField] private GameObject confirmPanel;
-        [SerializeField] private TMP_Text confirmLabel;
-        [SerializeField] private Button confirmYesButton;
-        [SerializeField] private Button confirmNoButton;
+        private VisualElement boundRoot;
+        private VisualElement screen;
+        private VisualElement mainPanel;
+        private VisualElement confirmPanel;
+        private Label subtitleLabel;
+        private Label confirmLabel;
+        private Button resumeButton;
+        private Button abandonButton;
+        private Button forceWaveButton;
+        private OptionsScreen options;
 
         private System.Action pendingConfirm;
         private bool pausedTime;
+        private bool open;
 
         public static PauseMenu Instance { get; private set; }
         public static bool IsOpen => Instance != null && Instance.open;
-
-        private bool open;
 
         private static bool IsSolo
         {
@@ -49,30 +45,11 @@ namespace RiskOfMagic.UI
 
         private static bool IsHost => NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer;
 
-        private void Awake()
-        {
-            Listen(resumeButton, Close);
-            Listen(optionsButton, OpenOptions);
-            Listen(abandonButton, () => Confirm("Abandonner la partie ?\nLa run se termine en défaite pour tous les joueurs.", Abandon));
-            Listen(menuButton, () => Confirm(IsHost
-                ? "Retourner au menu principal ?\nLa partie sera fermée pour tous les joueurs."
-                : "Quitter la partie et retourner au menu principal ?", ReturnToMenu));
-            Listen(quitButton, () => Confirm("Quitter le jeu ?", QuitGame));
-            Listen(forceWaveButton, ForceWave);
-            Listen(confirmYesButton, () =>
-            {
-                var action = pendingConfirm;
-                CloseConfirm();
-                action?.Invoke();
-            });
-            Listen(confirmNoButton, CloseConfirm);
-            SetVisible(false);
-        }
-
         private void OnEnable()
         {
             Instance = this;
             PlayerLook.EscapeHandledExternally = true;
+            EnsureBound();
         }
 
         private void OnDisable()
@@ -85,6 +62,59 @@ namespace RiskOfMagic.UI
             ResumeTime();
         }
 
+        private void OnDestroy() => options?.Dispose();
+
+        /// <summary>
+        /// (Re)binds the named elements of the document. The UIDocument rebuilds its tree when it is re-enabled, so
+        /// this runs again whenever its root changes.
+        /// </summary>
+        private bool EnsureBound()
+        {
+            if (document == null)
+                document = GetComponent<UIDocument>();
+            var root = document != null ? document.rootVisualElement : null;
+            if (root == null)
+                return false;
+            if (root == boundRoot)
+                return screen != null;
+            boundRoot = root;
+            if (assets == null)
+                assets = MenuUiAssets.Instance;
+
+            screen = MenuUi.Require<VisualElement>(root, "pauseScreen");
+            mainPanel = MenuUi.Require<VisualElement>(root, "main");
+            confirmPanel = MenuUi.Require<VisualElement>(root, "confirm");
+            subtitleLabel = MenuUi.Require<Label>(root, "subtitleLabel");
+            confirmLabel = MenuUi.Require<Label>(root, "confirmLabel");
+            resumeButton = Listen(root, "resumeButton", Close);
+            Listen(root, "optionsButton", OpenOptions);
+            abandonButton = Listen(root, "abandonButton", () => Confirm("Abandonner la partie ?\nLa run se termine en défaite pour tous les joueurs.", Abandon));
+            Listen(root, "menuButton", () => Confirm(IsHost
+                ? "Retourner au menu principal ?\nLa partie sera fermée pour tous les joueurs."
+                : "Quitter la partie et retourner au menu principal ?", ReturnToMenu));
+            Listen(root, "quitButton", () => Confirm("Quitter le jeu ?", QuitGame));
+            forceWaveButton = Listen(root, "forceWaveButton", ForceWave);
+            Listen(root, "confirmYesButton", () =>
+            {
+                var action = pendingConfirm;
+                CloseConfirm();
+                action?.Invoke();
+            });
+            Listen(root, "confirmNoButton", CloseConfirm);
+            options = assets != null ? new OptionsScreen(MenuUi.Require<VisualElement>(root, "options"), assets) : null;
+            MenuSounds.Register(root);
+            SetVisible(open);
+            return screen != null;
+        }
+
+        private static Button Listen(VisualElement root, string name, System.Action action)
+        {
+            var button = MenuUi.Require<Button>(root, name);
+            if (button != null)
+                button.clicked += action;
+            return button;
+        }
+
         protected override void OnUnbind()
         {
             open = false;
@@ -94,6 +124,10 @@ namespace RiskOfMagic.UI
 
         protected override void Tick()
         {
+            if (!EnsureBound())
+                return;
+            options?.Tick(handleBack: false); // Esc is handled below
+
             var stages = StageManager.Instance;
             bool gameOver = stages != null && stages.IsGameOver;
             if (gameOver && open)
@@ -102,11 +136,11 @@ namespace RiskOfMagic.UI
                 return;
             }
 
-            if (!Player.Input.ToggleCursorPressed || gameOver)
+            if (!Player.Input.ToggleCursorPressed || gameOver || GameInput.MenuKeysBlocked)
                 return;
-            if (options != null && options.gameObject.activeSelf)
+            if (options != null && options.IsOpen)
                 options.Close();
-            else if (confirmPanel != null && confirmPanel.activeSelf)
+            else if (MenuUi.IsShown(confirmPanel))
                 CloseConfirm();
             else if (open)
                 Close();
@@ -121,12 +155,9 @@ namespace RiskOfMagic.UI
             ShowMain();
             Player.Look.SetCursorLocked(false);
             bool host = IsHost;
-            if (abandonButton != null)
-                abandonButton.gameObject.SetActive(host);
-            if (forceWaveButton != null)
-                forceWaveButton.gameObject.SetActive(host && Debug.isDebugBuild);
-            if (subtitleLabel != null)
-                subtitleLabel.text = IsSolo ? "Jeu en pause" : "La partie continue";
+            MenuUi.SetShown(abandonButton, host);
+            MenuUi.SetShown(forceWaveButton, host && Debug.isDebugBuild);
+            MenuUi.SetText(subtitleLabel, IsSolo ? "Jeu en pause" : "La partie continue");
             if (IsSolo)
                 PauseTime();
         }
@@ -141,7 +172,7 @@ namespace RiskOfMagic.UI
         private void CloseWithoutCursor()
         {
             open = false;
-            if (options != null && options.gameObject.activeSelf)
+            if (options != null && options.IsOpen)
                 options.Close();
             CloseConfirm();
             SetVisible(false);
@@ -172,36 +203,38 @@ namespace RiskOfMagic.UI
         {
             if (options == null)
                 return;
-            if (mainPanel != null)
-                mainPanel.SetActive(false);
+            MenuUi.Hide(mainPanel);
             options.Open(ShowMain);
         }
 
         private void ShowMain()
         {
-            if (mainPanel != null)
-                mainPanel.SetActive(open);
+            MenuUi.SetShown(mainPanel, open, animate: true);
+            if (open)
+                MenuUi.Focus(resumeButton);
         }
 
         private void Confirm(string message, System.Action action)
         {
-            pendingConfirm = action;
-            if (confirmLabel != null)
-                confirmLabel.text = message;
-            if (mainPanel != null)
-                mainPanel.SetActive(false);
-            if (confirmPanel != null)
-                confirmPanel.SetActive(true);
-            else
+            if (confirmPanel == null)
+            {
                 action?.Invoke();
+                return;
+            }
+            pendingConfirm = action;
+            MenuUi.SetText(confirmLabel, message);
+            MenuUi.Hide(mainPanel);
+            MenuUi.Show(confirmPanel);
+            MenuUi.FocusFirst(confirmPanel);
         }
 
         private void CloseConfirm()
         {
+            bool wasShown = MenuUi.IsShown(confirmPanel);
             pendingConfirm = null;
-            if (confirmPanel != null)
-                confirmPanel.SetActive(false);
-            ShowMain();
+            MenuUi.Hide(confirmPanel);
+            if (wasShown)
+                ShowMain();
         }
 
         private void Abandon()
@@ -235,17 +268,10 @@ namespace RiskOfMagic.UI
 
         private void SetVisible(bool visible)
         {
-            if (group == null)
-                return;
-            group.alpha = visible ? 1f : 0f;
-            group.interactable = visible;
-            group.blocksRaycasts = visible;
-        }
-
-        private static void Listen(Button button, UnityEngine.Events.UnityAction action)
-        {
-            if (button != null)
-                button.onClick.AddListener(action);
+            if (visible)
+                MenuUi.Show(screen);
+            else
+                MenuUi.Hide(screen);
         }
     }
 }

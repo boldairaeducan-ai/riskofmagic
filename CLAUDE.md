@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Risk of Magic: first-person coop roguelite in the spirit of Risk of Rain, medieval fantasy setting.
 Unity 6 (see `ProjectSettings/ProjectVersion.txt`), Netcode for GameObjects 2.x (host/client, 1–4 players),
-Input System (actions built in code), uGUI + TextMeshPro, AI Navigation (NavMesh).
+Input System (actions built in code), UI Toolkit (menus) + uGUI/TextMeshPro (HUD), AI Navigation (NavMesh).
 Game-facing text (UI, item/skill names and descriptions) is in **French**; code, comments and commits in English.
 
 ## Building, running, testing
@@ -24,8 +24,8 @@ Game-facing text (UI, item/skill names and descriptions) is in **French**; code,
   Global constants are in `Resources/GameBalance.asset` (`GameBalance`: difficulty, director, experience, statuses,
   enemy damage / attack-rate multipliers); enemy attack tuning is in `Configs/Enemies/Attacks/*.asset`
   (`EnemyAttackData` subclasses, one per attack type: `EnemyXAttack` ↔ `XAttackData`, referenced by the component).
-- **Tools → Risk of Magic → Rebuild HUD Prefab** (`Editor/HudBuilder.cs`) rebuilds `UI/HUD.prefab`; needed whenever a
-  HUD widget is added. It never overwrites `UI/HudTheme.asset` (where art is plugged in).
+- **Tools → Risk of Magic → Rebuild HUD Prefab** (`Editor/HudBuilder.cs`) rebuilds `UI/HUD.prefab` (incl. the UI Toolkit
+  pause menu document); needed whenever a HUD widget is added. It never overwrites `UI/HudTheme.asset` (where art is plugged in).
 - Play from `Scenes/MainMenu` (Solo / online join code / lobby). Playing `Scenes/Prototype` directly still works for
   debugging (Host/Client-by-IP panel while disconnected; Esc = pause menu, `UI/PauseMenu`). Multi-instance tests use Multiplayer Play Mode.
 - Online play: **Steam** (`Scripts/Steam`, assembly compiled when Steamworks.NET + the community
@@ -119,8 +119,13 @@ charge draw and a keyed motion per executed skill.
 volume object to generated scenes; `PostProcessCamera.Enable` turns post on for screen cameras; `CombatPostFx` adds
 local hit / low-health volumes. Unlit effect materials are HDR (×1.8) so spells bloom.
 
-**UI.** `HudController` binds every `HudWidget` to the local player. `ThemedImage` / `ThemedText` pull sprites, fonts
-and colors from `HudTheme`; widgets only fill in game data (icons come from skill/item/equipment/character assets).
+**UI.** Menus (main menu, lobby, options, journal, pause, loading) are **UI Toolkit**: hand-written UXML/USS in
+`UI/Menus` (never generated; tokens in `Styles/Theme.uss`, components in `Styles/Menus.uss`), registry
+`Resources/MenuUI` (`MenuUiAssets`: PanelSettings, screens, templates), code in `Scripts/UI` + `Scripts/UI/Toolkit`
+(`MenuUi` helpers, `OptionsScreen`, `JournalScreen`, `LobbyCardView`, `MenuSounds`). Code finds elements by `name` and
+toggles USS classes, no inline styles except data images. See `docs/UI.md` (how to add options, screens, templates).
+The in-game HUD (+ choice chest, merchant, game over, debug connection panel) stays uGUI: `HudController` binds every
+`HudWidget` to the local player; `ThemedImage` / `ThemedText` pull sprites, fonts and colors from `HudTheme`.
 
 ## Working with the user
 

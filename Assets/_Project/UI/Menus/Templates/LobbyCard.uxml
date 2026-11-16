@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:Button name="card" class="card">
+        <ui:VisualElement name="icon" class="card__icon" picking-mode="Ignore">
+            <ui:Label name="iconLetter" class="card__letter" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement class="card__text" picking-mode="Ignore">
+            <ui:Label name="title" text="Titre" class="card__title" picking-mode="Ignore" />
+            <ui:Label name="body" class="card__body" picking-mode="Ignore" />
+        </ui:VisualElement>
+        <ui:VisualElement name="lock" class="card__lock" picking-mode="Ignore">
+            <ui:Label name="lockLabel" text="VERROUILLÉ" class="card__lock-label" picking-mode="Ignore" />
+        </ui:VisualElement>
+    </ui:Button>
+</ui:UXML>

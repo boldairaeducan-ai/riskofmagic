@@ -6,110 +6,75 @@ using RiskOfMagic.Flow;
 using RiskOfMagic.Meta;
 using RiskOfMagic.Networking;
 using RiskOfMagic.Run;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace RiskOfMagic.UI
 {
     /// <summary>
-    /// Main menu: Solo / Create online game (join code) / Join by code, then the shared lobby
-    /// (character, ready, difficulty for the host, start).
+    /// Main menu (UI Toolkit, UI/Menus/MainMenu.uxml): Solo / Create online game (join code) / Join by code, journal,
+    /// options, then the shared lobby (character, skills, ready, difficulty for the host, start).
+    /// Layout and look live in the UXML / USS; this class only finds named elements and fills them with game data.
     /// </summary>
+    [RequireComponent(typeof(UIDocument))]
     public class MainMenuController : MonoBehaviour
     {
-        [SerializeField] private HudTheme theme;
         [SerializeField] private LobbyState lobbyPrefab;
         [SerializeField, Range(1, 4)] private int maxPlayers = 4;
-
-        [Header("Home")]
-        [SerializeField] private GameObject homeScreen;
-        [SerializeField, Tooltip("Lobby title (the home and the menus have their own).")] private GameObject screenTitle;
-        [SerializeField] private UnityEngine.UI.Button soloButton;
-        [SerializeField] private UnityEngine.UI.Button multiplayerButton;
-        [SerializeField, Tooltip("Create online / join by code, unfolded by the Multiplayer entry.")] private GameObject multiplayerPanel;
-        [SerializeField] private UnityEngine.UI.Button hostButton;
-        [SerializeField] private TMP_InputField joinCodeField;
-        [SerializeField] private UnityEngine.UI.Button joinButton;
-        [SerializeField] private UnityEngine.UI.Button optionsButton;
-        [SerializeField] private UnityEngine.UI.Button journalButton;
-        [SerializeField] private JournalMenu journalMenu;
-        [SerializeField] private UnityEngine.UI.Button quitButton;
-        [SerializeField] private OptionsMenu optionsMenu;
-        [SerializeField] private TMP_Text statusLabel;
-        [SerializeField] private TMP_Text profileLabel;
-        [SerializeField] private TMP_Text versionLabel;
-        [SerializeField, Tooltip("ArtLibrary.menuBackground")] private UnityEngine.UI.Image backgroundImage;
-        [SerializeField, Tooltip("ArtLibrary.logo, replaces gameTitle")] private UnityEngine.UI.Image logoImage;
-        [SerializeField] private TMP_Text gameTitle;
-
-        [Header("Lobby")]
-        [SerializeField] private GameObject lobbyScreen;
-        [SerializeField] private TMP_Text codeLabel;
-        [SerializeField] private UnityEngine.UI.Button copyCodeButton;
-        [SerializeField, Tooltip("Steam: opens the friend invite overlay.")] private UnityEngine.UI.Button inviteButton;
-        [SerializeField] private TMP_Text playersLabel;
-        [SerializeField, Tooltip("Cloned per character.")] private LobbyCard characterCardTemplate;
-        [SerializeField] private CharacterPreview characterPreview;
-        [SerializeField] private TMP_Text characterDescription;
-        [SerializeField, Tooltip("Cloned per slot: base then alternative (grid of 2 columns).")] private LobbyCard skillCardTemplate;
-        [SerializeField] private LobbyCard normalCard;
-        [SerializeField] private LobbyCard hardCard;
-        [SerializeField] private TMP_Text difficultyDescription;
-        [SerializeField] private UnityEngine.UI.Button mainButton;
-        [SerializeField] private TMP_Text mainButtonLabel;
-        [SerializeField] private UnityEngine.UI.Button leaveButton;
-
-        private readonly List<LobbyCard> characterCards = new();
-        private readonly List<LobbyCard> skillCards = new(); // index = slot * 2 + (alternative ? 1 : 0)
-        private bool sentInitialLoadout;
-        private LobbyState subscribedLobby;
-        private bool busy;
+        [SerializeField, Tooltip("Empty = Resources/MenuUI.")] private MenuUiAssets assets;
 
         private static readonly string NormalDescription = "La difficulté augmente avec le temps et les étapes.";
         private static readonly string HardDescription =
             "Montée en difficulté 50% plus rapide, plus d'ennemis, détection plus large, variété d'ennemis débloquée plus tôt.";
 
+        // Home
+        private VisualElement home;
+        private Button soloButton, multiplayerButton, hostButton, joinButton, optionsButton, journalButton, quitButton;
+        private VisualElement multiplayerPanel;
+        private TextField joinCodeField;
+        private Label statusLabel, profileLabel;
+
+        // Lobby
+        private VisualElement lobbyScreen;
+        private Label codeLabel, playersLabel, characterDescription, difficultyDescription;
+        private Button copyCodeButton, inviteButton, mainButton, leaveButton;
+        private VisualElement characterGrid, skillGrid, difficultyCards, previewElement;
+        private LobbyCardView normalCard, hardCard;
+        private CharacterPreview characterPreview;
+
+        private OptionsScreen options;
+        private JournalScreen journal;
+
+        private readonly List<LobbyCardView> characterCards = new();
+        private readonly List<LobbyCardView> skillCards = new(); // index = slot * 2 + (alternative ? 1 : 0)
+        private bool sentInitialLoadout;
+        private LobbyState subscribedLobby;
+        private bool busy;
+        private bool built;
+
         private void Start()
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
 
-            ApplyArt();
-            AddListener(soloButton, StartSolo);
-            AddListener(multiplayerButton, ToggleMultiplayer);
-            if (multiplayerPanel != null)
-                multiplayerPanel.SetActive(false);
-            if (versionLabel != null)
-                versionLabel.text = $"v{Application.version}";
-            AddListener(hostButton, () => _ = HostOnline());
-            AddListener(joinButton, () => _ = JoinOnline());
-            AddListener(quitButton, Application.Quit);
-            AddListener(optionsButton, OpenOptions);
-            AddListener(journalButton, OpenJournal);
-            if (journalMenu != null)
-                journalMenu.gameObject.SetActive(false);
-            if (optionsMenu != null)
-                optionsMenu.gameObject.SetActive(false);
-            AddListener(copyCodeButton, () => GUIUtility.systemCopyBuffer = OnlineSessions.Service?.JoinCode ?? string.Empty);
-            AddListener(inviteButton, () => OnlineSessions.InviteFriends?.Invoke());
+            if (assets == null)
+                assets = MenuUiAssets.Instance;
+            var root = GetComponent<UIDocument>().rootVisualElement;
+            if (root == null || assets == null)
+            {
+                Debug.LogError("[Risk of Magic] Main menu: UIDocument or Resources/MenuUI missing. Run Tools → Risk of Magic → Build Prototype Scene.");
+                return;
+            }
+            Bind(root);
+            built = true;
+
             OnlineSessions.JoinRequested += OnJoinRequested;
-            if (normalCard != null)
-                AddListener(normalCard.Button, () => SetDifficulty(DifficultyLevel.Normal));
-            if (hardCard != null)
-                AddListener(hardCard.Button, () => SetDifficulty(DifficultyLevel.Hard));
-            AddListener(mainButton, OnMainButton);
-            AddListener(leaveButton, () => _ = Leave());
-
-            BuildCharacterCards();
-            BuildSkillCards();
             SetStatus(GameFlow.PendingMessage ?? (OnlineSessions.IsAvailable ? string.Empty
                 : "Jeu en ligne indisponible : lancez Steam (ou installez Multiplayer Services)."));
             GameFlow.PendingMessage = null;
-            if (hostButton != null)
-                hostButton.interactable = OnlineSessions.IsAvailable;
-            if (joinButton != null)
-                joinButton.interactable = OnlineSessions.IsAvailable;
+            hostButton?.SetEnabled(OnlineSessions.IsAvailable);
+            joinButton?.SetEnabled(OnlineSessions.IsAvailable);
 
             ShowLobby(NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening);
             if (!string.IsNullOrEmpty(OnlineSessions.PendingJoinCode))
@@ -120,6 +85,77 @@ namespace RiskOfMagic.UI
         {
             Subscribe(null);
             OnlineSessions.JoinRequested -= OnJoinRequested;
+            options?.Dispose();
+        }
+
+        // ---------------------------------------------------------------- Binding
+
+        private void Bind(VisualElement root)
+        {
+            ApplyArt(root);
+            MenuUi.SetText(root.Q<Label>("versionLabel"), $"v{Application.version}");
+
+            home = MenuUi.Require<VisualElement>(root, "home");
+            soloButton = Listen(root, "soloButton", StartSolo);
+            multiplayerButton = Listen(root, "multiplayerButton", ToggleMultiplayer);
+            journalButton = Listen(root, "journalButton", OpenJournal);
+            optionsButton = Listen(root, "optionsButton", OpenOptions);
+            quitButton = Listen(root, "quitButton", Application.Quit);
+            multiplayerPanel = MenuUi.Require<VisualElement>(root, "multiplayerPanel");
+            hostButton = Listen(root, "hostButton", () => _ = HostOnline());
+            joinButton = Listen(root, "joinButton", () => _ = JoinOnline());
+            joinCodeField = MenuUi.Require<TextField>(root, "joinCodeField");
+            statusLabel = MenuUi.Require<Label>(root, "statusLabel");
+            profileLabel = MenuUi.Require<Label>(root, "profileLabel");
+
+            lobbyScreen = MenuUi.Require<VisualElement>(root, "lobby");
+            codeLabel = MenuUi.Require<Label>(root, "codeLabel");
+            copyCodeButton = Listen(root, "copyCodeButton", () => GUIUtility.systemCopyBuffer = OnlineSessions.Service?.JoinCode ?? string.Empty);
+            inviteButton = Listen(root, "inviteButton", () => OnlineSessions.InviteFriends?.Invoke());
+            playersLabel = MenuUi.Require<Label>(root, "playersLabel");
+            characterDescription = MenuUi.Require<Label>(root, "characterDescription");
+            difficultyDescription = MenuUi.Require<Label>(root, "difficultyDescription");
+            characterGrid = MenuUi.Require<VisualElement>(root, "characterGrid");
+            skillGrid = MenuUi.Require<VisualElement>(root, "skillGrid");
+            difficultyCards = MenuUi.Require<VisualElement>(root, "difficultyCards");
+            previewElement = MenuUi.Require<VisualElement>(root, "characterPreview");
+            mainButton = Listen(root, "mainButton", OnMainButton);
+            leaveButton = Listen(root, "leaveButton", () => _ = Leave());
+
+            options = new OptionsScreen(MenuUi.Require<VisualElement>(root, "options"), assets);
+            journal = new JournalScreen(MenuUi.Require<VisualElement>(root, "journal"));
+
+            normalCard = NewCard(difficultyCards, "card--difficulty", () => SetDifficulty(DifficultyLevel.Normal));
+            hardCard = NewCard(difficultyCards, "card--difficulty", () => SetDifficulty(DifficultyLevel.Hard));
+            BuildCharacterCards();
+            BuildSkillCards();
+
+            var previewGo = new GameObject("CharacterPreview");
+            previewGo.transform.SetParent(transform, false);
+            characterPreview = previewGo.AddComponent<CharacterPreview>();
+            if (previewElement != null && characterPreview.Texture != null)
+                previewElement.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(characterPreview.Texture));
+
+            MenuSounds.Register(root);
+        }
+
+        private Button Listen(VisualElement root, string name, Action action)
+        {
+            var button = MenuUi.Require<Button>(root, name);
+            if (button != null)
+                button.clicked += action;
+            return button;
+        }
+
+        private LobbyCardView NewCard(VisualElement parent, string modifier, Action onClick)
+        {
+            var element = MenuUi.Clone(assets.lobbyCard, parent);
+            if (element == null)
+                return null;
+            var card = new LobbyCardView(element, modifier);
+            if (card.Root != null)
+                card.Root.clicked += onClick;
+            return card;
         }
 
         /// <summary>Steam invite accepted (overlay or launch argument): join right away from the home screen.</summary>
@@ -130,7 +166,7 @@ namespace RiskOfMagic.UI
                 return;
             OnlineSessions.PendingJoinCode = null;
             if (joinCodeField != null)
-                joinCodeField.text = code;
+                joinCodeField.value = code;
             _ = JoinOnline();
         }
 
@@ -175,7 +211,7 @@ namespace RiskOfMagic.UI
 
         private async System.Threading.Tasks.Task JoinOnline()
         {
-            string code = joinCodeField != null ? joinCodeField.text.Trim() : string.Empty;
+            string code = joinCodeField != null ? (joinCodeField.value ?? string.Empty).Trim() : string.Empty;
             if (busy || OnlineSessions.Service == null || string.IsNullOrEmpty(code))
                 return;
             SetBusy(true, $"Connexion ({OnlineSessions.Service.BackendName})...");
@@ -214,85 +250,66 @@ namespace RiskOfMagic.UI
 
         private void OpenOptions()
         {
-            if (optionsMenu == null)
-                return;
             ShowHome(false);
-            optionsMenu.Open(() => ShowHome(true, optionsButton));
+            options.Open(() => ShowHome(true, optionsButton));
         }
 
         private void OpenJournal()
         {
-            if (journalMenu == null)
-                return;
             ShowHome(false);
-            journalMenu.Open(() => ShowHome(true, journalButton));
+            journal.Open(() => ShowHome(true, journalButton));
         }
 
         private void ToggleMultiplayer()
         {
             if (multiplayerPanel == null)
                 return;
-            bool open = !multiplayerPanel.activeSelf;
-            multiplayerPanel.SetActive(open);
-            var first = hostButton != null && hostButton.interactable ? hostButton.gameObject : null;
-            Select(open && first != null ? first : multiplayerButton != null ? multiplayerButton.gameObject : null);
+            bool open = !MenuUi.IsShown(multiplayerPanel);
+            MenuUi.SetShown(multiplayerPanel, open, animate: true);
+            VisualElement focus = !open ? multiplayerButton : hostButton != null && hostButton.enabledSelf ? hostButton : joinCodeField;
+            MenuUi.Focus(focus);
         }
 
-        private void ShowHome(bool visible, UnityEngine.UI.Button focus = null)
+        private void ShowHome(bool visible, Button focus = null)
         {
-            if (homeScreen != null)
-                homeScreen.SetActive(visible);
+            MenuUi.SetShown(home, visible, animate: true);
             if (!visible)
                 return;
-            if (multiplayerPanel != null)
-                multiplayerPanel.SetActive(false);
+            MenuUi.Hide(multiplayerPanel);
             RefreshHome();
-            var target = focus != null ? focus : soloButton;
-            Select(target != null ? target.gameObject : null);
+            MenuUi.Focus(focus ?? soloButton);
         }
 
         /// <summary>Profile summary.</summary>
         private void RefreshHome()
         {
-            if (profileLabel != null)
-            {
-                long runs = MetaProgression.GetStat(ChallengeStat.Runs);
-                long wins = MetaProgression.GetStat(ChallengeStat.Victories);
-                int done = MetaProgression.Profile.completedChallenges.Count;
-                int total = MetaProgression.Challenges.Count;
-                float best = MetaProgression.Profile.bestVictoryTime;
-                string text = runs <= 0
-                    ? "Première aventure ? Bonne chance."
-                    : $"{runs} partie{(runs > 1 ? "s" : string.Empty)}   ·   {wins} victoire{(wins > 1 ? "s" : string.Empty)}   ·   défis {done}/{total}";
-                if (best > 0f)
-                    text += $"   ·   record {(int)(best / 60f)}:{(int)(best % 60f):00}";
-                profileLabel.text = text;
-            }
+            long runs = MetaProgression.GetStat(ChallengeStat.Runs);
+            long wins = MetaProgression.GetStat(ChallengeStat.Victories);
+            int done = MetaProgression.Profile.completedChallenges.Count;
+            int total = MetaProgression.Challenges.Count;
+            float best = MetaProgression.Profile.bestVictoryTime;
+            string text = runs <= 0
+                ? "Première aventure ? Bonne chance."
+                : $"{runs} partie{(runs > 1 ? "s" : string.Empty)}   ·   {wins} victoire{(wins > 1 ? "s" : string.Empty)}   ·   défis {done}/{total}";
+            if (best > 0f)
+                text += $"   ·   record {(int)(best / 60f)}:{(int)(best % 60f):00}";
+            MenuUi.SetText(profileLabel, text);
         }
 
-        private void ApplyArt()
+        /// <summary>Optional art from the ArtLibrary: full-screen background, logo replacing the title.</summary>
+        private static void ApplyArt(VisualElement root)
         {
             var library = ArtLibrary.Instance;
-            var background = library != null ? library.menuBackground : null;
-            if (backgroundImage != null)
-            {
-                backgroundImage.sprite = background;
-                backgroundImage.gameObject.SetActive(background != null);
-            }
-            var logo = library != null ? library.logo : null;
-            if (logoImage != null)
-            {
-                logoImage.sprite = logo;
-                logoImage.gameObject.SetActive(logo != null);
-            }
-            if (gameTitle != null)
-                gameTitle.gameObject.SetActive(logo == null);
-        }
+            var background = root.Q("background");
+            var backgroundSprite = library != null ? library.menuBackground : null;
+            MenuUi.SetImage(background, backgroundSprite);
+            MenuUi.SetShown(background, backgroundSprite != null);
 
-        private static void Select(GameObject target)
-        {
-            if (UnityEngine.EventSystems.EventSystem.current != null)
-                UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(target);
+            var logoSprite = library != null ? library.logo : null;
+            var logo = root.Q("logo");
+            MenuUi.SetImage(logo, logoSprite);
+            MenuUi.SetShown(logo, logoSprite != null);
+            MenuUi.SetShown(root.Q("gameTitle"), logoSprite == null);
         }
 
         private void OnHosting()
@@ -313,33 +330,27 @@ namespace RiskOfMagic.UI
         private void BuildCharacterCards()
         {
             var catalog = GameCatalog.Instance;
-            if (catalog == null || characterCardTemplate == null)
+            if (catalog == null)
                 return;
-            characterCardTemplate.gameObject.SetActive(false);
             for (int i = 0; i < catalog.Characters.Count; i++)
             {
                 int index = i;
-                var card = Instantiate(characterCardTemplate, characterCardTemplate.transform.parent);
-                card.gameObject.SetActive(true);
-                AddListener(card.Button, () => SelectCharacter(index));
-                characterCards.Add(card);
+                var card = NewCard(characterGrid, "card--character", () => SelectCharacter(index));
+                if (card != null)
+                    characterCards.Add(card);
             }
         }
 
         private void BuildSkillCards()
         {
-            if (skillCardTemplate == null)
-                return;
-            skillCardTemplate.gameObject.SetActive(false);
             for (int slot = 0; slot < 4; slot++)
                 for (int variant = 0; variant < 2; variant++)
                 {
                     int s = slot;
                     bool alternative = variant == 1;
-                    var card = Instantiate(skillCardTemplate, skillCardTemplate.transform.parent);
-                    card.gameObject.SetActive(true);
-                    AddListener(card.Button, () => SelectSkill(s, alternative));
-                    skillCards.Add(card);
+                    var card = NewCard(skillGrid, "card--skill", () => SelectSkill(s, alternative));
+                    if (card != null)
+                        skillCards.Add(card);
                 }
         }
 
@@ -398,29 +409,31 @@ namespace RiskOfMagic.UI
 
         private void Update()
         {
+            if (!built)
+                return;
             if (LobbyState.Instance != subscribedLobby)
                 Subscribe(LobbyState.Instance);
-            HandleBack();
+
+            bool screenOpen = options.IsOpen || journal.IsOpen;
+            options.Tick(handleBack: true);
+            if (!screenOpen)
+                HandleBack();
+            else if (journal.IsOpen && MenuUi.BackPressed())
+                journal.Close();
 
             // Host left / connection lost while in the lobby.
             bool listening = NetworkManager.Singleton != null && NetworkManager.Singleton.IsListening;
-            if (!busy && !listening && lobbyScreen != null && lobbyScreen.activeSelf)
+            if (!busy && !listening && MenuUi.IsShown(lobbyScreen))
             {
                 ShowLobby(false);
                 SetStatus("La partie a été fermée.");
             }
         }
 
-        /// <summary>Esc / B: folds the multiplayer panel, closes the journal (the options close themselves).</summary>
+        /// <summary>Esc / B on the home screen: folds the multiplayer panel.</summary>
         private void HandleBack()
         {
-            var keyboard = UnityEngine.InputSystem.Keyboard.current;
-            var pad = UnityEngine.InputSystem.Gamepad.current;
-            if (!((keyboard != null && keyboard.escapeKey.wasPressedThisFrame) || (pad != null && pad.buttonEast.wasPressedThisFrame)))
-                return;
-            if (journalMenu != null && journalMenu.gameObject.activeSelf)
-                journalMenu.Close();
-            else if (multiplayerPanel != null && multiplayerPanel.activeSelf && homeScreen != null && homeScreen.activeSelf)
+            if (MenuUi.BackPressed() && MenuUi.IsShown(multiplayerPanel) && MenuUi.IsShown(home))
                 ToggleMultiplayer();
         }
 
@@ -436,25 +449,21 @@ namespace RiskOfMagic.UI
 
         private void RefreshLobby()
         {
+            if (!built)
+                return;
             var lobby = subscribedLobby;
             bool hasLobby = lobby != null && lobby.IsSpawned;
             var catalog = GameCatalog.Instance;
 
-            if (codeLabel != null)
-            {
-                string code = OnlineSessions.Service?.JoinCode;
-                codeLabel.text = string.IsNullOrEmpty(code) ? "Partie locale" : $"Code de la partie : <b>{code}</b>";
-            }
-            if (copyCodeButton != null)
-                copyCodeButton.gameObject.SetActive(!string.IsNullOrEmpty(OnlineSessions.Service?.JoinCode));
-            if (inviteButton != null)
-                inviteButton.gameObject.SetActive(OnlineSessions.InviteFriends != null);
+            string code = OnlineSessions.Service?.JoinCode;
+            MenuUi.SetText(codeLabel, string.IsNullOrEmpty(code) ? "Partie locale" : $"Code de la partie : <b>{code}</b>");
+            MenuUi.SetShown(copyCodeButton, !string.IsNullOrEmpty(code));
+            MenuUi.SetShown(inviteButton, OnlineSessions.InviteFriends != null);
 
             if (!hasLobby)
             {
-                if (playersLabel != null)
-                    playersLabel.text = "En attente du salon...";
-                SetInteractable(mainButton, false);
+                MenuUi.SetText(playersLabel, "En attente du salon...");
+                mainButton?.SetEnabled(false);
                 return;
             }
 
@@ -469,8 +478,7 @@ namespace RiskOfMagic.UI
                 string state = isHost ? "<color=#E8C060>Hôte</color>" : player.Ready ? "<color=#70D070>Prêt</color>" : "<color=#A0A0A0>Pas prêt</color>";
                 builder.AppendLine($"Joueur {i + 1}{(isMe ? " (vous)" : string.Empty)} · {character} · {state}");
             }
-            if (playersLabel != null)
-                playersLabel.text = builder.ToString();
+            MenuUi.SetText(playersLabel, builder.ToString());
 
             // Character
             bool hasMe = lobby.TryGetLocalPlayer(out var me);
@@ -497,8 +505,9 @@ namespace RiskOfMagic.UI
             }
             if (characterPreview != null)
                 characterPreview.Show(selected);
-            if (characterDescription != null)
-                characterDescription.text = selected != null ? $"<size=130%><b>{selected.displayName}</b></size>  ·  {selected.maxHealth:0} PV\n<i>{selected.description}</i>" : string.Empty;
+            MenuUi.SetText(characterDescription, selected != null
+                ? $"<size=130%><b>{selected.displayName}</b></size>  ·  {selected.maxHealth:0} PV\n<i>{selected.description}</i>"
+                : string.Empty);
             RefreshSkillCards(selected, hasMe ? me.Loadout : (byte)0);
 
             // Difficulty
@@ -507,31 +516,28 @@ namespace RiskOfMagic.UI
             if (normalCard != null)
             {
                 normalCard.Set("Normal", "Pour découvrir le jeu.", null, new Color(0.35f, 0.6f, 0.35f), lobby.Difficulty == DifficultyLevel.Normal, null);
-                SetInteractable(normalCard.Button, isServer);
+                normalCard.Root?.SetEnabled(isServer);
             }
             if (hardCard != null)
             {
                 hardCard.Set("Difficile", "Pour les vétérans.", null, new Color(0.75f, 0.25f, 0.2f), lobby.Difficulty == DifficultyLevel.Hard,
                     hardUnlocked ? null : LockText(MetaProgression.HardModeChallenge));
-                SetInteractable(hardCard.Button, isServer && hardUnlocked);
+                hardCard.Root?.SetEnabled(isServer && hardUnlocked);
             }
-            if (difficultyDescription != null)
-                difficultyDescription.text = (lobby.Difficulty == DifficultyLevel.Hard ? HardDescription : NormalDescription)
-                                             + (isServer ? string.Empty : "\n<size=80%><i>Choisie par l'hôte.</i></size>")
-                                             + (isServer && !hardUnlocked ? "\n<size=80%><i>Difficile : débloqué après une première victoire.</i></size>" : string.Empty);
+            MenuUi.SetText(difficultyDescription, (lobby.Difficulty == DifficultyLevel.Hard ? HardDescription : NormalDescription)
+                                                  + (isServer ? string.Empty : "\n<i>Choisie par l'hôte.</i>")
+                                                  + (isServer && !hardUnlocked ? "\n<i>Difficile : débloqué après une première victoire.</i>" : string.Empty));
 
             // Start / ready
             if (isServer)
             {
-                SetInteractable(mainButton, lobby.AllGuestsReady);
-                if (mainButtonLabel != null)
-                    mainButtonLabel.text = lobby.AllGuestsReady ? "Lancer la partie" : "En attente des joueurs...";
+                mainButton?.SetEnabled(lobby.AllGuestsReady);
+                MenuUi.SetText(mainButton, lobby.AllGuestsReady ? "Lancer la partie" : "En attente des joueurs...");
             }
             else
             {
-                SetInteractable(mainButton, hasMe);
-                if (mainButtonLabel != null)
-                    mainButtonLabel.text = hasMe && me.Ready ? "Annuler « Prêt »" : "Prêt";
+                mainButton?.SetEnabled(hasMe);
+                MenuUi.SetText(mainButton, hasMe && me.Ready ? "Annuler « Prêt »" : "Prêt");
             }
         }
 
@@ -545,14 +551,15 @@ namespace RiskOfMagic.UI
                 var altSkill = character != null ? character.GetAlternative((SkillSlot)slot) : null;
                 bool usingAlt = altSkill != null && (loadout & (1 << slot)) != 0 && MetaProgression.IsUnlocked(altSkill);
                 var neutral = new Color(0.35f, 0.32f, 0.4f);
+                string key = RiskOfMagic.Player.GameInput.SkillKey(slot);
 
-                baseCard.gameObject.SetActive(baseSkill != null);
+                baseCard.SetVisible(baseSkill != null);
                 if (baseSkill != null)
-                    baseCard.Set($"<size=75%>{RiskOfMagic.Player.GameInput.SkillKey(slot)}</size>  {baseSkill.displayName}", baseSkill.description, baseSkill.icon, neutral, !usingAlt, null);
+                    baseCard.Set($"<size=75%>{key}</size>  {baseSkill.displayName}", baseSkill.description, baseSkill.icon, neutral, !usingAlt, null);
 
-                altCard.gameObject.SetActive(altSkill != null);
+                altCard.SetVisible(altSkill != null);
                 if (altSkill != null)
-                    altCard.Set($"<size=75%>{RiskOfMagic.Player.GameInput.SkillKey(slot)} · alt.</size>  {altSkill.displayName}", altSkill.description, altSkill.icon, neutral, usingAlt,
+                    altCard.Set($"<size=75%>{key} · alt.</size>  {altSkill.displayName}", altSkill.description, altSkill.icon, neutral, usingAlt,
                         LockText(altSkill));
             }
         }
@@ -563,11 +570,16 @@ namespace RiskOfMagic.UI
         {
             if (!lobby)
                 sentInitialLoadout = false;
+            if (options.IsOpen)
+                options.Close();
+            if (journal.IsOpen)
+                journal.Close();
             ShowHome(!lobby);
-            if (screenTitle != null)
-                screenTitle.SetActive(lobby);
-            if (lobbyScreen != null)
-                lobbyScreen.SetActive(lobby);
+            MenuUi.SetShown(lobbyScreen, lobby, animate: true);
+            if (characterPreview != null)
+                characterPreview.gameObject.SetActive(lobby); // renders only while visible
+            if (lobby)
+                MenuUi.Focus(mainButton);
             RefreshLobby();
         }
 
@@ -576,33 +588,12 @@ namespace RiskOfMagic.UI
             busy = value;
             if (message != null)
                 SetStatus(message);
-            foreach (var button in new[] { soloButton, multiplayerButton, hostButton, joinButton })
-                if (button != null)
-                    button.interactable = !value && (button == soloButton || button == multiplayerButton || OnlineSessions.IsAvailable);
+            soloButton?.SetEnabled(!value);
+            multiplayerButton?.SetEnabled(!value);
+            hostButton?.SetEnabled(!value && OnlineSessions.IsAvailable);
+            joinButton?.SetEnabled(!value && OnlineSessions.IsAvailable);
         }
 
-        private void SetStatus(string message)
-        {
-            if (statusLabel != null)
-                statusLabel.text = message ?? string.Empty;
-        }
-
-        private void Tint(UnityEngine.UI.Button button, bool selected)
-        {
-            if (button != null && theme != null && button.targetGraphic != null)
-                button.targetGraphic.color = selected ? theme.buttonSelectedColor : theme.buttonColor;
-        }
-
-        private static void SetInteractable(UnityEngine.UI.Button button, bool value)
-        {
-            if (button != null)
-                button.interactable = value;
-        }
-
-        private static void AddListener(UnityEngine.UI.Button button, UnityEngine.Events.UnityAction action)
-        {
-            if (button != null)
-                button.onClick.AddListener(action);
-        }
+        private void SetStatus(string message) => MenuUi.SetText(statusLabel, message);
     }
 }

@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Styles/Menus.uss" />
+    <ui:Template name="Options" src="Options.uxml" />
+    <ui:VisualElement name="pauseScreen" class="screen overlay centered hidden">
+        <ui:VisualElement name="main" class="panel pause-panel">
+            <ui:Label text="PAUSE" class="pause-title" />
+            <ui:Label name="subtitleLabel" text="Jeu en pause" class="pause-subtitle muted" />
+            <ui:Button name="resumeButton" text="Reprendre" class="pause-button" />
+            <ui:Button name="optionsButton" text="Options" class="pause-button" />
+            <ui:Button name="abandonButton" text="Abandonner la partie" class="pause-button" />
+            <ui:Button name="menuButton" text="Retour au menu" class="pause-button" />
+            <ui:Button name="quitButton" text="Quitter le jeu" class="pause-button" />
+            <ui:Button name="forceWaveButton" text="[Debug] Forcer une vague" class="pause-button pause-button--debug" />
+        </ui:VisualElement>
+        <ui:VisualElement name="confirm" class="panel confirm-panel hidden">
+            <ui:Label name="confirmLabel" text="Confirmer ?" class="confirm-message" />
+            <ui:VisualElement class="confirm-buttons">
+                <ui:Button name="confirmYesButton" text="Oui" />
+                <ui:Button name="confirmNoButton" text="Non" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Instance template="Options" name="options" class="screen hidden" />
+    </ui:VisualElement>
+</ui:UXML>

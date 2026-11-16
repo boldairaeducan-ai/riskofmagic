@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Styles/Menus.uss" />
+    <ui:VisualElement name="loadingScreen" class="screen loading" picking-mode="Ignore">
+        <ui:VisualElement name="background" class="menu-background" picking-mode="Ignore" />
+        <ui:Label name="label" text="Chargement…" class="loading-label" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

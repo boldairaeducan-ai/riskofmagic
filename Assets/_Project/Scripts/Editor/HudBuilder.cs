@@ -852,60 +852,21 @@ namespace RiskOfMagic.Editor
             });
         }
 
+        /// <summary>Pause menu: UI Toolkit document (UI/Menus/PauseMenu.uxml) on the shared menu panel.</summary>
         private static void BuildPauseMenu(RectTransform parent)
         {
-            var screen = Stretch("PauseMenu", parent);
-            var group = screen.gameObject.AddComponent<CanvasGroup>();
-            group.alpha = 0f;
-            group.interactable = false;
-            group.blocksRaycasts = false;
-            Themed(screen, null, HudColor.Overlay);
-
-            var main = Rect("Main", screen, Center, Center, Vector2.zero, new Vector2(460f, 600f));
-            Themed(main, HudSprite.Panel, HudColor.Panel);
-            Text(Rect("Title", main, TopCenter, TopCenter, new Vector2(0f, -20f), new Vector2(420f, 64f)), null,
-                "PAUSE", 54f, HudFont.Title, HudColor.Accent, TextAlignmentOptions.Center);
-            var subtitle = Text(Rect("Subtitle", main, TopCenter, TopCenter, new Vector2(0f, -84f), new Vector2(420f, 30f)), null,
-                "Jeu en pause", 20f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.Center);
-            var buttons = Rect("Buttons", main, TopCenter, TopCenter, new Vector2(0f, -130f), new Vector2(380f, 450f));
-            VerticalLayout(buttons.gameObject, 0, 12f);
-            var resume = Button(buttons, "ResumeButton", "Reprendre", 56f);
-            var options = Button(buttons, "OptionsButton", "Options", 56f);
-            var abandon = Button(buttons, "AbandonButton", "Abandonner la partie", 56f);
-            var menu = Button(buttons, "MenuButton", "Retour au menu", 56f);
-            var quit = Button(buttons, "QuitButton", "Quitter le jeu", 56f);
-            var wave = Button(buttons, "ForceWaveButton", "[Debug] Forcer une vague", 44f);
-
-            var confirm = Rect("Confirm", screen, Center, Center, Vector2.zero, new Vector2(620f, 280f));
-            Themed(confirm, HudSprite.Panel, HudColor.Panel);
-            var confirmLabel = Text(Rect("Message", confirm, TopCenter, TopCenter, new Vector2(0f, -24f), new Vector2(580f, 150f)), null,
-                "Confirmer ?", 26f, HudFont.Body, HudColor.Text, TextAlignmentOptions.Center);
-            var yes = Button(confirm, "YesButton", "Oui", 0f);
-            PlaceButton(yes, new Vector2(-135f, 28f));
-            var no = Button(confirm, "NoButton", "Non", 0f);
-            PlaceButton(no, new Vector2(135f, 28f));
-            confirm.gameObject.SetActive(false);
-
-            var optionsMenu = MainMenuBuilder.BuildOptions(screen);
-
-            var widget = screen.gameObject.AddComponent<PauseMenu>();
+            var ui = MenuUiBuilder.EnsureAssets();
+            var go = new GameObject("PauseMenu");
+            go.transform.SetParent(parent, false);
+            var document = go.AddComponent<UnityEngine.UIElements.UIDocument>();
+            document.panelSettings = ui.panelSettings;
+            document.visualTreeAsset = ui.pauseMenu;
+            var widget = go.AddComponent<PauseMenu>();
             Props(widget, so =>
             {
                 so.FindProperty("theme").objectReferenceValue = theme;
-                so.FindProperty("group").objectReferenceValue = group;
-                so.FindProperty("mainPanel").objectReferenceValue = main.gameObject;
-                so.FindProperty("subtitleLabel").objectReferenceValue = subtitle;
-                so.FindProperty("resumeButton").objectReferenceValue = resume;
-                so.FindProperty("optionsButton").objectReferenceValue = options;
-                so.FindProperty("abandonButton").objectReferenceValue = abandon;
-                so.FindProperty("menuButton").objectReferenceValue = menu;
-                so.FindProperty("quitButton").objectReferenceValue = quit;
-                so.FindProperty("forceWaveButton").objectReferenceValue = wave;
-                so.FindProperty("options").objectReferenceValue = optionsMenu;
-                so.FindProperty("confirmPanel").objectReferenceValue = confirm.gameObject;
-                so.FindProperty("confirmLabel").objectReferenceValue = confirmLabel;
-                so.FindProperty("confirmYesButton").objectReferenceValue = yes;
-                so.FindProperty("confirmNoButton").objectReferenceValue = no;
+                so.FindProperty("document").objectReferenceValue = document;
+                so.FindProperty("assets").objectReferenceValue = ui;
             });
         }
 

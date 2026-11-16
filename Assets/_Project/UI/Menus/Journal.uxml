@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Styles/Menus.uss" />
+    <ui:VisualElement name="journalScreen" class="modal-screen overlay">
+        <ui:VisualElement class="panel journal-panel">
+            <ui:Label text="Journal" class="panel__title" />
+            <ui:VisualElement class="tabs">
+                <ui:Button name="statsTab" text="Statistiques" class="tab" />
+                <ui:Button name="challengesTab" text="Défis" class="tab" />
+                <ui:Button name="itemsTab" text="Objets" class="tab" />
+                <ui:Button name="bestiaryTab" text="Bestiaire" class="tab" />
+            </ui:VisualElement>
+            <ui:ScrollView name="scroll" class="journal-scroll" horizontal-scroller-visibility="Hidden">
+                <ui:Label name="content" class="journal-content" />
+            </ui:ScrollView>
+            <ui:VisualElement class="journal-footer">
+                <ui:Button name="backButton" text="Retour" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="row" class="option-row">
+        <ui:Label name="label" text="Option" class="option-row__label" />
+        <ui:VisualElement class="option-row__control">
+            <ui:Label name="state" text="Activé" class="option-row__state muted" />
+            <ui:Button name="switch" class="switch">
+                <ui:VisualElement class="switch__knob" picking-mode="Ignore" />
+            </ui:Button>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

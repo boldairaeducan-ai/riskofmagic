@@ -3,68 +3,89 @@ using System.Text;
 using RiskOfMagic.Core;
 using RiskOfMagic.Items;
 using RiskOfMagic.Meta;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 namespace RiskOfMagic.UI
 {
-    /// <summary>Main menu journal: statistics, challenges, items, bestiary (local profile). Text pages for now.</summary>
-    public class JournalMenu : MonoBehaviour
+    /// <summary>
+    /// Main menu journal (Journal.uxml): statistics, challenges, items, bestiary of the local profile, as rich text pages.
+    /// To add a page: a tab button in Journal.uxml, an entry in <see cref="Tab"/>, its name in the constructor and a
+    /// page builder in Show().
+    /// </summary>
+    public sealed class JournalScreen
     {
         private enum Tab { Stats, Challenges, Items, Bestiary }
 
-        [SerializeField] private HudTheme theme;
-        [SerializeField] private Button statsTab;
-        [SerializeField] private Button challengesTab;
-        [SerializeField] private Button itemsTab;
-        [SerializeField] private Button bestiaryTab;
-        [SerializeField] private TMP_Text content;
-        [SerializeField] private ScrollRect scroll;
-        [SerializeField] private Button backButton;
+        private const string ActiveTabClass = "tab--active";
 
+        private readonly VisualElement root;
+        private readonly Button[] tabButtons;
+        private readonly Label content;
+        private readonly ScrollView scroll;
         private Action onClosed;
         private Tab tab;
 
-        private void Awake()
+        public bool IsOpen => MenuUi.IsShown(root);
+
+        public JournalScreen(VisualElement root)
         {
-            Listen(statsTab, () => Show(Tab.Stats));
-            Listen(challengesTab, () => Show(Tab.Challenges));
-            Listen(itemsTab, () => Show(Tab.Items));
-            Listen(bestiaryTab, () => Show(Tab.Bestiary));
-            Listen(backButton, Close);
+            this.root = root;
+            tabButtons = new[]
+            {
+                MenuUi.Require<Button>(root, "statsTab"),
+                MenuUi.Require<Button>(root, "challengesTab"),
+                MenuUi.Require<Button>(root, "itemsTab"),
+                MenuUi.Require<Button>(root, "bestiaryTab")
+            };
+            for (int i = 0; i < tabButtons.Length; i++)
+            {
+                var target = (Tab)i;
+                if (tabButtons[i] != null)
+                    tabButtons[i].clicked += () => Show(target);
+            }
+            content = MenuUi.Require<Label>(root, "content");
+            if (content != null)
+                content.enableRichText = true;
+            scroll = MenuUi.Require<ScrollView>(root, "scroll");
+            var back = MenuUi.Require<Button>(root, "backButton");
+            if (back != null)
+                back.clicked += Close;
+            MenuSounds.Register(root);
         }
 
         public void Open(Action closed)
         {
             onClosed = closed;
-            gameObject.SetActive(true);
+            MenuUi.Show(root);
             Show(tab);
         }
 
         public void Close()
         {
-            gameObject.SetActive(false);
-            onClosed?.Invoke();
+            if (!IsOpen)
+                return;
+            MenuUi.Hide(root);
+            var closed = onClosed;
+            onClosed = null;
+            closed?.Invoke();
         }
 
         private void Show(Tab next)
         {
             tab = next;
-            Tint(statsTab, tab == Tab.Stats);
-            Tint(challengesTab, tab == Tab.Challenges);
-            Tint(itemsTab, tab == Tab.Items);
-            Tint(bestiaryTab, tab == Tab.Bestiary);
-            if (content != null)
-                content.text = tab switch
-                {
-                    Tab.Challenges => ChallengesPage(),
-                    Tab.Items => ItemsPage(),
-                    Tab.Bestiary => BestiaryPage(),
-                    _ => StatsPage()
-                };
+            for (int i = 0; i < tabButtons.Length; i++)
+                tabButtons[i]?.EnableInClassList(ActiveTabClass, i == (int)tab);
+            MenuUi.SetText(content, tab switch
+            {
+                Tab.Challenges => ChallengesPage(),
+                Tab.Items => ItemsPage(),
+                Tab.Bestiary => BestiaryPage(),
+                _ => StatsPage()
+            });
             if (scroll != null)
-                scroll.verticalNormalizedPosition = 1f;
+                scroll.scrollOffset = Vector2.zero;
+            MenuUi.Focus(tabButtons[(int)tab]);
         }
 
         private static string StatsPage()
@@ -172,19 +193,6 @@ namespace RiskOfMagic.UI
                 builder.AppendLine($"<b>{enemy.displayName}</b>{boss} — {enemy.maxHealth:0} PV de base · tués : {MetaProgression.GetEnemyKills(enemy):N0}");
             }
             return builder.ToString();
-        }
-
-        private void Tint(Button button, bool selected)
-        {
-            if (button == null || theme == null || button.targetGraphic == null)
-                return;
-            button.targetGraphic.color = selected ? theme.buttonSelectedColor : theme.buttonColor;
-        }
-
-        private static void Listen(Button button, UnityEngine.Events.UnityAction action)
-        {
-            if (button != null)
-                button.onClick.AddListener(action);
         }
     }
 }

@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="row" class="option-row">
+        <ui:Label name="label" text="Action" class="option-row__label" />
+        <ui:VisualElement class="option-row__control">
+            <ui:Label name="category" text="Catégorie" class="option-row__category muted" />
+            <ui:Button name="key" text="Touche" class="key-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

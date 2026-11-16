@@ -1,0 +1,20 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Styles/Menus.uss" />
+    <ui:VisualElement name="optionsScreen" class="modal-screen overlay">
+        <ui:VisualElement class="panel options-panel">
+            <ui:VisualElement class="options-header">
+                <ui:Label text="Options" class="panel__heading" />
+                <ui:Label text="Tab / LB · RB : onglet   ·   Échap : retour" class="muted small" />
+            </ui:VisualElement>
+            <ui:VisualElement name="tabs" class="tabs" />
+            <ui:VisualElement class="separator" />
+            <ui:ScrollView name="pages" class="options-scroll" horizontal-scroller-visibility="Hidden" />
+            <ui:VisualElement class="separator" />
+            <ui:Label name="hint" class="option-hint muted" />
+            <ui:VisualElement class="options-footer">
+                <ui:Button name="resetButton" text="Réinitialiser" class="menu-entry" />
+                <ui:Button name="backButton" text="Retour" class="menu-entry" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

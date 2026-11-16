@@ -1,0 +1,214 @@
+/*
+ * Risk of Magic — menu theme.
+ * Design tokens (colors, sizes, spacing) + base look of the UI Toolkit core controls.
+ * Change the look of every menu here; screen layouts live in Menus.uss.
+ */
+
+:root {
+    --color-panel: rgba(13, 13, 20, 0.86);
+    --color-panel-strong: rgba(9, 8, 13, 0.96);
+    --color-band: rgba(9, 8, 13, 0.78);
+    --color-frame: rgb(191, 166, 115);
+    --color-frame-dim: rgba(191, 166, 115, 0.35);
+    --color-text: rgb(242, 237, 224);
+    --color-text-muted: rgb(178, 173, 158);
+    --color-text-disabled: rgba(178, 173, 158, 0.45);
+    --color-accent: rgb(242, 191, 77);
+    --color-accent-soft: rgba(242, 191, 77, 0.18);
+    --color-button: rgba(51, 46, 38, 0.95);
+    --color-button-hover: rgba(82, 70, 48, 0.98);
+    --color-button-selected: rgb(140, 102, 38);
+    --color-danger: rgb(230, 80, 70);
+    --color-success: rgb(112, 208, 112);
+    --color-overlay: rgba(8, 5, 12, 0.72);
+    --color-track: rgba(0, 0, 0, 0.6);
+    --color-row-hover: rgba(242, 237, 224, 0.07);
+
+    --font-small: 15px;
+    --font-body: 20px;
+    --font-large: 26px;
+    --font-title: 40px;
+    --font-hero: 92px;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 48px;
+
+    --radius: 4px;
+    --transition-fast: 0.12s;
+    --transition: 0.22s;
+
+    -unity-font: url("project://database/Assets/TextMesh%20Pro/Fonts/LiberationSans.ttf");
+    color: var(--color-text);
+    font-size: var(--font-body);
+}
+
+/* ------------------------------------------------------------------ Text */
+
+.unity-label {
+    color: var(--color-text);
+}
+
+/* ------------------------------------------------------------------ Button */
+
+.unity-button {
+    background-color: var(--color-button);
+    color: var(--color-text);
+    font-size: var(--font-body);
+    padding: var(--space-sm) var(--space-md);
+    margin: 0;
+    border-width: 1px;
+    border-color: var(--color-frame-dim);
+    border-radius: var(--radius);
+    -unity-text-align: middle-center;
+    transition-duration: var(--transition-fast);
+}
+
+.unity-button:hover {
+    background-color: var(--color-button-hover);
+    border-color: var(--color-frame);
+}
+
+.unity-button:focus {
+    border-color: var(--color-accent);
+}
+
+.unity-button:active {
+    background-color: var(--color-button-selected);
+    scale: 0.98 0.98;
+}
+
+.unity-button:disabled {
+    color: var(--color-text-disabled);
+    background-color: rgba(40, 38, 34, 0.6);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+/* ------------------------------------------------------------------ Text field */
+
+.unity-base-field__label {
+    display: none;
+}
+
+.unity-base-text-field__input {
+    background-color: var(--color-track);
+    color: var(--color-text);
+    font-size: var(--font-large);
+    padding: var(--space-sm) var(--space-md);
+    border-width: 1px;
+    border-color: var(--color-frame-dim);
+    border-radius: var(--radius);
+    --unity-cursor-color: var(--color-accent);
+    --unity-selection-color: rgba(242, 191, 77, 0.4);
+}
+
+.unity-base-text-field:focus > .unity-base-text-field__input {
+    border-color: var(--color-accent);
+}
+
+.unity-base-text-field__input--placeholder {
+    color: var(--color-text-disabled);
+}
+
+/* ------------------------------------------------------------------ Slider (also used by scroll bars) */
+
+.unity-base-slider__input {
+    flex-grow: 1;
+}
+
+.unity-base-slider__drag-container {
+    flex-grow: 1;
+}
+
+.unity-base-slider__dragger-border {
+    display: none;
+}
+
+.unity-base-slider--horizontal {
+    height: 28px;
+}
+
+.unity-base-slider--horizontal .unity-base-slider__tracker {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 6px;
+    margin-top: -3px;
+    background-color: var(--color-track);
+    border-radius: 3px;
+}
+
+.unity-base-slider--horizontal .unity-base-slider__dragger {
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    border-radius: 10px;
+    background-color: var(--color-text);
+    transition-duration: var(--transition-fast);
+}
+
+.unity-base-slider:hover .unity-base-slider__dragger,
+.unity-base-slider:focus .unity-base-slider__dragger {
+    background-color: var(--color-accent);
+}
+
+.unity-base-slider--vertical .unity-base-slider__tracker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    margin-left: -2px;
+    background-color: var(--color-track);
+    border-radius: 2px;
+}
+
+.unity-base-slider--vertical .unity-base-slider__dragger {
+    position: absolute;
+    left: 50%;
+    width: 6px;
+    margin-left: -3px;
+    border-radius: 3px;
+    background-color: var(--color-frame-dim);
+}
+
+/* ------------------------------------------------------------------ Scroll view */
+
+.unity-scroll-view {
+    overflow: hidden;
+}
+
+.unity-scroll-view__content-and-vertical-scroll-container {
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.unity-scroll-view__content-viewport {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+}
+
+.unity-scroll-view__content-container {
+    flex-shrink: 0;
+}
+
+.unity-scroll-view__vertical-scroller {
+    width: 12px;
+    margin-left: var(--space-xs);
+}
+
+.unity-scroller__slider {
+    flex-grow: 1;
+}
+
+.unity-scroller__low-button,
+.unity-scroller__high-button {
+    display: none;
+}

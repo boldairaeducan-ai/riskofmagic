@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="row" class="option-row">
+        <ui:Label name="label" text="Option" class="option-row__label" />
+        <ui:VisualElement class="option-row__control">
+            <ui:Slider name="slider" low-value="0" high-value="1" class="option-slider" />
+            <ui:Label name="value" text="100%" class="option-row__slider-value" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

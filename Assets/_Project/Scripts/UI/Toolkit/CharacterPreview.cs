@@ -1,15 +1,14 @@
 using RiskOfMagic.Characters;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.UI;
 
 namespace RiskOfMagic.UI
 {
     /// <summary>
-    /// Turntable preview of a character rendered into a RawImage: the CharacterDefinition.modelPrefab, or a capsule
-    /// placeholder in the character's color. The stage (camera, light, pedestal) is created far below the menu scene.
+    /// Turntable preview of a character rendered into <see cref="Texture"/> (shown by the lobby UI): the
+    /// CharacterDefinition.modelPrefab, or a capsule placeholder in the character's color. The stage (camera, light,
+    /// pedestal) is created far below the menu scene and only renders while this component is enabled.
     /// </summary>
-    [RequireComponent(typeof(RawImage))]
     public class CharacterPreview : MonoBehaviour
     {
         [SerializeField] private Vector3 stagePosition = new(0f, -500f, 0f);
@@ -21,8 +20,9 @@ namespace RiskOfMagic.UI
         [SerializeField, Tooltip("Clear to transparent (the model floats over the menu).")] private bool transparentBackground;
         [SerializeField] private bool showPedestal = true;
 
-        private RawImage image;
         private RenderTexture texture;
+
+        public RenderTexture Texture => texture;
         private GameObject stage;
         private Transform pivot;
         private GameObject current;
@@ -31,10 +31,7 @@ namespace RiskOfMagic.UI
 
         private void Awake()
         {
-            image = GetComponent<RawImage>();
             texture = new RenderTexture(resolution.x, resolution.y, 24) { name = "CharacterPreview", antiAliasing = 4 };
-            image.texture = texture;
-            image.color = Color.white;
             BuildStage();
         }
 
