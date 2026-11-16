@@ -89,7 +89,7 @@ namespace RiskOfMagic.Editor.Models
             // Keep the weapon's own world size whatever the bone scale (the model was scaled to its height).
             Vector3 lossy = bone.lossyScale;
             weapon.transform.localScale = new Vector3(1f / Mathf.Max(0.0001f, lossy.x), 1f / Mathf.Max(0.0001f, lossy.y), 1f / Mathf.Max(0.0001f, lossy.z))
-                                          * attachment.scale;
+                                          * (attachment.scale > 0f ? attachment.scale : 1f); // 0 = list element added in the inspector
         }
 
         /// <summary>

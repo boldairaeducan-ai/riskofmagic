@@ -36,7 +36,7 @@ namespace RiskOfMagic.Editor.Models
             public AttachAlignment alignment = AttachAlignment.HandGrip;
             public Vector3 localPosition;
             public Vector3 localEulerAngles;
-            public float scale = 1f;
+            [Tooltip("1 = the weapon's own size (0 is treated as 1).")] public float scale = 1f;
         }
 
         [Serializable]
