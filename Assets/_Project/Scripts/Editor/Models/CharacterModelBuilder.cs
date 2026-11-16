@@ -300,7 +300,10 @@ namespace RiskOfMagic.Editor.Models
             controller.layers = layers;
 
             var machine = layer.stateMachine;
+            // Write Defaults off on this layer: an empty humanoid state would otherwise force the upper body into the
+            // default muscle pose (arms half bent, the « T-pose » look) instead of letting the base layer through.
             var empty = machine.AddState("Empty");
+            empty.writeDefaultValues = false;
             machine.defaultState = empty;
 
             foreach (var action in recipe.actions)
@@ -309,6 +312,7 @@ namespace RiskOfMagic.Editor.Models
                     continue;
                 var state = machine.AddState(action.index >= 0 ? $"{action.trigger}_{action.index}" : action.trigger);
                 state.motion = action.clip;
+                state.writeDefaultValues = false;
                 if (action.matchCastDuration)
                 {
                     // Clip normalized to 1 s, then scaled live by ActionSpeed (= 1 / action duration).
@@ -330,6 +334,7 @@ namespace RiskOfMagic.Editor.Models
             {
                 var state = machine.AddState("UseEquipment");
                 state.motion = recipe.useEquipment;
+                state.writeDefaultValues = false;
                 var enter = machine.AddAnyStateTransition(state);
                 enter.AddCondition(AnimatorConditionMode.If, 0f, "UseEquipment");
                 enter.duration = 0.05f;
