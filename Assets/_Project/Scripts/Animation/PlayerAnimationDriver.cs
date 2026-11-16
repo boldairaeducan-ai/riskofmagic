@@ -26,6 +26,9 @@ namespace RiskOfMagic.Animation
         private GameObject viewModel;
         private ProceduralViewModel proceduralView;
         private ProceduralHumanoidMotion procedural;
+        private Quaternion modelRestRotation;
+        private bool controllerHasFall; // Death / Downed states exist: no fallback topple
+        private float topple;
         private Vector3 lastPosition;
         private Vector3 smoothedVelocity;
         private bool wasGrounded = true;
@@ -108,10 +111,17 @@ namespace RiskOfMagic.Animation
                     foreach (var r in model.GetComponentsInChildren<Renderer>(true))
                         r.shadowCastingMode = ShadowCastingMode.ShadowsOnly; // own body: shadow only in first person
                 // No Animator Controller (model without clips yet): animated by code.
+                modelRestRotation = model.transform.localRotation;
+                topple = 0f;
                 if (ProceduralHumanoidMotion.CanDrive(model))
                     procedural = model.AddComponent<ProceduralHumanoidMotion>();
                 else
+                {
                     animators.AddFrom(model);
+                    var animator = model.GetComponentInChildren<Animator>();
+                    controllerHasFall = animator != null && animator.runtimeAnimatorController != null
+                                        && (animator.HasState(0, Animator.StringToHash("Death")) || animator.HasState(0, Animator.StringToHash("Downed")));
+                }
             }
             if (character.viewModelPrefab != null && avatar.IsOwner && avatar.Look.Camera != null)
             {
@@ -177,11 +187,22 @@ namespace RiskOfMagic.Animation
             animators.SetBool(AnimParams.Grounded, grounded);
             animators.SetBool(AnimParams.Downed, avatar.IsDowned);
             animators.SetBool(AnimParams.Dead, !avatar.IsAlive);
+            UpdateFallbackTopple(dt);
             if (avatar.IsOwner)
             {
                 animators.SetFloat(AnimParams.AimPitch, avatar.Look.Pitch);
                 animators.SetBool(AnimParams.Sprinting, avatar.Motor != null && avatar.Motor.IsSprinting);
             }
+        }
+
+        /// <summary>Controller without Death / Downed clips: the model simply falls backwards while down.</summary>
+        private void UpdateFallbackTopple(float dt)
+        {
+            if (model == null || procedural != null || controllerHasFall)
+                return;
+            bool down = !avatar.IsAlive || avatar.IsDowned;
+            topple = Mathf.MoveTowards(topple, down ? 1f : 0f, dt * (down ? 2.5f : 4f));
+            model.transform.localRotation = modelRestRotation * Quaternion.Euler(-85f * topple * topple, 0f, 0f);
         }
 
         private void OnDamaged(DamageInfo info)

@@ -42,7 +42,24 @@ reconstruit.
 
 ## 2. Récupérer des animations
 
-Le pack Mercenary (et le Frog Marauder) **ne contiennent aucune animation**. Sources gratuites :
+Le pack Mercenary (et le Frog Marauder) **ne contiennent aucune animation**. Elles viennent d'ailleurs.
+
+### Pack déjà dans le projet : DoubleL (`Assets/DoubleL`)
+Clips **Humanoid**, donc utilisables sur n'importe quel modèle Humanoid. Utiliser ceux de `FBX Unity`, pas ceux de
+`FBX Unreal`, et de préférence les versions **InPlace** (le personnage ne se déplace pas tout seul : c'est le jeu qui
+le déplace).
+
+| Dossier (`FBX Unity/…`) | Contenu |
+|---|---|
+| `Bow/` | Idle à l'arc, deux tirs (`Bow_Attack_A_1_All`, `Bow_Attack_B_1_All`) |
+| `One Hand Up/Movement/` | Marche, course, sprint, accroupi (avant, arrière, côtés) |
+| `One Hand Up/Attack_A`, `Attack_B` | Combos à une main (épée) |
+| `One Hand Up/Jump`, `Hit/`, `Enemy Attack/` | Saut, réactions aux coups, attaques d'ennemi |
+
+Un FBX d'animation contient un clip : déplier le FBX dans la fenêtre Project (flèche) pour voir le clip (icône ▶) et le
+glisser dans la recette. Les fichiers `Demo/Anim/*.anim` sont des copies pour la scène de démo : les ignorer.
+
+### Mixamo
 
 ### Mixamo (recommandé, gratuit, compte Adobe)
 1. Sur mixamo.com → **Upload Character** : envoyer le FBX du personnage, valider l'auto-rig.
@@ -126,13 +143,29 @@ Chaque ligne associe un clip à un **déclencheur** envoyé par le jeu :
 4. Les modifications de clips → reconstruire. La fiche du personnage garde le nouveau prefab.
 
 **Sans clip Idle**, aucun controller n'est créé : le modèle est **animé par code** (`ProceduralHumanoidMotion`).
-C'est l'état actuel de l'Archer et de la Goule, en attendant des animations :
+C'est le cas de la Goule, en attendant des animations :
 - respiration au repos ;
 - marche et course ;
 - attaque : coup de hache en mêlée, tir à l'arc pour les sorts à projectiles ;
 - recul quand il est touché, chute à la mort.
 
-Dès qu'un vrai controller existe, il prend le relais automatiquement.
+Dès qu'un vrai controller existe, il prend le relais automatiquement. Sans clip *Death* ni *Downed*, un personnage
+joueur bascule simplement en arrière quand il est à terre.
+
+### Exemple : l'Archer (`Model_Archer`)
+
+| Rôle | Clip DoubleL | Réglage |
+|---|---|---|
+| Idle | `Bow_Idle_B` | — |
+| Walk | `1Hand_Up_Run_A_F_InPlace` | Walk Speed 7 (vitesse normale de l'Archer) |
+| Run | `1Hand_Up_Sprint_A_F_InPlace` | Run Speed 10 (sprint) |
+| Jump | `1Hand_Up_Jump_B_InPlace` | — |
+| Hit | `Hit_B_5_InPlace` | — |
+| `Cast` index 0 (clic gauche) | `Bow_Attack_A_1_All` | Speed 3 (tir rapide) |
+| `Cast` index 1 (clic droit) | `Bow_Attack_B_1_All` | Speed 1,5 |
+| `Cast` index 3 (spéciale) | `Bow_Attack_A_1_All` | Speed 2 |
+
+L'utilitaire (index 2 : roulade, bond) n'a volontairement pas d'action : il ne joue pas de tir.
 
 ---
 
@@ -166,7 +199,38 @@ généré, le modifier, puis :
 
 ---
 
-## 6. Dépannage
+## 6. Créer et utiliser un Animator à la main (si besoin)
+
+La recette suffit dans la plupart des cas. À la main, c'est utile pour un graphe sur mesure (strafe, combos…).
+
+1. **Créer** : Project → clic droit → *Create → Animation → Animator Controller* (ex. `Archer_Custom.controller`).
+2. **Ouvrir** : double-clic → fenêtre *Animator*. À gauche, onglet **Parameters** : ajouter, avec **exactement** ces
+   noms, ceux dont tu as besoin parmi la liste de la section 5. Par exemple `Speed` (Float), `Cast` (Trigger),
+   `SkillSlot` (Int). Le jeu ignore les paramètres absents : pas d'erreur s'il en manque.
+3. **États** :
+   - glisser un clip dans la grille crée un état ;
+   - l'état orange est celui par défaut (clic droit → *Set as Layer Default State*) : en général l'Idle ou un
+     *Blend Tree* de locomotion ;
+   - Blend Tree : clic droit → *Create State → From New Blend Tree*, double-clic, paramètre `Speed`, puis
+     *Add Motion Field* pour chaque clip, avec son seuil en m/s (décocher *Automate Thresholds*).
+4. **Transitions** :
+   - clic droit sur un état → *Make Transition* → cliquer l'état cible ;
+   - sélectionner la flèche et, dans l'Inspector :
+     - *Conditions* : ex. `Cast` + `SkillSlot Equals 0` ;
+     - **Has Exit Time** : décoché pour réagir tout de suite, coché pour un retour en fin de clip ;
+     - *Transition Duration* ≈ 0,1 s.
+   - Pour une action déclenchable depuis n'importe où, partir de **Any State**.
+5. **Haut du corps seulement** : onglet *Layers* → **+** → nouvelle couche, ⚙ → *Weight* 1 et *Mask*.
+   Le masque se crée via *Create → Avatar Mask*, en décochant les jambes dans *Humanoid*.
+6. **Utiliser** :
+   - ouvrir le prefab du modèle, sélectionner l'objet qui a le composant **Animator** ;
+   - *Controller* = ton controller, *Avatar* = l'avatar du modèle, **Apply Root Motion décoché** ;
+   - mettre ce prefab dans `modelPrefab` de la fiche du personnage ou de l'ennemi.
+   - Ne pas laisser ce prefab comme cible d'une recette : une reconstruction l'écraserait.
+7. **Tester** : Play, sélectionner le modèle dans la Hierarchy (sous le joueur ou l'ennemi) : la fenêtre Animator
+   montre en direct l'état joué et la valeur des paramètres.
+
+## 7. Dépannage
 
 | Problème | Cause probable |
 |---|---|

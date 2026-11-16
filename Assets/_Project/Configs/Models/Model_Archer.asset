@@ -24,15 +24,15 @@ MonoBehaviour:
   outputFolder: Assets/_Project/Prefabs/Models
   targetCharacter: {fileID: 11400000, guid: 18c40f11efbd2ca4ba6517b02d1ca0e8, type: 2}
   targetEnemy: {fileID: 0}
-  idle: {fileID: 0}
-  walk: {fileID: 0}
-  walkSpeed: 3
-  run: {fileID: 0}
-  runSpeed: 7
-  jump: {fileID: 0}
+  idle: {fileID: 6836563127765106943, guid: a78b0af770162f745bb80a71a9b814c9, type: 3}
+  walk: {fileID: -6848113619949682186, guid: 77cbe76379436db42afc0e47ff625926, type: 3}
+  walkSpeed: 7
+  run: {fileID: 5472839068072282397, guid: 8095384f3cbcfe54093c39e806abc290, type: 3}
+  runSpeed: 10
+  jump: {fileID: 7361425867615798983, guid: b178c30ab0c61314da2951d30369e27e, type: 3}
   fall: {fileID: 0}
   land: {fileID: 0}
-  hit: {fileID: 0}
+  hit: {fileID: -379998487791383941, guid: 542aee31f3000ee4095be9a612acd2a3, type: 3}
   death: {fileID: 0}
   downed: {fileID: 0}
   revive: {fileID: 0}
@@ -41,9 +41,13 @@ MonoBehaviour:
   actions:
   - trigger: Cast
     index: 0
-    clip: {fileID: 0}
-    speed: 1
+    clip: {fileID: -8143421071678012851, guid: a3b3ff94a9d28c24b909c1a18fab281c, type: 3}
+    speed: 3
   - trigger: Cast
-    index: -1
-    clip: {fileID: 0}
-    speed: 1
+    index: 1
+    clip: {fileID: -7954768981731889264, guid: c6204aee13b1bc845ad8859efad28955, type: 3}
+    speed: 1.5
+  - trigger: Cast
+    index: 3
+    clip: {fileID: -8143421071678012851, guid: a3b3ff94a9d28c24b909c1a18fab281c, type: 3}
+    speed: 2
