@@ -42,12 +42,15 @@ MonoBehaviour:
   - trigger: Cast
     index: 0
     clip: {fileID: -8143421071678012851, guid: a3b3ff94a9d28c24b909c1a18fab281c, type: 3}
-    speed: 3
+    matchCastDuration: 1
+    speed: 1
   - trigger: Cast
     index: 1
     clip: {fileID: -7954768981731889264, guid: c6204aee13b1bc845ad8859efad28955, type: 3}
-    speed: 1.5
+    matchCastDuration: 1
+    speed: 1
   - trigger: Cast
     index: 3
     clip: {fileID: -8143421071678012851, guid: a3b3ff94a9d28c24b909c1a18fab281c, type: 3}
-    speed: 2
+    matchCastDuration: 1
+    speed: 1

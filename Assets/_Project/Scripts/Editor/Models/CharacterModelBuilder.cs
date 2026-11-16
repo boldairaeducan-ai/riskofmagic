@@ -117,7 +117,7 @@ namespace RiskOfMagic.Editor.Models
 
         // ---------------------------------------------------------------- Animator Controller
 
-        private static readonly string[] Floats = { "Speed", "MoveX", "MoveY", "VerticalSpeed", "AimPitch" };
+        private static readonly string[] Floats = { "Speed", "MoveX", "MoveY", "VerticalSpeed", "AimPitch", "ActionSpeed" };
         private static readonly string[] Bools = { "Grounded", "Sprinting", "Downed", "Dead", "Frozen" };
         private static readonly string[] Ints = { "SkillSlot", "AttackIndex" };
         private static readonly string[] Triggers = { "Jump", "Land", "Hit", "UseEquipment", "Revive", "Spawn", "Dodge", "Leap", "Cast", "Attack" };
@@ -137,8 +137,12 @@ namespace RiskOfMagic.Editor.Models
             // Grounded starts true so a model doesn't begin in the air.
             var parameters = controller.parameters;
             foreach (var p in parameters)
+            {
                 if (p.name == "Grounded")
                     p.defaultBool = true;
+                if (p.name == "ActionSpeed")
+                    p.defaultFloat = 1f;
+            }
             controller.parameters = parameters;
 
             BuildBaseLayer(recipe, controller);
@@ -277,7 +281,15 @@ namespace RiskOfMagic.Editor.Models
                     continue;
                 var state = machine.AddState(action.index >= 0 ? $"{action.trigger}_{action.index}" : action.trigger);
                 state.motion = action.clip;
-                state.speed = action.speed;
+                if (action.matchCastDuration)
+                {
+                    // Clip normalized to 1 s, then scaled live by ActionSpeed (= 1 / action duration).
+                    state.speed = action.clip.length * action.speed;
+                    state.speedParameter = "ActionSpeed";
+                    state.speedParameterActive = true;
+                }
+                else
+                    state.speed = action.speed;
                 var enter = machine.AddAnyStateTransition(state);
                 enter.AddCondition(AnimatorConditionMode.If, 0f, action.trigger);
                 if (action.index >= 0)

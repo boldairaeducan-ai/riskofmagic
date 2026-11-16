@@ -15,6 +15,7 @@ namespace RiskOfMagic.Animation
         public static readonly int MoveY = Animator.StringToHash("MoveY");            // local forward m/s
         public static readonly int VerticalSpeed = Animator.StringToHash("VerticalSpeed");
         public static readonly int AimPitch = Animator.StringToHash("AimPitch");      // degrees, owner only
+        public static readonly int ActionSpeed = Animator.StringToHash("ActionSpeed");// 1 / duration of the current action (s)
         // Bools
         public static readonly int Grounded = Animator.StringToHash("Grounded");
         public static readonly int Sprinting = Animator.StringToHash("Sprinting");    // owner only

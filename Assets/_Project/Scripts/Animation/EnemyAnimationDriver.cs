@@ -136,6 +136,7 @@ namespace RiskOfMagic.Animation
         private void OnAttackStarted(int index, EnemyAttack attack)
         {
             animators.SetInteger(AnimParams.AttackIndex, index);
+            animators.SetFloat(AnimParams.ActionSpeed, 1f / Mathf.Max(0.15f, attack.WindupTime + attack.RecoveryTime));
             animators.SetTrigger(attack.AnimatorTrigger);
             if (procedural != null)
                 procedural.PlayAttack(attack.WindupTime, attack.RecoveryTime);

@@ -33,7 +33,10 @@ namespace RiskOfMagic.Editor.Models
             [Tooltip("-1 = any. Players: SkillSlot (0 primary … 3 special). Enemies: AttackIndex (order of the EnemyAttack components).")]
             public int index = -1;
             public AnimationClip clip;
-            [Min(0.1f)] public float speed = 1f;
+            [Tooltip("The clip lasts exactly the action: skill cast time (attack speed included, live) or enemy windup + recovery.")]
+            public bool matchCastDuration = true;
+            [Min(0.1f), Tooltip("Matched: 1 = the whole cast time, 2 = twice as fast. Otherwise: plain playback speed.")]
+            public float speed = 1f;
         }
 
         [Header("Source")]

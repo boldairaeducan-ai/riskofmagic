@@ -122,7 +122,13 @@ Chaque ligne associe un clip à un **déclencheur** envoyé par le jeu :
 - **Ennemis** : chaque attaque envoie `Attack` (champ *Animator Trigger* de la donnée d'attaque) et son rang dans
   `AttackIndex` (0 = premier composant `EnemyAttack` du prefab).
 - Index `-1` = n'importe quel emplacement. Mettre les lignes précises **avant** la ligne générique.
-- **Speed** accélère ou ralentit le clip (ex. 1,5 pour qu'une attaque colle à un sort rapide).
+- **Match Cast Duration** (coché par défaut) : le clip dure **exactement** le temps de lancement de la compétence
+  (`castDuration`), vitesse d'attaque comprise et **en temps réel**. Un bonus de vitesse d'attaque accélère donc aussi le
+  geste, même en plein tir. Pour un ennemi : préparation + récupération de l'attaque. Le jeu envoie pour cela
+  `ActionSpeed` = 1 / durée de l'action.
+- **Speed** :
+  - avec *Match Cast Duration* : 1 = le clip remplit tout le temps de lancement, 2 = il finit à mi-chemin ;
+  - sans : vitesse de lecture brute du clip.
 
 ---
 
@@ -161,9 +167,9 @@ joueur bascule simplement en arrière quand il est à terre.
 | Run | `1Hand_Up_Sprint_A_F_InPlace` | Run Speed 10 (sprint) |
 | Jump | `1Hand_Up_Jump_B_InPlace` | — |
 | Hit | `Hit_B_5_InPlace` | — |
-| `Cast` index 0 (clic gauche) | `Bow_Attack_A_1_All` | Speed 3 (tir rapide) |
-| `Cast` index 1 (clic droit) | `Bow_Attack_B_1_All` | Speed 1,5 |
-| `Cast` index 3 (spéciale) | `Bow_Attack_A_1_All` | Speed 2 |
+| `Cast` index 0 (clic gauche) | `Bow_Attack_A_1_All` | Match Cast Duration, Speed 1 |
+| `Cast` index 1 (clic droit) | `Bow_Attack_B_1_All` | Match Cast Duration, Speed 1 |
+| `Cast` index 3 (spéciale) | `Bow_Attack_A_1_All` | Match Cast Duration, Speed 1 |
 
 L'utilitaire (index 2 : roulade, bond) n'a volontairement pas d'action : il ne joue pas de tir.
 
@@ -175,7 +181,7 @@ Générés automatiquement dans chaque controller (définis dans `Scripts/Animat
 
 | Type | Paramètres |
 |---|---|
-| Float | `Speed` (m/s), `MoveX` / `MoveY` (déplacement local), `VerticalSpeed`, `AimPitch` (joueur local) |
+| Float | `Speed` (m/s), `MoveX` / `MoveY` (déplacement local), `VerticalSpeed`, `AimPitch` (joueur local), `ActionSpeed` (1 / durée de l'action en cours) |
 | Bool | `Grounded`, `Sprinting`, `Downed`, `Dead`, `Frozen` |
 | Int | `SkillSlot`, `AttackIndex` |
 | Trigger | `Cast`, `Attack`, `Hit`, `Jump`, `Land`, `UseEquipment`, `Revive`, `Spawn`, `Dodge`, `Leap` |
@@ -220,6 +226,8 @@ La recette suffit dans la plupart des cas. À la main, c'est utile pour un graph
      - **Has Exit Time** : décoché pour réagir tout de suite, coché pour un retour en fin de clip ;
      - *Transition Duration* ≈ 0,1 s.
    - Pour une action déclenchable depuis n'importe où, partir de **Any State**.
+   - Pour caler une attaque sur la vitesse d'attaque : sur l'état, *Speed* = durée du clip en secondes, cocher
+     *Multiplier → Parameter* et choisir `ActionSpeed` (paramètre Float, valeur par défaut 1).
 5. **Haut du corps seulement** : onglet *Layers* → **+** → nouvelle couche, ⚙ → *Weight* 1 et *Mask*.
    Le masque se crée via *Create → Avatar Mask*, en décochant les jambes dans *Humanoid*.
 6. **Utiliser** :

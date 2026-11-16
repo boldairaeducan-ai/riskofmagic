@@ -29,6 +29,7 @@ namespace RiskOfMagic.Animation
         private Quaternion modelRestRotation;
         private bool controllerHasFall; // Death / Downed states exist: no fallback topple
         private float topple;
+        private SkillDefinition lastSkill;
         private Vector3 lastPosition;
         private Vector3 smoothedVelocity;
         private bool wasGrounded = true;
@@ -188,6 +189,9 @@ namespace RiskOfMagic.Animation
             animators.SetBool(AnimParams.Downed, avatar.IsDowned);
             animators.SetBool(AnimParams.Dead, !avatar.IsAlive);
             UpdateFallbackTopple(dt);
+            // Live: an attack speed buff mid-shot speeds the current animation up.
+            if (lastSkill != null)
+                animators.SetFloat(AnimParams.ActionSpeed, ActionSpeed(lastSkill));
             if (avatar.IsOwner)
             {
                 animators.SetFloat(AnimParams.AimPitch, avatar.Look.Pitch);
@@ -216,15 +220,22 @@ namespace RiskOfMagic.Animation
 
         private void OnRevived() => animators.SetTrigger(AnimParams.Revive);
 
+        /// <summary>Actions built with « match cast duration » last exactly the skill's cast time (attack speed included).</summary>
+        private float ActionSpeed(SkillDefinition skill) =>
+            1f / Mathf.Max(0.15f, avatar.Stats != null ? skill.GetCastDuration(avatar.Stats) : skill.castDuration);
+
         private void OnSkillExecuted(SkillSlot slot, SkillDefinition skill)
         {
+            lastSkill = skill;
+            animators.SetFloat(AnimParams.ActionSpeed, ActionSpeed(skill));
             animators.SetInteger(AnimParams.SkillSlot, (int)slot);
             animators.SetTrigger(skill.animatorTrigger);
             if (procedural != null)
             {
                 bool ranged = skill is RiskOfMagic.Skills.Types.ProjectileSkill || skill is RiskOfMagic.Skills.Types.HomingVolleySkill
                               || skill is RiskOfMagic.Skills.Types.BolasSkill;
-                procedural.PlayAttack(ranged ? 0.18f : 0.12f, ranged ? 0.25f : 0.3f,
+                float cast = 1f / ActionSpeed(skill);
+                procedural.PlayAttack(cast * 0.45f, cast * 0.55f,
                     ranged ? ProceduralHumanoidMotion.AttackStyle.Shoot : ProceduralHumanoidMotion.AttackStyle.Swing);
             }
             if (proceduralView != null && avatar.Character != null)
