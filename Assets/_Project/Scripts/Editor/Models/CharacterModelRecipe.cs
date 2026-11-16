@@ -15,11 +15,25 @@ namespace RiskOfMagic.Editor.Models
     [CreateAssetMenu(menuName = "Risk of Magic/Character Model Recipe", fileName = "Model_New")]
     public class CharacterModelRecipe : ScriptableObject
     {
+        public enum AttachAlignment
+        {
+            /// <summary>Position / rotation in the bone's own axes (rig dependent).</summary>
+            Bone,
+            /// <summary>
+            /// Held in the fist, whatever the rig axes: the weapon's local Y goes through the fist like the thumb points
+            /// (bow limbs, sword blade, staff), its local -Z points back along the arm (bow string toward the body).
+            /// Position and rotation below are then extra offsets in that grip frame.
+            /// </summary>
+            HandGrip
+        }
+
         [Serializable]
         public class Attachment
         {
             [Tooltip("Weapon / prop prefab.")] public GameObject prefab;
             public HumanBodyBones bone = HumanBodyBones.RightHand;
+            [Tooltip("HandGrip: held in the fist (recommended for hands). Bone: raw bone axes.")]
+            public AttachAlignment alignment = AttachAlignment.HandGrip;
             public Vector3 localPosition;
             public Vector3 localEulerAngles;
             public float scale = 1f;

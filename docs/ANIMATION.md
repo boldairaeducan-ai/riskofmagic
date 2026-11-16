@@ -103,7 +103,7 @@ Liste conseillée (noms Mixamo indicatifs) :
 | **Source Model** | Prefab du pack (ex. `Mercenary_Archer.prefab`). |
 | **Height** | Taille finale en mètres (joueurs ≈ 1,8 ; 0 = taille d'origine). |
 | **Rotation** | Correction si le modèle ne regarde pas vers +Z (ex. `0, 180, 0`). |
-| **Attachments** | Armes / accessoires : prefab + **os humanoïde** (`LeftHand`, `RightHand`, `Spine`…) + position, rotation et échelle locales. |
+| **Attachments** | Armes / accessoires : prefab + **os humanoïde** (`LeftHand`, `RightHand`, `Spine`…) + **Alignment** + position, rotation et échelle. |
 | **Output Folder** | Dossier des fichiers générés (par défaut `Assets/_Project/Prefabs/Models`). |
 | **Target Character** / **Target Enemy** | La fiche qui recevra le modèle (`Configs/Characters/Character_X` ou `Configs/Enemies/Enemy_X`). |
 | **Idle / Walk / Run** + vitesses | Locomotion, mélangée selon la vitesse réelle en m/s (`Walk Speed` / `Run Speed` = vitesse à laquelle le clip semble naturel). |
@@ -139,10 +139,35 @@ Chaque ligne associe un clip à un **déclencheur** envoyé par le jeu :
    - double-clic pour l'ouvrir ;
    - contrôler que l'arme est bien en main ;
    - sinon, ajuster *Local Position / Euler Angles* dans la recette et reconstruire.
-   - **Astuce** pour trouver les bons angles :
-     1. dans le prefab ouvert, déplacer l'arme à la main jusqu'à ce qu'elle soit bien placée ;
-     2. recopier ses valeurs *Position / Rotation* dans la recette ;
-     3. reconstruire.
+
+### Tenir une arme : l'alignement **Hand Grip**
+
+Chaque squelette oriente ses os à sa façon : une rotation « locale à l'os » qui marche sur un modèle est fausse sur un
+autre. Avec **Alignment = Hand Grip** (par défaut pour les mains), l'outil ignore les axes de l'os. Il calcule un repère
+« poing fermé » à partir de la pose du modèle :
+- l'axe **Y local de l'arme** traverse le poing dans la direction du pouce : branches de l'arc, lame, manche du bâton ;
+- son axe **−Z** remonte le long du bras vers le corps : la corde de l'arc côté archer.
+
+Le centre du poing est placé un peu après le poignet.
+
+Les valeurs *Local Position / Euler Angles* sont alors des corrections **dans ce repère** :
+
+| Correction | Réglage |
+|---|---|
+| Arme à l'envers (pointe vers le bas) | Euler `0, 0, 180` |
+| Arme qui tourne autour du poing (corde vers l'extérieur) | Euler `0, 180, 0` |
+| Arme penchée vers l'avant / l'arrière | Euler X ±15 à 30 |
+| Prise trop haute / trop basse sur le manche | Position Y ± quelques cm (ex. `0, -0.1, 0`) |
+| Arme dans les doigts au lieu de la paume | Position Z négative (ex. `0, 0, -0.03`) |
+
+L'alignement suppose que la pose de repos du modèle a les paumes vers le bas (T-pose / A-pose classique). Si l'arme
+est tournée d'un quart de tour autour du bras, corriger avec Euler Z ±90.
+
+Avec **Alignment = Bone**, les valeurs sont dans les axes bruts de l'os (pour un accessoire non tenu : carquois dans le
+dos sur `Chest`, etc.). Astuce pour trouver les bonnes valeurs :
+1. dans le prefab ouvert, déplacer l'objet à la main jusqu'à ce qu'il soit bien placé ;
+2. recopier ses valeurs *Position / Rotation* dans la recette ;
+3. reconstruire.
 3. Play depuis `Scenes/MainMenu`, choisir le personnage. Le modèle n'est visible **que des autres joueurs** et en
    ombre pour soi (vue à la première personne) : tester avec deux instances (*Multiplayer Play Mode*), ou en
    regardant son ombre. Pour un ennemi, il suffit de le croiser.
@@ -247,5 +272,6 @@ La recette suffit dans la plupart des cas. À la main, c'est utile pour un graph
 | Il avance en marchant sur place puis « recule » | *Root Transform Position (XZ)* non baké, ou clip sans **In Place**. |
 | Il regarde de côté | Champ **Rotation** de la recette (ex. `0, 90, 0`). |
 | L'arme flotte ou est géante | Mauvais os ou échelle : vérifier `Bone` et `Scale` de l'attachement. |
+| L'arme est tenue de travers | *Alignment* = **Hand Grip**, puis corrections Euler (voir « Tenir une arme »). |
 | Rose / magenta | Matériau non URP : *Window → Rendering → Render Pipeline Converter*, ou assigner un matériau URP/Lit. |
 | « bone … not found » dans la console | Le Rig n'est pas en Humanoid ou l'os n'est pas mappé (Configure… dans l'onglet Rig). |

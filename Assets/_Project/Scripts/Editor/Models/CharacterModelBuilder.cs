@@ -79,12 +79,40 @@ namespace RiskOfMagic.Editor.Models
                 return;
             }
             var weapon = (GameObject)PrefabUtility.InstantiatePrefab(attachment.prefab, bone);
-            weapon.transform.localPosition = attachment.localPosition;
-            weapon.transform.localRotation = Quaternion.Euler(attachment.localEulerAngles);
+            if (attachment.alignment == CharacterModelRecipe.AttachAlignment.HandGrip)
+                PlaceInFist(instance.transform, animator, bone, attachment, weapon.transform);
+            else
+            {
+                weapon.transform.localPosition = attachment.localPosition;
+                weapon.transform.localRotation = Quaternion.Euler(attachment.localEulerAngles);
+            }
             // Keep the weapon's own world size whatever the bone scale (the model was scaled to its height).
             Vector3 lossy = bone.lossyScale;
             weapon.transform.localScale = new Vector3(1f / Mathf.Max(0.0001f, lossy.x), 1f / Mathf.Max(0.0001f, lossy.y), 1f / Mathf.Max(0.0001f, lossy.z))
                                           * attachment.scale;
+        }
+
+        /// <summary>
+        /// Grip frame computed from the bind pose: fingers = forearm → hand direction, thumb = perpendicular to the
+        /// fingers and the down vector (palm down in a T / A pose). Weapon Y → thumb, weapon Z → fingers.
+        /// </summary>
+        private static void PlaceInFist(Transform model, Animator animator, Transform hand, CharacterModelRecipe.Attachment attachment, Transform weapon)
+        {
+            bool left = attachment.bone == HumanBodyBones.LeftHand;
+            var lowerArm = animator.isHuman ? animator.GetBoneTransform(left ? HumanBodyBones.LeftLowerArm : HumanBodyBones.RightLowerArm) : null;
+            if (lowerArm == null)
+                lowerArm = hand.parent;
+            Vector3 forearm = hand.position - lowerArm.position;
+            Vector3 fingers = hand.childCount > 0 && (hand.GetChild(0).position - hand.position).sqrMagnitude > 0.0001f
+                ? (hand.GetChild(0).position - hand.position).normalized
+                : forearm.normalized;
+            Vector3 thumb = Vector3.Cross(fingers, -model.up).normalized * (left ? 1f : -1f);
+            if (thumb.sqrMagnitude < 0.01f)
+                thumb = model.forward;
+            var grip = Quaternion.LookRotation(fingers, thumb);
+            float handLength = forearm.magnitude * 0.35f;
+            weapon.position = hand.position + fingers * handLength + grip * attachment.localPosition;
+            weapon.rotation = grip * Quaternion.Euler(attachment.localEulerAngles);
         }
 
         private static Transform FindByName(Transform root, string name)

@@ -18,6 +18,7 @@ MonoBehaviour:
   attachments:
   - prefab: {fileID: 5689215608645113600, guid: 6d826ac466fcafb49879a5e5a942e557, type: 3}
     bone: 17
+    alignment: 1
     localPosition: {x: 0, y: 0, z: 0}
     localEulerAngles: {x: 0, y: 0, z: 0}
     scale: 1
