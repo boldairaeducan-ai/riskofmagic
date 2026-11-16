@@ -63,9 +63,7 @@
                     <ui:Label text="Personnage" class="panel__title" />
                     <ui:VisualElement name="characterGrid" class="card-grid" />
                     <ui:Label text="Compétences  &lt;size=70%&gt;&lt;alpha=#A0&gt;(de base | alternative)" class="skills-header" />
-                    <ui:ScrollView name="skillScroll" class="grow" horizontal-scroller-visibility="Hidden">
-                        <ui:VisualElement name="skillGrid" class="card-grid" />
-                    </ui:ScrollView>
+                    <ui:VisualElement name="skillGrid" class="card-grid skill-grid" />
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="lobby-footer">
