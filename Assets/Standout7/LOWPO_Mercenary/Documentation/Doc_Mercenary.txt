@@ -1,0 +1,86 @@
+LOWPO Mercenary Company
+
+Render Pipeline: URP (Universal Render Pipeline)
+
+Version: 1.0
+
+Rigging: Basic Humanoid Rig
+
+Contact: standoutseven+ahelp@gmail.com
+
+Store Page: https://assetstore.unity.com/publishers/122440
+
+1. Overview
+
+LOWPO Mercenary Company is a stylized low-poly character and weapon pack designed for medieval, fantasy, action RPGs, and strategy games. All characters and weapons follow a consistent art style and are optimized for mobile, PC, VR, and large-scale unit battles.
+
+The asset is URP ready, fully rigged, and prepared for animation.
+
+2. Included Character Sets
+
+This package features 3 unique rigged mercenary characters:
+
+1 Captain 👑
+1 Swordsman ⚔️
+1 Archer 🏹
+3. Models & Art Style
+Stylized low-poly models
+Basic rigging
+Character heights and proportions vary based on combat role
+All characters and weapons share a single material and texture palette for maximum performance optimization
+4. Weapons & Props
+
+This package includes 4 low-poly weapons designed for unit-based gameplay:
+
+Longsword 🗡️
+Sword ⚔️
+Bow 🏹
+Arrow 🎯
+
+Note: All weapons match the same low-poly visual style and can be equipped by the included characters.
+
+5. Technical Details
+File Formats
+FBX — Engine-ready character and weapon meshes
+PNG — Color palette texture atlas
+MAT — Preconfigured Unity URP materials
+PREFAB — Ready-to-use scene prefabs
+TXT — Documentation
+Polygon Count
+Weapons: ~300 triangles
+Characters: ~1,500–2,500 triangles per model
+Texture Sizes
+512 × 512 — Single shared color palette texture
+Rigging
+Basic Humanoid Rig
+Animations
+Not included
+Unity Mecanim & Mixamo ready
+6. Render Pipeline Compatibility
+Fully compatible with Universal Render Pipeline (URP)
+Materials are preconfigured
+No additional setup required for URP projects
+7. Usage
+Open the Prefabs folder.
+Drag a character, weapon, or prop prefab directly into your scene.
+For weapons, snap or parent them into the appropriate character hand bone hierarchy as needed.
+8. Support
+
+For support, questions, or feedback, contact:
+
+standoutseven+ahelp@gmail.com
+
+TROUBLESHOOTING
+⚠️ The model is PINK!
+
+This usually means the URP material is missing or unassigned. This asset is built for URP projects.
+
+If you are using the Built-In Render Pipeline, create a new Standard material and assign the included 512×512 texture palette manually.
+
+⚠️ Animation doesn't work / Model is twisted!
+
+This is commonly caused by an Avatar mismatch.
+
+Check: The Avatar in the model's Import Settings (Rig tab) must be set to Humanoid.
+
+Check: Ensure the Avatar assigned in the scene object's Animator component matches the target humanoid avatar setup.
