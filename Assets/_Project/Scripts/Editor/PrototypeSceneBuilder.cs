@@ -1144,7 +1144,10 @@ namespace RiskOfMagic.Editor
             adrenaline.bonusFirstStack = 0.25f;
             adrenaline.bonusPerExtraStack = 0.15f;
             adrenaline.duration = 3f;
-            var whetstone = Item<ItemDefinition>("Item_Whetstone", "Pierre à aiguiser", "+8% de dégâts (+8%).", ItemRarity.Common, Mod(StatType.Damage, 0.08f));
+            var whetstone = Item<FirstStrikeItem>("Item_FirstStrike", "Pierre de première taille",
+                "Le premier coup porté à chaque ennemi inflige +60% (+40%) de dégâts.", ItemRarity.Common);
+            whetstone.firstStackBonus = 0.6f;
+            whetstone.extraStackBonus = 0.4f;
 
             // Rare
             var hourglass = Item<ItemDefinition>("Item_Hourglass", "Sablier ancien", "-12% temps de recharge (multiplicatif).", ItemRarity.Uncommon, Mod(StatType.CooldownReduction, 0.12f));
