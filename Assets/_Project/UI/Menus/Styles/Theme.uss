@@ -45,6 +45,18 @@
     font-size: var(--font-body);
 }
 
+/* ------------------------------------------------------------------ Document root
+ * Every UIDocument root must fill the screen (the default Unity theme, which we don't use, normally does it):
+ * without this the root is 0 px high and every screen collapses on itself. */
+
+.unity-ui-document__root {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
 /* ------------------------------------------------------------------ Text */
 
 .unity-label {
