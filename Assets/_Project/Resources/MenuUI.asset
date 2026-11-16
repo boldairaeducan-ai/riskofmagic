@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ce4044b2ec87f84a933b4ad0326454b, type: 3}
+  m_Name: MenuUI
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.UI.MenuUiAssets
+  panelSettings: {fileID: 11400000, guid: 7060557b93ba73646b51205f63635046, type: 2}
+  mainMenu: {fileID: 9197481963319205126, guid: b9a53b65468a8e444b62a9ba755b8047, type: 3}
+  pauseMenu: {fileID: 9197481963319205126, guid: 8cca52f50644b9c43baa2bae194271b5, type: 3}
+  loadingScreen: {fileID: 9197481963319205126, guid: d8e6f80acd0c3bf449490d82af3a741b, type: 3}
+  lobbyCard: {fileID: 9197481963319205126, guid: 4e4ca4161d52231488ea1c0e36235aed, type: 3}
+  optionChoice: {fileID: 9197481963319205126, guid: 73f5ec38ff1104f479b6e8584e2857c9, type: 3}
+  optionSlider: {fileID: 9197481963319205126, guid: 0ed70acb40a51494d829201fe8ae24b0, type: 3}
+  optionToggle: {fileID: 9197481963319205126, guid: b1d1ae3abd7cf2f439974befb5744eab, type: 3}
+  optionKey: {fileID: 9197481963319205126, guid: 5706cac78403eab43890c429447c8ad6, type: 3}

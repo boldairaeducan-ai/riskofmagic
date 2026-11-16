@@ -28,9 +28,6 @@ MonoBehaviour:
   modelPrefab: {fileID: 0}
   viewModelPrefab: {fileID: 0}
   proceduralViewModel: {fileID: 11400000, guid: 9ea2d26d82a1a5b40b82527abf7d39dc, type: 2}
-  footstepSound: {fileID: 11400000, guid: 09d27462ecebe044aa9b8e33c18c75b5, type: 2}
-  jumpSound: {fileID: 11400000, guid: a5c603973cb8c0c4faf0eb2f2bcf4e44, type: 2}
-  landSound: {fileID: 11400000, guid: 3e74e578786dcdb48a7abd45250408ce, type: 2}
   primary: {fileID: 11400000, guid: e439a05c906fa8341a225a92881d1068, type: 2}
   secondary: {fileID: 11400000, guid: 804882ba4eb16974e97249310a241c98, type: 2}
   utility: {fileID: 11400000, guid: 6a3705d344d634c49b49102739130e49, type: 2}

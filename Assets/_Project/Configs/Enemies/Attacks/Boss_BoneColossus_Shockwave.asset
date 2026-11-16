@@ -17,6 +17,8 @@ MonoBehaviour:
   maxHeightDifference: 5
   selectionWeight: 1.5
   animatorTrigger: Attack
+  jumpHeight: 3
+  crouchShare: 0.25
   slamDamage: 30
   slamRadius: 4
   windup: 1

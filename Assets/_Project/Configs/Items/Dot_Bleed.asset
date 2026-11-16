@@ -17,3 +17,8 @@ MonoBehaviour:
   tickInterval: 0.5
   duration: 3
   maxStacks: 20
+  maxHealthPerSecond: 0
+  bossAndEliteFactor: 0.5
+  playerMaxHealthPerSecond: 0.005
+  playerMaxStacks: 4
+  refreshAllStacks: 0

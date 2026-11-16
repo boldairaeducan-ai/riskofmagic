@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Archer_Bolas
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BolasSkill
   displayName: Bolas
-  description: "Charger : bolas en c\xF4ne (18 m) sur 1 \xE0 4 ennemis : 150%, ralentit de 50% pendant 3 s."
+  description: "Charger : bolas en c\xF4ne (18 m) sur 1 \xE0 4 ennemis : 150%, ralentit
+    de 50% pendant 3 s."
   icon: {fileID: 21300000, guid: 87b064ffa10b01d41bcaa0177f0e153f, type: 3}
   activationMode: 2
   cooldown: 7
@@ -38,3 +39,4 @@ MonoBehaviour:
   minTargets: 1
   maxTargets: 4
   ensnareDuration: 3
+  hitVfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}
