@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse;
         }
 
         private sealed class ProjectileSet
@@ -99,6 +99,8 @@ namespace RiskOfMagic.Editor
             PostProcessBuilder.EnsureSetup();
             HitFeedbackBuilder.Ensure();
             var vfx = BuildVfx();
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Curse, vfx.AuraCurse, aboveEnemies: true, null);
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Marked, vfx.AuraCurse, aboveEnemies: true, null);
             var projectiles = BuildProjectiles(vfx);
             var items = BuildItems(projectiles, vfx);
             var characters = BuildCharacters(projectiles, vfx);
@@ -280,7 +282,9 @@ namespace RiskOfMagic.Editor
                 AuraStorm = AuraPrefab("VFX_Aura_Storm", 1.2f, new Color(1f, 0.9f, 0.2f)),
                 AuraSpectral = AuraPrefab("VFX_Aura_Spectral", 1.2f, new Color(0.65f, 0.4f, 1f)),
                 // Bolas wrapped around the feet while Ensnared (attached by StatusEffects, sized to the footprint).
-                Bolas = BolasPrefab("VFX_Bolas")
+                Bolas = BolasPrefab("VFX_Bolas"),
+                // Curse / mark: follows the cursed character while the status lasts (StatusEffects attached effect).
+                AuraCurse = AuraPrefab("VFX_Aura_Curse", 0.6f, new Color(0.55f, 0.2f, 0.6f))
             };
         }
 
@@ -688,7 +692,7 @@ namespace RiskOfMagic.Editor
                 "La cible visée subit +50% de dégâts de toutes sources pendant 6 s. Si elle meurt, la recharge est réinitialisée.",
                 SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
             mark.duration = 6f;
-            mark.markVfx = vfx.CursePulse;
+            mark.markVfx = null; // the mark follows the target (Marked status attached effect)
 
             foreach (var skill in new SkillDefinition[] { hammer, judgment, aegis, consecration, daggers, throwing, veil, mark })
                 EditorUtility.SetDirty(skill);

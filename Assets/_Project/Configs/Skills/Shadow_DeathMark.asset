@@ -36,4 +36,4 @@ MonoBehaviour:
   aimTolerance: 3
   duration: 6
   resetOnKill: 1
-  markVfx: {fileID: 666047915649629285, guid: e28d37df24c893243a222bb9293b6972, type: 3}
+  markVfx: {fileID: 0}
