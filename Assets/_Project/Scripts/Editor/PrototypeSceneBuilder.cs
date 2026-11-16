@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm;
         }
 
         private sealed class ProjectileSet
@@ -110,7 +110,7 @@ namespace RiskOfMagic.Editor
             var catalog = Asset<GameCatalog>(ResourcesFolder + "/GameCatalog.asset");
             var replicatedEffects = new List<GameObject>
             {
-                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink, vfx.VoidBeam, vfx.PoisonCloud, vfx.ArcaneBurst, vfx.FrostBurst
+                vfx.Explosion, vfx.Lightning, vfx.Telegraph, vfx.PoisonBurst, vfx.CursePulse, vfx.RallyPulse, vfx.Shockwave, vfx.FireBurst, vfx.GroundWave, vfx.FirePatch, vfx.Blink, vfx.VoidBeam, vfx.PoisonCloud, vfx.ArcaneBurst, vfx.FrostBurst, vfx.Impact, vfx.VineWhip
             };
             catalog.EditorSet(characters, projectiles.All, items, replicatedEffects, equipment, pickup);
             catalog.EditorSetMapRotation(MapTools.LoadOrCreateRotation());
@@ -284,7 +284,11 @@ namespace RiskOfMagic.Editor
                 // Bolas wrapped around the feet while Ensnared (attached by StatusEffects, sized to the footprint).
                 Bolas = BolasPrefab("VFX_Bolas"),
                 // Curse / mark: follows the cursed character while the status lasts (StatusEffects attached effect).
-                AuraCurse = AuraPrefab("VFX_Aura_Curse", 0.6f, new Color(0.55f, 0.2f, 0.6f))
+                AuraCurse = AuraPrefab("VFX_Aura_Curse", 0.6f, new Color(0.55f, 0.2f, 0.6f)),
+                // Druid (nature): vine lash line, lightning column (scaled by the area radius), raven swarm (attached).
+                VineWhip = LinePrefab("VFX_VineWhip", new Color(0.35f, 0.75f, 0.25f), 0.12f, 0.18f),
+                LightningStrike = EffectPrefab("VFX_LightningStrike", PrimitiveType.Cylinder, new Vector3(0.08f, 2f, 0.08f), new Vector3(0f, 2f, 0f), new Color(0.85f, 0.9f, 1f), 0.3f),
+                RavenSwarm = AuraPrefab("VFX_RavenSwarm", 0.7f, new Color(0.12f, 0.1f, 0.18f))
             };
         }
 
@@ -549,58 +553,64 @@ namespace RiskOfMagic.Editor
             timeLock.castVfxScale = 20f;
             timeLock.ownerCameraTrauma = 0.15f;
 
-            // Druid (poison, damage over time)
-            var claws = Skill<MeleeComboSkill>("Druid_ToxicClaws", "Griffes toxiques",
-                "Combo de 3 coups de griffes (80/80/140%), chacun empoisonne : 0,6 % des PV max/s par cumul (15 max), relancé à chaque coup.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
-            claws.damageType = DamageType.Poison;
-            claws.dot = p.Poison;
-            claws.swingVfx = vfx.Swing;
-            claws.comboResetTime = 0.8f;
-            claws.steps = new[]
-            {
-                new MeleeComboSkill.Step { damageCoefficient = 0.8f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f },
-                new MeleeComboSkill.Step { damageCoefficient = 0.8f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f },
-                new MeleeComboSkill.Step { damageCoefficient = 1.4f, radius = 1.9f, reach = 1.7f, hitDelay = 0.12f, lunge = 4f }
-            };
+            // Druid (nature, ranged; the only class dealing damage over time natively). Same values as the items' DoTs.
+            var natureBleed = Dot("Dot_Bleed", DamageType.Bleed, tickFraction: 0.4f, interval: 0.5f, duration: 3f, maxStacks: 20);
+            var natureBurn = Dot("Dot_Burn", DamageType.Fire, tickFraction: 0.25f, interval: 0.5f, duration: 3f, maxStacks: 10);
 
-            var cloud = Skill<AreaSkill>("Druid_ToxicCloud", "Nuage toxique", "Nuage ciblé pendant 5 s : 30% par tick + poison.",
-                SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
-            cloud.center = AreaCenter.AimPoint;
-            cloud.maxRange = 35f;
-            cloud.radius = 5f;
-            cloud.ticks = 10;
-            cloud.tickInterval = 0.5f;
-            cloud.damageCoefficient = 0.3f;
-            cloud.damageType = DamageType.Poison;
-            cloud.dot = p.Poison;
-            cloud.tickVfx = vfx.PoisonCloud;
+            var vineWhip = Skill<WhipSkill>("Druid_VineWhip", "Fouet de liane",
+                "Fouet à 14 m : 120% + saignement (cumulable).",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.55f, attackSpeed: true);
+            vineWhip.range = 14f;
+            vineWhip.damageCoefficient = 1.2f;
+            vineWhip.dot = natureBleed;
+            vineWhip.lashVfx = vfx.VineWhip;
+            vineWhip.hitVfx = vfx.Impact;
+            if (vineWhip.icon == null)
+                vineWhip.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_219.png");
 
-            var leap = Skill<DashSkill>("Druid_WildLeap", "Bond sylvestre", "Bond en avant, empoisonne les ennemis traversés.",
-                SkillActivationMode.Press, cooldown: 6f, cast: 0.2f);
-            leap.direction = DashDirection.AimFlat;
-            leap.speed = 22f;
-            leap.duration = 0.35f;
-            leap.ignoreGravity = false;
-            leap.upwardVelocity = 7f;
-            leap.damageCoefficient = 1f;
-            leap.damageRadius = 2f;
-            leap.damageType = DamageType.Poison;
-            leap.dot = p.Poison;
-            leap.keepsSprint = true;
-            leap.castVfx = vfx.DashBurst;
-            leap.ownerFovKick = 10f;
-            leap.ownerFovKickDuration = 0.4f;
+            var lightning = Skill<AreaSkill>("Druid_CallLightning", "Appel de la foudre",
+                "La foudre frappe le point visé (5 m) : 320%, étourdit 0,8 s.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0.3f);
+            lightning.center = AreaCenter.AimPoint;
+            lightning.maxRange = 35f;
+            lightning.radius = 5f;
+            lightning.ticks = 1;
+            lightning.initialDelay = 0.2f;
+            lightning.damageCoefficient = 3.2f;
+            lightning.damageType = DamageType.Lightning;
+            lightning.freezeDuration = 0.8f;
+            lightning.tickVfx = vfx.LightningStrike;
+            if (lightning.icon == null)
+                lightning.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_027.png");
 
-            var bloom = Skill<DetonateDotsSkill>("Druid_FatalBloom", "Floraison fatale",
-                "Fait éclater tous les poisons à 25 m : 150% des dégâts de poison restants, instantanément.",
-                SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
-            bloom.dotType = DamageType.Poison;
-            bloom.radius = 25f;
-            bloom.damageMultiplier = 1.5f;
-            bloom.burstVfx = vfx.PoisonBurst;
+            var ravens = Skill<RavenFlightSkill>("Druid_RavenFlight", "Envol de corbeaux",
+                "Se change en nuée 1,5 s : invulnérable, +60% de vitesse, flotte dans les airs.",
+                SkillActivationMode.Press, cooldown: 9f, cast: 0f);
+            ravens.duration = 1.5f;
+            ravens.liftVelocity = 3f;
+            ravens.canCastWhileBusy = true;
+            ravens.keepsSprint = true;
+            ravens.castVfx = vfx.DashBurst;
+            if (ravens.icon == null)
+                ravens.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_182.png");
+            ArtLibraryBuilder.ConfigureStatus(StatusType.RavenForm, vfx.RavenSwarm, aboveEnemies: false,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_182.png"));
 
-            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, claws, cloud, leap, bloom })
+            var breath = Skill<ConeChannelSkill>("Druid_FlameBreath", "Souffle enflammé",
+                "Souffle de 2,5 s en cône (10 m) : 10 × 45%, chaque souffle ajoute une brûlure. Ralenti pendant le souffle.",
+                SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
+            breath.duration = 2.5f;
+            breath.ticks = 10;
+            breath.range = 10f;
+            breath.coneAngle = 30f;
+            breath.damageCoefficientPerTick = 0.45f;
+            breath.damageType = DamageType.Fire;
+            breath.dot = natureBurn;
+            breath.tickVfx = vfx.FireBurst;
+            if (breath.icon == null)
+                breath.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_266.png");
+
+            foreach (var skill in new SkillDefinition[] { rapidShot, piercing, roll, rain, combo, whirlwind, charge, slam, volley, burst, shield, timeLock, vineWhip, lightning, ravens, breath })
                 EditorUtility.SetDirty(skill);
 
             var characters = new List<CharacterDefinition>
@@ -611,8 +621,8 @@ namespace RiskOfMagic.Editor
                     130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
                     90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock),
-                Character("Character_Druid", "Druide", "Corps à corps empoisonné, poisons cumulables.", new Color(0.25f, 0.55f, 0.2f),
-                    100f, Movement("Movement_Druid", 7.2f, 1), claws, cloud, leap, bloom)
+                Character("Character_Druid", "Druide", "Maître de la nature, à distance : saignements, foudre et flammes. Kit poison en alternative.",
+                    new Color(0.25f, 0.55f, 0.2f), 100f, Movement("Movement_Druid", 7.2f, 1), vineWhip, lightning, ravens, breath)
             };
             BuildPaladinAndShadow(characters, p, vfx);
             BuildAlternativeSkills(characters, p, vfx);
@@ -717,11 +727,13 @@ namespace RiskOfMagic.Editor
             EditorUtility.SetDirty(p.FireArrow);
 
             // Archer
-            var fireArrows = Skill<ProjectileSkill>("Archer_FireArrows", "Flèches enflammées", "Tirs plus lents : 160% + brûlure.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.65f, attackSpeed: true);
-            fireArrows.projectile = p.FireArrow;
-            fireArrows.damageType = DamageType.Fire;
-            fireArrows.damageCoefficient = 1.6f;
+            var fireArrows = Skill<ProjectileSkill>("Archer_FanShot", "Tir en éventail", "3 flèches en arc : 3 × 60%.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.4f, attackSpeed: true);
+            fireArrows.projectile = p.Arrow;
+            fireArrows.damageType = DamageType.Physical;
+            fireArrows.damageCoefficient = 0.6f;
+            fireArrows.count = 3;
+            fireArrows.spreadAngle = 18f;
 
             var bolas = Skill<BolasSkill>("Archer_Bolas", "Bolas",
                 "Charger : bolas en cône (18 m) sur 1 à 4 ennemis : 150%, ralentit de 50% pendant 3 s.",
@@ -839,40 +851,45 @@ namespace RiskOfMagic.Editor
             thorns.damageType = DamageType.Poison;
             thorns.damageCoefficient = 0.7f;
 
-            var brambles = Skill<ConeControlSkill>("Druid_Brambles", "Ronces", "Cône de ronces : immobilise 2 s et empoisonne.",
+            var cloud = Skill<AreaSkill>("Druid_ToxicCloud", "Nuage toxique", "Nuage ciblé pendant 5 s : 30% par tick + poison.",
                 SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
-            brambles.range = 15f;
-            brambles.coneAngle = 35f;
-            brambles.freezeDuration = 2f;
-            brambles.damageCoefficient = 0.5f;
-            brambles.damageType = DamageType.Poison;
-            brambles.dot = p.Poison;
-            brambles.castVfx = vfx.PoisonCloud;
-            brambles.castVfxAnchor = VfxAnchor.Caster;
-            brambles.castVfxScale = 8f;
+            cloud.center = AreaCenter.AimPoint;
+            cloud.maxRange = 35f;
+            cloud.radius = 5f;
+            cloud.ticks = 10;
+            cloud.tickInterval = 0.5f;
+            cloud.damageCoefficient = 0.3f;
+            cloud.damageType = DamageType.Poison;
+            cloud.dot = p.Poison;
+            cloud.tickVfx = vfx.PoisonCloud;
 
-            var root = Skill<RootSkill>("Druid_Rooting", "Enracinement", "Immobile 3 s : régénère 10% PV/s, nuage de poison autour de soi.",
-                SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
-            root.duration = 3f;
-            root.healPerSecond = 0.1f;
-            root.radius = 5f;
-            root.damageCoefficientPerTick = 0.3f;
-            root.dot = p.Poison;
-            root.tickVfx = vfx.PoisonCloud;
+            var venomRoots = Skill<AreaSkill>("Druid_VenomRoots", "Racines vénéneuses",
+                "Des racines jaillissent autour de vous (8 m) : enracinent 2 s, 50% + poison.",
+                SkillActivationMode.Press, cooldown: 10f, cast: 0.2f);
+            venomRoots.center = AreaCenter.Caster;
+            venomRoots.radius = 8f;
+            venomRoots.ticks = 1;
+            venomRoots.damageCoefficient = 0.5f;
+            venomRoots.damageType = DamageType.Poison;
+            venomRoots.dot = p.Poison;
+            venomRoots.rootDuration = 2f;
+            venomRoots.tickVfx = vfx.PoisonBurst;
 
-            var epidemic = Skill<EpidemicSkill>("Druid_Epidemic", "Épidémie", "Propage les poisons de l'ennemi visé à tous les ennemis à 10 m.",
+            var bloom = Skill<DetonateDotsSkill>("Druid_FatalBloom", "Floraison fatale",
+                "Fait éclater tous les poisons à 25 m : 150% des dégâts de poison restants, instantanément.",
                 SkillActivationMode.Press, cooldown: 10f, cast: 0.3f);
-            epidemic.poison = p.Poison;
-            epidemic.spreadRadius = 10f;
-            epidemic.spreadVfx = vfx.PoisonBurst;
+            bloom.dotType = DamageType.Poison;
+            bloom.radius = 25f;
+            bloom.damageMultiplier = 1.5f;
+            bloom.burstVfx = vfx.PoisonBurst;
 
-            foreach (var skill in new SkillDefinition[] { fireArrows, bolas, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, brambles, root, epidemic })
+            foreach (var skill in new SkillDefinition[] { fireArrows, bolas, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, cloud, venomRoots, bloom })
                 EditorUtility.SetDirty(skill);
 
             SetAlternatives(characters[0], fireArrows, bolas, backHop, explosiveVolley);
             SetAlternatives(characters[1], hammer, axe, parry, warCry);
             SetAlternatives(characters[2], shards, frostOrb, transfer, voidBeam);
-            SetAlternatives(characters[3], thorns, brambles, root, epidemic);
+            SetAlternatives(characters[3], thorns, cloud, venomRoots, bloom);
 
             // Paladin
             var radiant = Skill<MeleeComboSkill>("Paladin_RadiantBlade", "Lame radieuse",

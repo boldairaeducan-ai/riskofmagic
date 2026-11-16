@@ -41,10 +41,10 @@ Musique par carte : `Audio/Music/<Carte>_Music.asset` (musique + musique du boss
 ### 1.3 Compétences — `castSound` sur chaque compétence (48)
 | Personnage | De base | Alternatives |
 |---|---|---|
-| Archer | Tir rapide, Flèche perforante, Roulade, Pluie de flèches | Flèches enflammées, Bolas, Bond arrière, Volée explosive |
+| Archer | Tir rapide, Flèche perforante, Roulade, Pluie de flèches | Tir en éventail, Bolas, Bond arrière, Volée explosive |
 | Guerrier | Combo d'épée, Tourbillon, Charge, Frappe sismique | Marteau de guerre, Hache de jet, Parade, Cri de guerre |
 | Arcaniste | Projectile magique, Explosion arcanique, Bouclier arcanique, Blocage temporel | Éclats arcaniques, Orbe de givre, Transfert, Rayon du néant |
-| Druide | Griffes toxiques, Nuage toxique, Bond sylvestre, Floraison fatale | Épines, Ronces, Enracinement, Épidémie |
+| Druide | Fouet de liane, Appel de la foudre, Envol de corbeaux, Souffle enflammé | Épines, Nuage toxique, Racines vénéneuses, Floraison fatale |
 | Paladin | Marteau béni, Jugement, Égide, Sol consacré | Lame radieuse, Bouclier projeté, Charge du croisé, Intervention divine |
 | Ombre | Dagues jumelles, Dagues de lancer, Voile d'ombre, Marque de mort | Poignard lourd, Fumigène, Pas de l'ombre, Danse des lames |
 

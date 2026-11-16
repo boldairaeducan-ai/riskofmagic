@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06c0ceb357e8b974dad344bb22955f86, type: 3}
-  m_Name: Archer_FireArrows
+  m_Name: Archer_FanShot
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
-  displayName: "Fl\xE8ches enflamm\xE9es"
-  description: "Tirs plus lents : 160% + br\xFBlure."
-  icon: {fileID: 21300000, guid: c05206f2898706944816b2dfa9e34f7e, type: 3}
+  displayName: "Tir en \xE9ventail"
+  description: "3 fl\xE8ches en arc : 3 \xD7 60%."
+  icon: {fileID: 21300000, guid: 02dbc847c1ebc7b45b05b09bb8bda7f3, type: 3}
   activationMode: 1
   cooldown: 0
   maxStock: 1
-  castDuration: 0.65
+  castDuration: 0.4
   scalesWithAttackSpeed: 1
   canCastWhileBusy: 0
   keepsSprint: 0
@@ -31,11 +31,10 @@ MonoBehaviour:
   ownerFovKick: 0
   ownerFovKickDuration: 0.25
   ownerCameraTrauma: 0
-  projectile: {fileID: 11400000, guid: db4903fc611564146b9250bc43b96707, type: 2}
-  damageType: 1
-  damageCoefficient: 1.6
-  count: 1
-  spreadAngle: 0
+  damageType: 0
+  damageCoefficient: 0.6
+  count: 3
+  spreadAngle: 18
   muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}
   burstCount: 1
   burstInterval: 0.08

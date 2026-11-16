@@ -60,6 +60,16 @@ namespace RiskOfMagic.Player
             velocity.y = dashVelocityValue.y;
         }
 
+        public bool IsHovering => Time.time < hoverEndTime;
+        private float hoverEndTime = float.NegativeInfinity;
+
+        /// <summary>Owner: no gravity for <paramref name="duration"/> seconds, the altitude is kept (Envol de corbeaux).</summary>
+        public void Hover(float duration, float liftVelocity = 0f)
+        {
+            hoverEndTime = Time.time + duration;
+            velocity.y = Mathf.Max(velocity.y, liftVelocity);
+        }
+
         public void Teleport(Vector3 position, Quaternion rotation)
         {
             controller.enabled = false;
@@ -141,7 +151,10 @@ namespace RiskOfMagic.Player
                 Jumped?.Invoke();
             }
 
-            velocity.y = Mathf.Max(velocity.y - config.gravity * dt, -config.maxFallSpeed);
+            if (IsHovering)
+                velocity.y = Mathf.MoveTowards(velocity.y, 0f, config.gravity * 0.5f * dt); // floats: rises a little, then holds
+            else
+                velocity.y = Mathf.Max(velocity.y - config.gravity * dt, -config.maxFallSpeed);
             velocity.x = horizontal.x;
             velocity.z = horizontal.z;
 
