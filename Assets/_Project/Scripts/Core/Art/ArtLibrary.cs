@@ -38,6 +38,8 @@ namespace RiskOfMagic.Core
             public Sprite icon;
             [Tooltip("Shown in the HUD status bar.")] public bool visible = true;
             public bool debuff;
+            [Tooltip("Also shown in the icon row above enemies.")] public bool aboveEnemies;
+            [Tooltip("Optional effect attached at the feet of anyone under this status (every peer).")] public GameObject attachedEffect;
         }
 
         [Serializable]

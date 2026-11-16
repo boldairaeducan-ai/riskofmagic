@@ -41,7 +41,7 @@ Musique par carte : `Audio/Music/<Carte>_Music.asset` (musique + musique du boss
 ### 1.3 Compétences — `castSound` sur chaque compétence (48)
 | Personnage | De base | Alternatives |
 |---|---|---|
-| Archer | Tir rapide, Flèche perforante, Roulade, Pluie de flèches | Flèches enflammées, Flèche de givre, Bond arrière, Volée explosive |
+| Archer | Tir rapide, Flèche perforante, Roulade, Pluie de flèches | Flèches enflammées, Bolas, Bond arrière, Volée explosive |
 | Guerrier | Combo d'épée, Tourbillon, Charge, Frappe sismique | Marteau de guerre, Hache de jet, Parade, Cri de guerre |
 | Arcaniste | Projectile magique, Explosion arcanique, Bouclier arcanique, Blocage temporel | Éclats arcaniques, Orbe de givre, Transfert, Rayon du néant |
 | Druide | Griffes toxiques, Nuage toxique, Bond sylvestre, Floraison fatale | Épines, Ronces, Enracinement, Épidémie |

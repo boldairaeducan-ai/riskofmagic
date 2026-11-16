@@ -62,6 +62,8 @@ namespace RiskOfMagic.Core
             public float curseSpeedMultiplier = 0.9f;
             public float curseDamageTakenMultiplier = 1.3f;
             public float chillSpeedMultiplier = 0.7f;
+            [Tooltip("Bolas (Ensnared): move speed multiplier.")] public float ensnareSpeedMultiplier = 0.5f;
+            [Tooltip("Bolas on bosses and elites.")] public float ensnareReducedSpeedMultiplier = 0.75f;
             public float channelingSpeedMultiplier = 0.5f;
             public float bannerDamageBonus = 0.2f;
             public float stealthSpeedBonus = 0.3f;

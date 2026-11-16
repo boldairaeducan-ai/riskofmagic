@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06c0ceb357e8b974dad344bb22955f86, type: 3}
-  m_Name: Archer_FrostArrow
-  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
-  displayName: "Fl\xE8che de givre"
-  description: "Charger : 200-400%, g\xE8le les ennemis touch\xE9s 1,5 s."
-  icon: {fileID: 21300000, guid: 1e28fea69828b3e40a2859de96dd3328, type: 3}
+  m_Script: {fileID: 11500000, guid: 66fb5c0adbbe45df9e97990fd73ea94a, type: 3}
+  m_Name: Archer_Bolas
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BolasSkill
+  displayName: Bolas
+  description: "Charger : bolas en c\xF4ne (18 m) sur 1 \xE0 4 ennemis : 150%, ralentit de 50% pendant 3 s."
+  icon: {fileID: 21300000, guid: 87b064ffa10b01d41bcaa0177f0e153f, type: 3}
   activationMode: 2
   cooldown: 7
   maxStock: 1
@@ -31,15 +31,10 @@ MonoBehaviour:
   ownerFovKick: 0
   ownerFovKickDuration: 0.25
   ownerCameraTrauma: 0
-  projectile: {fileID: 11400000, guid: 5e8491996e542fe43a9a628d30bc6da1, type: 2}
-  damageType: 2
+  range: 18
+  coneAngle: 30
   damageCoefficient: 1.5
-  count: 1
-  spreadAngle: 0
-  muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}
-  burstCount: 1
-  burstInterval: 0.08
-  minChargeCoefficient: 2
-  maxChargeCoefficient: 4
-  minChargeScale: 1
-  maxChargeScale: 1.4
+  damageType: 0
+  minTargets: 1
+  maxTargets: 4
+  ensnareDuration: 3

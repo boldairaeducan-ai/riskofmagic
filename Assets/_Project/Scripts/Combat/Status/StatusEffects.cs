@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,7 +34,9 @@ namespace RiskOfMagic.Combat
         /// <summary>The next hit dealt is a guaranteed critical (Pas de l'ombre).</summary>
         Ambush,
         /// <summary>Map secret reward: more damage until the end of the stage.</summary>
-        RuneBlessing
+        RuneBlessing,
+        /// <summary>Slowed by bolas (Bolas). 2 stacks = full slow, 1 stack = reduced slow (bosses, elites).</summary>
+        Ensnared
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -58,6 +61,8 @@ namespace RiskOfMagic.Combat
         private float curseDamageTakenMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.curseDamageTakenMultiplier;
 
         private float chillSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.chillSpeedMultiplier;
+        private float ensnareSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.ensnareSpeedMultiplier;
+        private float ensnareReducedSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.ensnareReducedSpeedMultiplier;
         private float channelingSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.channelingSpeedMultiplier;
         private float bannerDamageBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.bannerDamageBonus;
         private float stealthSpeedBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.stealthSpeedBonus;
@@ -83,16 +88,40 @@ namespace RiskOfMagic.Combat
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f
             : (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
               * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus)
-              * (Has(StatusType.Stealth) ? 1f + stealthSpeedBonus : 1f);
+              * (Has(StatusType.Stealth) ? 1f + stealthSpeedBonus : 1f)
+              * EnsnareMultiplier;
+
+        private float EnsnareMultiplier
+        {
+            get
+            {
+                int stacks = GetStacks(StatusType.Ensnared);
+                return stacks <= 0 ? 1f : stacks >= 2 ? ensnareSpeedMultiplier : ensnareReducedSpeedMultiplier;
+            }
+        }
         public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus)
                                               * (1f + GetStacks(StatusType.Adrenaline) / 100f);
 
         private float SpeedBonus => (Has(StatusType.Rally) ? rallyBonus : 0f) + GetStacks(StatusType.Warhorn) * warhornBonusPerStack;
 
+        private readonly Dictionary<StatusType, GameObject> attachedEffects = new();
+
         private void Awake() => entries = new NetworkList<StatusEntry>();
 
-        public override void OnNetworkSpawn() => entries.OnListChanged += OnEntriesChanged;
-        public override void OnNetworkDespawn() => entries.OnListChanged -= OnEntriesChanged;
+        public override void OnNetworkSpawn()
+        {
+            entries.OnListChanged += OnEntriesChanged;
+            RefreshAttachedEffects();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            entries.OnListChanged -= OnEntriesChanged;
+            foreach (var effect in attachedEffects.Values)
+                if (effect != null)
+                    Destroy(effect);
+            attachedEffects.Clear();
+        }
 
         public bool Has(StatusType type) => GetStacks(type) > 0;
 
@@ -160,6 +189,51 @@ namespace RiskOfMagic.Combat
             return false;
         }
 
-        private void OnEntriesChanged(NetworkListEvent<StatusEntry> change) => Changed?.Invoke();
+        private void OnEntriesChanged(NetworkListEvent<StatusEntry> change)
+        {
+            RefreshAttachedEffects();
+            Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Every peer: shows ArtLibrary.StatusArt.attachedEffect (e.g. bolas around the feet) while its status is active,
+        /// sized to the character's footprint.
+        /// </summary>
+        private void RefreshAttachedEffects()
+        {
+            var library = RiskOfMagic.Core.ArtLibrary.Instance;
+            if (library == null)
+                return;
+            foreach (var art in library.statuses)
+            {
+                if (art == null || art.attachedEffect == null)
+                    continue;
+                bool active = Has(art.status);
+                attachedEffects.TryGetValue(art.status, out var current);
+                if (active && current == null)
+                {
+                    current = Instantiate(art.attachedEffect, transform);
+                    current.transform.localPosition = Vector3.zero;
+                    current.transform.localRotation = Quaternion.identity;
+                    current.transform.localScale = Vector3.one * Footprint() / Mathf.Max(0.0001f, transform.lossyScale.x);
+                    attachedEffects[art.status] = current;
+                }
+                else if (!active && current != null)
+                {
+                    Destroy(current);
+                    attachedEffects.Remove(art.status);
+                }
+            }
+        }
+
+        /// <summary>Horizontal size of the character (1 = human sized).</summary>
+        private float Footprint()
+        {
+            var body = GetComponentInChildren<Collider>();
+            if (body == null)
+                return 1f;
+            var extents = body.bounds.extents;
+            return Mathf.Clamp(Mathf.Max(extents.x, extents.z) / 0.5f, 0.6f, 4f);
+        }
     }
 }

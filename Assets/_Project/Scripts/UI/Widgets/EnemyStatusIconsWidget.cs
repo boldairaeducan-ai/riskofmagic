@@ -9,7 +9,8 @@ using UnityEngine.UI;
 namespace RiskOfMagic.UI
 {
     /// <summary>
-    /// Icons floating above enemies: elite affix, then active damage over time (poison, bleed, burn).
+    /// Icons floating above enemies: elite affix, active damage over time (poison, bleed, burn), then the statuses
+    /// flagged « aboveEnemies » in the ArtLibrary (e.g. Entravé).
     /// Icons come from ArtLibrary; without one, a colored square with an initial.
     /// </summary>
     public class EnemyStatusIconsWidget : HudWidget
@@ -61,7 +62,8 @@ namespace RiskOfMagic.UI
                     continue;
                 bool elite = enemy.IsElite;
                 int dotMask = enemy.Health.DotMask;
-                if (!elite && !HasShownDot(dotMask))
+                bool statuses = HasShownStatus(enemy, library);
+                if (!elite && !HasShownDot(dotMask) && !statuses)
                     continue;
                 Vector3 head = enemy.transform.position + Vector3.up * Height(enemy);
                 if (!ScreenProjection.TryProject(cam, space, head, maxDistance, out var position))
@@ -79,11 +81,29 @@ namespace RiskOfMagic.UI
                     var art = library != null ? library.GetDot(type) : null;
                     SetIcon(row, used++, art != null ? art.icon : null, DotColor(type), art != null ? art.name : type.ToString());
                 }
+                if (statuses)
+                    foreach (var art in library.statuses)
+                    {
+                        if (used >= row.Icons.Length)
+                            break;
+                        if (art != null && art.aboveEnemies && enemy.Status.Has(art.status))
+                            SetIcon(row, used++, art.icon, theme != null ? theme.textMutedColor : Color.gray, art.name);
+                    }
                 for (int i = used; i < row.Icons.Length; i++)
                     row.Icons[i].gameObject.SetActive(false);
             }
             pool.End();
             Cleanup();
+        }
+
+        private static bool HasShownStatus(EnemyActor enemy, ArtLibrary library)
+        {
+            if (library == null || enemy.Status == null)
+                return false;
+            foreach (var art in library.statuses)
+                if (art != null && art.aboveEnemies && enemy.Status.Has(art.status))
+                    return true;
+            return false;
         }
 
         private static bool HasShownDot(int mask)

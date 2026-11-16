@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas;
         }
 
         private sealed class ProjectileSet
@@ -278,7 +278,9 @@ namespace RiskOfMagic.Editor
                 AuraBurning = AuraPrefab("VFX_Aura_Burning", 1.2f, new Color(1f, 0.3f, 0.1f)),
                 AuraBlizzard = AuraPrefab("VFX_Aura_Blizzard", 6f, new Color(0.75f, 0.9f, 1f)), // = BlizzardAffix.radius
                 AuraStorm = AuraPrefab("VFX_Aura_Storm", 1.2f, new Color(1f, 0.9f, 0.2f)),
-                AuraSpectral = AuraPrefab("VFX_Aura_Spectral", 1.2f, new Color(0.65f, 0.4f, 1f))
+                AuraSpectral = AuraPrefab("VFX_Aura_Spectral", 1.2f, new Color(0.65f, 0.4f, 1f)),
+                // Bolas wrapped around the feet while Ensnared (attached by StatusEffects, sized to the footprint).
+                Bolas = BolasPrefab("VFX_Bolas")
             };
         }
 
@@ -712,14 +714,21 @@ namespace RiskOfMagic.Editor
             fireArrows.damageType = DamageType.Fire;
             fireArrows.damageCoefficient = 1.6f;
 
-            var frostArrow = Skill<ProjectileSkill>("Archer_FrostArrow", "Flèche de givre", "Charger : 200-400%, gèle les ennemis touchés 1,5 s.",
+            var bolas = Skill<BolasSkill>("Archer_Bolas", "Bolas",
+                "Charger : bolas en cône (18 m) sur 1 à 4 ennemis : 150%, ralentit de 50% pendant 3 s.",
                 SkillActivationMode.Charge, cooldown: 7f, cast: 0.3f);
-            frostArrow.projectile = p.FrostArrow;
-            frostArrow.damageType = DamageType.Frost;
-            frostArrow.maxChargeTime = 1.2f;
-            frostArrow.minChargeCoefficient = 2f;
-            frostArrow.maxChargeCoefficient = 4f;
-            frostArrow.maxChargeScale = 1.4f;
+            bolas.maxChargeTime = 1.2f;
+            bolas.range = 18f;
+            bolas.coneAngle = 30f;
+            bolas.damageCoefficient = 1.5f;
+            bolas.minTargets = 1;
+            bolas.maxTargets = 4;
+            bolas.ensnareDuration = 3f;
+            bolas.hitVfx = vfx.Impact;
+            if (bolas.icon == null)
+                bolas.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_392.png");
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Ensnared, vfx.Bolas, aboveEnemies: true,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_093.png"));
 
             var backHop = Skill<DashSkill>("Archer_BackHop", "Bond arrière", "Saut de 12 m vers l'arrière, repousse les ennemis proches.",
                 SkillActivationMode.Press, cooldown: 6f, cast: 0f);
@@ -848,10 +857,10 @@ namespace RiskOfMagic.Editor
             epidemic.spreadRadius = 10f;
             epidemic.spreadVfx = vfx.PoisonBurst;
 
-            foreach (var skill in new SkillDefinition[] { fireArrows, frostArrow, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, brambles, root, epidemic })
+            foreach (var skill in new SkillDefinition[] { fireArrows, bolas, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, brambles, root, epidemic })
                 EditorUtility.SetDirty(skill);
 
-            SetAlternatives(characters[0], fireArrows, frostArrow, backHop, explosiveVolley);
+            SetAlternatives(characters[0], fireArrows, bolas, backHop, explosiveVolley);
             SetAlternatives(characters[1], hammer, axe, parry, warCry);
             SetAlternatives(characters[2], shards, frostOrb, transfer, voidBeam);
             SetAlternatives(characters[3], thorns, brambles, root, epidemic);
@@ -2472,6 +2481,51 @@ namespace RiskOfMagic.Editor
             SetProperties(timed, so => so.FindProperty("lifetime").floatValue = lifetime);
             root.AddComponent<EffectSound>();
             return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
+        }
+
+        /// <summary>Bolas tangled around the feet: three weights joined by two rope loops, no lifetime.</summary>
+        private static GameObject BolasPrefab(string name)
+        {
+            var root = new GameObject(name);
+            var weight = Mat("M_" + name + "_Weight", new Color(0.32f, 0.27f, 0.22f));
+            for (int i = 0; i < 3; i++)
+            {
+                float angle = i * 120f * Mathf.Deg2Rad;
+                var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                ball.name = "Weight" + i;
+                Object.DestroyImmediate(ball.GetComponent<Collider>());
+                ball.transform.SetParent(root.transform, false);
+                ball.transform.localPosition = new Vector3(Mathf.Cos(angle) * 0.42f, 0.12f + 0.08f * i, Mathf.Sin(angle) * 0.42f);
+                ball.transform.localScale = Vector3.one * 0.2f;
+                ball.GetComponent<Renderer>().sharedMaterial = weight;
+                ball.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.Off;
+            }
+            var rope = new Color(0.62f, 0.48f, 0.3f);
+            RopeLoop(root.transform, "RopeLow", 0.42f, 0.15f, 8f, rope);
+            RopeLoop(root.transform, "RopeHigh", 0.36f, 0.32f, -14f, rope);
+            return SavePrefab(root, $"{VfxFolder}/{name}.prefab");
+        }
+
+        private static void RopeLoop(Transform parent, string name, float radius, float height, float tilt, Color color)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = new Vector3(0f, height, 0f);
+            go.transform.localRotation = Quaternion.Euler(tilt, 0f, tilt * 0.5f);
+            var line = go.AddComponent<LineRenderer>();
+            line.useWorldSpace = false;
+            line.loop = true;
+            line.widthMultiplier = 0.05f;
+            line.sharedMaterial = LineMat();
+            line.startColor = line.endColor = color;
+            line.shadowCastingMode = ShadowCastingMode.Off;
+            const int segments = 24;
+            line.positionCount = segments;
+            for (int i = 0; i < segments; i++)
+            {
+                float a = i * Mathf.PI * 2f / segments;
+                line.SetPosition(i, new Vector3(Mathf.Cos(a) * radius, 0f, Mathf.Sin(a) * radius));
+            }
         }
 
         /// <summary>Flat ground disc, no lifetime (elite auras).</summary>

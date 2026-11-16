@@ -43,6 +43,7 @@ namespace RiskOfMagic.Editor
             { StatusType.Marked, ("Marqué", true, true) },
             { StatusType.Ambush, ("Embuscade", true, false) },
             { StatusType.RuneBlessing, ("Bénédiction runique", true, false) },
+            { StatusType.Ensnared, ("Entravé", true, true) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()
@@ -109,6 +110,25 @@ namespace RiskOfMagic.Editor
             }
             if (dirty)
                 EditorUtility.SetDirty(target);
+        }
+
+        /// <summary>
+        /// Builder defaults of a status entry: attached effect, above-enemy icon and icon. Only fills empty slots, so a
+        /// value changed by hand in the ArtLibrary is kept.
+        /// </summary>
+        public static void ConfigureStatus(StatusType type, GameObject attachedEffect, bool aboveEnemies, Sprite icon)
+        {
+            var entry = Library.GetStatus(type);
+            if (entry == null)
+                return;
+            if (entry.attachedEffect == null && attachedEffect != null)
+            {
+                entry.attachedEffect = attachedEffect;
+                entry.aboveEnemies = aboveEnemies; // first setup only
+            }
+            if (entry.icon == null && icon != null)
+                entry.icon = icon;
+            EditorUtility.SetDirty(Library);
         }
 
         /// <summary>One icon slot per elite affix (called by the builder).</summary>
