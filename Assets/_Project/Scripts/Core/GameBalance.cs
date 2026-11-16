@@ -68,6 +68,8 @@ namespace RiskOfMagic.Core
             public float bannerDamageBonus = 0.2f;
             public float stealthSpeedBonus = 0.3f;
             public float markedDamageTakenMultiplier = 1.5f;
+            [Tooltip("Marque de mort: share of the damage the marked target takes dealt to the enemies around it.")] public float markedEchoFraction = 0.3f;
+            [Tooltip("Marque de mort: echo radius (m).")] public float markedEchoRadius = 8f;
             public float runeBlessingDamageBonus = 0.3f;
             public float rallyBonus = 0.4f;
             public float warhornBonusPerStack = 0.15f;

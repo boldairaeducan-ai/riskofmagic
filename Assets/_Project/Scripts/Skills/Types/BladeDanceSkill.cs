@@ -5,7 +5,10 @@ using UnityEngine;
 
 namespace RiskOfMagic.Skills.Types
 {
-    /// <summary>Danse des lames: invulnerable for a short time while hitting every enemy around several times.</summary>
+    /// <summary>
+    /// Danse des lames: invulnerable for a short time while hitting every enemy around several times. The cast lasts
+    /// the whole dance (castDuration), so no other skill can be used meanwhile.
+    /// </summary>
     [CreateAssetMenu(menuName = "Risk of Magic/Skills/Blade Dance", fileName = "Skill_BladeDance")]
     public class BladeDanceSkill : SkillDefinition
     {
@@ -14,6 +17,7 @@ namespace RiskOfMagic.Skills.Types
         [Min(0.5f)] public float radius = 6f;
         [Min(0f)] public float damageCoefficientPerHit = 1.2f;
         public DamageType damageType = DamageType.Physical;
+        [Range(0f, 1f), Tooltip("Chance factor for item effects on each hit.")] public float procCoefficient = 0.3f;
         public GameObject hitVfx;
 
         public override void OnServerExecute(SkillContext context, in SkillActivation activation)
@@ -30,7 +34,9 @@ namespace RiskOfMagic.Skills.Types
                 if (!context.Avatar.IsStanding)
                     yield break;
                 Vector3 center = context.Transform.position + Vector3.up;
-                context.DamageArea(center, radius, damageCoefficientPerHit, damageType);
+                var info = context.CreateDamage(damageCoefficientPerHit, damageType, center);
+                info.ProcCoefficient = procCoefficient;
+                AreaDamage.Apply(center, radius, info, context.HitMask);
                 VfxNetwork.Spawn(hitVfx, context.Transform.position, Quaternion.Euler(0f, i * 45f, 0f), radius * 0.5f);
                 yield return wait;
             }

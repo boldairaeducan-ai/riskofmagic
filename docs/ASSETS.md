@@ -46,7 +46,7 @@ Musique par carte : `Audio/Music/<Carte>_Music.asset` (musique + musique du boss
 | Arcaniste | Projectile magique, Explosion arcanique, Bouclier arcanique, Blocage temporel | Éclats arcaniques, Orbe de givre, Transfert, Rayon du néant |
 | Druide | Griffes toxiques, Nuage toxique, Bond sylvestre, Floraison fatale | Épines, Ronces, Enracinement, Épidémie |
 | Paladin | Marteau béni, Jugement, Égide, Sol consacré | Lame radieuse, Bouclier projeté, Charge du croisé, Intervention divine |
-| Ombre | Dagues jumelles, Dagues de lancer, Voile d'ombre, Marque de mort | Lames saignantes, Fumigène, Pas de l'ombre, Danse des lames |
+| Ombre | Dagues jumelles, Dagues de lancer, Voile d'ombre, Marque de mort | Poignard lourd, Fumigène, Pas de l'ombre, Danse des lames |
 
 ### 1.4 Projectiles — `fireSound` + `impactSound` (22 × 2 = 44)
 Flèche, flèche perforante, trait de feu, orbe de givre, trait ennemi, missile arcanique, bombe de feu, trait arcanique, dard empoisonné,

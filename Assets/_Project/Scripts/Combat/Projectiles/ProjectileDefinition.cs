@@ -30,6 +30,7 @@ namespace RiskOfMagic.Combat.Projectiles
         public LayerMask hitMask = Physics.DefaultRaycastLayers;
         [Tooltip("Optional damage over time applied by direct hits and the explosion.")] public DotEffect dot;
         [Min(0f), Tooltip("Freezes enemies hit (direct hit and explosion), seconds.")] public float freezeDuration;
-        [Tooltip("Direct hits from behind the target are guaranteed criticals (x2).")] public bool backstabCritical;
+        [Tooltip("Direct hits from behind the target are guaranteed criticals.")] public bool backstabCritical;
+        [Min(1f), Tooltip("Damage multiplier of a critical direct hit (2 = the normal critical).")] public float criticalMultiplier = 2f;
     }
 }

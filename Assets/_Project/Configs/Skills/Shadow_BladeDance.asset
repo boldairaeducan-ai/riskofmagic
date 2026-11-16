@@ -13,13 +13,12 @@ MonoBehaviour:
   m_Name: Shadow_BladeDance
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.BladeDanceSkill
   displayName: Danse des lames
-  description: "1,5 s invuln\xE9rable en frappant 8 fois tous les ennemis \xE0 6
-    m (8 \xD7 120%)."
+  description: "1,5 s invuln\xE9rable en frappant 8 fois tous les ennemis \xE0 6 m (8 \xD7 70%). Aucune autre action pendant la danse."
   icon: {fileID: 21300000, guid: 47077642d68a2924c8a317e159578f92, type: 3}
   activationMode: 0
-  cooldown: 14
+  cooldown: 25
   maxStock: 1
-  castDuration: 0.2
+  castDuration: 1.5
   scalesWithAttackSpeed: 0
   canCastWhileBusy: 0
   keepsSprint: 0
@@ -35,6 +34,7 @@ MonoBehaviour:
   duration: 1.5
   hits: 8
   radius: 6
-  damageCoefficientPerHit: 1.2
+  damageCoefficientPerHit: 0.7
+  procCoefficient: 0.3
   damageType: 0
   hitVfx: {fileID: 7567192199689358438, guid: 8456f2fda818e0d458b34996233552c0, type: 3}

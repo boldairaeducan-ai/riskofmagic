@@ -67,11 +67,11 @@ namespace RiskOfMagic.Editor
         {
             public ProjectileDefinition Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
                 FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb,
-                HolyHammer, RadiantWave, ThrowingDagger;
+                HolyHammer, RadiantWave, ThrowingDagger, HeavyDagger;
             public DotEffect Poison;
             public List<ProjectileDefinition> All => new() { Arrow, PiercingArrow, FireBolt, FrostOrb, EnemyBolt, ArcaneMissile, Firebomb, ArcaneBolt, PoisonDart, SpiderSpit, Boulder, ChaosBolt, Meteor,
                 FireArrow, FrostArrow, ExplosiveArrow, Axe, ArcaneShard, ArcaneFrostOrb,
-                HolyHammer, RadiantWave, ThrowingDagger };
+                HolyHammer, RadiantWave, ThrowingDagger, HeavyDagger };
         }
 
         [MenuItem("Tools/Risk of Magic/Build Prototype Scene")]
@@ -315,7 +315,8 @@ namespace RiskOfMagic.Editor
                 // Paladin / Shadow
                 HolyHammer = ProjectileAsset("Projectile_HolyHammer", new Color(1f, 0.9f, 0.5f), 0.55f, vfx.Impact),
                 RadiantWave = ProjectileAsset("Projectile_RadiantWave", new Color(1f, 0.95f, 0.7f), 0.9f, vfx.Impact),
-                ThrowingDagger = ProjectileAsset("Projectile_ThrowingDagger", new Color(0.6f, 0.6f, 0.7f), 0.15f, vfx.Impact)
+                ThrowingDagger = ProjectileAsset("Projectile_ThrowingDagger", new Color(0.6f, 0.6f, 0.7f), 0.15f, vfx.Impact),
+                HeavyDagger = ProjectileAsset("Projectile_HeavyDagger", new Color(0.45f, 0.4f, 0.55f), 0.2f, vfx.Impact)
             };
 
             Configure(set.Arrow, speed: 110f, gravity: 6f, lifetime: 2f, radius: 0.1f);
@@ -378,8 +379,12 @@ namespace RiskOfMagic.Editor
             set.RadiantWave.maxRange = 8f;
             set.ThrowingDagger.maxRange = 45f;
             set.ThrowingDagger.backstabCritical = true;
+            Configure(set.HeavyDagger, speed: 70f, gravity: 3f, lifetime: 1.5f, radius: 0.15f);
+            set.HeavyDagger.maxRange = 45f;
+            set.HeavyDagger.backstabCritical = true;
+            set.HeavyDagger.criticalMultiplier = 3.5f;
             foreach (var alternative in new[] { set.FireArrow, set.FrostArrow, set.ExplosiveArrow, set.Axe, set.ArcaneShard, set.ArcaneFrostOrb,
-                         set.HolyHammer, set.RadiantWave, set.ThrowingDagger })
+                         set.HolyHammer, set.RadiantWave, set.ThrowingDagger, set.HeavyDagger })
                 EditorUtility.SetDirty(alternative);
 
             // Strict max ranges (m) for ranged attacks.
@@ -689,7 +694,7 @@ namespace RiskOfMagic.Editor
             veil.castVfx = vfx.Blink;
 
             var mark = Skill<MarkSkill>("Shadow_DeathMark", "Marque de mort",
-                "La cible visée subit +50% de dégâts de toutes sources pendant 6 s. Si elle meurt, la recharge est réinitialisée.",
+                "La cible visée subit +50% de dégâts pendant 6 s ; 30% des dégâts qu'elle subit touchent les ennemis à 8 m. Si elle meurt, la recharge est réinitialisée.",
                 SkillActivationMode.Press, cooldown: 12f, cast: 0.2f);
             mark.duration = 6f;
             mark.markVfx = null; // the mark follows the target (Marked status attached effect)
@@ -913,17 +918,12 @@ namespace RiskOfMagic.Editor
             intervention.reviveVfx = vfx.ShieldPulse;
 
             // Shadow
-            var bleed = Dot("Dot_Bleed", DamageType.Bleed, tickFraction: 0.4f, interval: 0.5f, duration: 3f, maxStacks: 20);
-            var bleedingBlades = Skill<MeleeComboSkill>("Shadow_BleedingBlades", "Lames saignantes", "2 coups (90/120%) qui font saigner.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.35f, attackSpeed: true);
-            bleedingBlades.swingVfx = vfx.Swing;
-            bleedingBlades.dot = bleed;
-            bleedingBlades.backstabCritical = true;
-            bleedingBlades.steps = new[]
-            {
-                new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.4f, reach = 1.5f, hitDelay = 0.06f },
-                new MeleeComboSkill.Step { damageCoefficient = 1.2f, radius = 1.5f, reach = 1.5f, hitDelay = 0.08f }
-            };
+            var heavyDagger = Skill<ProjectileSkill>("Shadow_HeavyDagger", "Poignard lourd",
+                "Poignard lent : 220%. Critiques ×3,5, critique garanti dans le dos.",
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.9f, attackSpeed: true);
+            heavyDagger.projectile = p.HeavyDagger;
+            heavyDagger.damageType = DamageType.Physical;
+            heavyDagger.damageCoefficient = 2.2f;
 
             var smoke = Skill<AreaSkill>("Shadow_SmokeBomb", "Fumigène", "Nuage de 6 m : 150%, ennemis désorientés 2 s.",
                 SkillActivationMode.Press, cooldown: 8f, cast: 0.3f);
@@ -943,14 +943,16 @@ namespace RiskOfMagic.Editor
             shadowStep.canCastWhileBusy = true;
 
             var bladeDance = Skill<BladeDanceSkill>("Shadow_BladeDance", "Danse des lames",
-                "1,5 s invulnérable en frappant 8 fois tous les ennemis à 6 m (8 × 120%).",
-                SkillActivationMode.Press, cooldown: 14f, cast: 0.2f);
+                "1,5 s invulnérable en frappant 8 fois tous les ennemis à 6 m (8 × 70%). Aucune autre action pendant la danse.",
+                SkillActivationMode.Press, cooldown: 25f, cast: 1.5f);
+            bladeDance.damageCoefficientPerHit = 0.7f;
+            bladeDance.procCoefficient = 0.3f;
             bladeDance.hitVfx = vfx.Swing;
 
-            foreach (var skill in new SkillDefinition[] { radiant, shieldThrow, crusade, intervention, bleedingBlades, smoke, shadowStep, bladeDance })
+            foreach (var skill in new SkillDefinition[] { radiant, shieldThrow, crusade, intervention, heavyDagger, smoke, shadowStep, bladeDance })
                 EditorUtility.SetDirty(skill);
             SetAlternatives(characters[4], radiant, shieldThrow, crusade, intervention);
-            SetAlternatives(characters[5], bleedingBlades, smoke, shadowStep, bladeDance);
+            SetAlternatives(characters[5], heavyDagger, smoke, shadowStep, bladeDance);
         }
 
         private const string ChallengesFolder = Configs + "/Challenges";
