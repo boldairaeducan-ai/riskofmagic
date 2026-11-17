@@ -390,7 +390,10 @@ Le décor s'illumine d'un coup : c'est ce qui vend l'effet.
 
 ## 6. Brancher l'effet dans le jeu
 
-1. Glisse `FX_LightningStrike` dans `Assets/_Project/Art/VFX/` pour créer le prefab.
+1. Glisse `FX_LightningStrike` dans `Assets/_Project/Art/VFX/` pour créer **ton propre prefab**.
+   - **Ne modifie jamais** les prefabs générés de `Prefabs/Vfx/` : *Build Prototype Scene* les réécrit.
+   - **Ne les mets jamais** dans le champ *Model* : ils contiennent un *ArtSlot*, et le jeu les instancierait en
+     boucle. Unity se figerait ; depuis le correctif, la console affiche une erreur à la place.
 2. Ouvre `Resources/ArtLibrary` → liste **Vfx** → entrée **`VFX_LightningStrike`**.
    - *Model* = ton prefab ;
    - *Keep Placeholder* **décoché** (la colonne grise disparaît) ;
