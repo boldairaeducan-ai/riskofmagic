@@ -85,6 +85,36 @@ Textures utiles du pack (dossier `Textures/`) :
 > Les noms entre *italiques* sont ceux de l'interface Unity (en anglais). Dans le graph, **Espace** ou clic droit →
 > *Create Node* ouvre la recherche : tape le nom du bloc ou de l'opérateur (ex. `Single Burst`, `Lerp`).
 
+### 4.0 Deux Shader Graphs pour les sorties (à faire une fois)
+
+Dans ce projet, les sorties proposées par le VFX Graph sont des variantes **Shader Graph** (et des variantes
+**HDRP**). Les sorties **HDRP** (*HDRP Distortion*, *HDRP Lit*…) **ne s'affichent pas** : le jeu rend en URP.
+Il faut donc prendre la variante **Shader Graph** et lui donner un Shader Graph compatible VFX.
+
+1. Project → `Assets/_Project/Art/VFX/Shaders/` → clic droit → *Create → Shader Graph → URP → Unlit Shader Graph*
+   → `SG_VFX_Additive`.
+2. Ouvre-le. *Graph Inspector* → onglet *Graph Settings* :
+   - *Material* : Unlit ;
+   - *Surface Type* : **Transparent** ;
+   - *Blending Mode* : **Additive** ;
+   - *Render Face* : Both ;
+   - coche **Support VFX Graph**.
+3. *Blackboard* (**+**) :
+   - `MainTex` : *Texture2D* ;
+   - `Tint` : *Color*, *Mode* **HDR**, valeur blanche.
+4. Graph :
+   - *Sample Texture 2D* (Texture = `MainTex`) ;
+   - *Multiply* : sortie RGBA du sample × `Tint` ;
+   - sortie RGB → *Base Color* du *Fragment* ; composante A (nœud *Split*) → *Alpha*.
+5. *Save Asset*. Duplique-le en `SG_VFX_Alpha` et passe son *Blending Mode* à **Alpha** : il servira à la fumée.
+
+Dans le VFX Graph, chaque sortie *Shader Graph* reçoit ce Shader Graph dans son champ **Shader Graph**. Ses
+propriétés apparaissent alors comme des entrées du contexte :
+- `MainTex` : la texture du pack Hovl ;
+- `Tint` : à relier à *Get Attribute: color* et *Get Attribute: alpha*, assemblés en *Vector4* (opérateur
+  *Vector4*, ou *Combine*). Les couleurs et fondus réglés par les blocs *Set Color*, *Set Alpha over Life*… arrivent
+  ainsi dans le shader.
+
 ### 4.1 Créer le graph
 1. Project → `Assets/_Project/Art/VFX/` → clic droit → *Create → Visual Effects → Visual Effect Graph* →
    `VFXG_LightningStrike`. Supprime le système par défaut.
@@ -105,7 +135,7 @@ Textures utiles du pack (dossier `Textures/`) :
 ### 4.2 Arc principal (Particle Strip)
 
 Assemble 4 contextes (*Create Node → Context*), reliés de haut en bas :
-*Spawn* → *Initialize Particle Strip* → *Update Particle Strip* → *Output ParticleStrip Quad*.
+*Spawn* → *Initialize Particle Strip* → *Update Particle Strip* → *Output ParticleStrip Shader Graph Quad*.
 Dans chaque contexte, **Espace** ajoute un bloc.
 
 **Spawn**
@@ -143,10 +173,11 @@ Blocs du contexte Initialize :
 
 **Update Particle Strip** : rien, ou *Set Size over Life* pour amincir l'arc en fin de vie.
 
-**Output ParticleStrip Quad** (sortie *Unlit*)
-- *Blend Mode* : **Additive** ;
-- *Main Texture* : `Trail67.png` ou `Electro.png` ;
-- *UV Mode* : **Stretch** ;
+**Output ParticleStrip Shader Graph Quad** (pas la variante *HDRP*)
+- *Shader Graph* : `SG_VFX_Additive` ;
+- *Tiling Mode* : **Stretch** (la texture est étirée sur toute la longueur de l'arc) ;
+- *Uv Mode* : Default ;
+- `MainTex` : `Trail67.png` ou `Electro.png` ; `Tint` : couleur + alpha de la particule (section 4.0) ;
 - bloc *Set Alpha over Life* : courbe 1 → 0.
 
 ### 4.3 Branches
@@ -166,12 +197,12 @@ Duplique les 4 contextes de l'arc (sélection, Ctrl+D) et adapte :
 - *Set Size* 0,03, *Set Color* = `GlowColor`, *Set Lifetime* 0,03.
 
 ### 4.4 Flash d'impact
-Système classique : *Spawn* → *Initialize Particle* → *Update Particle* → *Output Particle Quad*
+Système classique : *Spawn* → *Initialize Particle* → *Update Particle* → *Output Particle Shader Graph Quad*
 (ou *Create Node → System → Simple Particle System*, puis on vide ses blocs).
 - *Single Burst* : *Count* 1, *Delay* 0 ;
 - *Set Lifetime* 0,1 ; *Set Position* (0, 0,3, 0) ; *Set Size* 3 ;
 - *Set Size over Life* : 0,5 → 1 ; *Set Alpha over Life* : 1 → 0 ;
-- *Output Particle Quad* : *Main Texture* `Flash.png`, *Blend Mode* Additive, *Set Color* blanc HDR (+3).
+- sortie *Shader Graph* `SG_VFX_Additive`, `MainTex` = `Flash.png`, *Set Color* blanc HDR (+3).
 
 ### 4.5 Étincelles
 - *Single Burst* : *Count* 30 ;
@@ -180,26 +211,26 @@ Système classique : *Spawn* → *Initialize Particle* → *Update Particle* →
 - *Update Particle* :
   - *Gravity* : (0, −9,8, 0) ;
   - *Collision Shape* : *Shape* Plane, position (0, 0, 0), normale (0, 1, 0), *Bounce* 0,3 ;
-- *Output Particle Quad* :
+- sortie *Shader Graph* (`SG_VFX_Additive`) :
   - bloc *Orient* : mode **Along Velocity** ;
   - *Set Scale* : Y = 4 (traits allongés) ; *Set Size* 0,06 ;
-  - *Main Texture* `Point1.png`, Additive, couleur HDR +2.
+  - `MainTex` = `Point1.png`, *Set Color* HDR +2.
 
 ### 4.6 Onde au sol et brûlure
-Deux petits systèmes *Output Particle Quad*, un *Single Burst* de 1 chacun. Pour les poser **à plat** au sol :
+Deux petits systèmes (sortie *Output Particle Shader Graph Quad*, `SG_VFX_Additive`), un *Single Burst* de 1 chacun. Pour les poser **à plat** au sol :
 bloc *Orient*, mode **Fixed Axis** (*Axis* (0, 1, 0)), ou **Advanced** avec *Front* = (0, 1, 0).
 
 - **Onde** :
   - *Set Lifetime* 0,35 ;
   - *Set Size over Life* 0,3 → 2 (2 m = diamètre de la zone au rayon 1) ;
   - *Set Alpha over Life* 1 → 0 ;
-  - *Main Texture* `Circle2.png` ;
+  - `MainTex` = `Circle2.png` ;
   - *Set Position* Y = 0,05.
 - **Brûlure** :
   - *Set Lifetime* 1,2 ; *Set Size* 1,5 ;
   - *Set Angle* : Z en mode *Random* 0 à 360 ;
   - *Set Color over Life* : bleu lumineux → gris → transparent ;
-  - *Main Texture* `Crack.png`.
+  - `MainTex` = `Crack.png`.
 
 ### 4.7 Fumée
 - *Single Burst* : *Count* 5 ;
@@ -207,7 +238,7 @@ bloc *Orient*, mode **Fixed Axis** (*Axis* (0, 1, 0)), ou **Advanced** avec *Fro
 - *Set Velocity* *Random* : Y de 0,5 à 1,5 (vers le haut, faible) ;
 - *Set Size* *Random* 0,6 à 1,2, puis *Set Size over Life* 0,6 → 1,4 ;
 - *Set Angle* *Random* et *Set Angular Velocity* *Random* ±30 ;
-- *Output Particle Quad* : *Blend Mode* **Alpha** (pas Additive), gris foncé alpha 0,35, *Main Texture*
+- sortie *Shader Graph* avec **`SG_VFX_Alpha`** (pas l'additif), *Set Color* gris foncé, alpha 0,35, `MainTex` =
   `Smoke26.png`.
 
 ### 4.8 La lumière (Particle System enfant)
@@ -222,7 +253,10 @@ Le VFX Graph ne crée pas de lumières en URP. Ajoute au prefab un *Particle Sys
 - Le graph se recompile à chaque sauvegarde (Ctrl+S) : garde la fenêtre ouverte et regarde la *Scene*.
 - *Play Controls* (overlay de la *Scene View* quand l'objet est sélectionné) : *Play*, *Restart*, *Play Rate* 0,1
   pour voir l'éclair au ralenti.
-- Sorties **Unlit** : les sorties *Lit* coûtent plus cher et n'apportent rien à un effet additif lumineux.
+- Shader Graphs **Unlit** : un Shader Graph *Lit* coûte plus cher et n'apporte rien à un effet additif lumineux.
+- Jamais de sortie **HDRP** : rien ne s'affiche en URP. Si tu retires le package HDRP (le jeu n'en a pas besoin),
+  installe d'abord *Visual Effect Graph* depuis le *Package Manager* : il partirait avec HDRP, et ces sorties
+  disparaîtront du menu.
 - Un bloc qui ne s'applique pas est souvent un bloc désactivé : la case à cocher à gauche de son nom doit être
   cochée.
 
@@ -380,7 +414,9 @@ Le décor s'illumine d'un coup : c'est ce qui vend l'effet.
 - [ ] VFX Graph : **tous** les systèmes en espace **Local**
 - [ ] VFX Graph : *Bounds Mode* = **Manual** et *Bounds* qui englobent toute la colonne (sinon l'effet disparaît en
       bord d'écran)
-- [ ] VFX Graph : *Capacity* au plus juste, sorties **Unlit**, paramètres exposés (couleur, hauteur, zigzag)
+- [ ] VFX Graph : *Capacity* au plus juste, paramètres exposés (couleur, hauteur, zigzag)
+- [ ] VFX Graph : sorties **Shader Graph** avec `SG_VFX_Additive` / `SG_VFX_Alpha` (*Support VFX Graph* coché),
+      jamais **HDRP**
 - [ ] *Looping* décoché partout, rien ne dure plus de ~1,5 s (fumée et brûlure comprises)
 - [ ] Matériaux **dupliqués** dans `_Project/Art/VFX/Materials`, pack Hovl intact
 
