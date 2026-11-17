@@ -82,130 +82,149 @@ Textures utiles du pack (dossier `Textures/`) :
 
 ## 4. L'éclair en VFX Graph
 
+> Les noms entre *italiques* sont ceux de l'interface Unity (en anglais). Dans le graph, **Espace** ou clic droit →
+> *Create Node* ouvre la recherche : tape le nom du bloc ou de l'opérateur (ex. `Single Burst`, `Lerp`).
+
 ### 4.1 Créer le graph
 1. Project → `Assets/_Project/Art/VFX/` → clic droit → *Create → Visual Effects → Visual Effect Graph* →
-   `VFXG_LightningStrike`. Partir du modèle **Empty** ou supprimer le système par défaut.
-2. Double-clic pour l'ouvrir. Dans le **Blackboard** (panneau de gauche, bouton *+*), crée ces paramètres
-   **exposés** (case *Exposed*). Tu pourras les régler sans rouvrir le graph, depuis l'Inspector du composant
-   *Visual Effect* :
+   `VFXG_LightningStrike`. Supprime le système par défaut.
+2. Ouvre le graph. Dans le *Blackboard* (bouton **+**), crée ces propriétés et coche *Exposed* sur chacune. Elles
+   apparaissent ensuite dans l'Inspector du composant *Visual Effect* :
 
-| Paramètre | Type | Valeur |
+| Property | Type | Valeur |
 |---|---|---|
-| `Height` | Float | 4 (hauteur de la colonne, rayon 1) |
-| `Jaggedness` | Float | 0,35 (amplitude des zigzags) |
-| `BoltColor` | Color **HDR** | blanc-bleu, intensité +3 |
-| `GlowColor` | Color HDR | bleu, intensité +1,5 |
-| `Points` | Int | 24 (points par arc) |
+| `Height` | *Float* | 4 (hauteur de la colonne, rayon 1) |
+| `Jaggedness` | *Float* | 0,35 (amplitude des zigzags) |
+| `BoltColor` | *Color* (HDR) | blanc-bleu, *Intensity* +3 |
+| `GlowColor` | *Color* (HDR) | bleu, *Intensity* +1,5 |
+| `Points` | *Int* | 24 (points par arc) |
 
-3. Glisse le `.vfx` dans le prefab `FX_LightningStrike` : un enfant avec le composant **Visual Effect** est créé.
+3. Glisse le `.vfx` dans le prefab `FX_LightningStrike` : un enfant avec le composant *Visual Effect* est créé.
    Laisse *Initial Event Name* = `OnPlay` : l'effet se joue à chaque apparition, recyclage compris.
 
 ### 4.2 Arc principal (Particle Strip)
 
-Crée un système avec clic droit dans le graph → *Create Node → System → **Simple Particle Strip***, ou assemble
-les contextes ci-dessous.
+Assemble 4 contextes (*Create Node → Context*), reliés de haut en bas :
+*Spawn* → *Initialize Particle Strip* → *Update Particle Strip* → *Output ParticleStrip Quad*.
+Dans chaque contexte, **Espace** ajoute un bloc.
 
 **Spawn**
-- 3 blocs **Single Burst** : temps 0, 0,04 et 0,08 s, *Count* = `Points`. Chaque burst = un arc complet = un
+- 3 blocs *Single Burst* : *Delay* 0, 0,04 et 0,08 s ; *Count* = `Points`. Chaque burst = un arc complet = un
   scintillement.
 
-**Initialize Particle Strip**
-- *Strip Capacity* 1, *Particle Per Strip Count* = 32 (≥ `Points`).
-- **Bounds** : *Bounds Mode* = Manual, *Center* (0, 2, 0), *Size* (3, 5, 3). Indispensable : sans bounds
-  corrects, l'effet disparaît quand le centre sort de l'écran.
-- **Set Lifetime** = 0,035 : chaque arc meurt avant le suivant, le strip se reconstruit (scintillement net).
-- **Set Position** (Position = valeur calculée) :
-  - `t` = **Get Attribute: spawnIndex** ÷ (`Points` − 1) : 0 au premier point, 1 au dernier ;
-  - base = **Lerp**((0, `Height`, 0), (0, 0, 0), `t`) : du ciel au sol ;
-  - décalage = **Random Number** (−1 à 1, *Constant* décoché) pour X et Z, multiplié par `Jaggedness` × **Sin**(π × `t`).
-    Le sinus ramène le décalage à 0 aux deux extrémités : l'arc part bien du ciel et touche bien le sol ;
-  - Position = base + décalage (Y du décalage = 0).
-- **Set Size** = 0,08 (largeur du ruban).
-- **Set Color** = `BoltColor`.
+**Initialize Particle Strip** : les champs du contexte lui-même.
 
-**Update Particle Strip** : rien (ou *Set Size over Life* pour amincir l'arc en fin de vie).
+| Champ | Valeur |
+|---|---|
+| Bouton d'espace (en haut à droite) | **Local** |
+| *Strip Capacity* | 1 |
+| *Particle Per Strip Count* | 32 (≥ `Points`) |
+| *Bounds Mode* | **Manual** |
+| *Bounds* (déplier ▸) | *Center* (0, 2, 0), *Size* (3, 5, 3) |
+| *Bounds Padding* | 0 |
+| *Strip Index* | 0 |
 
-**Output ParticleStrip Quad** (*Unlit*)
-- *Blend Mode* **Additive** ;
-- *Main Texture* `Trail67.png` ou `Electro.png` ;
-- *UV Mode* Stretch ;
-- bloc **Set Alpha over Life** : 1 → 0.
+*Bounds Mode* : *Recorded* (défaut) demande d'enregistrer les bounds dans l'éditeur, *Automatic* les recalcule
+chaque frame et coûte plus cher, *Manual* est fixe et sûr. Sans bounds corrects, l'effet disparaît quand le centre
+sort de l'écran.
+
+Blocs du contexte Initialize :
+- *Set Lifetime* = 0,035. Chaque arc meurt avant le suivant : le strip se reconstruit, le scintillement est net.
+- *Set Position*, dont l'entrée *Position* est calculée par ces opérateurs :
+  1. `t` = *Get Attribute: spawnIndex* ÷ (`Points` − 1), avec *Divide* et *Subtract*. Il vaut 0 au premier point et 1
+     au dernier.
+  2. base = *Lerp*(A = (0, `Height`, 0), B = (0, 0, 0), S = `t`) : du ciel au sol.
+  3. zigzag = deux *Random Number* (*Min* −1, *Max* 1, *Constant* décoché) pour X et Z, assemblés en *Vector3*
+     (Y = 0) et multipliés par `Jaggedness` × *Sine*(*Pi* × `t`). Le *Sine* ramène le décalage à 0 aux deux
+     extrémités : l'arc part bien du ciel et touche bien le sol.
+  4. *Position* = base + zigzag (*Add*).
+- *Set Size* = 0,08 (largeur du ruban).
+- *Set Color* = `BoltColor`.
+
+**Update Particle Strip** : rien, ou *Set Size over Life* pour amincir l'arc en fin de vie.
+
+**Output ParticleStrip Quad** (sortie *Unlit*)
+- *Blend Mode* : **Additive** ;
+- *Main Texture* : `Trail67.png` ou `Electro.png` ;
+- *UV Mode* : **Stretch** ;
+- bloc *Set Alpha over Life* : courbe 1 → 0.
 
 ### 4.3 Branches
 
-Duplique le système de l'arc et adapte-le :
-- **Spawn** : 3 Single Burst (mêmes temps), *Count* = 3 branches × 8 points = 24 ;
-- **Initialize** : *Strip Capacity* **3**, *Particle Per Strip* 8 ;
-- **Set Strip Index** (*Set Attribute → stripIndex*) = **Floor**(spawnIndex ÷ 8) : 8 points par branche ;
-- `t` = (spawnIndex **Modulo** 8) ÷ 7 ;
-- départ de la branche :
-  - un point sur la colonne, à une hauteur **Random Number** (1 à 3) avec *Constant* coché et **Seed** = `stripIndex`
-    (même valeur pour les 8 points d'une branche) ;
-  - direction = Random (*Constant*, Seed = `stripIndex` + 10) en X/Z (−1 à 1), Y = −0,6, normalisée, × 1,2 m ;
-- Position = Lerp(départ, départ + direction, `t`) + petit décalage aléatoire × 0,15 × Sin(π × `t`) ;
-- Size 0,03, couleur = `GlowColor`, *Lifetime* 0,03.
+Duplique les 4 contextes de l'arc (sélection, Ctrl+D) et adapte :
+- *Spawn* : 3 *Single Burst* (mêmes *Delay*), *Count* = 24 (3 branches × 8 points) ;
+- *Initialize Particle Strip* : *Strip Capacity* **3**, *Particle Per Strip Count* 8 ;
+- entrée **Strip Index** du contexte = *Floor*(*Get Attribute: spawnIndex* ÷ 8) : chaque groupe de 8 points forme
+  une branche ;
+- `t` = *Modulo*(spawnIndex, 8) ÷ 7 ;
+- point de départ, identique pour les 8 points d'une branche : *Random Number* avec *Constant* **coché** et
+  *Seed* = l'index de branche (le *Floor* ci-dessus) :
+  - une hauteur sur la colonne entre 1 et 3 m ;
+  - une direction : X et Z entre −1 et 1, Y = −0,6, puis *Normalize* et × 1,2 m (*Seed* + 10, pour qu'elle diffère
+    de la hauteur) ;
+- *Position* = *Lerp*(départ, départ + direction, `t`) + zigzag × 0,15 × *Sine*(*Pi* × `t`) ;
+- *Set Size* 0,03, *Set Color* = `GlowColor`, *Set Lifetime* 0,03.
 
 ### 4.4 Flash d'impact
-Système *Simple Particle System* (sortie **Output Particle Quad**) :
-- Single Burst 1 à 0 s ;
-- *Lifetime* 0,1 ;
-- Set Position (0, 0,3, 0) ;
-- Set Size 3 avec *Size over Life* 0,5 → 1 ;
-- *Alpha over Life* 1 → 0 ;
-- texture `Flash.png`, blend Additive, couleur blanche HDR +3.
+Système classique : *Spawn* → *Initialize Particle* → *Update Particle* → *Output Particle Quad*
+(ou *Create Node → System → Simple Particle System*, puis on vide ses blocs).
+- *Single Burst* : *Count* 1, *Delay* 0 ;
+- *Set Lifetime* 0,1 ; *Set Position* (0, 0,3, 0) ; *Set Size* 3 ;
+- *Set Size over Life* : 0,5 → 1 ; *Set Alpha over Life* : 1 → 0 ;
+- *Output Particle Quad* : *Main Texture* `Flash.png`, *Blend Mode* Additive, *Set Color* blanc HDR (+3).
 
 ### 4.5 Étincelles
-- Single Burst 30 ;
-- *Lifetime* aléatoire 0,2-0,5 ;
-- **Set Velocity Random** : (−6, 6, −6) → (6, 14, 6) ;
-- Update :
-  - **Gravity** (0, −9,8, 0) ;
-  - **Collision Shape → Plane** (position 0, normale Y) avec *Bounce* 0,3 ;
-- Output Particle Quad :
-  - bloc **Orient : Along Velocity** ;
-  - **Set Scale** Y = 4 (traits allongés) ;
-  - Size 0,06 ;
-  - texture `Point1.png` additive, couleur HDR +2.
+- *Single Burst* : *Count* 30 ;
+- *Set Lifetime* en mode *Random* (*Uniform*) : 0,2 à 0,5 ;
+- *Set Velocity* en mode *Random* (*Uniform*) : *A* (−6, 6, −6), *B* (6, 14, 6) ;
+- *Update Particle* :
+  - *Gravity* : (0, −9,8, 0) ;
+  - *Collision Shape* : *Shape* Plane, position (0, 0, 0), normale (0, 1, 0), *Bounce* 0,3 ;
+- *Output Particle Quad* :
+  - bloc *Orient* : mode **Along Velocity** ;
+  - *Set Scale* : Y = 4 (traits allongés) ; *Set Size* 0,06 ;
+  - *Main Texture* `Point1.png`, Additive, couleur HDR +2.
 
 ### 4.6 Onde au sol et brûlure
-Deux petits systèmes *Output Particle Quad*, Single Burst 1 chacun. Pour les poser **à plat** au sol : bloc
-**Orient : Fixed Axis** (axe Y vers le haut), ou *Advanced* avec *Front* = (0, 1, 0).
+Deux petits systèmes *Output Particle Quad*, un *Single Burst* de 1 chacun. Pour les poser **à plat** au sol :
+bloc *Orient*, mode **Fixed Axis** (*Axis* (0, 1, 0)), ou **Advanced** avec *Front* = (0, 1, 0).
 
 - **Onde** :
-  - *Lifetime* 0,35 ;
-  - *Size over Life* 0,3 → 2 (2 m = diamètre de la zone au rayon 1) ;
-  - *Alpha over Life* 1 → 0 ;
-  - texture `Circle2.png` ;
-  - position Y 0,05.
+  - *Set Lifetime* 0,35 ;
+  - *Set Size over Life* 0,3 → 2 (2 m = diamètre de la zone au rayon 1) ;
+  - *Set Alpha over Life* 1 → 0 ;
+  - *Main Texture* `Circle2.png` ;
+  - *Set Position* Y = 0,05.
 - **Brûlure** :
-  - *Lifetime* 1,2 ;
-  - Size 1,5 ;
-  - **Set Angle** Z aléatoire 0-360 ;
-  - *Color over Life* : bleu lumineux → gris → transparent ;
-  - texture `Crack.png`.
+  - *Set Lifetime* 1,2 ; *Set Size* 1,5 ;
+  - *Set Angle* : Z en mode *Random* 0 à 360 ;
+  - *Set Color over Life* : bleu lumineux → gris → transparent ;
+  - *Main Texture* `Crack.png`.
 
 ### 4.7 Fumée
-- Single Burst 5 ;
-- *Lifetime* 0,8-1,2 ;
-- Velocity aléatoire faible vers le haut (0,5-1,5) ;
-- Size 0,6-1,2 avec *Size over Life* 0,6 → 1,4 ;
-- *Angle* aléatoire et **Angular Velocity** ±30 ;
-- Output Particle Quad en blend **Alpha** (pas additif), gris foncé alpha 0,35, texture `Smoke26.png`.
+- *Single Burst* : *Count* 5 ;
+- *Set Lifetime* *Random* 0,8 à 1,2 ;
+- *Set Velocity* *Random* : Y de 0,5 à 1,5 (vers le haut, faible) ;
+- *Set Size* *Random* 0,6 à 1,2, puis *Set Size over Life* 0,6 → 1,4 ;
+- *Set Angle* *Random* et *Set Angular Velocity* *Random* ±30 ;
+- *Output Particle Quad* : *Blend Mode* **Alpha** (pas Additive), gris foncé alpha 0,35, *Main Texture*
+  `Smoke26.png`.
 
 ### 4.8 La lumière (Particle System enfant)
-Le VFX Graph ne crée pas de lumières en URP. Ajoute au prefab un **Particle System** dédié :
-- Duration 0,2, *Looping* décoché, Burst 1, *Lifetime* 0,1 ;
-- *Renderer* **désactivé** : on ne veut que la lumière ;
-- module **Lights** réglé comme à la section 5.5.
+Le VFX Graph ne crée pas de lumières en URP. Ajoute au prefab un *Particle System* dédié :
+- *Duration* 0,2, *Looping* décoché, *Emission → Bursts* 1, *Start Lifetime* 0,1 ;
+- module *Renderer* **désactivé** : on ne veut que la lumière ;
+- module *Lights* réglé comme à la section 5.5.
 
 ### 4.9 Astuces VFX Graph
-- **Capacity** de chaque système au plus juste (ex. 32 pour l'arc, 40 pour les étincelles). C'est de la mémoire
-  réservée par instance.
-- Le graph se **recompile** à chaque sauvegarde : laisse la fenêtre ouverte et regarde le résultat dans la Scene.
-- Pour prévisualiser : sélectionne l'objet dans la scène, puis panneau **Play Controls** de la Scene View : *Play*,
-  *Restart*, *Play Rate* à 0,1 pour voir les 0,1 s de l'éclair.
-- Garde ces systèmes en **Unlit**. Les sorties *Lit* coûtent plus cher et n'apportent rien à un effet
-  additif lumineux.
+- *Capacity* (dans l'Inspector du contexte *Initialize Particle*, ou *Strip Capacity* × *Particle Per Strip Count*
+  pour un strip) au plus juste : c'est de la mémoire réservée par instance.
+- Le graph se recompile à chaque sauvegarde (Ctrl+S) : garde la fenêtre ouverte et regarde la *Scene*.
+- *Play Controls* (overlay de la *Scene View* quand l'objet est sélectionné) : *Play*, *Restart*, *Play Rate* 0,1
+  pour voir l'éclair au ralenti.
+- Sorties **Unlit** : les sorties *Lit* coûtent plus cher et n'apportent rien à un effet additif lumineux.
+- Un bloc qui ne s'applique pas est souvent un bloc désactivé : la case à cocher à gauche de son nom doit être
+  cochée.
 
 ---
 
@@ -359,7 +378,8 @@ Le décor s'illumine d'un coup : c'est ce qui vend l'effet.
 - [ ] Pivot au point d'impact, +Y vers le ciel, construit pour un **rayon de 1 m**
 - [ ] *Scaling Mode = Hierarchy* sur **tous** les Particle Systems
 - [ ] VFX Graph : **tous** les systèmes en espace **Local**
-- [ ] VFX Graph : **Bounds** manuels qui englobent toute la colonne (sinon l'effet disparaît en bord d'écran)
+- [ ] VFX Graph : *Bounds Mode* = **Manual** et *Bounds* qui englobent toute la colonne (sinon l'effet disparaît en
+      bord d'écran)
 - [ ] VFX Graph : *Capacity* au plus juste, sorties **Unlit**, paramètres exposés (couleur, hauteur, zigzag)
 - [ ] *Looping* décoché partout, rien ne dure plus de ~1,5 s (fumée et brûlure comprises)
 - [ ] Matériaux **dupliqués** dans `_Project/Art/VFX/Materials`, pack Hovl intact
