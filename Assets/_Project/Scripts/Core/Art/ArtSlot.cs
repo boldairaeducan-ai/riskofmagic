@@ -20,6 +20,14 @@ namespace RiskOfMagic.Core
             var entry = library != null ? library.Find(category, key) : null;
             if (entry == null || entry.model == null)
                 return;
+            // The model is a generated prefab (it has an ArtSlot too): instantiating it would instantiate it again,
+            // forever, and freeze Unity. Plug your own prefab instead.
+            if (entry.model.GetComponentInChildren<ArtSlot>(true) != null)
+            {
+                Debug.LogError($"[Risk of Magic] ArtLibrary « {key} »: its Model « {entry.model.name} » is a generated prefab (it contains an ArtSlot). " +
+                               "Plug your own prefab (e.g. in Assets/_Project/Art), never one of Prefabs/Vfx, Prefabs/Interactables or the projectiles.", entry.model);
+                return;
+            }
 
             if (!entry.keepPlaceholder)
                 foreach (var placeholder in GetComponentsInChildren<Renderer>(true))
