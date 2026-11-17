@@ -28,6 +28,8 @@ namespace RiskOfMagic.Core
             public Vector3 offset;
             public Vector3 rotation;
             public float scale = 1f;
+            [Min(0f), Tooltip("Effects only: minimum time (s) before the effect is released. 0 = automatic (Particle System durations). Needed for VFX Graph art.")]
+            public float lifetime;
         }
 
         [Serializable]

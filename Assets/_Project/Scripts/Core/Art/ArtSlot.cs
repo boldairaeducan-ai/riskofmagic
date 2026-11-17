@@ -40,7 +40,11 @@ namespace RiskOfMagic.Core
             foreach (var behaviour in art.GetComponentsInChildren<Unity.Netcode.NetworkBehaviour>(true))
                 behaviour.enabled = false; // a model is visual only
             if (category == ArtLibrary.Category.Vfx && TryGetComponent(out RiskOfMagic.Vfx.TimedEffect timed))
+            {
                 FitParticlesToLifetime(art, timed);
+                if (entry.lifetime > 0f)
+                    timed.ExtendLifetime(entry.lifetime); // VFX Graph art: its duration can't be read
+            }
         }
 
         /// <summary>
