@@ -23,8 +23,8 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: f6bbaa16fe1da104988720c13d65e19b, type: 3}
     visible: 1
     debuff: 1
-    aboveEnemies: 0
-    attachedEffect: {fileID: 0}
+    aboveEnemies: 1
+    attachedEffect: {fileID: 4084285269629648210, guid: f190cb91b6e26d345a98bc7f38293b98, type: 3}
   - name: Ralliement
     status: 1
     icon: {fileID: 21300000, guid: 513d2090ba754a7438ffc867ebc2e8f2, type: 3}
@@ -100,8 +100,8 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 619fbe1fc6dd3da4096b2e061321c2ff, type: 3}
     visible: 1
     debuff: 1
-    aboveEnemies: 0
-    attachedEffect: {fileID: 0}
+    aboveEnemies: 1
+    attachedEffect: {fileID: 4084285269629648210, guid: f190cb91b6e26d345a98bc7f38293b98, type: 3}
   - name: Embuscade
     status: 12
     icon: {fileID: 21300000, guid: af72b21847e4cc745a9550417bf2dac1, type: 3}
@@ -123,6 +123,13 @@ MonoBehaviour:
     debuff: 1
     aboveEnemies: 1
     attachedEffect: {fileID: 1492257417686685889, guid: 6e1a257e65de69745b8d0f0bd1f80a8a, type: 3}
+  - name: RavenForm
+    status: 15
+    icon: {fileID: 21300000, guid: 8ac2ba7e2750f3f4e852f00318837599, type: 3}
+    visible: 1
+    debuff: 0
+    aboveEnemies: 0
+    attachedEffect: {fileID: 6447379827180369669, guid: 888c84c914cfe2b4aaac2e682620553e, type: 3}
   rarities:
   - name: Commun
     rarity: 0
@@ -169,162 +176,210 @@ MonoBehaviour:
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_FrostBurst
     model: {fileID: 161766660727748596, guid: 05ce920d629922a4eb4795ef7494ce5c, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Area
     model: {fileID: 4994997792314849709, guid: 3dd50886582244645be87adb42aa8528, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Swing
     model: {fileID: 2060900179291159282, guid: ca6705a3f9070d14d819d179493bcfa0, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Blink
     model: {fileID: 7761031033666763820, guid: 1eb833340b41fb444b576c4dced8d4dc, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Lightning
-    model: {fileID: 0}
+    model: {fileID: 5370805351732007781, guid: 544f549c20707744d88094a830b7f408, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Explosion
     model: {fileID: 358637981425055526, guid: 8eb503696b886e04faff8fc0f480d473, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_FireBurst
     model: {fileID: 8378648546881499446, guid: 867c572a5be680d42a042d2349f10143, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_ArcaneBurst
     model: {fileID: 8974203713140315807, guid: 709b0bd6b0b625249a98409dd7a87343, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_PoisonCloud
     model: {fileID: 5034656251238326012, guid: 9de2fa19f0390d44491264d9cab8cec5, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_PoisonBurst
     model: {fileID: 6823302871133167919, guid: 3138a83bedbd6ad4481ba0b061da2eb6, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_DashBurst
     model: {fileID: 5610010966355794069, guid: 803ecf87f61d9fb4f84ba6319ba95c9c, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: -1}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_ShieldPulse
     model: {fileID: 1289543790355709915, guid: b99922c2f59b1a542bdd06ae8bee47ae, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_CursePulse
     model: {fileID: 3377181292992421420, guid: 48c5715f9603c3842a353516a8baefbb, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_RallyPulse
     model: {fileID: 7155335147208632822, guid: 97c43495f80a3244fad1301dfafbe252, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Shockwave
     model: {fileID: 1758473627833946668, guid: 9b21333b068a5084ba09535839bee3c8, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_TimePulse
     model: {fileID: 3744133877081091469, guid: a2a060732547fe64581bb0cb3c2bdf1d, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Telegraph
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_GroundWave
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_VoidBeam
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_FirePatch
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Aura_Burning
     model: {fileID: 3438277244574041817, guid: 6fec832863289f04a854167bc2650d9b, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Aura_Blizzard
     model: {fileID: 4932088507883938021, guid: 0e5709a7ddb77924090c112cf73bb98a, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Aura_Storm
     model: {fileID: 7131401307255788800, guid: 4d9a3b35b3bc07649b697df7fb497b6d, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Aura_Spectral
     model: {fileID: 6063518424537689786, guid: bad5794a53f5c3645bb444b3a040ba01, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Bolas
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: VFX_Aura_Curse
     model: {fileID: 6126188424833946103, guid: a58aa9a78f2b45b45bb0f3e2e1e3ad3c, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
+  - name: VFX_VineWhip
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+    lifetime: 0
+  - name: VFX_LightningStrike
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+    lifetime: 0
+  - name: VFX_RavenSwarm
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+    lifetime: 0
   projectiles:
   - name: Projectile_Arrow
     model: {fileID: 7689144012477797116, guid: ad1ae1938a2039e4292dd5278d0b7781, type: 3}
@@ -332,132 +387,161 @@ MonoBehaviour:
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 90, z: 90}
     scale: 1
+    lifetime: 0
   - name: Projectile_PiercingArrow
     model: {fileID: 2940241529925636610, guid: 7a3cc8e2504e49d42ba15b7b05fc288f, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_FireBolt
     model: {fileID: 4950011398366637647, guid: b47ad05af5bffa94587c2de476295311, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_FrostOrb
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_EnemyBolt
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ArcaneMissile
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_Firebomb
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ArcaneBolt
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_PoisonDart
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_SpiderSpit
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_Boulder
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ChaosBolt
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_Meteor
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_FireArrow
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_FrostArrow
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ExplosiveArrow
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_Axe
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ArcaneShard
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ArcaneFrostOrb
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_HolyHammer
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_RadiantWave
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Projectile_ThrowingDagger
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
+  - name: Projectile_HeavyDagger
+    model: {fileID: 0}
+    keepPlaceholder: 0
+    offset: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0}
+    scale: 1
+    lifetime: 0
   interactables:
   - name: ItemPickup
     model: {fileID: 0}
@@ -465,111 +549,130 @@ MonoBehaviour:
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Chest_Small
     model: {fileID: 8954518982097225188, guid: 3082097348be1d442841596a8a23e16a, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 0.85
+    lifetime: 0
   - name: Chest_Large
     model: {fileID: 2884705084735435304, guid: 78eae56a9b0bec644be557db7f85145c, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1.15
+    lifetime: 0
   - name: Chest_Choice
     model: {fileID: 7784012661194530565, guid: 01c17eec7ac939240ac81f78eae21f4f, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: EquipmentBarrel
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Merchant
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: HealingShrine
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: RunEndSeal
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Teleporter
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: MapEvent_PurificationTomb
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: MapEvent_ChallengeAltar
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: MapEvent_CursedChest
     model: {fileID: 4454980991020990177, guid: a6461ca0d0d0c1f4a901e18b04b121e0, type: 3}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_CorruptedSylvan
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_LichKing
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_FrostWyvern
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_TitanSmith
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_VoidWeaver
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_Altar
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0
   - name: Secret_Fragment
     model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
     scale: 1
+    lifetime: 0

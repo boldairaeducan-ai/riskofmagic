@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Druid_VenomRoots
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: "Racines v\xE9n\xE9neuses"
-  description: "Des racines jaillissent autour de vous (8 m) : enracinent 2 s, 50% + poison."
+  description: 'Des racines jaillissent autour de vous (8 m) : enracinent 2 s, 50%
+    + poison.'
   icon: {fileID: 21300000, guid: 9fb2db68e05e4bd4f822bfe3cbab9373, type: 3}
   activationMode: 0
   cooldown: 10
@@ -23,11 +24,29 @@ MonoBehaviour:
   canCastWhileBusy: 0
   keepsSprint: 0
   maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
   castSound: {fileID: 11400000, guid: ca295e176c81027488c851f8a4f944e0, type: 2}
   animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   center: 0
+  maxRange: 40
   radius: 8
-  ticks: 1
-  damageCoefficient: 0.5
+  followCaster: 1
   damageType: 5
+  damageCoefficient: 0.5
+  ticks: 1
+  initialDelay: 0
+  tickInterval: 0.2
+  hitOncePerTarget: 0
+  dot: {fileID: 11400000, guid: 98e5b30ee27784c42b466b207fae4dfb, type: 2}
+  freezeDuration: 0
   rootDuration: 2
+  allyHealPerTick: 0
+  knockbackDistance: 0
+  knockbackDuration: 0.25
+  casterUpwardVelocity: 0
+  tickVfx: {fileID: 8782927124138761051, guid: cbcdc83588a0afe46b54e3052a2acf6a, type: 3}

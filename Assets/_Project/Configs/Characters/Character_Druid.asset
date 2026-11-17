@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Character_Druid
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Characters.CharacterDefinition
   displayName: Druide
-  description: "Ma\xEEtre de la nature, \xE0 distance : saignements, foudre et flammes. Kit poison en alternative."
+  description: "Ma\xEEtre de la nature, \xE0 distance : saignements, foudre et flammes.
+    Kit poison en alternative."
   bodyColor: {r: 0.25, g: 0.55, b: 0.2, a: 1}
   portrait: {fileID: 0}
   maxHealth: 100

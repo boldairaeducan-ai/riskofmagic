@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Shadow_HeavyDagger
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Poignard lourd
-  description: "Poignard lent : 220%. Critiques \xD73,5, critique garanti dans le dos."
+  description: "Poignard lent : 220%. Critiques \xD73,5, critique garanti dans le
+    dos."
   icon: {fileID: 21300000, guid: 960e95cf3b1f5294a85c156642dd2421, type: 3}
   activationMode: 1
   cooldown: 0
@@ -31,6 +32,7 @@ MonoBehaviour:
   ownerFovKick: 0
   ownerFovKickDuration: 0.25
   ownerCameraTrauma: 0
+  projectile: {fileID: 11400000, guid: 8b7b97f036dc6be48b978cfb7458f944, type: 2}
   damageType: 0
   damageCoefficient: 2.2
   count: 1
@@ -38,3 +40,7 @@ MonoBehaviour:
   muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}
   burstCount: 1
   burstInterval: 0.08
+  minChargeCoefficient: 2
+  maxChargeCoefficient: 6
+  minChargeScale: 1
+  maxChargeScale: 1

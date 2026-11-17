@@ -44,6 +44,7 @@ MonoBehaviour:
   hitOncePerTarget: 0
   dot: {fileID: 0}
   freezeDuration: 0
+  rootDuration: 0
   allyHealPerTick: 0.025
   knockbackDistance: 0
   knockbackDuration: 0.25

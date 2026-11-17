@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1e98c7341d84775b7a4d51b5d98c984, type: 3}
   m_Name: Druid_RavenFlight
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.RavenFlightSkill
-  displayName: "Envol de corbeaux"
-  description: "Se change en nu\xE9e 1,5 s : invuln\xE9rable, +60% de vitesse, flotte dans les airs."
+  displayName: Envol de corbeaux
+  description: "Se change en nu\xE9e 1,5 s : invuln\xE9rable, +60% de vitesse, flotte
+    dans les airs."
   icon: {fileID: 21300000, guid: 8ac2ba7e2750f3f4e852f00318837599, type: 3}
   activationMode: 0
   cooldown: 9
@@ -23,7 +24,13 @@ MonoBehaviour:
   canCastWhileBusy: 1
   keepsSprint: 1
   maxChargeTime: 1.5
+  castVfx: {fileID: 8132036637947505890, guid: 9a3c07ec3c6d4374d879ac37782d7ce4, type: 3}
+  castVfxAnchor: 1
+  castVfxScale: 1
   castSound: {fileID: 11400000, guid: f360c64eb666af8409c09e45d47dec74, type: 2}
   animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   duration: 1.5
   liftVelocity: 3

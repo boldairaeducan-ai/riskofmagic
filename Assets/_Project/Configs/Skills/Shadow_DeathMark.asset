@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Shadow_DeathMark
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.MarkSkill
   displayName: Marque de mort
-  description: "La cible vis\xE9e subit +50% de d\xE9g\xE2ts pendant 6 s ; 30% des d\xE9g\xE2ts qu'elle subit touchent les ennemis \xE0 8 m. Si elle meurt, la recharge est r\xE9initialis\xE9e."
+  description: "La cible vis\xE9e subit +50% de d\xE9g\xE2ts pendant 6 s ; 30% des
+    d\xE9g\xE2ts qu'elle subit touchent les ennemis \xE0 8 m. Si elle meurt, la recharge
+    est r\xE9initialis\xE9e."
   icon: {fileID: 21300000, guid: b52ccd1805ef43a4da1cf310fa6785cf, type: 3}
   activationMode: 0
   cooldown: 12

@@ -31,3 +31,4 @@ MonoBehaviour:
   dot: {fileID: 0}
   freezeDuration: 1
   backstabCritical: 0
+  criticalMultiplier: 2

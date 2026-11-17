@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9299fd170e72410f88aea11d23a67576, type: 3}
   m_Name: Druid_VineWhip
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.WhipSkill
-  displayName: "Fouet de liane"
+  displayName: Fouet de liane
   description: "Fouet \xE0 14 m : 120% + saignement (cumulable)."
   icon: {fileID: 21300000, guid: 240cd37c2acc0a6489aa01993e78d981, type: 3}
   activationMode: 1
@@ -23,9 +23,21 @@ MonoBehaviour:
   canCastWhileBusy: 0
   keepsSprint: 0
   maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
   castSound: {fileID: 11400000, guid: f02dd34157876c240b847a952eed5da8, type: 2}
   animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   range: 14
   radius: 0.45
   damageCoefficient: 1.2
   damageType: 0
+  dot: {fileID: 11400000, guid: e49438e4e59c6574cb055f258d6a0e29, type: 2}
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 4294967291
+  lashVfx: {fileID: 5722860055861492718, guid: c6897f98aefddc649acad95e6c861ba3, type: 3}
+  hitVfx: {fileID: 8674038745230358592, guid: 69fbc1a48ed772e468aebc8c5cd6fbc7, type: 3}
