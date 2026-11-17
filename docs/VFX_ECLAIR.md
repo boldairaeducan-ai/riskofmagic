@@ -182,19 +182,37 @@ Blocs du contexte Initialize :
 
 ### 4.3 Branches
 
-Duplique les 4 contextes de l'arc (sélection, Ctrl+D) et adapte :
-- *Spawn* : 3 *Single Burst* (mêmes *Delay*), *Count* = 24 (3 branches × 8 points) ;
-- *Initialize Particle Strip* : *Strip Capacity* **3**, *Particle Per Strip Count* 8 ;
-- entrée **Strip Index** du contexte = *Floor*(*Get Attribute: spawnIndex* ÷ 8) : chaque groupe de 8 points forme
-  une branche ;
-- `t` = *Modulo*(spawnIndex, 8) ÷ 7 ;
-- point de départ, identique pour les 8 points d'une branche : *Random Number* avec *Constant* **coché** et
-  *Seed* = l'index de branche (le *Floor* ci-dessus) :
-  - une hauteur sur la colonne entre 1 et 3 m ;
-  - une direction : X et Z entre −1 et 1, Y = −0,6, puis *Normalize* et × 1,2 m (*Seed* + 10, pour qu'elle diffère
-    de la hauteur) ;
-- *Position* = *Lerp*(départ, départ + direction, `t`) + zigzag × 0,15 × *Sine*(*Pi* × `t`) ;
-- *Set Size* 0,03, *Set Color* = `GlowColor`, *Set Lifetime* 0,03.
+Les branches forment un **deuxième système, indépendant**, dans le même graph : il n'est relié à l'arc par
+**aucun lien**. Au lancement de l'effet (`OnPlay`), chaque bloc *Spawn* du graph démarre tout seul, donc l'arc et les
+branches partent ensemble. Les seuls liens sont internes au système :
+- les liens de flux, verticaux, entre ses 4 contextes ;
+- les opérateurs, branchés sur les entrées des contextes et des blocs.
+
+1. Sélectionne les 4 contextes de l'arc, Ctrl+D, et pose la copie à côté. Elle garde ses liens de flux
+   *Spawn* → *Initialize* → *Update* → *Output* ; supprime les opérateurs copiés qui pendent.
+2. **Spawn** : les 3 *Single Burst* passent à *Count* = 24 (3 branches × 8 points).
+3. **Initialize Particle Strip** : *Strip Capacity* 3, *Particle Per Strip Count* 8, mêmes *Bounds*.
+4. Les opérateurs (Espace dans une zone vide → recherche), puis les liens :
+
+| # | Opérateur | Entrées | Sortie branchée sur |
+|---|---|---|---|
+| A | *Get Attribute: spawnIndex* | — | B et C |
+| B | *Divide* → *Floor* | A ÷ 8 | **entrée *Strip Index* du contexte *Initialize Particle Strip*** (le petit rond à gauche du champ), et les *Seed* de D et E. C'est le numéro de la branche (0, 1, 2) |
+| C | *Modulo* → *Divide* | (A modulo 8) ÷ 7 | entrée *S* de G : `t`, de 0 à 1 le long de la branche |
+| D | *Random Number* | *Min* 1, *Max* 3, *Constant* coché, *Seed* = B | *Y* d'un *Vector3* (X = 0, Z = 0) = **départ** de la branche sur la colonne |
+| E | 2 × *Random Number* | *Min* −1, *Max* 1, *Constant* coché, *Seed* = B + 10 et B + 20 | *X* et *Z* d'un *Vector3* (Y = −0,6) → *Normalize* → *Multiply* 1,2 → **direction** |
+| F | *Add* | départ + direction | entrée *B* de G = **bout** de la branche |
+| G | *Lerp* | *A* = départ, *B* = F, *S* = C | entrée *A* de I |
+| H | zigzag | 2 × *Random Number* (*Min* −1, *Max* 1, *Constant* **décoché**) en X/Z d'un *Vector3* (Y = 0), × 0,15, × *Sine*(*Pi* × `t`) | entrée *B* de I |
+| I | *Add* | G + H | entrée *Position* du bloc *Set Position* |
+
+5. Blocs du contexte Initialize : *Set Lifetime* 0,03, *Set Size* 0,03, *Set Color* = `GlowColor` (glisse la
+   propriété depuis le *Blackboard* sur l'entrée).
+6. **Output** : le même Shader Graph que l'arc (`SG_VFX_Additive`), `MainTex` = `Electro.png`.
+
+*Constant* coché sur D et E : la valeur aléatoire est la même pour tous les points qui ont le même *Seed*,
+c'est-à-dire pour toute une branche. Les 8 points partent donc du même endroit, dans la même direction. Décoché sur
+H : chaque point a son propre décalage, d'où le zigzag.
 
 ### 4.4 Flash d'impact
 Système classique : *Spawn* → *Initialize Particle* → *Update Particle* → *Output Particle Shader Graph Quad*
