@@ -25,7 +25,7 @@ MonoBehaviour:
   damagePerLevel: 0.15
   healthPerLevel: 0.3
   regenPerLevel: 0.2
-  modelPrefab: {fileID: 0}
+  modelPrefab: {fileID: 1635154290015552752, guid: 12035fe49c852e34984e7e3be4924cc5, type: 3}
   viewModelPrefab: {fileID: 0}
   proceduralViewModel: {fileID: 11400000, guid: 171e821191140144ab1ee6ee80651f76, type: 2}
   primary: {fileID: 11400000, guid: 03a9ad3be52384943bd47db3e9f13bf8, type: 2}

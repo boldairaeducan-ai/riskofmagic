@@ -13,18 +13,25 @@ MonoBehaviour:
   m_Name: Druid_FlameBreath
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ConeChannelSkill
   displayName: "Souffle enflamm\xE9"
-  description: "Souffle de 2,5 s en c\xF4ne (10 m) : 10 \xD7 45%, chaque souffle ajoute une br\xFBlure. Ralenti pendant le souffle."
+  description: "Souffle de 2,5 s en c\xF4ne (10 m) : 10 \xD7 45%, chaque souffle
+    ajoute une br\xFBlure. Ralenti pendant le souffle."
   icon: {fileID: 21300000, guid: 0ee5cc1637825db4eaf4045d043ed1c1, type: 3}
   activationMode: 0
   cooldown: 12
   maxStock: 1
-  castDuration: 0.2
+  castDuration: 2.5
   scalesWithAttackSpeed: 0
   canCastWhileBusy: 0
   keepsSprint: 0
   maxChargeTime: 1.5
+  castVfx: {fileID: 0}
+  castVfxAnchor: 1
+  castVfxScale: 1
   castSound: {fileID: 11400000, guid: d2f0334ad87ce194f8ddef983ca509bb, type: 2}
   animatorTrigger: Cast
+  ownerFovKick: 0
+  ownerFovKickDuration: 0.25
+  ownerCameraTrauma: 0
   duration: 2.5
   ticks: 10
   range: 10
@@ -32,4 +39,6 @@ MonoBehaviour:
   damageCoefficientPerTick: 0.45
   damageType: 1
   procCoefficient: 0.5
+  dot: {fileID: 0}
+  tickVfx: {fileID: 0}
   tickVfxScale: 0.35

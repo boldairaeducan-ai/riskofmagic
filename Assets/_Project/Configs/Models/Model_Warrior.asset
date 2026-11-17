@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 133ca6c3544f47b3a9c2ad957fac7f66, type: 3}
+  m_Name: Model_Warrior
+  m_EditorClassIdentifier: RiskOfMagic.Editor::RiskOfMagic.Editor.Models.CharacterModelRecipe
+  sourceModel: {fileID: 6721514194412353441, guid: dd2781eefba618e47aec1156ef835d2b, type: 3}
+  height: 1.8
+  rotation: {x: 0, y: 0, z: 0}
+  attachments:
+  - prefab: {fileID: 1578757411161238, guid: ed51059379731a84daae9591c275ab7d, type: 3}
+    bone: 18
+    alignment: 1
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    scale: 0.35
+  - prefab: {fileID: 1934641823220642, guid: 085fb5db950c87e409ee1aaf4f17f441, type: 3}
+    bone: 15
+    alignment: 1
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    scale: 0.15
+  outputFolder: Assets/_Project/Prefabs/Models
+  targetCharacter: {fileID: 11400000, guid: 2e1421b87fd9efe45aa56befb6a009ed, type: 2}
+  targetEnemy: {fileID: 0}
+  idle: {fileID: -6206981513316247533, guid: c346a9e2503cda64ba4698db6aa5e707, type: 3}
+  walk: {fileID: -370141452831569596, guid: e040b5e6a47bcb34c8f7028964671571, type: 3}
+  walkSpeed: 3
+  run: {fileID: -6848113619949682186, guid: 77cbe76379436db42afc0e47ff625926, type: 3}
+  runSpeed: 7
+  jump: {fileID: 7361425867615798983, guid: b178c30ab0c61314da2951d30369e27e, type: 3}
+  fall: {fileID: 0}
+  land: {fileID: 0}
+  hit: {fileID: -4404663596961452652, guid: 5b089c349dd15c94693d1234e6b09396, type: 3}
+  death: {fileID: 0}
+  downed: {fileID: 0}
+  revive: {fileID: 0}
+  useEquipment: {fileID: 0}
+  actionsUpperBodyOnly: 1
+  actions:
+  - trigger: Cast
+    index: 0
+    clip: {fileID: 2325089928583051239, guid: be4606ee5d454f446b1c3fd6a27e75b5, type: 3}
+    matchCastDuration: 1
+    speed: 1
