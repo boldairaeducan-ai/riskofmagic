@@ -19,6 +19,7 @@ namespace RiskOfMagic.Combat
         private readonly NetworkVariable<double> shieldUntil = new();
         private readonly NetworkVariable<float> shieldReduction = new();
         private readonly NetworkVariable<int> dotMask = new();
+        private readonly NetworkVariable<ulong> dotStacks = new(); // 6 bits per DamageType (stack count, max 63)
         private IHealthHooks[] hooks = Array.Empty<IHealthHooks>();
 
         /// <summary>(current, max)</summary>
@@ -58,9 +59,18 @@ namespace RiskOfMagic.Combat
         public bool IsAlive => current.Value > 0f;
         /// <summary>Bit per DamageType with an active damage over time (replicated, for visuals).</summary>
         public int DotMask => dotMask.Value;
+        /// <summary>Every peer: active stacks of a damage over time type.</summary>
+        public int GetDotStacks(DamageType type) => (int)((dotStacks.Value >> ((int)type * 6)) & 63UL);
         public bool HasDot(DamageType type) => (dotMask.Value & (1 << (int)type)) != 0;
 
         /// <summary>Server only (DotSystem).</summary>
+        /// <summary>Server: packed stack counts (DotSystem).</summary>
+        public void SetDotStacks(ulong packed)
+        {
+            if (IsServer && IsSpawned && dotStacks.Value != packed)
+                dotStacks.Value = packed;
+        }
+
         public void SetDotMask(int mask)
         {
             if (IsServer && IsSpawned && dotMask.Value != mask)
