@@ -48,4 +48,4 @@ MonoBehaviour:
   knockbackDistance: 0
   knockbackDuration: 0.25
   casterUpwardVelocity: 0
-  tickVfx: {fileID: 0}
+  tickVfx: {fileID: 6426869434460156015, guid: 670d1d5fdb7d02541b4df39d609606b2, type: 3}
