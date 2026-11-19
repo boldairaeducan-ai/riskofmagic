@@ -168,11 +168,21 @@ Blocs du contexte Initialize :
   1. `t` = *Get Attribute: spawnIndex* ÷ (`Points` − 1), avec *Divide* et *Subtract*. Il vaut 0 au premier point et 1
      au dernier.
   2. base = *Lerp*(A = (0, `Height`, 0), B = (0, 0, 0), S = `t`) : du ciel au sol.
-  3. zigzag = deux *Random Number* (*Min* −1, *Max* 1, *Constant* décoché) pour X et Z, assemblés en *Vector3*
-     (Y = 0) et multipliés par `Jaggedness` × *Sine*(*Pi* × `t`). Le *Sine* ramène le décalage à 0 aux deux
-     extrémités : l'arc part bien du ciel et touche bien le sol.
-  4. *Position* = base + zigzag (*Add*).
-- *Set Size* = 0,08 (largeur du ruban).
+  3. **courbe** (la grande forme, comme un vrai éclair qui serpente) :
+     - opérateur *Total Time* (temps de l'effet, identique pour tous les points d'un même scintillement) ;
+     - coordonnée = `t` × 2 + *Total Time* × 13 ;
+     - X = *Perlin Noise* (*Type* 1D, *Coordinate* = coordonnée, *Frequency* 1, *Octaves* 2) ;
+     - Z = le même *Perlin Noise* avec coordonnée + 100 ;
+     - *Vector3*(X, 0, Z) × `Jaggedness` × (1 − `t`) : la courbe est large en haut et ramène l'arc **exactement** sur
+       la cible en bas.
+  4. **éclats** (les petits angles vifs) : deux *Random Number* (*Min* −1, *Max* 1, *Constant* décoché) en X et Z
+     d'un *Vector3* (Y = 0), × 0,05 × *Sine*(*Pi* × `t`).
+  5. *Position* = base + courbe + éclats (deux *Add*).
+
+  > Avec un simple *Random Number* par point (ancienne version), l'arc fait des allers-retours de 35 cm tous les
+  > 17 cm : on obtient des traits presque horizontaux, pas un éclair. La forme vient de la **courbe** lente ; le
+  > hasard par point ne doit ajouter que de petits angles.
+- *Set Size* = 0,12 × *Lerp*(0,6 ; 1,4 ; `t`) : l'arc s'épaissit vers l'impact.
 - *Set Color* = `BoltColor`.
 
 **Update Particle Strip** : rien, ou *Set Size over Life* pour amincir l'arc en fin de vie.
@@ -181,8 +191,19 @@ Blocs du contexte Initialize :
 - *Shader Graph* : `SG_VFX_Additive` ;
 - *Tiling Mode* : **Stretch** (la texture est étirée sur toute la longueur de l'arc) ;
 - *Uv Mode* : Default ;
-- `MainTex` : `Trail67.png` ou `Electro.png` ; `Tint` : couleur + alpha de la particule (section 4.0) ;
+- `MainTex` : **`Trail67.png`** (trait net au centre, bords doux). Évite `Electro.png` sur le ruban : sa texture
+  déjà dentelée, étirée sur l'arc, le découpe en traits parallèles ;
+- `Tint` : couleur + alpha de la particule (section 4.0) ;
 - bloc *Set Alpha over Life* : courbe 1 → 0.
+
+### 4.2 bis Halo de l'arc
+
+Le cœur blanc et fin ne suffit pas : l'image de référence a un **halo bleu large** autour de l'arc.
+1. Duplique les 4 contextes de l'arc.
+2. Dans ce double, **retire les éclats** (étape 4) : garde base + courbe. *Total Time* et le *Perlin Noise* donnent
+   alors exactement le même tracé que l'arc, puisque les deux systèmes démarrent ensemble.
+3. *Set Size* 0,5 ; *Set Color* = `GlowColor` ; *Set Alpha* 0,35.
+4. Sortie : `SG_VFX_Additive`, `MainTex` = `GlowFree1.png` ou `Trail67.png`.
 
 ### 4.3 Branches
 
@@ -194,25 +215,32 @@ branches partent ensemble. Les seuls liens sont internes au système :
 
 1. Sélectionne les 4 contextes de l'arc, Ctrl+D, et pose la copie à côté. Elle garde ses liens de flux
    *Spawn* → *Initialize* → *Update* → *Output* ; supprime les opérateurs copiés qui pendent.
-2. **Spawn** : les 3 *Single Burst* passent à *Count* = 24 (3 branches × 8 points).
-3. **Initialize Particle Strip** : *Strip Capacity* 3, *Particle Per Strip Count* 8, mêmes *Bounds*.
+Sur l'image de référence, les branches partent **du point d'impact**, au ras du sol, et rayonnent vers l'extérieur
+sur toute la zone : 6 branches de 10 points.
+
+2. **Spawn** : les 3 *Single Burst* passent à *Count* = 60 (6 branches × 10 points).
+3. **Initialize Particle Strip** : *Strip Capacity* 6, *Particle Per Strip Count* 10, mêmes *Bounds*.
 4. Les opérateurs (Espace dans une zone vide → recherche), puis les liens :
 
 | # | Opérateur | Entrées | Sortie branchée sur |
 |---|---|---|---|
 | A | *Get Attribute: spawnIndex* | — | B et C |
-| B | *Divide* → *Floor* | A ÷ 8 | **entrée *Strip Index* du contexte *Initialize Particle Strip*** (le petit rond à gauche du champ), et les *Seed* de D et E. C'est le numéro de la branche (0, 1, 2) |
-| C | *Modulo* → *Divide* | (A modulo 8) ÷ 7 | entrée *S* de G : `t`, de 0 à 1 le long de la branche |
-| D | *Random Number* | *Min* 1, *Max* 3, *Constant* coché, *Seed* = B | *Y* d'un *Vector3* (X = 0, Z = 0) = **départ** de la branche sur la colonne |
-| E | 2 × *Random Number* | *Min* −1, *Max* 1, *Constant* coché, *Seed* = B + 10 et B + 20 | *X* et *Z* d'un *Vector3* (Y = −0,6) → *Normalize* → *Multiply* 1,2 → **direction** |
+| B | *Divide* → *Floor* | A ÷ 10 | **entrée *Strip Index* du contexte *Initialize Particle Strip*** (le petit rond à gauche du champ), et les *Seed* de D et E. C'est le numéro de la branche (0 à 5) |
+| C | *Modulo* → *Divide* | (A modulo 10) ÷ 9 | entrée *S* de G : `t`, de 0 à 1 le long de la branche |
+| D | *Random Number* | *Min* 0, *Max* 0,3, *Constant* coché, *Seed* = B | *Y* d'un *Vector3* (X = 0, Z = 0) = **départ** de la branche, au ras du sol |
+| E | 3 × *Random Number* (*Constant* coché) | X et Z : *Min* −1, *Max* 1, *Seed* = B + 10 et B + 20 ; Y : *Min* −0,1, *Max* 0,3, *Seed* = B + 40 | *Vector3*(X, Y, Z) → *Normalize* → × longueur = un 4e *Random Number* (*Min* 1,2, *Max* 2,2, *Constant*, *Seed* = B + 30) → **direction** (rayonne à plat sur toute la zone) |
 | F | *Add* | départ + direction | entrée *B* de G = **bout** de la branche |
 | G | *Lerp* | *A* = départ, *B* = F, *S* = C | entrée *A* de I |
-| H | zigzag | 2 × *Random Number* (*Min* −1, *Max* 1, *Constant* **décoché**) en X/Z d'un *Vector3* (Y = 0), × 0,15, × *Sine*(*Pi* × `t`) | entrée *B* de I |
+| H | zigzag | 2 × *Random Number* (*Min* −1, *Max* 1, *Constant* **décoché**) en X/Z d'un *Vector3* (Y = 0), × 0,12, × *Sine*(*Pi* × `t`) | entrée *B* de I |
 | I | *Add* | G + H | entrée *Position* du bloc *Set Position* |
 
-5. Blocs du contexte Initialize : *Set Lifetime* 0,07, *Set Size* 0,03, *Set Color* = `GlowColor` (glisse la
-   propriété depuis le *Blackboard* sur l'entrée).
-6. **Output** : le même Shader Graph que l'arc (`SG_VFX_Additive`), `MainTex` = `Electro.png`.
+5. Blocs du contexte Initialize :
+   - *Set Lifetime* 0,12 : les branches restent un peu après l'arc ;
+   - *Set Size* = 0,04 × (1 − `t`) : fines, pointues au bout ;
+   - *Set Color* = `GlowColor` (glisse la propriété depuis le *Blackboard* sur l'entrée).
+6. **Output** : le même Shader Graph que l'arc (`SG_VFX_Additive`), `MainTex` = `Trail67.png`.
+7. Optionnel : pour que chaque scintillement ait des branches différentes, *Seed* = B + *Floor*(*Total Time* × 100) × 7
+   au lieu de B (même chose pour les +10, +20, +30, +40).
 
 *Constant* coché sur D et E : la valeur aléatoire est la même pour tous les points qui ont le même *Seed*,
 c'est-à-dire pour toute une branche. Les 8 points partent donc du même endroit, dans la même direction. Décoché sur
