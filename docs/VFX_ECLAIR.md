@@ -142,7 +142,7 @@ Assemble 4 contextes (*Create Node → Context*), reliés de haut en bas :
 Dans chaque contexte, **Espace** ajoute un bloc.
 
 **Spawn**
-- 3 blocs *Single Burst* : *Delay* 0, 0,04 et 0,08 s ; *Count* = `Points`. Chaque burst = un arc complet = un
+- 3 blocs *Single Burst* : *Delay* 0, 0,08 et 0,16 s ; *Count* = `Points`. Chaque burst = un arc complet = un
   scintillement.
 
 **Initialize Particle Strip** : les champs du contexte lui-même.
@@ -162,7 +162,8 @@ chaque frame et coûte plus cher, *Manual* est fixe et sûr. Sans bounds correct
 sort de l'écran.
 
 Blocs du contexte Initialize :
-- *Set Lifetime* = 0,035. Chaque arc meurt avant le suivant : le strip se reconstruit, le scintillement est net.
+- *Set Lifetime* = 0,07. Chaque arc meurt avant le suivant (0,08 s plus tard) : le strip se reconstruit et le
+  scintillement est net. Plus court, l'arc ne dure qu'une ou deux images et passe inaperçu.
 - *Set Position*, dont l'entrée *Position* est calculée par ces opérateurs :
   1. `t` = *Get Attribute: spawnIndex* ÷ (`Points` − 1), avec *Divide* et *Subtract*. Il vaut 0 au premier point et 1
      au dernier.
@@ -209,7 +210,7 @@ branches partent ensemble. Les seuls liens sont internes au système :
 | H | zigzag | 2 × *Random Number* (*Min* −1, *Max* 1, *Constant* **décoché**) en X/Z d'un *Vector3* (Y = 0), × 0,15, × *Sine*(*Pi* × `t`) | entrée *B* de I |
 | I | *Add* | G + H | entrée *Position* du bloc *Set Position* |
 
-5. Blocs du contexte Initialize : *Set Lifetime* 0,03, *Set Size* 0,03, *Set Color* = `GlowColor` (glisse la
+5. Blocs du contexte Initialize : *Set Lifetime* 0,07, *Set Size* 0,03, *Set Color* = `GlowColor` (glisse la
    propriété depuis le *Blackboard* sur l'entrée).
 6. **Output** : le même Shader Graph que l'arc (`SG_VFX_Additive`), `MainTex` = `Electro.png`.
 

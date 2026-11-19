@@ -90,6 +90,34 @@
                 },
                 "m_SlotId": 0
             }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "dbca0621f6dc44e8b2da6098f0959aea"
+                },
+                "m_SlotId": 2
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "a085d46fed4c47c3a4feb7ad14313254"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "8657cf9a68424655935c94a64b032ecb"
+                },
+                "m_SlotId": 7
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "2bfe5632e4bf4570b84b823ec3bf4636"
+                },
+                "m_SlotId": 0
+            }
         }
     ],
     "m_VertexContext": {
