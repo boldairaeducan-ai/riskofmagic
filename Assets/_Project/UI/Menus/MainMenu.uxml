@@ -1,79 +1,75 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements">
-    <ui:Style src="Styles/Menus.uss" />
-    <ui:Template name="Options" src="Options.uxml" />
-    <ui:Template name="Journal" src="Journal.uxml" />
-    <ui:VisualElement name="mainMenu" class="screen" picking-mode="Ignore">
-        <ui:VisualElement name="background" class="menu-background hidden" picking-mode="Ignore" />
-
-        <ui:VisualElement name="home" class="screen" picking-mode="Ignore">
-            <ui:VisualElement class="home-band" picking-mode="Ignore" />
-            <ui:VisualElement class="home-band__fade" picking-mode="Ignore" />
-            <ui:VisualElement class="home-content" picking-mode="Ignore">
-                <ui:Label name="gameTitle" text="RISK OF MAGIC" class="hero-title" />
-                <ui:VisualElement name="logo" class="logo hidden" />
-                <ui:Label text="Roguelite coopératif  ·  1 à 4 joueurs" class="tagline" />
-                <ui:VisualElement class="home-menu-row" picking-mode="Ignore">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Template name="Journal" src="project://database/Assets/_Project/UI/Menus/Journal.uxml?fileID=9197481963319205126&amp;guid=cac09d15352286e48a0c0d0fe26b7aa1&amp;type=3#Journal"/>
+    <ui:Template name="Options" src="project://database/Assets/_Project/UI/Menus/Options.uxml?fileID=9197481963319205126&amp;guid=1f1c004b3ec0040488507e8d39753fb1&amp;type=3#Options"/>
+    <Style src="project://database/Assets/_Project/UI/Menus/Styles/Menus.uss?fileID=7433441132597879392&amp;guid=2bc82a553e4c88f4ba3f663361f86dcb&amp;type=3#Menus"/>
+    <ui:VisualElement name="mainMenu" picking-mode="Ignore" class="screen">
+        <ui:VisualElement name="background" picking-mode="Ignore" class="menu-background hidden"/>
+        <ui:VisualElement name="home" picking-mode="Ignore" class="screen">
+            <ui:VisualElement picking-mode="Ignore" class="home-band"/>
+            <ui:VisualElement picking-mode="Ignore" class="home-band__fade"/>
+            <ui:VisualElement picking-mode="Ignore" class="home-content">
+                <ui:Label name="gameTitle" text="RISK OF MAGIC" class="hero-title"/>
+                <ui:VisualElement name="logo" class="logo hidden"/>
+                <ui:VisualElement picking-mode="Ignore" class="home-menu-row">
                     <ui:VisualElement name="homeMenu" class="home-menu">
-                        <ui:Button name="soloButton" text="Jouer en solo" class="menu-entry menu-entry--large" />
-                        <ui:Button name="multiplayerButton" text="Multijoueur" class="menu-entry menu-entry--large" />
-                        <ui:Button name="journalButton" text="Journal" class="menu-entry menu-entry--large" />
-                        <ui:Button name="optionsButton" text="Options" class="menu-entry menu-entry--large" />
-                        <ui:Button name="quitButton" text="Quitter" class="menu-entry menu-entry--large" />
+                        <ui:Button name="soloButton" text="Solo" class="menu-entry menu-entry--large"/>
+                        <ui:Button name="multiplayerButton" text="Multijoueur" class="menu-entry menu-entry--large"/>
+                        <ui:Button name="journalButton" text="Journal" class="menu-entry menu-entry--large"/>
+                        <ui:Button name="optionsButton" text="Options" class="menu-entry menu-entry--large"/>
+                        <ui:Button name="quitButton" text="Quitter" class="menu-entry menu-entry--large"/>
                     </ui:VisualElement>
                     <ui:VisualElement name="multiplayerPanel" class="panel multiplayer-panel hidden">
-                        <ui:Button name="hostButton" text="Créer une partie en ligne" class="menu-entry" />
-                        <ui:Label text="Rejoindre avec un code" class="join-header muted" />
-                        <ui:TextField name="joinCodeField" max-length="16" placeholder-text="Code de la partie" />
-                        <ui:Button name="joinButton" text="Rejoindre" class="menu-entry" />
+                        <ui:Button name="hostButton" text="Créer une partie en ligne" class="menu-entry"/>
+                        <ui:Label text="Rejoindre avec un code" class="join-header muted"/>
+                        <ui:TextField name="joinCodeField" max-length="16" placeholder-text="Code de la partie"/>
+                        <ui:Button name="joinButton" text="Rejoindre" class="menu-entry"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement class="home-footer" picking-mode="Ignore">
-                    <ui:Label name="statusLabel" class="status" />
-                    <ui:Label name="profileLabel" class="muted" />
+                <ui:VisualElement picking-mode="Ignore" class="home-footer">
+                    <ui:Label name="statusLabel" class="status"/>
+                    <ui:Label name="profileLabel" class="muted"/>
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:Label name="versionLabel" class="version muted small" />
+            <ui:Label name="versionLabel" class="version muted small"/>
         </ui:VisualElement>
-
         <ui:VisualElement name="lobby" class="screen lobby hidden">
-            <ui:Label text="RISK OF MAGIC" class="lobby-title" />
+            <ui:Label text="RISK OF MAGIC" class="lobby-title"/>
             <ui:VisualElement class="row lobby-code-row">
-                <ui:Label name="codeLabel" text="Code de la partie" class="lobby-code" />
-                <ui:Button name="copyCodeButton" text="Copier" />
-                <ui:Button name="inviteButton" text="Inviter des amis" />
+                <ui:Label name="codeLabel" text="Code de la partie" class="lobby-code"/>
+                <ui:Button name="copyCodeButton" text="Copier"/>
+                <ui:Button name="inviteButton" text="Inviter des amis"/>
             </ui:VisualElement>
             <ui:VisualElement class="lobby-body">
                 <ui:VisualElement class="lobby-column">
                     <ui:VisualElement class="panel lobby-players">
-                        <ui:Label text="Joueurs" class="panel__title" />
-                        <ui:Label name="playersLabel" text="En attente du salon..." class="wrap" />
+                        <ui:Label text="Joueurs" class="panel__title"/>
+                        <ui:Label name="playersLabel" text="En attente du salon..." class="wrap"/>
                     </ui:VisualElement>
                     <ui:VisualElement class="panel">
-                        <ui:Label text="Difficulté" class="panel__title" />
-                        <ui:VisualElement name="difficultyCards" />
-                        <ui:Label name="difficultyDescription" class="muted small wrap" />
+                        <ui:Label text="Difficulté" class="panel__title"/>
+                        <ui:VisualElement name="difficultyCards"/>
+                        <ui:Label name="difficultyDescription" class="muted small wrap"/>
                     </ui:VisualElement>
                 </ui:VisualElement>
                 <ui:VisualElement class="panel preview-panel">
-                    <ui:Label text="Aperçu" class="panel__title" />
-                    <ui:VisualElement name="characterPreview" class="character-preview" picking-mode="Ignore" />
-                    <ui:Label name="characterDescription" class="character-description" />
+                    <ui:Label text="Aperçu" class="panel__title"/>
+                    <ui:VisualElement name="characterPreview" picking-mode="Ignore" class="character-preview"/>
+                    <ui:Label name="characterDescription" class="character-description"/>
                 </ui:VisualElement>
                 <ui:VisualElement class="panel selection-panel">
-                    <ui:Label text="Personnage" class="panel__title" />
-                    <ui:VisualElement name="characterGrid" class="card-grid" />
-                    <ui:Label text="Compétences  &lt;size=70%&gt;&lt;alpha=#A0&gt;(de base | alternative)" class="skills-header" />
-                    <ui:VisualElement name="skillGrid" class="card-grid skill-grid" />
+                    <ui:Label text="Personnage" class="panel__title"/>
+                    <ui:VisualElement name="characterGrid" class="card-grid"/>
+                    <ui:Label text="Compétences  &lt;size=70%&gt;&lt;alpha=#A0&gt;(de base | alternative)" class="skills-header"/>
+                    <ui:VisualElement name="skillGrid" class="card-grid skill-grid"/>
                 </ui:VisualElement>
             </ui:VisualElement>
             <ui:VisualElement class="lobby-footer">
-                <ui:Button name="leaveButton" text="Quitter le salon" />
-                <ui:Button name="mainButton" text="Prêt" class="lobby-main-button" />
-                <ui:VisualElement class="lobby-footer-spacer" picking-mode="Ignore" />
+                <ui:Button name="leaveButton" text="Quitter le salon"/>
+                <ui:Button name="mainButton" text="Prêt" class="lobby-main-button"/>
+                <ui:VisualElement picking-mode="Ignore" class="lobby-footer-spacer"/>
             </ui:VisualElement>
         </ui:VisualElement>
-
-        <ui:Instance template="Options" name="options" class="screen hidden" />
-        <ui:Instance template="Journal" name="journal" class="screen hidden" />
+        <ui:Instance template="Options" name="options" class="screen hidden"/>
+        <ui:Instance template="Journal" name="journal" class="screen hidden"/>
     </ui:VisualElement>
 </ui:UXML>
