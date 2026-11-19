@@ -404,6 +404,10 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661614541}
       inputSlot: {fileID: 8926484042661614753}
+    - outputSlot: {fileID: 8926484042661614541}
+      inputSlot: {fileID: 8926484042661614789}
+    - outputSlot: {fileID: 8926484042661614541}
+      inputSlot: {fileID: 8926484042661614854}
     position: {x: 1140.8, y: 2459.2}
     expandedSlots: []
     expanded: 1
@@ -447,6 +451,8 @@ MonoBehaviour:
   m_Direction: 1
   m_LinkedSlots:
   - {fileID: 8926484042661614753}
+  - {fileID: 8926484042661614789}
+  - {fileID: 8926484042661614854}
 --- !u!114 &8926484042661614542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5951,7 +5957,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614541}
 --- !u!114 &8926484042661614790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7909,7 +7916,8 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Color, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots: []
+  m_LinkedSlots:
+  - {fileID: 8926484042661614541}
 --- !u!114 &8926484042661614855
 MonoBehaviour:
   m_ObjectHideFlags: 0
