@@ -119,7 +119,10 @@ propriétés apparaissent alors comme des entrées du contexte :
 1. Project → `Assets/_Project/Art/VFX/` → clic droit → *Create → Visual Effects → Visual Effect Graph* →
    `VFXG_LightningStrike`. Supprime le système par défaut.
 2. Ouvre le graph. Dans le *Blackboard* (bouton **+**), crée ces propriétés et coche *Exposed* sur chacune. Elles
-   apparaissent ensuite dans l'Inspector du composant *Visual Effect* :
+   apparaissent ensuite dans l'Inspector du composant *Visual Effect*.
+   **Renseigne la valeur de chacune** : déplie la propriété (▸) dans le *Blackboard*, champ *Default Value*.
+   Une propriété créée vaut 0, ou noir transparent pour une couleur : avec `Points` = 0 aucune particule n'apparaît,
+   et une couleur d'alpha 0 est invisible.
 
 | Property | Type | Valeur |
 |---|---|---|
