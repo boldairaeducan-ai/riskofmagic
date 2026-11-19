@@ -732,3 +732,162 @@
     -unity-text-align: middle-center;
     color: rgb(235, 225, 204);
 }
+
+/* ================================================================== In-game info screen (InfoScreen.uxml, hold Tab) */
+
+.info-screen {
+    background-color: rgba(8, 5, 12, 0.55);
+    padding: 60px 80px;
+}
+
+.info-columns {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.info-panel {
+    background-color: var(--color-panel-strong);
+    margin-right: var(--space-md);
+}
+
+.info-character {
+    width: 420px;
+}
+
+.info-items {
+    flex-grow: 1;
+}
+
+.info-players {
+    width: 400px;
+    margin-right: 0;
+}
+
+.info-character-header {
+    margin-bottom: var(--space-md);
+}
+
+.info-portrait {
+    width: 72px;
+    height: 72px;
+    margin-right: var(--space-md);
+    border-radius: var(--radius);
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.info-name {
+    font-size: var(--font-large);
+    -unity-font-style: bold;
+}
+
+.info-section-title {
+    color: var(--color-accent);
+    -unity-font-style: bold;
+    margin: var(--space-md) 0 var(--space-sm) 0;
+}
+
+.info-stat {
+    padding: 2px 0;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.info-stat-value {
+    -unity-font-style: bold;
+}
+
+.info-item-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.info-item {
+    width: 64px;
+    height: 64px;
+    margin: 0 var(--space-sm) var(--space-sm) 0;
+    border-width: 2px;
+    border-radius: var(--radius);
+    border-color: var(--color-frame-dim);
+    background-color: var(--color-track);
+}
+
+.info-item:hover {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent-soft);
+}
+
+.info-item-icon {
+    flex-grow: 1;
+    -unity-background-scale-mode: scale-to-fit;
+    margin: 4px;
+}
+
+.info-equipment {
+    width: 56px;
+    height: 56px;
+    flex-grow: 0;
+    margin: 0 var(--space-md) 0 0;
+    border-width: 2px;
+    border-radius: var(--radius);
+    border-color: var(--color-frame-dim);
+    background-color: var(--color-track);
+}
+
+.info-item-count {
+    position: absolute;
+    right: 3px;
+    bottom: 1px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    -unity-text-outline-width: 1px;
+    -unity-text-outline-color: rgb(0, 0, 0);
+}
+
+.info-tooltip {
+    margin-top: var(--space-md);
+    padding: var(--space-md);
+    border-width: 1px;
+    border-radius: var(--radius);
+    border-color: var(--color-frame);
+    background-color: rgba(20, 18, 26, 0.95);
+}
+
+.info-tooltip-name {
+    font-size: var(--font-large);
+    -unity-font-style: bold;
+}
+
+.info-player {
+    padding: var(--space-sm) 0;
+    border-bottom-width: 1px;
+    border-bottom-color: var(--color-frame-dim);
+}
+
+.info-player-name {
+    -unity-font-style: bold;
+}
+
+.info-ping {
+    align-items: flex-end;
+    height: 18px;
+}
+
+.info-ping-bar {
+    width: 4px;
+    margin-right: 2px;
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.info-ping-bar--1 { height: 5px; }
+.info-ping-bar--2 { height: 9px; }
+.info-ping-bar--3 { height: 13px; }
+.info-ping-bar--4 { height: 17px; }
+
+.info-ping--good .info-ping-bar--on { background-color: var(--color-success); }
+.info-ping--ok .info-ping-bar--on { background-color: rgb(200, 210, 90); }
+.info-ping--bad .info-ping-bar--on { background-color: rgb(230, 150, 60); }
+.info-ping--terrible .info-ping-bar--on { background-color: var(--color-danger); }
+
+.info-ping-label {
+    margin-left: var(--space-xs);
+}

@@ -20,6 +20,7 @@ namespace RiskOfMagic.UI
         public VisualTreeAsset mainMenu;
         public VisualTreeAsset pauseMenu;
         public VisualTreeAsset loadingScreen;
+        [Tooltip("In-game info screen, hold Tab (HUD).")] public VisualTreeAsset infoScreen;
 
         [Header("Templates (cloned at runtime)")]
         public VisualTreeAsset lobbyCard;
@@ -27,6 +28,9 @@ namespace RiskOfMagic.UI
         public VisualTreeAsset optionSlider;
         public VisualTreeAsset optionToggle;
         public VisualTreeAsset optionKey;
+        public VisualTreeAsset infoItem;
+        public VisualTreeAsset infoStat;
+        public VisualTreeAsset infoPlayerRow;
 
         private static MenuUiAssets instance;
 

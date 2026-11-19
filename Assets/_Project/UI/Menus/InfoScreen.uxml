@@ -1,0 +1,42 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Styles/Menus.uss" />
+    <ui:VisualElement name="infoScreen" class="screen info-screen hidden">
+        <ui:VisualElement class="info-columns">
+            <ui:VisualElement class="panel info-panel info-character">
+                <ui:VisualElement class="row info-character-header">
+                    <ui:VisualElement name="portrait" class="info-portrait" />
+                    <ui:VisualElement class="grow">
+                        <ui:Label name="characterName" text="Personnage" class="info-name" />
+                        <ui:Label name="levelLabel" text="Niveau 1" class="muted" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label text="Statistiques" class="info-section-title" />
+                <ui:VisualElement name="stats" />
+                <ui:Label text="Cette partie" class="info-section-title" />
+                <ui:VisualElement name="runStats" />
+            </ui:VisualElement>
+            <ui:VisualElement class="panel info-panel info-items">
+                <ui:Label text="Objets" class="info-section-title" />
+                <ui:ScrollView name="itemScroll" class="grow" horizontal-scroller-visibility="Hidden">
+                    <ui:VisualElement name="itemGrid" class="info-item-grid" />
+                </ui:ScrollView>
+                <ui:Label text="Équipement" class="info-section-title" />
+                <ui:VisualElement class="row">
+                    <ui:VisualElement name="equipmentIcon" class="info-item-icon info-equipment" />
+                    <ui:Label name="equipmentLabel" text="Aucun" class="grow wrap" />
+                </ui:VisualElement>
+                <ui:VisualElement name="itemTooltip" class="info-tooltip hidden">
+                    <ui:Label name="tooltipName" class="info-tooltip-name" />
+                    <ui:Label name="tooltipRarity" class="muted small" />
+                    <ui:Label name="tooltipDescription" class="wrap" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="panel info-panel info-players">
+                <ui:Label text="Partie" class="info-section-title" />
+                <ui:Label name="runLabel" class="muted wrap" />
+                <ui:Label text="Joueurs" class="info-section-title" />
+                <ui:VisualElement name="playerList" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

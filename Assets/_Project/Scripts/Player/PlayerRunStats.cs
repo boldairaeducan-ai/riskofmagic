@@ -12,6 +12,8 @@ namespace RiskOfMagic.Player
         private readonly NetworkVariable<int> kills = new();
         private readonly NetworkVariable<int> deaths = new();
         private readonly NetworkVariable<int> goldEarned = new();
+        private readonly NetworkVariable<ushort> ping = new();
+        private float nextPingUpdate;
 
         private PlayerAvatar avatar;
 
@@ -20,6 +22,19 @@ namespace RiskOfMagic.Player
         /// <summary>Knocked down or killed outright.</summary>
         public int Deaths => deaths.Value;
         public int GoldEarned => goldEarned.Value;
+        /// <summary>Round trip to the host in ms (0 for the host itself), updated every second by the server.</summary>
+        public int PingMs => ping.Value;
+
+        private void Update()
+        {
+            if (!IsServer || !IsSpawned || Time.unscaledTime < nextPingUpdate)
+                return;
+            nextPingUpdate = Time.unscaledTime + 1f;
+            ulong rtt = 0;
+            if (OwnerClientId != NetworkManager.ServerClientId && NetworkManager.NetworkConfig.NetworkTransport != null)
+                rtt = NetworkManager.NetworkConfig.NetworkTransport.GetCurrentRtt(OwnerClientId);
+            ping.Value = (ushort)System.Math.Min(rtt, 9999UL);
+        }
 
         private void Awake() => avatar = GetComponent<PlayerAvatar>();
 

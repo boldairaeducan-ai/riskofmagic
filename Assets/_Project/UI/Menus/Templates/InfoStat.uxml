@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="stat" class="row info-stat">
+        <ui:Label name="label" text="Statistique" class="grow muted" />
+        <ui:Label name="value" text="0" class="info-stat-value" />
+    </ui:VisualElement>
+</ui:UXML>

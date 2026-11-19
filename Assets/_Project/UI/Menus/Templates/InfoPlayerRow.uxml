@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="player" class="info-player">
+        <ui:VisualElement class="row">
+            <ui:Label name="name" text="Joueur 1" class="grow info-player-name" />
+            <ui:VisualElement name="ping" class="row info-ping">
+                <ui:VisualElement name="bar1" class="info-ping-bar info-ping-bar--1" />
+                <ui:VisualElement name="bar2" class="info-ping-bar info-ping-bar--2" />
+                <ui:VisualElement name="bar3" class="info-ping-bar info-ping-bar--3" />
+                <ui:VisualElement name="bar4" class="info-ping-bar info-ping-bar--4" />
+                <ui:Label name="pingLabel" text="0 ms" class="small muted info-ping-label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="details" text="Archer · niveau 1" class="small muted" />
+        <ui:Label name="score" text="0 kills · 0 dégâts" class="small" />
+    </ui:VisualElement>
+</ui:UXML>

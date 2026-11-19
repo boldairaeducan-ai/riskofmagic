@@ -99,6 +99,7 @@ namespace RiskOfMagic.Editor
             BuildChoiceMenu(rootRect);
             BuildMerchantMenu(rootRect);
             BuildPauseMenu(rootRect);
+            BuildInfoScreen(rootRect);
             BuildConnectionMenu(rootRect);
 
             var prefab = PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -862,6 +863,25 @@ namespace RiskOfMagic.Editor
             document.panelSettings = ui.panelSettings;
             document.visualTreeAsset = ui.pauseMenu;
             var widget = go.AddComponent<PauseMenu>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("document").objectReferenceValue = document;
+                so.FindProperty("assets").objectReferenceValue = ui;
+            });
+        }
+
+        /// <summary>Info screen (hold Tab): UI Toolkit document (UI/Menus/InfoScreen.uxml) on the shared menu panel.</summary>
+        private static void BuildInfoScreen(RectTransform parent)
+        {
+            var ui = MenuUiBuilder.EnsureAssets();
+            var go = new GameObject("InfoScreen");
+            go.transform.SetParent(parent, false);
+            var document = go.AddComponent<UnityEngine.UIElements.UIDocument>();
+            document.panelSettings = ui.panelSettings;
+            document.visualTreeAsset = ui.infoScreen;
+            document.sortingOrder = -1f; // under the pause menu
+            var widget = go.AddComponent<InfoScreen>();
             Props(widget, so =>
             {
                 so.FindProperty("theme").objectReferenceValue = theme;

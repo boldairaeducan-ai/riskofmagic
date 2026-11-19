@@ -121,7 +121,7 @@ charge draw and a keyed motion per executed skill.
 volume object to generated scenes; `PostProcessCamera.Enable` turns post on for screen cameras; `CombatPostFx` adds
 local hit / low-health volumes. Unlit effect materials are HDR (×1.8) so spells bloom.
 
-**UI.** Menus (main menu, lobby, options, journal, pause, loading) are **UI Toolkit**: hand-written UXML/USS in
+**UI.** Menus (main menu, lobby, options, journal, pause, hold-Tab info screen, loading) are **UI Toolkit**: hand-written UXML/USS in
 `UI/Menus` (never generated; tokens in `Styles/Theme.uss`, components in `Styles/Menus.uss`), registry
 `Resources/MenuUI` (`MenuUiAssets`: PanelSettings, screens, templates), code in `Scripts/UI` + `Scripts/UI/Toolkit`
 (`MenuUi` helpers, `OptionsScreen`, `JournalScreen`, `LobbyCardView`, `MenuSounds`). Code finds elements by `name` and

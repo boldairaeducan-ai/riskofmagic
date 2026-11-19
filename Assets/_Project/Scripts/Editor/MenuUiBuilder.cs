@@ -36,6 +36,10 @@ namespace RiskOfMagic.Editor
             assets.mainMenu = Fill(assets.mainMenu, "MainMenu.uxml");
             assets.pauseMenu = Fill(assets.pauseMenu, "PauseMenu.uxml");
             assets.loadingScreen = Fill(assets.loadingScreen, "LoadingScreen.uxml");
+            assets.infoScreen = Fill(assets.infoScreen, "InfoScreen.uxml");
+            assets.infoItem = Fill(assets.infoItem, "Templates/InfoItem.uxml");
+            assets.infoStat = Fill(assets.infoStat, "Templates/InfoStat.uxml");
+            assets.infoPlayerRow = Fill(assets.infoPlayerRow, "Templates/InfoPlayerRow.uxml");
             assets.lobbyCard = Fill(assets.lobbyCard, "Templates/LobbyCard.uxml");
             assets.optionChoice = Fill(assets.optionChoice, "Templates/OptionChoice.uxml");
             assets.optionSlider = Fill(assets.optionSlider, "Templates/OptionSlider.uxml");

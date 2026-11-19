@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Styles/Menus.uss" />
+    <ui:VisualElement name="item" class="info-item">
+        <ui:VisualElement name="icon" class="info-item-icon" picking-mode="Ignore" />
+        <ui:Label name="count" class="info-item-count" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

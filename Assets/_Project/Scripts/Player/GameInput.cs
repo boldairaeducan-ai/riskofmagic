@@ -30,7 +30,7 @@ namespace RiskOfMagic.Player
         private static readonly List<Rebindable> rebindables = new();
         private static InputActionRebindingExtensions.RebindingOperation rebinding;
 
-        public static InputAction Move, LookPointer, LookStick, Jump, Sprint, ToggleCursor, Interact, Equipment;
+        public static InputAction Move, LookPointer, LookStick, Jump, Sprint, ToggleCursor, Interact, Equipment, InfoScreen;
         public static InputAction[] Skills;
 
         /// <summary>Raised whenever a binding changes (HUD key labels, options rows).</summary>
@@ -93,6 +93,7 @@ namespace RiskOfMagic.Player
             ToggleCursor = Button("ToggleCursor", "<Keyboard>/escape", "<Gamepad>/start");
             Interact = Button("Interact", "<Keyboard>/e", "<Gamepad>/buttonWest");
             Equipment = Button("Equipment", "<Keyboard>/f", "<Gamepad>/dpad/up");
+            InfoScreen = Button("InfoScreen", "<Keyboard>/tab", "<Gamepad>/select");
             Skills = new[]
             {
                 Button("Primary", "<Mouse>/leftButton", "<Gamepad>/rightTrigger"),
@@ -114,6 +115,7 @@ namespace RiskOfMagic.Player
             Add("Compétence spéciale", "Combat", Skills[3], 0);
             Add("Équipement", "Combat", Equipment, 0);
             Add("Interagir", "Interaction", Interact, 0);
+            Add("Écran d'infos (maintenir)", "Interface", InfoScreen, 0);
 
             string saved = PlayerPrefs.GetString(PrefsKey, string.Empty);
             if (!string.IsNullOrEmpty(saved))

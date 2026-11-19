@@ -82,6 +82,8 @@ Le code retrouve les éléments par leur `name`. Si l'un d'eux disparaît, la co
 | Journal | `statsTab`, `challengesTab`, `itemsTab`, `bestiaryTab`, `scroll` (ScrollView), `content` (Label), `backButton` |
 | Pause | `pauseScreen`, `main`, `subtitleLabel`, `resumeButton`, `optionsButton`, `abandonButton`, `menuButton`, `quitButton`, `forceWaveButton`, `confirm`, `confirmLabel`, `confirmYesButton`, `confirmNoButton`, `options` (Instance) |
 | Chargement | `loadingScreen`, `background`, `label` |
+| Écran d'infos (Tab maintenu) | `infoScreen`, `portrait`, `characterName`, `levelLabel`, `stats`, `runStats`, `itemGrid`, `equipmentIcon`, `equipmentLabel`, `itemTooltip`, `tooltipName`, `tooltipRarity`, `tooltipDescription`, `runLabel`, `playerList` |
+| InfoItem / InfoStat / InfoPlayerRow | `icon`, `count` / `label`, `value` / `name`, `details`, `score`, `ping`, `bar1`…`bar4`, `pingLabel` |
 | LobbyCard | racine **Button**, `icon`, `iconLetter`, `title`, `body`, `lockLabel` |
 | OptionChoice | `label`, `previous`, `value`, `next` |
 | OptionSlider | `label`, `slider` (Slider), `value` |
@@ -104,6 +106,7 @@ Elles peuvent être restylées, mais leurs noms doivent rester.
 | `key-button--listening` | touche en attente d'une nouvelle assignation |
 | `loading--visible` | écran de chargement affiché (fondu par transition) |
 | `silent` | (à ajouter soi-même) coupe les sons de survol/clic d'un bouton |
+| `info-ping--good/ok/bad/terrible`, `info-ping-bar--on` | qualité du ping et barres allumées (écran d'infos) |
 
 ---
 
