@@ -128,8 +128,9 @@ namespace RiskOfMagic.UI
             string character = player.Character != null ? player.Character.displayName : "?";
             string you = player.IsOwner ? " (vous)" : string.Empty;
             var stats = player.RunStats;
+            string playerName = stats != null && !string.IsNullOrEmpty(stats.DisplayName) ? stats.DisplayName : $"Joueur {player.OwnerClientId + 1}";
             if (labels.Length > 0)
-                labels[0].text = $"Joueur {player.OwnerClientId + 1}{you} — {character}";
+                labels[0].text = $"{playerName}{you} — {character}";
             if (labels.Length > 1)
                 labels[1].text = stats == null ? string.Empty
                     : $"Dégâts {FormatNumber(stats.DamageDealt)}   ·   Kills {stats.Kills}   ·   Morts {stats.Deaths}   ·   Or {stats.GoldEarned}   ·   Objets {CountItems(player.Inventory)}";

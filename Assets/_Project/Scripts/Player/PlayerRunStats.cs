@@ -1,4 +1,6 @@
 using RiskOfMagic.Combat;
+using RiskOfMagic.Networking;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,6 +15,7 @@ namespace RiskOfMagic.Player
         private readonly NetworkVariable<int> deaths = new();
         private readonly NetworkVariable<int> goldEarned = new();
         private readonly NetworkVariable<ushort> ping = new();
+        private readonly NetworkVariable<FixedString64Bytes> displayName = new();
         private float nextPingUpdate;
 
         private PlayerAvatar avatar;
@@ -24,6 +27,8 @@ namespace RiskOfMagic.Player
         public int GoldEarned => goldEarned.Value;
         /// <summary>Round trip to the host in ms (0 for the host itself), updated every second by the server.</summary>
         public int PingMs => ping.Value;
+        /// <summary>Platform name (Steam persona) sent by the owner; empty when unknown.</summary>
+        public string DisplayName => displayName.Value.ToString();
 
         private void Update()
         {
@@ -40,6 +45,14 @@ namespace RiskOfMagic.Player
 
         public override void OnNetworkSpawn()
         {
+            if (IsOwner)
+            {
+                string playerName = null;
+                try { playerName = OnlineSessions.LocalPlayerName?.Invoke(); }
+                catch (System.Exception exception) { Debug.LogWarning($"[PlayerRunStats] {exception.Message}"); }
+                if (!string.IsNullOrWhiteSpace(playerName))
+                    SetNameRpc(Sanitize(playerName));
+            }
             if (!IsServer)
                 return;
             Health.ServerDamaged += OnServerDamaged;
@@ -58,6 +71,33 @@ namespace RiskOfMagic.Player
             avatar.Wallet.GoldChanged -= OnGoldChanged;
             if (avatar.Downed != null)
                 avatar.Downed.Changed -= OnDownedChanged;
+        }
+
+        [Rpc(SendTo.Server)]
+        private void SetNameRpc(FixedString64Bytes name, RpcParams rpcParams = default)
+        {
+            if (rpcParams.Receive.SenderClientId == OwnerClientId)
+                displayName.Value = name;
+        }
+
+        /// <summary>Strips rich text markers and truncates to what a FixedString64Bytes holds (UTF-8).</summary>
+        private static FixedString64Bytes Sanitize(string name)
+        {
+            name = name.Trim().Replace('<', '‹').Replace('>', '›');
+            var builder = new System.Text.StringBuilder();
+            int bytes = 0;
+            foreach (char c in name)
+            {
+                int size = char.IsSurrogate(c) ? 2 : System.Text.Encoding.UTF8.GetByteCount(c.ToString());
+                if (bytes + size > 60)
+                    break;
+                bytes += size;
+                builder.Append(c);
+            }
+            // Drop a dangling high surrogate left by the cut.
+            if (builder.Length > 0 && char.IsHighSurrogate(builder[builder.Length - 1]))
+                builder.Length--;
+            return new FixedString64Bytes(builder.ToString());
         }
 
         /// <summary>Server only (new run).</summary>

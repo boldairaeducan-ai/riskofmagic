@@ -273,7 +273,10 @@ namespace RiskOfMagic.UI
                     continue;
                 var player = players[i];
                 bool me = player == PlayerAvatar.Local;
-                MenuUi.SetText(row.Q<Label>("name"), $"Joueur {i + 1}{(me ? " (vous)" : string.Empty)}");
+                string playerName = player.RunStats != null ? player.RunStats.DisplayName : null;
+                if (string.IsNullOrEmpty(playerName))
+                    playerName = $"Joueur {i + 1}";
+                MenuUi.SetText(row.Q<Label>("name"), $"{playerName}{(me ? " (vous)" : string.Empty)}");
                 string character = player.Character != null ? player.Character.displayName : "?";
                 int level = player.Experience != null ? player.Experience.Level : 1;
                 string state = !player.IsAlive ? " · mort" : player.IsDowned ? " · à terre" : string.Empty;

@@ -30,6 +30,9 @@ namespace RiskOfMagic.Networking
         /// <summary>Optional (Steam): opens the platform's friend invite dialog for the current game.</summary>
         public static System.Action InviteFriends { get; set; }
 
+        /// <summary>Optional (Steam): the local player's platform name (persona), shown to the other players.</summary>
+        public static System.Func<string> LocalPlayerName { get; set; }
+
         /// <summary>A join code received from outside the menu (Steam invite, launch argument), consumed by the menu.</summary>
         public static string PendingJoinCode { get; set; }
 
@@ -42,6 +45,7 @@ namespace RiskOfMagic.Networking
             Service = null;
             servicePriority = int.MinValue;
             InviteFriends = null;
+            LocalPlayerName = null;
             PendingJoinCode = null;
             JoinRequested = null;
         }

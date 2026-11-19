@@ -47,6 +47,7 @@ namespace RiskOfMagic.Steam
             go.hideFlags = HideFlags.HideInHierarchy;
             go.AddComponent<SteamBootstrap>();
             OnlineSessions.Register(new SteamSessionService(), 10);
+            OnlineSessions.LocalPlayerName = SteamFriends.GetPersonaName;
             Debug.Log($"[Steam] Ready as {SteamFriends.GetPersonaName()}.");
 
             // Started from a Steam invite: "+connect_lobby <id>".
