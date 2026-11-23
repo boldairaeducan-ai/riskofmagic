@@ -38,7 +38,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Slowed by bolas (Bolas). 2 stacks = full slow, 1 stack = reduced slow (bosses, elites).</summary>
         Ensnared,
         /// <summary>Swarm of ravens (Envol de corbeaux): faster.</summary>
-        RavenForm
+        RavenForm,
+        /// <summary>Slowed by sticky resin (Résine collante): a fraction per stack.</summary>
+        Resin
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -92,6 +94,7 @@ namespace RiskOfMagic.Combat
               * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus)
               * (Has(StatusType.Stealth) ? 1f + stealthSpeedBonus : 1f)
               * EnsnareMultiplier
+              * Mathf.Max(0f, 1f - GetStacks(StatusType.Resin) * RiskOfMagic.Core.GameBalance.Instance.statuses.resinSlowPerStack)
               * (Has(StatusType.RavenForm) ? 1f + RiskOfMagic.Core.GameBalance.Instance.statuses.ravenFormSpeedBonus : 1f);
 
         private float EnsnareMultiplier

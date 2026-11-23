@@ -20,6 +20,8 @@ namespace RiskOfMagic.Combat
         private readonly NetworkVariable<float> shieldReduction = new();
         private readonly NetworkVariable<int> dotMask = new();
         private readonly NetworkVariable<ulong> dotStacks = new(); // 6 bits per DamageType (stack count, max 63)
+        private readonly NetworkVariable<float> barrier = new();
+        private double barrierUntil;
         private IHealthHooks[] hooks = Array.Empty<IHealthHooks>();
 
         /// <summary>(current, max)</summary>
@@ -91,6 +93,24 @@ namespace RiskOfMagic.Combat
                 shieldUntil.Value = until;
         }
 
+        /// <summary>Every peer: temporary health points absorbed before health (Carapace d'ambre).</summary>
+        public float Barrier => barrier.Value;
+
+        /// <summary>Server only. Adds barrier points (capped) and restarts its expiry timer.</summary>
+        public void AddBarrier(float amount, float cap, float duration)
+        {
+            if (!AssertServer() || !IsAlive || amount <= 0f)
+                return;
+            barrier.Value = Mathf.Min(Mathf.Max(cap, barrier.Value), barrier.Value + amount);
+            barrierUntil = NetworkManager.ServerTime.Time + duration;
+        }
+
+        private void Update()
+        {
+            if (IsServer && IsSpawned && barrier.Value > 0f && (!IsAlive || NetworkManager.ServerTime.Time >= barrierUntil))
+                barrier.Value = 0f;
+        }
+
         private void Awake() => hooks = GetComponents<IHealthHooks>();
 
         /// <summary>Server only. Health cost that ignores every modifier (can kill).</summary>
@@ -142,6 +162,12 @@ namespace RiskOfMagic.Combat
 
             if (!info.IgnoreModifiers)
                 info.Amount = ModifyDamage(info);
+            if (!info.IgnoreModifiers && barrier.Value > 0f && info.Amount > 0f)
+            {
+                float absorbed = Mathf.Min(barrier.Value, info.Amount);
+                barrier.Value -= absorbed;
+                info.Amount -= absorbed;
+            }
             if (info.Amount <= 0f)
                 return;
 

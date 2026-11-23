@@ -44,6 +44,7 @@ namespace RiskOfMagic.Editor
             { StatusType.Ambush, ("Embuscade", true, false) },
             { StatusType.RuneBlessing, ("Bénédiction runique", true, false) },
             { StatusType.Ensnared, ("Entravé", true, true) },
+            { StatusType.Resin, ("Résine", true, true) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()
@@ -127,7 +128,11 @@ namespace RiskOfMagic.Editor
                 entry.aboveEnemies = aboveEnemies; // first setup only
             }
             if (entry.icon == null && icon != null)
+            {
+                if (attachedEffect == null)
+                    entry.aboveEnemies = aboveEnemies; // first setup only (no attached effect)
                 entry.icon = icon;
+            }
             EditorUtility.SetDirty(Library);
         }
 

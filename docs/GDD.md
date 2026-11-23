@@ -12,7 +12,7 @@ Roguelite coopératif à la première personne dans l'esprit de *Risk of Rain*, 
 | Joueurs | 1 à 4, coop en ligne (Steam, code de partie) |
 | Plateforme | PC (Unity 6, URP) |
 | Personnages | 6 classes jouables, 8 compétences chacune (4 de base + 4 alternatives) |
-| Contenu | 36 objets, 3 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
+| Contenu | 37 objets, 3 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
 
 **Piliers** : la difficulté monte avec le temps ; les objets se cumulent sans plafond ; chaque classe a deux styles de jeu ; la coop est au cœur du jeu (soins, relèves, buffs de zone).
 
@@ -115,12 +115,12 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 ## Objets et équipements
 
-36 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 3 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
+37 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 3 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
 
 | Rareté | Nombre | Source principale |
 | --- | --- | --- |
 | Commun | 14 | Petits coffres, marchand |
-| Inhabituel | 11 | Petits et grands coffres |
+| Inhabituel | 12 | Petits et grands coffres |
 | Rare | 5 | Grands coffres, coffres à choix |
 | Légendaire | 4 | Coffres rares, secrets |
 | Boss | 2 | Récompense de boss |
@@ -151,7 +151,8 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Sablier ancien | −12 % de rechargement (multiplicatif) |
 | Plume de griffon | +1 (+1) saut |
 | Orbe de tempête | 25 % : éclair sur 3 (+2) ennemis, 80 % |
-| Éclat d'ambre | 20 % : éclair en chaîne, 50 % (+15 %), 2 (+1) cibles |
+| Carapace d'ambre | Chaque kill : 5 (+5) points de bouclier, max 20 % des PV max, perdus après 5 s sans kill |
+| Résine collante | Chaque coup ralentit de 10 % (+10 %) pendant 2 s, max 50 % |
 | Carquois enchanté | 10 % : missile chercheur, 300 % (+300 %) |
 | Pierre de résonance | Critiques : 50 % (+25 %) des dégâts dans 3 m |
 | Huile incendiaire | Ennemis tués explosent : 150 % (+75 %) dans 6 m (+1,5 m) |
@@ -235,6 +236,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Entravé (bolas) | −50 % de vitesse (−25 % sur boss et élites) |
 | Gelé | −30 % de vitesse |
 | Enraciné | Immobile, peut attaquer |
+| Résine | −10 % de vitesse par exemplaire de Résine collante du joueur, max −50 % |
 | Figé / étourdi | Ni déplacement ni attaque |
 | Poison, saignement, brûlure | Dégâts sur la durée, voir ci-dessous |
 

@@ -1197,14 +1197,18 @@ namespace RiskOfMagic.Editor
                 "+25 % de vitesse en sprint (+25 %).", ItemRarity.Common, Mod(StatType.SprintSpeed, 0.25f));
             var vigorRoot = Item<ItemDefinition>("Item_VigorRoot", "Racine de vigueur", "+1,5 PV/s de régénération (+1,5).", ItemRarity.Common,
                 Mod(StatType.HealthRegen, 1.5f));
-            var amber = Item<ChainOnHitItem>("Item_AmberShard", "Éclat d'ambre",
-                "20% de chances : éclair en chaîne, 50% (+15%) des dégâts, 2 cibles (+1).", ItemRarity.Uncommon);
-            amber.chance = 0.2f;
-            amber.damageFraction = 0.5f;
-            amber.damageFractionPerExtraStack = 0.15f;
-            amber.targetsFirstStack = 2;
-            amber.targetsPerExtraStack = 1;
-            amber.boltVfx = vfx.Lightning;
+            var amber = Item<BarrierOnKillItem>("Item_AmberCarapace", "Carapace d'ambre",
+                "Chaque kill donne 5 (+5) points de bouclier, jusqu'à 20% des PV max. Disparaît après 5 s sans kill.", ItemRarity.Uncommon);
+            amber.barrierFirstStack = 5f;
+            amber.barrierPerExtraStack = 5f;
+            amber.maxHealthCap = 0.2f;
+            amber.duration = 5f;
+            var resin = Item<SlowOnHitItem>("Item_StickyResin", "Résine collante",
+                "Chaque coup ralentit la cible de 10% (+10%) pendant 2 s, jusqu'à 50%.", ItemRarity.Uncommon);
+            resin.maxStacks = 5;
+            resin.duration = 2f;
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Resin, null, aboveEnemies: true,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_094.png"));
             var thorns = Item<ThornsItem>("Item_ThornBracelet", "Bracelet d'épines",
                 "Quand vous êtes touché : 200% (+100%) de vos dégâts de base renvoyés à l'attaquant. Recharge 15 s (-2 s).", ItemRarity.Uncommon);
             thorns.vfx = vfx.Impact;
@@ -1226,7 +1230,7 @@ namespace RiskOfMagic.Editor
             {
                 gauntlet, boots, hawkEye, meat, fang, oak, dagger, executioner, breaker, adrenaline, whetstone,
                 pendant, vigorRoot, courierDraught,
-                fireOrb, feather, hourglass, storm, oil, quiver, amber, thorns, voodoo, cloak, resonance,
+                fireOrb, feather, hourglass, storm, oil, quiver, amber, resin, thorns, voodoo, cloak, resonance,
                 horn, grimoire, twinBlade, frostRing, banner,
                 chaosEye, phoenix, comet, crown,
                 scale, bone
