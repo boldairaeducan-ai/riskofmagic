@@ -52,6 +52,9 @@ namespace RiskOfMagic.Enemies
         [Tooltip("Animator inside = driven by EnemyAnimationDriver. Authored at scale 1, feet at the pivot.")] public GameObject modelPrefab;
         [Min(0f), Tooltip("Model scaled to this height in meters (0 = as authored). A humanoid model without Animator Controller is animated by code.")]
         public float modelHeight;
+        [Tooltip("Optional: replaces every material of the model (e.g. a URP material for a pack whose materials don't render).")]
+        public Material modelMaterial;
+        [Tooltip("Extra yaw (degrees) when the model doesn't face +Z.")] public float modelYaw;
 
         [Header("Audio")]
         public SoundEvent spawnSound;

@@ -265,6 +265,36 @@ La recette suffit dans la plupart des cas. À la main, c'est utile pour un graph
 7. **Tester** : Play, sélectionner le modèle dans la Hierarchy (sous le joueur ou l'ennemi) : la fenêtre Animator
    montre en direct l'état joué et la valeur des paramètres.
 
+## 6 bis. Modèles rigides (sans squelette)
+
+Certains packs low poly (ex. `Assets/Monster Pack`) livrent un **seul mesh, sans os ni animation**. Les animations
+humanoïdes ne peuvent pas s'y appliquer. Le jeu les anime alors par code : `ProceduralRigidMotion`, ajouté
+automatiquement par `EnemyAnimationDriver` quand le modèle n'a ni Animator Controller ni os humanoïdes.
+
+- Respiration au repos, dandinement et rebond en marchant, penchée vers l'avant selon la vitesse.
+- Attaque : recul pendant la préparation, frappe rapide vers l'avant, retour lent (durées = préparation et
+  récupération de l'attaque).
+- Coup reçu : recul bref. Esquive / bond : petit saut. Mort : chute sur le côté.
+- Réglages (amplitudes, cadence) dans l'Inspector du composant, sur le modèle instancié en Play.
+
+Fiche de l'ennemi (`Configs/Enemies/Enemy_X`) :
+- *Model Prefab* : le `.fbx` du pack (ou son prefab) ;
+- *Model Height* : hauteur voulue en mètres (avant l'échelle de l'ennemi) ;
+- *Model Material* : facultatif, remplace tous les matériaux du modèle. `Art/Monsters/M_MonsterPack` (URP Lit + atlas
+  `Gradient Pallete`) pour le Monster Pack ;
+- *Model Yaw* : rotation en degrés si le modèle ne regarde pas vers +Z (180 s'il marche à reculons).
+
+Ennemis actuellement habillés par le Monster Pack :
+
+| Ennemi | Modèle | Hauteur |
+| --- | --- | --- |
+| Goule | Orc | 1,9 |
+| Loup spectral | WereWolf | 2,2 (×0,8) |
+| Lame d'ombre | Skell_Warrior | 1,85 |
+| Pyromancien | Skell_Mage | 1,9 |
+| Squelette archer | Skeleton | 1,8 |
+| Ogre | Minotaur | 1,9 (×1,5) |
+
 ## 7. Dépannage
 
 | Problème | Cause probable |

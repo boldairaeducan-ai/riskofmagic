@@ -34,8 +34,10 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.4
   goldReward: 8
   despawnDelay: 2
-  modelPrefab: {fileID: 0}
-  modelHeight: 0
+  modelPrefab: {fileID: 919132149155446097, guid: 0d4ee09e6fe0149469d2f26717b9a730, type: 3}
+  modelHeight: 2.2
+  modelMaterial: {fileID: 2100000, guid: 16da4e165b7041d088bb671fb2b4ca20, type: 2}
+  modelYaw: 0
   spawnSound: {fileID: 11400000, guid: ad6224da3dd9ef748b58c9516586e471, type: 2}
   attackSound: {fileID: 11400000, guid: 93888d71e01322e4f96ea233eee2a933, type: 2}
   hurtSound: {fileID: 11400000, guid: 781d3472f52e85a40b31290cd13df120, type: 2}

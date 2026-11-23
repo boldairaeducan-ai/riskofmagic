@@ -7,7 +7,8 @@ namespace RiskOfMagic.Animation
     /// <summary>
     /// Spawns EnemyDefinition.modelPrefab (placeholder hidden, hitboxes kept) and drives its Animator on every peer:
     /// locomotion from movement, attacks (per-EnemyAttack trigger + AttackIndex), hit, dodge/leap cues, death, freeze.
-    /// A humanoid model without Animator Controller is animated by code instead (ProceduralHumanoidMotion).
+    /// A humanoid model without Animator Controller is animated by code instead (ProceduralHumanoidMotion), a rigid model
+    /// (no skeleton, no controller) by ProceduralRigidMotion.
     /// </summary>
     [RequireComponent(typeof(EnemyActor))]
     public class EnemyAnimationDriver : MonoBehaviour
@@ -24,6 +25,7 @@ namespace RiskOfMagic.Animation
         private Vector3 smoothedVelocity;
         private bool spawned;
         private ProceduralHumanoidMotion procedural;
+        private ProceduralRigidMotion rigid;
 
         private void Awake()
         {
@@ -35,19 +37,38 @@ namespace RiskOfMagic.Animation
             var prefab = actor.Definition != null ? actor.Definition.modelPrefab : null;
             if (prefab != null)
             {
+                var definition = actor.Definition;
                 var model = Instantiate(prefab, transform);
                 model.transform.localPosition = Vector3.zero;
-                model.transform.localRotation = prefab.transform.localRotation;
-                FitHeight(model, actor.Definition.modelHeight);
+                model.transform.localRotation = Quaternion.Euler(0f, definition.modelYaw, 0f) * prefab.transform.localRotation;
+                if (definition.modelMaterial != null)
+                    foreach (var renderer in model.GetComponentsInChildren<Renderer>(true))
+                    {
+                        var materials = renderer.sharedMaterials;
+                        for (int i = 0; i < materials.Length; i++)
+                            materials[i] = definition.modelMaterial;
+                        renderer.sharedMaterials = materials;
+                    }
+                FitHeight(model, definition.modelHeight);
                 actor.UseModel(model);
                 if (ProceduralHumanoidMotion.CanDrive(model))
                     procedural = model.AddComponent<ProceduralHumanoidMotion>();
+                else if (!HasController(model))
+                    rigid = model.AddComponent<ProceduralRigidMotion>();
                 else
                     animators.AddFrom(model);
             }
             // Animators placed directly in the prefab by hand also work.
             if (animators.Count == 0)
                 animators.AddFrom(gameObject);
+        }
+
+        private static bool HasController(GameObject model)
+        {
+            foreach (var animator in model.GetComponentsInChildren<Animator>(true))
+                if (animator.runtimeAnimatorController != null)
+                    return true;
+            return false;
         }
 
         /// <summary>Scales the model so its renderers are <paramref name="height"/> tall (0 = as authored).</summary>
@@ -119,6 +140,13 @@ namespace RiskOfMagic.Animation
                 procedural.SetDead(actor.IsSpawned && !actor.Health.IsAlive);
                 procedural.SetFrozen(actor.IsFrozen);
             }
+            if (rigid != null)
+            {
+                Vector3 flat = new(smoothedVelocity.x, 0f, smoothedVelocity.z);
+                rigid.SetLocomotion(flat.magnitude, actor.Definition != null ? actor.Definition.moveSpeed : 5f);
+                rigid.SetDead(actor.IsSpawned && !actor.Health.IsAlive);
+                rigid.SetFrozen(actor.IsFrozen);
+            }
             if (animators.Count == 0)
                 return;
 
@@ -140,6 +168,8 @@ namespace RiskOfMagic.Animation
             animators.SetTrigger(attack.AnimatorTrigger);
             if (procedural != null)
                 procedural.PlayAttack(attack.WindupTime, attack.RecoveryTime);
+            if (rigid != null)
+                rigid.PlayAttack(attack.WindupTime, attack.RecoveryTime);
         }
 
         private void OnDamaged(DamageInfo info)
@@ -149,13 +179,19 @@ namespace RiskOfMagic.Animation
             animators.SetTrigger(AnimParams.Hit);
             if (procedural != null)
                 procedural.PlayHit();
+            if (rigid != null)
+                rigid.PlayHit();
         }
 
         // Dodge/leap run on the server: relay them to every peer.
         private void OnServerDodge(Vector3 direction) => actor.BroadcastCue(EnemyAnimationCue.Dodge);
         private void OnServerLeap(Vector3 destination) => actor.BroadcastCue(EnemyAnimationCue.Leap);
 
-        private void OnCue(EnemyAnimationCue cue) =>
+        private void OnCue(EnemyAnimationCue cue)
+        {
             animators.SetTrigger(cue == EnemyAnimationCue.Dodge ? AnimParams.Dodge : AnimParams.Leap);
+            if (rigid != null)
+                rigid.PlayHop();
+        }
     }
 }
