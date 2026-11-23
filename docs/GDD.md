@@ -139,8 +139,8 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Croc de loup | Chaque kill soigne 8 (+6) PV |
 | Bouclier de chêne | −5 (−5) dégâts par coup reçu, minimum 1 |
 | Pierre de première taille | 1er coup sur chaque ennemi : +60 % (+40 %) |
-| Lame du bourreau | +30 % (+30 %) contre les ennemis sous 30 % de PV |
-| Masse brise-garde | +75 % (+75 %) contre les ennemis au-dessus de 90 % de PV |
+| Lame du bourreau | +40 % (+40 %) contre les ennemis sous 30 % de PV |
+| Masse brise-garde | +40 % (+40 %) contre les ennemis au-dessus de 90 % de PV |
 | Dague barbelée | 10 % (+10 %) de chances de saignement, 240 % en 3 s |
 | Fiole d'adrénaline | Après un kill : +25 % (+15 %) de vitesse d'attaque 3 s |
 
@@ -156,9 +156,9 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Carquois enchanté | 10 % : missile chercheur, 300 % (+300 %) |
 | Pierre de résonance | Critiques : 50 % (+25 %) des dégâts dans 3 m |
 | Huile incendiaire | Ennemis tués explosent : 150 % (+75 %) dans 6 m (+1,5 m) |
-| Orbe de feu | Kill : brûle les ennemis à 4 m (+4 m), 150 % en 3 s |
+| Orbe de feu | Kill : brûle les ennemis à 4 m (+1,5 m), 200 % (+100 %) en 3 s |
 | Poupée vaudou | Kill : maudit les ennemis à 4 m (+1 m) pendant 4 s |
-| Bracelet d'épines | Touché : renvoie 200 % (+100 %), recharge 15 s (−2 s) |
+| Bracelet d'épines | Touché : renvoie 400 % (+200 %), recharge 5 s (−0,5 s, min 3 s) |
 | Cape du fuyard | Touché : +40 % de vitesses 2 s (+1 s), recharge 5 s |
 
 ### Rares, légendaires et boss
@@ -166,7 +166,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Objet | Rareté | Effet |
 | --- | --- | --- |
 | Anneau de givre | Rare | 10 % (+5 %) : gèle 1,5 s et 250 % |
-| Bannière de guerre | Rare | Alliés à 12 m (+4 m) : +20 % de dégâts |
+| Bannière de guerre | Rare | Alliés à 12 m (+2 m) : +20 % (+10 %) de dégâts |
 | Cor de guerre | Rare | Kill : +15 % de vitesses, max 5 (+1) cumuls, perdus quand on est touché |
 | Grimoire interdit | Rare | +1 (+1) charge aux compétences hors principale |
 | Lame jumelle | Rare | 15 % (+10 %) de frapper une 2e fois (100 %) |

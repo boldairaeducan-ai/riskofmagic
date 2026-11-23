@@ -1126,19 +1126,21 @@ namespace RiskOfMagic.Editor
             dagger.dot = bleed;
             dagger.chanceFirstStack = 0.1f;
             dagger.chancePerExtraStack = 0.1f;
-            var fireOrb = Item<DotAreaOnKillItem>("Item_FireOrb", "Orbe de feu", "Un ennemi tué brûle les ennemis à 4 m (+4 m) : 150% en 3 s.", ItemRarity.Uncommon);
+            var fireOrb = Item<DotAreaOnKillItem>("Item_FireOrb", "Orbe de feu", "Un ennemi tué brûle les ennemis à 4 m (+1,5 m) : 200% (+100%) en 3 s.", ItemRarity.Uncommon);
             fireOrb.dot = burn;
             fireOrb.radiusFirstStack = 4f;
-            fireOrb.radiusPerExtraStack = 4f;
+            fireOrb.radiusPerExtraStack = 1.5f;
+            fireOrb.baseDamageCoefficient = 1.3333f;
+            fireOrb.baseDamagePerExtraStack = 0.6667f;
             fireOrb.vfx = vfx.Explosion;
             var feather = Item<ItemDefinition>("Item_GriffinFeather", "Plume de griffon", "+1 saut (+1).", ItemRarity.Uncommon, Mod(StatType.ExtraJumps, 1f));
-            var executioner = Item<ExecutionerItem>("Item_ExecutionerBlade", "Lame du bourreau", "+30% (+30%) de dégâts contre les ennemis sous 30% de PV.", ItemRarity.Common);
+            var executioner = Item<ExecutionerItem>("Item_ExecutionerBlade", "Lame du bourreau", "+40% (+40%) de dégâts contre les ennemis sous 30% de PV.", ItemRarity.Common);
             executioner.healthThreshold = 0.3f;
-            executioner.bonusPerStack = 0.3f;
+            executioner.bonusPerStack = 0.4f;
             executioner.aboveThreshold = false;
-            var breaker = Item<ExecutionerItem>("Item_GuardBreaker", "Masse brise-garde", "+75% (+75%) de dégâts contre les ennemis à plus de 90% de PV.", ItemRarity.Common);
+            var breaker = Item<ExecutionerItem>("Item_GuardBreaker", "Masse brise-garde", "+40% (+40%) de dégâts contre les ennemis à plus de 90% de PV.", ItemRarity.Common);
             breaker.healthThreshold = 0.9f;
-            breaker.bonusPerStack = 0.75f;
+            breaker.bonusPerStack = 0.4f;
             breaker.aboveThreshold = true;
             var adrenaline = Item<AdrenalineItem>("Item_AdrenalineVial", "Fiole d'adrénaline", "Après un kill : +25% (+15%) de vitesse d'attaque pendant 3 s.", ItemRarity.Common);
             adrenaline.bonusFirstStack = 0.25f;
@@ -1175,9 +1177,9 @@ namespace RiskOfMagic.Editor
             frostRing.freezeDuration = 1.5f;
             frostRing.damageCoefficient = 2.5f;
             frostRing.vfx = vfx.FrostBurst;
-            var banner = Item<BannerItem>("Item_WarBanner", "Bannière de guerre", "Les alliés à 12 m (+4 m), vous compris, infligent +20% de dégâts.", ItemRarity.Rare);
+            var banner = Item<BannerItem>("Item_WarBanner", "Bannière de guerre", "Les alliés à 12 m (+2 m), vous compris, infligent +20% (+10%) de dégâts.", ItemRarity.Rare);
             banner.radiusFirstStack = 12f;
-            banner.radiusPerExtraStack = 4f;
+            banner.radiusPerExtraStack = 2f;
             var comet = Item<MeteorOnHitItem>("Item_CometTear", "Larme de comète", "8% (+4%) de chances qu'un coup appelle un météore : 500% dans 5 m.", ItemRarity.Legendary);
             comet.meteor = projectiles.Meteor;
             comet.chanceFirstStack = 0.08f;
@@ -1210,8 +1212,12 @@ namespace RiskOfMagic.Editor
             ArtLibraryBuilder.ConfigureStatus(StatusType.Resin, null, aboveEnemies: true,
                 AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_094.png"));
             var thorns = Item<ThornsItem>("Item_ThornBracelet", "Bracelet d'épines",
-                "Quand vous êtes touché : 200% (+100%) de vos dégâts de base renvoyés à l'attaquant. Recharge 15 s (-2 s).", ItemRarity.Uncommon);
+                "Quand vous êtes touché : 400% (+200%) de vos dégâts de base renvoyés à l'attaquant. Recharge 5 s (-0,5 s).", ItemRarity.Uncommon);
             thorns.vfx = vfx.Impact;
+            thorns.damageFirstStack = 4f;
+            thorns.damagePerExtraStack = 2f;
+            thorns.cooldownFirstStack = 5f;
+            thorns.cooldownPerExtraStack = -0.5f;
             var voodoo = Item<CurseAreaOnKillItem>("Item_VoodooDoll", "Poupée vaudou",
                 "Un ennemi tué maudit les ennemis à 4 m (+1 m) pendant 4 s.", ItemRarity.Uncommon);
             voodoo.vfx = vfx.CursePulse;

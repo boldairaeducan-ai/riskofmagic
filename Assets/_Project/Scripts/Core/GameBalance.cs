@@ -68,6 +68,7 @@ namespace RiskOfMagic.Core
             [Tooltip("Envol de corbeaux: move speed bonus.")] public float ravenFormSpeedBonus = 0.6f;
             public float channelingSpeedMultiplier = 0.5f;
             public float bannerDamageBonus = 0.2f;
+            [Tooltip("Bannière de guerre: extra damage bonus per extra stack of the item.")] public float bannerDamageBonusPerExtraStack = 0.1f;
             public float stealthSpeedBonus = 0.3f;
             public float markedDamageTakenMultiplier = 1.5f;
             [Tooltip("Marque de mort: share of the damage the marked target takes dealt to the enemies around it.")] public float markedEchoFraction = 0.3f;

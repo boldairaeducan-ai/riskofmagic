@@ -49,6 +49,7 @@ MonoBehaviour:
     chillSpeedMultiplier: 0.7
     channelingSpeedMultiplier: 0.5
     bannerDamageBonus: 0.2
+    bannerDamageBonusPerExtraStack: 0.1
     stealthSpeedBonus: 0.3
     markedDamageTakenMultiplier: 1.5
     runeBlessingDamageBonus: 0.3

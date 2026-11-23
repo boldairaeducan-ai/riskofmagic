@@ -69,6 +69,7 @@ namespace RiskOfMagic.Combat
         private float ensnareReducedSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.ensnareReducedSpeedMultiplier;
         private float channelingSpeedMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.channelingSpeedMultiplier;
         private float bannerDamageBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.bannerDamageBonus;
+        private float bannerDamageBonusPerExtraStack => RiskOfMagic.Core.GameBalance.Instance.statuses.bannerDamageBonusPerExtraStack;
         private float stealthSpeedBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.stealthSpeedBonus;
         private float markedDamageTakenMultiplier => RiskOfMagic.Core.GameBalance.Instance.statuses.markedDamageTakenMultiplier;
         private float runeBlessingDamageBonus => RiskOfMagic.Core.GameBalance.Instance.statuses.runeBlessingDamageBonus;
@@ -86,7 +87,7 @@ namespace RiskOfMagic.Combat
         /// <summary>Withered: 1% max health per stack (at least 5% left).</summary>
         public float MaxHealthMultiplier => Mathf.Max(0.05f, 1f - GetStacks(StatusType.Withered) / 100f);
         public float DamageDealtMultiplier => (Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f)
-                                              * (Has(StatusType.Banner) ? 1f + bannerDamageBonus : 1f)
+                                              * (Has(StatusType.Banner) ? 1f + bannerDamageBonus + bannerDamageBonusPerExtraStack * (GetStacks(StatusType.Banner) - 1) : 1f)
                                               * (1f + GetStacks(StatusType.SoulHarvest) / 100f)
                                               * (Has(StatusType.RuneBlessing) ? 1f + runeBlessingDamageBonus : 1f);
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f

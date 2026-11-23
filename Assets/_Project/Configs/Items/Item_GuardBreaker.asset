@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Item_GuardBreaker
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.ExecutionerItem
   displayName: Masse brise-garde
-  description: "+75% (+75%) de d\xE9g\xE2ts contre les ennemis \xE0 plus de 90% de
+  description: "+40% (+40%) de d\xE9g\xE2ts contre les ennemis \xE0 plus de 90% de
     PV."
   rarity: 0
   pickupSound: {fileID: 0}
   icon: {fileID: 21300000, guid: 1985b1e01973d504c8339c792cba7673, type: 3}
   modifiers: []
   healthThreshold: 0.9
-  bonusPerStack: 0.75
+  bonusPerStack: 0.4
   aboveThreshold: 1
