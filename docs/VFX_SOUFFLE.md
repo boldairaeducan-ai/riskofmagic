@@ -72,15 +72,34 @@ Textures utiles :
 > Les noms entre *italiques* sont ceux de l'interface Unity (en anglais). **Espace** ou clic droit → *Create Node*
 > ouvre la recherche.
 
-### 3.0 Shader Graphs et teinte (rappel)
+### 3.0 Shader Graphs et entrée `Tint`
 
-Réutilise `SG_VFX_Additive` (flammes, cœur, braises) et `SG_VFX_Alpha` (fumée) du tuto de l'éclair (§ 4.0).
+Réutilise les Shader Graphs du tuto de l'éclair (§ 4.0) :
+- `SG_VFX_Additive` pour les flammes, le cœur et les braises ;
+- `SG_VFX_Alpha` pour la fumée.
 
-**Indispensable ici** : sur chaque sortie, relie l'entrée `Tint` à la couleur de la particule.
-- *Get Attribute: color* (Vector3) et *Get Attribute: alpha* (Float) → opérateur *Vector4* (X, Y, Z = color ;
-  W = alpha) → entrée `Tint`.
-- Sans ce lien, le Shader Graph ignore la couleur de la particule : tout le dégradé blanc → rouge de ce tuto
-  disparaît et les flammes restent blanches.
+**D'où vient `Tint`** : ces Shader Graphs ont deux propriétés dans leur *Blackboard*, `MainTex` (texture) et `Tint`
+(couleur HDR). Quand tu choisis le Shader Graph dans le champ **Shader Graph** d'une sortie *Output Particle Shader
+Graph Quad*, ces deux propriétés deviennent des **entrées du contexte de sortie**. Elles apparaissent en haut du
+contexte, sous les réglages, avec un petit rond de connexion à gauche.
+
+- `MainTex` : glisse la texture (ex. `Smoke26.png`) dans le champ.
+- `Tint` : **ne mets pas une couleur fixe, relie-la à la couleur de la particule** :
+  1. Espace → *Get Attribute: color* (sortie Vector3) ;
+  2. Espace → *Get Attribute: alpha* (sortie Float) ;
+  3. Espace → opérateur *Vector4* (catégorie *Inline*), déplie son entrée (▸) : branche color sur **x, y, z**
+     (déplie aussi la sortie de *Get Attribute: color* pour relier x → x, y → y, z → z) et alpha sur **w** ;
+  4. relie la sortie du *Vector4* au rond de l'entrée `Tint` de la sortie.
+
+  Le type de `Tint` est *Color* : si le fil refuse de se brancher, passe par un opérateur *Color* (*Inline*) à la
+  place du *Vector4*, mêmes branchements (r, g, b, a).
+
+Fais-le **sur chaque sortie** : un même groupe *Get Attribute* + *Vector4* peut être relié à toutes les sorties
+(plusieurs fils depuis la même sortie).
+
+**Pourquoi c'est indispensable** : un Shader Graph ne lit pas tout seul la couleur de la particule. Sans ce lien,
+les blocs *Set Color*, *Set Color over Life* et *Set Alpha over Life* de ce tuto n'ont **aucun effet visible** :
+les flammes restent blanches et ne s'estompent pas.
 
 ### 3.1 Créer le graph
 
