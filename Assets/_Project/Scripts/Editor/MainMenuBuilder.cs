@@ -29,14 +29,22 @@ namespace RiskOfMagic.Editor
             return prefab;
         }
 
+        /// <summary>
+        /// First build: creates the scene with the 3D backdrop. Later builds open it and only replace the generated
+        /// objects (NetworkManager, EventSystem, MainMenu UI, post-process volume): the set and your changes are kept.
+        /// </summary>
         public static void BuildScene(NetworkPrefabsList prefabList, GameObject lobbyPrefab)
         {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-            // The 3D set (own camera, lights, atmosphere) replaces the default camera and light.
-            foreach (var go in scene.GetRootGameObjects())
-                if (go.GetComponent<Camera>() != null || go.GetComponent<Light>() != null)
-                    Object.DestroyImmediate(go);
-            PrefabUtility.InstantiatePrefab(MenuBackdropBuilder.GetOrCreate(), scene);
+            var scene = PrototypeSceneBuilder.OpenOrCreateScene(ScenePath, out bool created);
+            PrototypeSceneBuilder.RemoveGeneratedRoots(scene, null, "NetworkManager", "EventSystem", "MainMenu");
+            if (created)
+            {
+                // The 3D set (own camera, lights, atmosphere) replaces the default camera and light.
+                foreach (var go in scene.GetRootGameObjects())
+                    if (go.GetComponent<Camera>() != null || go.GetComponent<Light>() != null)
+                        Object.DestroyImmediate(go);
+                PrefabUtility.InstantiatePrefab(MenuBackdropBuilder.GetOrCreate(), scene);
+            }
 
             // Network (persists into the game scene)
             var netGo = new GameObject("NetworkManager");

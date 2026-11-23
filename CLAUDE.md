@@ -16,7 +16,9 @@ Game-facing text (UI, item/skill names and descriptions) is in **French**; code,
   clashes, `UnityEngine.Object` vs `?.`, NGO API signatures) and expect the user to report console errors.
 - **Tools → Risk of Magic → Build Prototype Scene** (`Editor/PrototypeSceneBuilder.cs`) regenerates almost every
   asset: configs (characters, skills, projectiles, DoTs, items, equipment, enemies, spawn cards), prefabs, VFX,
-  materials, `Resources/GameCatalog`, the `NetworkPrefabs` list, the `Prototype` and `MainMenu` scenes and build settings.
+  materials, `Resources/GameCatalog`, the `NetworkPrefabs` list and build settings. The `Prototype` and `MainMenu` scenes are created on
+  the first build only; later builds open them and replace only their generated roots (NetworkManager, GameBootstrap, HUD,
+  EventSystem, MainMenu UI, post-process volume), so level/set edits are kept. `Map_*` scenes are never touched.
   Configs are **seeded once**: the builder creates them with its default values, then on later runs every field an
   existing asset already has is restored after the build (`RestoreUserValues`), so tuning lives in the assets
   (new fields still get the builder's value). Balance changes are made by editing the `.asset` files (YAML) or, for new

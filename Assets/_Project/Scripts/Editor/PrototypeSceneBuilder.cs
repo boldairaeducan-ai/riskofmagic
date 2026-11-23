@@ -2094,26 +2094,57 @@ namespace RiskOfMagic.Editor
 
         // ---------------------------------------------------------------- Scene
 
+        /// <summary>
+        /// Opens an existing scene (its level and every object you added are kept) or creates it on the first build.
+        /// </summary>
+        internal static UnityEngine.SceneManagement.Scene OpenOrCreateScene(string path, out bool created)
+        {
+            created = !File.Exists(path);
+            return created
+                ? EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single)
+                : EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+        }
+
+        /// <summary>Removes the root objects the builder regenerates (by name, or instances of <paramref name="prefab"/>).</summary>
+        internal static void RemoveGeneratedRoots(UnityEngine.SceneManagement.Scene scene, GameObject prefab, params string[] names)
+        {
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                bool generated = System.Array.IndexOf(names, root.name) >= 0
+                                 || (prefab != null && PrefabUtility.GetCorrespondingObjectFromSource(root) == prefab);
+                if (generated)
+                    Object.DestroyImmediate(root);
+            }
+        }
+
+        /// <summary>
+        /// First build: creates the scene with a test level and spawn points. Later builds open it and only replace the
+        /// generated objects (NetworkManager, GameBootstrap, HUD, EventSystem, post-process volume): the level is never touched.
+        /// </summary>
         private static void BuildScene(GameObject playerPrefab, NetworkPrefabsList prefabList, GameObject gameSystems, GameObject hud)
         {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+            var scene = OpenOrCreateScene(ScenePath, out bool created);
+            RemoveGeneratedRoots(scene, hud, "NetworkManager", "GameBootstrap", "EventSystem", hud.name);
 
-            var mainCam = Camera.main;
-            if (mainCam != null)
+            if (created)
             {
-                Object.DestroyImmediate(mainCam.GetComponent<AudioListener>());
-                mainCam.transform.SetPositionAndRotation(new Vector3(0f, 25f, -30f), Quaternion.Euler(40f, 0f, 0f));
-            }
+                var mainCam = Camera.main;
+                if (mainCam != null)
+                {
+                    Object.DestroyImmediate(mainCam.GetComponent<AudioListener>());
+                    mainCam.transform.SetPositionAndRotation(new Vector3(0f, 25f, -30f), Quaternion.Euler(40f, 0f, 0f));
+                }
 
-            BuildLevel();
+                BuildLevel();
 
-            var spawns = new GameObject("PlayerSpawns");
-            for (int i = 0; i < 4; i++)
-            {
-                var point = new GameObject($"Spawn_{i}");
-                point.transform.SetParent(spawns.transform);
-                point.transform.position = new Vector3((i - 1.5f) * 2.5f, 0.1f, -3f);
-                point.AddComponent<PlayerSpawnPoint>();
+                var spawns = new GameObject("PlayerSpawns");
+                for (int i = 0; i < 4; i++)
+                {
+                    var point = new GameObject($"Spawn_{i}");
+                    point.transform.SetParent(spawns.transform);
+                    point.transform.position = new Vector3((i - 1.5f) * 2.5f, 0.1f, -3f);
+                    point.AddComponent<PlayerSpawnPoint>();
+                }
             }
 
             var netGo = new GameObject("NetworkManager");
@@ -2138,7 +2169,7 @@ namespace RiskOfMagic.Editor
                 list.GetArrayElementAtIndex(0).objectReferenceValue = gameSystems.GetComponent<NetworkObject>();
             });
 
-            PrefabUtility.InstantiatePrefab(hud);
+            PrefabUtility.InstantiatePrefab(hud, scene);
             new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
 
             PostProcessBuilder.AddVolumes(scene, "Prototype");
