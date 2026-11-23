@@ -28,8 +28,8 @@ MonoBehaviour:
   movementStyle: 2
   flankRadius: 6
   flankAngle: {x: 100, y: 160}
-  kiteRange: {x: 8, y: 20}
-  retreatDistance: 7
+  kiteRange: {x: 3, y: 14}
+  retreatDistance: 4
   wanderRadius: 6
   wanderSpeedMultiplier: 0.4
   goldReward: 150

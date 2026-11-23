@@ -1914,8 +1914,8 @@ namespace RiskOfMagic.Editor
         {
             var def = BossDef("Boss_SpiderQueen", "Reine araignée", health: 1300f, speed: 5f, feminine: true);
             def.movementStyle = EnemyMovementStyle.Kite;
-            def.kiteRange = new Vector2(8f, 20f);
-            def.retreatDistance = 7f;
+            def.kiteRange = new Vector2(3f, 14f); // fights close: lunges, only backs off when hugged
+            def.retreatDistance = 4f;
             EditorUtility.SetDirty(def);
             var root = EnemyBase("Boss_SpiderQueen", def, new Color(0.3f, 0.12f, 0.35f), out _);
             root.transform.localScale = Vector3.one * 1.8f;
