@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Druid_VineWhip
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.WhipSkill
   displayName: Fouet de liane
-  description: "Fouet \xE0 14 m : 120% + saignement (cumulable)."
+  description: "Fouet \xE0 14 m : 80% + saignement (cumulable)."
   icon: {fileID: 21300000, guid: 240cd37c2acc0a6489aa01993e78d981, type: 3}
   activationMode: 1
   cooldown: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
   ownerCameraTrauma: 0
   range: 14
   radius: 0.45
-  damageCoefficient: 1.2
+  damageCoefficient: 0.8
   damageType: 0
   dot: {fileID: 11400000, guid: e49438e4e59c6574cb055f258d6a0e29, type: 2}
   obstacleMask:

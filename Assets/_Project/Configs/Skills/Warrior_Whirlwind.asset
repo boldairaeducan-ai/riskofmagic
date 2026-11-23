@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Warrior_Whirlwind
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Tourbillon
-  description: 3 coups circulaires. 90% chacun.
+  description: 3 coups circulaires. 120% chacun.
   icon: {fileID: 21300000, guid: f30d24ae22e16d847909033c850ab569, type: 3}
   activationMode: 0
   cooldown: 7
@@ -36,7 +36,7 @@ MonoBehaviour:
   radius: 4
   followCaster: 1
   damageType: 0
-  damageCoefficient: 0.9
+  damageCoefficient: 1.2
   ticks: 3
   initialDelay: 0
   tickInterval: 0.2

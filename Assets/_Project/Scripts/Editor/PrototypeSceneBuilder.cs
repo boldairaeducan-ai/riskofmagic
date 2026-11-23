@@ -339,13 +339,13 @@ namespace RiskOfMagic.Editor
 
             set.Poison = Asset<DotEffect>(ProjectilesFolder + "/Dot_Poison.asset");
             set.Poison.damageType = DamageType.Poison;
-            // Poison: 0.6 % max health/s per stack (max 15 = 9 %/s), refreshed by every application;
+            // Poison: 0.4 % max health/s per stack (max 10 = 4 %/s), refreshed by every application;
             // half on bosses / elites, reduced on players (0.5 %/s, max 4).
             set.Poison.tickDamageFraction = 0.25f; // unused in % max health mode
             set.Poison.tickInterval = 0.5f;
             set.Poison.duration = 6f;
-            set.Poison.maxStacks = 15;
-            set.Poison.maxHealthPerSecond = 0.006f;
+            set.Poison.maxStacks = 10;
+            set.Poison.maxHealthPerSecond = 0.004f;
             set.Poison.bossAndEliteFactor = 0.5f;
             set.Poison.playerMaxHealthPerSecond = 0.005f;
             set.Poison.playerMaxStacks = 4;
@@ -456,14 +456,14 @@ namespace RiskOfMagic.Editor
             roll.ownerFovKick = 10f;
             roll.ownerFovKickDuration = 0.3f;
 
-            var rain = Skill<AreaSkill>("Archer_ArrowRain", "Pluie de flèches", "Zone ciblée frappée 6 fois. 60% par impact.",
+            var rain = Skill<AreaSkill>("Archer_ArrowRain", "Pluie de flèches", "Zone ciblée frappée 8 fois. 75% par impact.",
                 SkillActivationMode.Press, cooldown: 15f, cast: 0.4f);
             rain.center = AreaCenter.AimPoint;
             rain.maxRange = 50f;
             rain.radius = 5f;
-            rain.damageCoefficient = 0.6f;
-            rain.ticks = 6;
-            rain.tickInterval = 0.3f;
+            rain.damageCoefficient = 0.75f;
+            rain.ticks = 8;
+            rain.tickInterval = 0.25f;
             rain.initialDelay = 0.4f;
             rain.tickVfx = vfx.Area;
 
@@ -478,13 +478,13 @@ namespace RiskOfMagic.Editor
                 new MeleeComboSkill.Step { damageCoefficient = 2f, radius = 2.2f, reach = 1.8f, hitDelay = 0.15f, lunge = 6f }
             };
 
-            var whirlwind = Skill<AreaSkill>("Warrior_Whirlwind", "Tourbillon", "3 coups circulaires. 90% chacun.",
+            var whirlwind = Skill<AreaSkill>("Warrior_Whirlwind", "Tourbillon", "3 coups circulaires. 120% chacun.",
                 SkillActivationMode.Press, cooldown: 7f, cast: 0.6f);
             whirlwind.center = AreaCenter.Caster;
             whirlwind.radius = 4f;
             whirlwind.ticks = 3;
             whirlwind.tickInterval = 0.2f;
-            whirlwind.damageCoefficient = 0.9f;
+            whirlwind.damageCoefficient = 1.2f;
             whirlwind.tickVfx = vfx.Area;
             whirlwind.ownerCameraTrauma = 0.1f;
 
@@ -500,13 +500,13 @@ namespace RiskOfMagic.Editor
             charge.ownerFovKickDuration = 0.4f;
             charge.ownerCameraTrauma = 0.15f;
 
-            var slam = Skill<AreaSkill>("Warrior_SeismicSlam", "Frappe sismique", "Bond puis onde de choc. 400%.",
+            var slam = Skill<AreaSkill>("Warrior_SeismicSlam", "Frappe sismique", "Bond puis onde de choc. 600%.",
                 SkillActivationMode.Press, cooldown: 15f, cast: 0.5f);
             slam.center = AreaCenter.Caster;
             slam.radius = 7f;
             slam.ticks = 1;
             slam.initialDelay = 0.35f;
-            slam.damageCoefficient = 4f;
+            slam.damageCoefficient = 6f;
             slam.hitOncePerTarget = true;
             slam.casterUpwardVelocity = 6f;
             slam.tickVfx = vfx.Area;
@@ -515,7 +515,7 @@ namespace RiskOfMagic.Editor
             // Arcanist
             var volley = Skill<HomingVolleySkill>("Arcanist_ArcaneVolley", "Projectile magique",
                 "Charger pour acquérir jusqu'à 6 cibles (un ennemi peut être ciblé plusieurs fois). 110% par projectile.",
-                SkillActivationMode.Charge, cooldown: 0f, cast: 0.25f, attackSpeed: true);
+                SkillActivationMode.Charge, cooldown: 0f, cast: 0.45f, attackSpeed: true);
             volley.projectile = p.ArcaneBolt;
             volley.maxTargets = 6;
             volley.maxChargeTime = 1.5f;
@@ -558,10 +558,10 @@ namespace RiskOfMagic.Editor
             var natureBurn = Dot("Dot_Burn", DamageType.Fire, tickFraction: 0.25f, interval: 0.5f, duration: 3f, maxStacks: 10);
 
             var vineWhip = Skill<WhipSkill>("Druid_VineWhip", "Fouet de liane",
-                "Fouet à 14 m : 120% + saignement (cumulable).",
+                "Fouet à 14 m : 80% + saignement (cumulable).",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.55f, attackSpeed: true);
             vineWhip.range = 14f;
-            vineWhip.damageCoefficient = 1.2f;
+            vineWhip.damageCoefficient = 0.8f;
             vineWhip.dot = natureBleed;
             vineWhip.lashVfx = vfx.VineWhip;
             vineWhip.hitVfx = vfx.Impact;
@@ -727,11 +727,11 @@ namespace RiskOfMagic.Editor
             EditorUtility.SetDirty(p.FireArrow);
 
             // Archer
-            var fireArrows = Skill<ProjectileSkill>("Archer_FanShot", "Tir en éventail", "3 flèches en arc : 3 × 60%.",
+            var fireArrows = Skill<ProjectileSkill>("Archer_FanShot", "Tir en éventail", "3 flèches en arc : 3 × 50%.",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.4f, attackSpeed: true);
             fireArrows.projectile = p.Arrow;
             fireArrows.damageType = DamageType.Physical;
-            fireArrows.damageCoefficient = 0.6f;
+            fireArrows.damageCoefficient = 0.5f;
             fireArrows.count = 3;
             fireArrows.spreadAngle = 18f;
 
@@ -812,7 +812,7 @@ namespace RiskOfMagic.Editor
 
             // Arcanist
             var shards = Skill<ProjectileSkill>("Arcanist_ArcaneShards", "Éclats arcaniques", "Rafale de 3 projectiles rapides : 3 × 60%.",
-                SkillActivationMode.Hold, cooldown: 0f, cast: 0.45f, attackSpeed: true);
+                SkillActivationMode.Hold, cooldown: 0f, cast: 0.6f, attackSpeed: true);
             shards.projectile = p.ArcaneShard;
             shards.damageType = DamageType.Arcane;
             shards.damageCoefficient = 0.6f;
@@ -834,12 +834,12 @@ namespace RiskOfMagic.Editor
             transfer.keepsSprint = true;
 
             var voidBeam = Skill<BeamSkill>("Arcanist_VoidBeam", "Rayon du néant",
-                "Rayon de 3 s qui traverse les ennemis : 80% 8 fois par seconde. Chaque tick déclenche les objets (coef. 0,5). Ralentit de 50%.",
+                "Rayon de 3 s qui traverse les ennemis : 45% 8 fois par seconde. Chaque tick déclenche les objets (coef. 0,5). Ralentit de 50%.",
                 SkillActivationMode.Press, cooldown: 12f, cast: 0.3f);
             voidBeam.range = 40f;
             voidBeam.duration = 3f;
             voidBeam.ticksPerSecond = 8f;
-            voidBeam.damageCoefficientPerTick = 0.8f;
+            voidBeam.damageCoefficientPerTick = 0.45f;
             voidBeam.procCoefficient = 0.5f;
             voidBeam.beamVfx = vfx.VoidBeam;
             voidBeam.impactVfx = vfx.ArcaneBurst;
@@ -893,7 +893,7 @@ namespace RiskOfMagic.Editor
 
             // Paladin
             var radiant = Skill<MeleeComboSkill>("Paladin_RadiantBlade", "Lame radieuse",
-                "3 coups (90/90/150%) ; le 3e projette une onde de lumière perforante (8 m, 150%).",
+                "3 coups (90/90/150%) ; le 3e projette une onde de lumière perforante (8 m, 100%).",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.45f, attackSpeed: true);
             radiant.damageType = DamageType.Holy;
             radiant.swingVfx = vfx.Swing;
@@ -902,7 +902,7 @@ namespace RiskOfMagic.Editor
             {
                 new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.7f, reach = 1.7f, hitDelay = 0.1f },
                 new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.7f, reach = 1.7f, hitDelay = 0.1f },
-                new MeleeComboSkill.Step { damageCoefficient = 1.5f, radius = 2f, reach = 1.8f, hitDelay = 0.12f, projectile = p.RadiantWave, projectileCoefficient = 1.5f }
+                new MeleeComboSkill.Step { damageCoefficient = 1.5f, radius = 2f, reach = 1.8f, hitDelay = 0.12f, projectile = p.RadiantWave, projectileCoefficient = 1f }
             };
 
             var shieldThrow = Skill<ChainLightningSkill>("Paladin_ShieldThrow", "Bouclier projeté", "Le bouclier ricoche sur 4 ennemis : 200% chacun.",

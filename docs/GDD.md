@@ -61,19 +61,19 @@ Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire)
 
 | Emplacement | Base | Alternative |
 | --- | --- | --- |
-| Clic gauche | Tir rapide : 100 % en continu | Tir en éventail : 3 × 60 % |
+| Clic gauche | Tir rapide : 100 % en continu | Tir en éventail : 3 × 50 % |
 | Clic droit | Flèche perforante [6 s] : chargée, 150-500 %, traverse | Bolas [7 s] : chargés, 1 à 4 cibles en cône de 18 m, 150 %, −50 % de vitesse 3 s |
 | Utilitaire | Roulade [5 s] | Bond arrière [6 s] : 12 m, repousse |
-| Spéciale | Pluie de flèches [15 s] : 6 × 60 % en zone | Volée explosive [12 s] : 3 × 250 % dans 4 m |
+| Spéciale | Pluie de flèches [15 s] : 8 × 75 % en zone | Volée explosive [12 s] : 3 × 250 % dans 4 m |
 
 ### Guerrier
 
 | Emplacement | Base | Alternative |
 | --- | --- | --- |
 | Clic gauche | Combo d'épée : 100/100/200 % | Marteau de guerre : 2 × 250 % en zone de 3 m, repousse |
-| Clic droit | Tourbillon [7 s] : 3 × 90 % | Hache de jet [6 s] : 300 %, perforante |
+| Clic droit | Tourbillon [7 s] : 3 × 120 % | Hache de jet [6 s] : 300 %, perforante |
 | Utilitaire | Charge [8 s] : 200 % aux ennemis percutés | Parade [8 s] : bloque 100 % 1 s, contre-attaque 200 % |
-| Spéciale | Frappe sismique [15 s] : bond + onde 400 % | Cri de guerre [20 s] : alliés à 15 m, +40 % vitesses 6 s, +20 PV |
+| Spéciale | Frappe sismique [15 s] : bond + onde 600 % | Cri de guerre [20 s] : alliés à 15 m, +40 % vitesses 6 s, +20 PV |
 
 ### Arcaniste
 
@@ -82,7 +82,7 @@ Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire)
 | Clic gauche | Projectile magique : chargé, jusqu'à 6 cibles, 110 % chacune | Éclats arcaniques : 3 × 60 % |
 | Clic droit | Explosion arcanique [6 s] : 200 % autour, repousse | Orbe de givre [7 s] : 300 % dans 4 m, gèle 2 s |
 | Utilitaire | Bouclier arcanique [10 s] : bloque 95 % 3 s | Transfert [7 s] : téléportation 15 m |
-| Spéciale | Blocage temporel [14 s] : fige les ennemis devant soi 4 s | Rayon du néant [12 s] : 3 s, 8 × 80 %/s, traverse |
+| Spéciale | Blocage temporel [14 s] : fige les ennemis devant soi 4 s | Rayon du néant [12 s] : 3 s, 8 × 45 %/s, traverse |
 
 ### Druide
 
@@ -90,7 +90,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 | Emplacement | Base | Alternative |
 | --- | --- | --- |
-| Clic gauche | Fouet de liane : 14 m, 120 % + saignement | Épines : 70 % + poison |
+| Clic gauche | Fouet de liane : 14 m, 80 % + saignement | Épines : 70 % + poison |
 | Clic droit | Appel de la foudre [7 s] : 320 % dans 5 m, étourdit 0,8 s | Nuage toxique [8 s] : 5 s, 30 %/tick + poison |
 | Utilitaire | Envol de corbeaux [9 s] : 1,5 s invulnérable, +60 % de vitesse, flotte | Racines vénéneuses [10 s] : enracine 2 s à 8 m, 50 % + poison |
 | Spéciale | Souffle enflammé [12 s] : 2,5 s, cône 10 m, 10 × 45 % + brûlure | Floraison fatale [10 s] : fait éclater les poisons à 25 m, 150 % du reste |
@@ -99,7 +99,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 | Emplacement | Base | Alternative |
 | --- | --- | --- |
-| Clic gauche | Marteau béni : 120/180 %, soigne 3 PV aux alliés à 10 m | Lame radieuse : 90/90/150 %, onde perforante 150 % |
+| Clic gauche | Marteau béni : 120/180 %, soigne 3 PV aux alliés à 10 m | Lame radieuse : 90/90/150 %, onde perforante 100 % |
 | Clic droit | Jugement [6 s] : 300 %, étourdit 1 s | Bouclier projeté [6 s] : ricoche sur 4 ennemis, 200 % |
 | Utilitaire | Égide [12 s] : −50 % de dégâts subis, alliés à 10 m, 4 s | Charge du croisé [8 s] : 12 m, 200 %, soigne 10 % les alliés |
 | Spéciale | Sol consacré [18 s] : 8 m, 6 s, alliés +5 % PV/s, ennemis 60 %/s | Intervention divine [60 s] : relève les alliés à 30 m (50 % PV) |
@@ -236,8 +236,35 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Gelé | −30 % de vitesse |
 | Enraciné | Immobile, peut attaquer |
 | Figé / étourdi | Ni déplacement ni attaque |
-| Poison | % des PV max par seconde et par cumul (réduit sur boss, élites, joueurs) |
-| Saignement / Brûlure | Dégâts sur 3 s, cumulables (20 / 10 cumuls max) |
+| Poison, saignement, brûlure | Dégâts sur la durée, voir ci-dessous |
+
+### Dégâts sur la durée (DoT)
+
+Chaque application ajoute **un cumul** indépendant, avec sa propre durée. Les cumuls d'un même effet posés par un même
+joueur sur une même cible tiquent ensemble, toutes les 0,5 s.
+
+| Effet | Dégâts par tick | Durée | Cumuls max | Au plafond | Sources |
+| --- | --- | --- | --- | --- | --- |
+| Saignement | 40 % du coup qui l'applique | 3 s | 20 | Le plus ancien cumul est remplacé | Fouet de liane, Dague barbelée |
+| Brûlure | 25 % du coup | 3 s | 10 | Le plus ancien cumul est remplacé | Souffle enflammé, Orbe de feu, élite Ardente, Drake de braise |
+| Poison | 0,4 % des PV max de la cible par seconde | 6 s | 10 | Tous les cumuls sont rafraîchis | Épines, Nuage toxique, Racines vénéneuses, Reine araignée (crachat) |
+
+Sur toute sa durée, un cumul inflige donc 2,4 × le coup (saignement), 1,5 × le coup (brûlure) ou 2,4 % des PV max
+(poison).
+
+Règles :
+- Saignement et brûlure **suivent les dégâts du coup** : stats, niveau, objets et critique comptent au moment de
+  l'application. Les ticks eux-mêmes ne sont jamais critiques.
+- Le poison **ignore les dégâts du lanceur** : il dépend des PV max de la cible, donc il reste efficace contre les gros
+  ennemis. En contrepartie :
+  - il est **divisé par 2 sur les boss et les élites** (2 %/s au plafond, contre 4 %/s sur un ennemi normal) ;
+  - sur un joueur, il est limité à 0,5 % par seconde et 4 cumuls ;
+  - chaque nouvelle application **rafraîchit tous les cumuls** : il faut continuer à toucher pour l'entretenir.
+- Les ticks ne déclenchent **aucun effet d'objet** (coefficient de déclenchement 0) ; ils passent par la réduction de
+  dégâts normale de la cible.
+- **Floraison fatale** consomme tous les poisons à 25 m et inflige d'un coup 150 % des dégâts qu'il leur restait.
+- **Lisibilité** : la cible prend la teinte du DoT. Les icônes au-dessus des ennemis (masquées derrière les murs)
+  affichent les DoT actifs, avec le nombre de cumuls sur les boss.
 
 ## Économie et progression
 

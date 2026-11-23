@@ -19,7 +19,7 @@ MonoBehaviour:
   activationMode: 2
   cooldown: 0
   maxStock: 1
-  castDuration: 0.25
+  castDuration: 0.45
   scalesWithAttackSpeed: 1
   canCastWhileBusy: 0
   keepsSprint: 0

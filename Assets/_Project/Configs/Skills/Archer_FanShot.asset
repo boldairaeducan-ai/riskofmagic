@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Archer_FanShot
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: "Tir en \xE9ventail"
-  description: "3 fl\xE8ches en arc : 3 \xD7 60%."
+  description: "3 fl\xE8ches en arc : 3 \xD7 50%."
   icon: {fileID: 21300000, guid: 02dbc847c1ebc7b45b05b09bb8bda7f3, type: 3}
   activationMode: 1
   cooldown: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
   ownerCameraTrauma: 0
   projectile: {fileID: 11400000, guid: 22860390e4810974ca92c0c900e1c68e, type: 2}
   damageType: 0
-  damageCoefficient: 0.6
+  damageCoefficient: 0.5
   count: 3
   spreadAngle: 18
   muzzleOffset: {x: 0.25, y: -0.2, z: 0.5}

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Warrior_SeismicSlam
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.AreaSkill
   displayName: Frappe sismique
-  description: Bond puis onde de choc. 400%.
+  description: Bond puis onde de choc. 600%.
   icon: {fileID: 21300000, guid: aa017396a83df3347a6a0ddc4a1ec837, type: 3}
   activationMode: 0
   cooldown: 15
@@ -36,7 +36,7 @@ MonoBehaviour:
   radius: 7
   followCaster: 1
   damageType: 0
-  damageCoefficient: 4
+  damageCoefficient: 6
   ticks: 1
   initialDelay: 0.35
   tickInterval: 0.2
