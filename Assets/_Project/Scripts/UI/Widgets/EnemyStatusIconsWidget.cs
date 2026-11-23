@@ -97,7 +97,11 @@ namespace RiskOfMagic.UI
                         if (used >= row.Icons.Length)
                             break;
                         if (art != null && art.aboveEnemies && enemy.Status.Has(art.status))
+                        {
+                            // Paladin seals: the count matters on every enemy (1-3 before the Judgment).
+                            SetCount(row, used, art.status == RiskOfMagic.Combat.StatusType.Sealed ? enemy.Status.GetStacks(art.status) : 0);
                             SetIcon(row, used++, art.icon, theme != null ? theme.textMutedColor : Color.gray, art.name);
+                        }
                     }
                 for (int i = used; i < row.Icons.Length; i++)
                     row.Icons[i].gameObject.SetActive(false);
