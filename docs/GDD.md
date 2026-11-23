@@ -187,7 +187,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 ## Ennemis
 
-8 ennemis courants, 4 boss de téléporteur et 5 boss secrets. Les PV montent de 30 % et les dégâts de 20 % par niveau d'ennemi ; les boss ont +50 % de PV par joueur au-delà du premier ; les ennemis courants frappent ×1,15 plus fort et ×1,3 plus souvent.
+8 ennemis courants, 4 boss de téléporteur et 5 boss secrets. Les PV montent de 40 % et les dégâts de 20 % par niveau d'ennemi ; les boss ont +50 % de PV par joueur au-delà du premier ; les ennemis courants frappent ×1,15 plus fort et ×1,3 plus souvent.
 
 ### Ennemis courants
 

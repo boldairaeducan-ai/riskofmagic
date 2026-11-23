@@ -20,7 +20,7 @@ MonoBehaviour:
   acceleration: 20
   angularSpeed: 540
   controlResistance: 0
-  healthPerLevel: 0.3
+  healthPerLevel: 0.4
   damagePerLevel: 0.2
   detectionRange: 49
   requireLineOfSight: 0

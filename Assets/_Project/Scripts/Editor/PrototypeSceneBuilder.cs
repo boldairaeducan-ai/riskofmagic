@@ -1981,7 +1981,7 @@ namespace RiskOfMagic.Editor
             def.detectionRange = detection;
             def.isBoss = false;
             def.movementStyle = EnemyMovementStyle.Direct;
-            def.healthPerLevel = 0.3f; // same as RoR2
+            def.healthPerLevel = 0.4f; // RoR2: 0.3; our levels are slower (see RunDifficulty)
             def.damagePerLevel = 0.2f;
             def.flankRadius = 6f;
             def.flankAngle = new Vector2(100f, 160f);
