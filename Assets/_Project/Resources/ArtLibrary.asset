@@ -213,7 +213,7 @@ MonoBehaviour:
     scale: 1
     lifetime: 0
   - name: VFX_Lightning
-    model: {fileID: 5370805351732007781, guid: 544f549c20707744d88094a830b7f408, type: 3}
+    model: {fileID: 0}
     keepPlaceholder: 0
     offset: {x: 0, y: 0, z: 0}
     rotation: {x: 0, y: 0, z: 0}
