@@ -20,6 +20,8 @@ namespace RiskOfMagic.Combat
         [Range(0f, 1f), Tooltip("Bosses and elites take this fraction of it.")] public float bossAndEliteFactor = 0.5f;
         [Min(0f), Tooltip("On players (enemy poison): max health per second per stack.")] public float playerMaxHealthPerSecond = 0.005f;
         [Min(1)] public int playerMaxStacks = 4;
+        [Min(0f), Tooltip("Floor per stack on enemies, in the attacker's base damage per second (0.4 = 40%/s). Needs a player attacker.")]
+        public float minBaseDamagePerSecond;
         [Tooltip("Each new application refreshes the duration of every stack (keep attacking to keep it going).")]
         public bool refreshAllStacks;
     }

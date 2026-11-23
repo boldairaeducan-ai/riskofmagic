@@ -57,6 +57,10 @@ namespace RiskOfMagic.Combat
                 else if (target.TryGetComponent(out RiskOfMagic.Enemies.EnemyActor enemy) && (enemy.IsBoss || enemy.IsElite))
                     perSecond *= effect.bossAndEliteFactor;
                 tick.Amount = Mathf.Max(0.01f, target.Max * perSecond * effect.tickInterval);
+                // Floor (RoR2-like): small enemies still die to poison.
+                if (effect.minBaseDamagePerSecond > 0f && !target.TryGetComponent(out RiskOfMagic.Player.PlayerAvatar _)
+                    && hit.TryGetSource(out var source) && source.TryGetComponent(out RiskOfMagic.Characters.CharacterStats stats))
+                    tick.Amount = Mathf.Max(tick.Amount, stats.BaseDamage * effect.minBaseDamagePerSecond * effect.tickInterval);
             }
             else
                 tick.Amount = hit.Amount * effect.tickDamageFraction;

@@ -261,7 +261,9 @@ Règles :
   ennemis. En contrepartie :
   - il est **divisé par 2 sur les boss et les élites** (2 %/s au plafond, contre 4 %/s sur un ennemi normal) ;
   - sur un joueur, il est limité à 0,5 % par seconde et 4 cumuls ;
-  - chaque nouvelle application **rafraîchit tous les cumuls** : il faut continuer à toucher pour l'entretenir.
+  - chaque nouvelle application **rafraîchit tous les cumuls** : il faut continuer à toucher pour l'entretenir ;
+  - **plancher** : au moins 40 % des dégâts de base du lanceur par seconde et par cumul, pour que le poison reste
+    efficace contre les petits ennemis (hors joueurs).
 - Les ticks ne déclenchent **aucun effet d'objet** (coefficient de déclenchement 0) ; ils passent par la réduction de
   dégâts normale de la cible.
 - **Floraison fatale** consomme tous les poisons à 25 m et inflige d'un coup 150 % des dégâts qu'il leur restait.

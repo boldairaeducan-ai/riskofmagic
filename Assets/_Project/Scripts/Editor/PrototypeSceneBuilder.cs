@@ -350,6 +350,7 @@ namespace RiskOfMagic.Editor
             set.Poison.playerMaxHealthPerSecond = 0.005f;
             set.Poison.playerMaxStacks = 4;
             set.Poison.refreshAllStacks = true;
+            set.Poison.minBaseDamagePerSecond = 0.4f; // floor per stack: 40% of the attacker base damage per second
             EditorUtility.SetDirty(set.Poison);
 
             Configure(set.PoisonDart, speed: 75f, gravity: 3f, lifetime: 2f, radius: 0.12f);
