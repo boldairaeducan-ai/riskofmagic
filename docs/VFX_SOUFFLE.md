@@ -43,12 +43,14 @@ Règles :
    - Construis-le **à l'échelle réelle** : le jet atteint ~10 m. Une propriété `Range` permet de l'ajuster.
 2. Glisse le graph (section 3) dans le prefab : un enfant avec le composant *Visual Effect*.
    *Initial Event Name* = `OnPlay`.
-3. Espace des systèmes : **World** (bouton *Local / World* en haut à droite de chaque contexte).
-   - En **World**, les particules déjà émises restent où elles sont quand le joueur tourne : le jet **se courbe**
-     naturellement, comme un vrai jet de flammes ou d'eau.
-   - En *Local*, tout le cône tourne d'un bloc avec la caméra (plus « arcade », moins crédible).
-   - En World, mets *Bounds Mode* = **Automatic** sur chaque *Initialize* : des bounds manuels seraient en
-     coordonnées monde et ne suivraient pas le joueur.
+3. Espace des systèmes : **Local** (bouton *Local / World* en haut à droite de chaque contexte).
+   - En **Local**, tout le jet tourne d'un bloc avec le lanceur : il part toujours dans la bonne direction, en vue à
+     la première personne comme vu par un allié.
+   - **World** courberait le jet quand le joueur tourne, mais une vitesse calculée par des opérateurs (D × S) y est
+     lue **en coordonnées monde** : le bouton L de l'entrée *Velocity* est ignoré dès qu'elle est branchée, et le jet
+     part toujours vers le +Z du monde. Pour l'utiliser quand même, insère un opérateur *Vector* (*Inline*, pas
+     *Vector3*) réglé sur **L** juste avant chaque *Set Velocity*.
+   - Mets *Bounds Mode* = **Automatic** sur chaque *Initialize*.
 4. Durée : l'effet **boucle** tant qu'on ne l'arrête pas. Le code l'arrêtera avec l'événement `OnStop` à la fin de
    la canalisation : l'émission cesse, les particules déjà émises finissent leur vie (~1,5 s), puis l'objet est recyclé.
 
@@ -132,8 +134,8 @@ D × S donne une vitesse vers l'avant (+Z), dispersée dans le cône. Chaque sys
 facteur (ex. « vitesse = D × S × 0,8 »).
 
 > **Espace des entrées** : sur *Set Velocity* et *Set Position*, le petit bouton **L / W** à gauche de l'entrée doit
-> être sur **L** (Local) : la direction +Z est alors celle du prefab (là où regarde le joueur), même si le système
-> est en World.
+> être sur **L** (Local). Attention : une entrée **branchée** sur des opérateurs sans espace (*Vector3*, *Multiply*…)
+> prend l'espace du système, quel que soit ce bouton. D'où les systèmes en Local (§ 2).
 
 ### 3.2 Flammes (le corps du jet)
 
@@ -144,7 +146,7 @@ facteur (ex. « vitesse = D × S × 0,8 »).
 - *Constant Spawn Rate* : *Rate* = 220 × `Intensity`.
 - Ne touche pas aux entrées *Start* / *Stop* du contexte : par défaut `OnPlay` démarre, `OnStop` arrête.
 
-**Initialize Particle** (*Capacity* 200, *Bounds Mode* Automatic, espace World)
+**Initialize Particle** (*Capacity* 200, *Bounds Mode* Automatic, espace Local)
 
 | Bloc | Valeur |
 |---|---|
@@ -251,7 +253,7 @@ C'est coûteux et facultatif : à garder pour la fin.
 
 - *Play Controls* (overlay de la *Scene View*) → **Play Rate 0,1** pour régler le dégradé au ralenti ; **Stop** pour
   vérifier que le jet s'éteint proprement (fin de canalisation).
-- Pour tester la courbure en World, déplace ou tourne l'objet dans la scène pendant que l'effet joue.
+- Pour tester l'orientation, tourne l'objet dans la scène pendant que l'effet joue : le jet doit suivre son +Z.
 - Total : ~450 particules par joueur, 4 joueurs = ~1 800. C'est négligeable pour le VFX Graph.
 - Tout est **trop blanc** ? Le lien `Tint` (§ 3.0) manque, ou les intensités HDR sont trop hautes : baisse d'abord
   celle du cœur.
@@ -288,7 +290,7 @@ Arrêt : `ParticleSystem.Stop()` sur la racine (*Stop Emitting*) laisse les part
 ## 6. Checklist
 
 - [ ] `Tint` relié à *color* + *alpha* sur **toutes** les sorties.
-- [ ] Systèmes en **World**, entrées *Position* / *Velocity* en **L**, *Bounds Mode* **Automatic**.
+- [ ] Systèmes en **Local**, entrées *Position* / *Velocity* en **L**, *Bounds Mode* **Automatic**.
 - [ ] Les propriétés du *Blackboard* ont leur valeur par défaut (pas 0).
 - [ ] *Stop* dans les *Play Controls* : le jet s'éteint en ~1,5 s sans coupure.
 - [ ] La fumée est derrière les flammes (*Sorting Priority* −1).
