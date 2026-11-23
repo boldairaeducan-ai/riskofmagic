@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 728bfcaffc0b2fb43b1681183fe17629, type: 3}
+  m_Name: Item_StickyResin
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Items.Types.SlowOnHitItem
+  displayName: "R\xE9sine collante"
+  description: "Chaque coup ralentit la cible de 10% (+10%) pendant 2 s, jusqu'\xE0
+    50%."
+  rarity: 1
+  pickupSound: {fileID: 0}
+  icon: {fileID: 0}
+  modifiers: []
+  maxStacks: 5
+  duration: 2

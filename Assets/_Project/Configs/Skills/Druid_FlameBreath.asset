@@ -42,3 +42,6 @@ MonoBehaviour:
   dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
   tickVfx: {fileID: 0}
   tickVfxScale: 0.35
+  channelVfx: {fileID: 7603255517507121383, guid: 26f0953f6f35bf34daf6503c908e5626, type: 3}
+  firstPersonOffset: {x: 0.15, y: -0.35, z: 0.6}
+  thirdPersonOffset: {x: 0, y: -0.15, z: 0.45}

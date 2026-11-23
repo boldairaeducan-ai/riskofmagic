@@ -317,5 +317,5 @@ MonoBehaviour:
       palette: {fileID: 11400000, guid: 99c7de03c7fa1ef4cae4b6cdfb47d8a8, type: 2}
       specificIndex: -1
   showWelcomeScreen: 0
-  projectOpened: 0
+  projectOpened: 1
   applicationClosesSinceAdValue: 5

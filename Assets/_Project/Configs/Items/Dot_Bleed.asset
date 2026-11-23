@@ -21,4 +21,5 @@ MonoBehaviour:
   bossAndEliteFactor: 0.5
   playerMaxHealthPerSecond: 0.005
   playerMaxStacks: 4
+  minBaseDamagePerSecond: 0
   refreshAllStacks: 0

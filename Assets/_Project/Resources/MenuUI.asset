@@ -16,8 +16,12 @@ MonoBehaviour:
   mainMenu: {fileID: 9197481963319205126, guid: b9a53b65468a8e444b62a9ba755b8047, type: 3}
   pauseMenu: {fileID: 9197481963319205126, guid: 8cca52f50644b9c43baa2bae194271b5, type: 3}
   loadingScreen: {fileID: 9197481963319205126, guid: d8e6f80acd0c3bf449490d82af3a741b, type: 3}
+  infoScreen: {fileID: 9197481963319205126, guid: e29cbf29a9e7da84b83c25026fcb07e7, type: 3}
   lobbyCard: {fileID: 9197481963319205126, guid: 4e4ca4161d52231488ea1c0e36235aed, type: 3}
   optionChoice: {fileID: 9197481963319205126, guid: 73f5ec38ff1104f479b6e8584e2857c9, type: 3}
   optionSlider: {fileID: 9197481963319205126, guid: 0ed70acb40a51494d829201fe8ae24b0, type: 3}
   optionToggle: {fileID: 9197481963319205126, guid: b1d1ae3abd7cf2f439974befb5744eab, type: 3}
   optionKey: {fileID: 9197481963319205126, guid: 5706cac78403eab43890c429447c8ad6, type: 3}
+  infoItem: {fileID: 9197481963319205126, guid: a577835e3be324d4b95d5abb05f8e64c, type: 3}
+  infoStat: {fileID: 9197481963319205126, guid: 88807ce6a49821d42aeee317fa45ee1f, type: 3}
+  infoPlayerRow: {fileID: 9197481963319205126, guid: 074e20bbbdc61674fa1f3eda557f2542, type: 3}
