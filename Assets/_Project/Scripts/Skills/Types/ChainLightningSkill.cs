@@ -24,6 +24,13 @@ namespace RiskOfMagic.Skills.Types
         [Header("Feedback")]
         public GameObject boltVfx;
 
+        [Header("Seals (Paladin)")]
+        [Tooltip("Each target hit has its seals detonated (SealSystem) before the bounce damage.")] public bool detonateSeals;
+        [Min(0f)] public float sealDamageCoefficient = 0.8f;
+        [Min(0f)] public float sealHealFraction = 0.05f;
+        [Min(0f)] public float sealHealRadius = 8f;
+        public GameObject sealVfx;
+
         private static readonly RaycastHit[] castHits = new RaycastHit[16];
         private static readonly Collider[] overlaps = new Collider[64];
         private static readonly List<Health> chain = new();
@@ -54,7 +61,10 @@ namespace RiskOfMagic.Skills.Types
             float coefficient = damageCoefficient;
             foreach (var target in chain)
             {
-                target.ApplyDamage(context.CreateDamage(coefficient, damageType, Center(target), activation.Direction));
+                var info = context.CreateDamage(coefficient, damageType, Center(target), activation.Direction);
+                if (detonateSeals)
+                    SealSystem.Detonate(target, info, sealDamageCoefficient, sealHealFraction, sealHealRadius, sealVfx);
+                target.ApplyDamage(info);
                 coefficient *= bounceFalloff;
             }
         }

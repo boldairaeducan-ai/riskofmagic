@@ -40,7 +40,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Swarm of ravens (Envol de corbeaux): faster.</summary>
         RavenForm,
         /// <summary>Slowed by sticky resin (Résine collante): a fraction per stack.</summary>
-        Resin
+        Resin,
+        /// <summary>Paladin seals (1-3), detonated by Judgment / thrown shield (SealSystem).</summary>
+        Sealed
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>

@@ -36,6 +36,10 @@ namespace RiskOfMagic.Skills.Types
         [Tooltip("Hits from behind are guaranteed criticals (per target).")] public bool backstabCritical;
         [Min(0f), Tooltip("Flat heal for allies (caster included) when a swing hits something.")] public float healAlliesOnHit;
         [Min(0f)] public float healRadius = 10f;
+        [Header("Seals (Paladin)")]
+        [Min(0), Tooltip("Seals added to every enemy hit (SealSystem).")] public int sealsPerHit;
+        [Min(1)] public int maxSeals = 3;
+        [Min(0.1f)] public float sealDuration = 8f;
         public GameObject swingVfx;
 
         public override void PrepareActivation(SkillContext context, SkillSlotState state, ref SkillActivation activation)
@@ -72,6 +76,7 @@ namespace RiskOfMagic.Skills.Types
                 yield break;
             Vector3 center = context.Look.CameraPivot.position + direction * step.reach;
             int hits;
+            var hitTargets = sealsPerHit > 0 ? new HashSet<Health>() : null;
             if (backstabCritical)
             {
                 hits = 0;
@@ -83,13 +88,17 @@ namespace RiskOfMagic.Skills.Types
                     target.ApplyDamage(info);
                     if (dot != null)
                         DotSystem.Apply(target, dot, info);
+                    hitTargets?.Add(target);
                     hits++;
                 }
             }
             else
             {
-                hits = context.DamageArea(center, step.radius, step.damageCoefficient, damageType, null, dot);
+                hits = context.DamageArea(center, step.radius, step.damageCoefficient, damageType, hitTargets, dot);
             }
+            if (hitTargets != null)
+                foreach (var sealedTarget in hitTargets)
+                    SealSystem.Apply(sealedTarget, sealsPerHit, maxSeals, sealDuration);
             SkillUtility.Knockback(context, context.Transform.position, step.reach + step.radius, knockbackDistance);
             if (hits > 0 && healAlliesOnHit > 0f)
                 context.HealAllies(context.Transform.position, healRadius, healAlliesOnHit);

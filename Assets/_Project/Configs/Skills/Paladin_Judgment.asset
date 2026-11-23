@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Paladin_Judgment
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Skills.Types.ProjectileSkill
   displayName: Jugement
-  description: "Marteau de lumi\xE8re : 300%, \xE9tourdit 1 s."
+  description: "Marteau de lumi\xE8re : 300%, \xE9tourdit 1 s. Fait \xE9clater les
+    sceaux : +80% par sceau et soigne de 5% par sceau les alli\xE9s \xE0 8 m."
   icon: {fileID: 21300000, guid: 66b19d43466315e4caff1240bfe0da43, type: 3}
   activationMode: 0
   cooldown: 6

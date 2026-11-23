@@ -386,6 +386,8 @@ namespace RiskOfMagic.Editor
             Configure(set.ThrowingDagger, speed: 85f, gravity: 2f, lifetime: 1.5f, radius: 0.12f);
             set.HolyHammer.maxRange = 50f;
             set.HolyHammer.freezeDuration = 1f;
+            set.HolyHammer.detonateSeals = true; // Paladin: Judgment detonates the hammer's seals
+            set.HolyHammer.sealVfx = vfx.RallyPulse;
             set.RadiantWave.maxRange = 8f;
             set.ThrowingDagger.maxRange = 45f;
             set.ThrowingDagger.backstabCritical = true;
@@ -641,12 +643,14 @@ namespace RiskOfMagic.Editor
         {
             // Paladin
             var hammer = Skill<MeleeComboSkill>("Paladin_BlessedHammer", "Marteau béni",
-                "2 coups (120% / 180%) ; chaque coup qui touche soigne de 3 PV les alliés à 10 m.",
+                "2 coups (120% / 180%) ; chaque ennemi touché reçoit un sceau (max 3, 8 s), que le Jugement fait éclater.",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.6f, attackSpeed: true);
             hammer.damageType = DamageType.Holy;
             hammer.swingVfx = vfx.Swing;
-            hammer.healAlliesOnHit = 3f;
-            hammer.healRadius = 10f;
+            hammer.healAlliesOnHit = 0f;
+            hammer.sealsPerHit = 1;
+            hammer.maxSeals = 3;
+            hammer.sealDuration = 8f;
             hammer.comboResetTime = 1.1f;
             hammer.steps = new[]
             {
@@ -654,7 +658,7 @@ namespace RiskOfMagic.Editor
                 new MeleeComboSkill.Step { damageCoefficient = 1.8f, radius = 2.3f, reach = 1.9f, hitDelay = 0.2f, lunge = 3f }
             };
 
-            var judgment = Skill<ProjectileSkill>("Paladin_Judgment", "Jugement", "Marteau de lumière : 300%, étourdit 1 s.",
+            var judgment = Skill<ProjectileSkill>("Paladin_Judgment", "Jugement", "Marteau de lumière : 300%, étourdit 1 s. Fait éclater les sceaux : +80% par sceau et soigne de 5% par sceau les alliés à 8 m.",
                 SkillActivationMode.Press, cooldown: 6f, cast: 0.35f);
             judgment.projectile = p.HolyHammer;
             judgment.damageType = DamageType.Holy;
@@ -720,7 +724,7 @@ namespace RiskOfMagic.Editor
                 EditorUtility.SetDirty(skill);
 
             characters.Add(Character("Character_Paladin", "Paladin", "Soutien de première ligne : soins, protection, dégâts sacrés.",
-                new Color(0.95f, 0.85f, 0.45f), 140f, Movement("Movement_Paladin", 6.6f, 1), hammer, judgment, aegis, consecration));
+                new Color(0.95f, 0.85f, 0.45f), 120f, Movement("Movement_Paladin", 6.6f, 1), hammer, judgment, aegis, consecration));
             characters.Add(Character("Character_Shadow", "Ombre", "Assassin furtif : invisibilité, critiques dans le dos, marque.",
                 new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 8f, 2), daggers, throwing, veil, mark));
         }
@@ -899,12 +903,15 @@ namespace RiskOfMagic.Editor
             SetAlternatives(characters[3], thorns, cloud, venomRoots, bloom);
 
             // Paladin
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Sealed, null, aboveEnemies: true,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_201.png"));
             var radiant = Skill<MeleeComboSkill>("Paladin_RadiantBlade", "Lame radieuse",
-                "3 coups (90/90/150%) ; le 3e projette une onde de lumière perforante (8 m, 100%).",
+                "3 coups (90/90/150%) ; le 3e projette une onde de lumière perforante (8 m, 100%). Chaque coup pose un sceau.",
                 SkillActivationMode.Hold, cooldown: 0f, cast: 0.45f, attackSpeed: true);
             radiant.damageType = DamageType.Holy;
             radiant.swingVfx = vfx.Swing;
             radiant.comboResetTime = 0.9f;
+            radiant.sealsPerHit = 1;
             radiant.steps = new[]
             {
                 new MeleeComboSkill.Step { damageCoefficient = 0.9f, radius = 1.7f, reach = 1.7f, hitDelay = 0.1f },
@@ -912,7 +919,7 @@ namespace RiskOfMagic.Editor
                 new MeleeComboSkill.Step { damageCoefficient = 1.5f, radius = 2f, reach = 1.8f, hitDelay = 0.12f, projectile = p.RadiantWave, projectileCoefficient = 1f }
             };
 
-            var shieldThrow = Skill<ChainLightningSkill>("Paladin_ShieldThrow", "Bouclier projeté", "Le bouclier ricoche sur 4 ennemis : 200% chacun.",
+            var shieldThrow = Skill<ChainLightningSkill>("Paladin_ShieldThrow", "Bouclier projeté", "Le bouclier ricoche sur 4 ennemis : 200% chacun et fait éclater leurs sceaux.",
                 SkillActivationMode.Press, cooldown: 6f, cast: 0.3f);
             shieldThrow.range = 35f;
             shieldThrow.maxBounces = 3;
@@ -921,6 +928,8 @@ namespace RiskOfMagic.Editor
             shieldThrow.damageCoefficient = 2f;
             shieldThrow.bounceFalloff = 1f;
             shieldThrow.boltVfx = vfx.Lightning;
+            shieldThrow.detonateSeals = true;
+            shieldThrow.sealVfx = vfx.RallyPulse;
 
             var crusade = Skill<DashSkill>("Paladin_CrusaderCharge", "Charge du croisé",
                 "Ruée de 12 m : 200% et recul aux ennemis, soigne de 10% les alliés traversés.",

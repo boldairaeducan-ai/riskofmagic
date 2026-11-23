@@ -45,6 +45,7 @@ namespace RiskOfMagic.Editor
             { StatusType.RuneBlessing, ("Bénédiction runique", true, false) },
             { StatusType.Ensnared, ("Entravé", true, true) },
             { StatusType.Resin, ("Résine", true, true) },
+            { StatusType.Sealed, ("Sceau", true, true) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()

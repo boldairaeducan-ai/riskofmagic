@@ -16,8 +16,8 @@ MonoBehaviour:
   description: "Soutien de premi\xE8re ligne : soins, protection, d\xE9g\xE2ts sacr\xE9s."
   bodyColor: {r: 0.95, g: 0.85, b: 0.45, a: 1}
   portrait: {fileID: 0}
-  maxHealth: 140
-  healthRegen: 1
+  maxHealth: 120
+  healthRegen: 0
   baseDamage: 10
   attackSpeed: 1
   critChance: 0.01

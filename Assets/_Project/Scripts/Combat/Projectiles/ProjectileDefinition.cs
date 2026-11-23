@@ -32,5 +32,12 @@ namespace RiskOfMagic.Combat.Projectiles
         [Min(0f), Tooltip("Freezes enemies hit (direct hit and explosion), seconds.")] public float freezeDuration;
         [Tooltip("Direct hits from behind the target are guaranteed criticals.")] public bool backstabCritical;
         [Min(1f), Tooltip("Damage multiplier of a critical direct hit (2 = the normal critical).")] public float criticalMultiplier = 2f;
+
+        [Header("Seals (Paladin)")]
+        [Tooltip("A direct hit detonates the target's seals (SealSystem) before dealing its damage.")] public bool detonateSeals;
+        [Min(0f), Tooltip("Extra damage per seal, in the attacker's damage.")] public float sealDamageCoefficient = 0.8f;
+        [Min(0f), Tooltip("Heal per seal for the players around the target, fraction of their max health.")] public float sealHealFraction = 0.05f;
+        [Min(0f)] public float sealHealRadius = 8f;
+        [Tooltip("Replicated effect at the detonation (must be in the GameCatalog effects).")] public GameObject sealVfx;
     }
 }

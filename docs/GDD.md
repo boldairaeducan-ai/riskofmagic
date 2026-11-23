@@ -52,7 +52,7 @@ Une run enchaîne 5 étapes : chaque carte se termine en chargeant un téléport
 | Guerrier | Mêlée robuste | 130 | 7 | 1 | 0,8 |
 | Arcaniste | Projectiles chercheurs, contrôle | 90 | 7 | 1 | 1 |
 | Druide | Distance, seul à infliger des dégâts sur la durée | 100 | 7,2 | 1 | 0,8 |
-| Paladin | Soutien de première ligne | 140 | 6,6 | 1 | 1 |
+| Paladin | Soutien de première ligne, sceaux | 120 | 6,6 | 1 | 1 |
 | Ombre | Assassin, critiques dans le dos | 85 | 8 | 2 | 1 |
 
 Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire), R (spéciale). Rechargement entre crochets.
@@ -97,10 +97,14 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 ### Paladin
 
+Mécanique : **Sceaux**. Chaque coup de clic gauche pose un sceau sur l'ennemi touché (max 3, 8 s). Le Jugement (ou le
+Bouclier projeté) les fait éclater : +80 % de dégâts par sceau et soin de 5 % des PV max par sceau aux alliés à 8 m.
+Pas de régénération passive.
+
 | Emplacement | Base | Alternative |
 | --- | --- | --- |
-| Clic gauche | Marteau béni : 120/180 %, soigne 3 PV aux alliés à 10 m | Lame radieuse : 90/90/150 %, onde perforante 100 % |
-| Clic droit | Jugement [6 s] : 300 %, étourdit 1 s | Bouclier projeté [6 s] : ricoche sur 4 ennemis, 200 % |
+| Clic gauche | Marteau béni : 120/180 %, pose un sceau | Lame radieuse : 90/90/150 %, onde perforante 100 %, pose un sceau |
+| Clic droit | Jugement [6 s] : 300 %, étourdit 1 s, fait éclater les sceaux | Bouclier projeté [6 s] : ricoche sur 4 ennemis, 200 %, fait éclater leurs sceaux |
 | Utilitaire | Égide [12 s] : −50 % de dégâts subis, alliés à 10 m, 4 s | Charge du croisé [8 s] : 12 m, 200 %, soigne 10 % les alliés |
 | Spéciale | Sol consacré [18 s] : 8 m, 6 s, alliés +5 % PV/s, ennemis 60 %/s | Intervention divine [60 s] : relève les alliés à 30 m (50 % PV) |
 
@@ -236,6 +240,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Entravé (bolas) | −50 % de vitesse (−25 % sur boss et élites) |
 | Gelé | −30 % de vitesse |
 | Enraciné | Immobile, peut attaquer |
+| Sceau | 1 à 3 cumuls posés par le Paladin, éclatés par le Jugement |
 | Résine | −10 % de vitesse par exemplaire de Résine collante du joueur, max −50 % |
 | Figé / étourdi | Ni déplacement ni attaque |
 | Poison, saignement, brûlure | Dégâts sur la durée, voir ci-dessous |

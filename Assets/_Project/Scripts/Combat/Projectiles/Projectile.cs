@@ -120,6 +120,8 @@ namespace RiskOfMagic.Combat.Projectiles
                         }
                         else if (info.IsCritical && !Mathf.Approximately(definition.criticalMultiplier, 2f))
                             info.Amount *= definition.criticalMultiplier / 2f; // rolled criticals are already x2
+                        if (definition.detonateSeals)
+                            SealSystem.Detonate(target.Health, info, definition.sealDamageCoefficient, definition.sealHealFraction, definition.sealHealRadius, definition.sealVfx);
                         target.ApplyDamage(info);
                         if (definition.dot != null)
                             DotSystem.Apply(target.Health, definition.dot, info);
