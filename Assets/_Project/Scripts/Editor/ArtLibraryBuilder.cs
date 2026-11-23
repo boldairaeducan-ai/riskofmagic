@@ -186,6 +186,19 @@ namespace RiskOfMagic.Editor
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        /// <summary>First setup only: plugs a model (and VFX Graph lifetime) into an empty entry.</summary>
+        public static void SetDefaultModel(Category category, string key, GameObject model, float lifetime)
+        {
+            var entry = ListFor(category)?.Find(e => e.name == key);
+            if (entry == null || model == null)
+                return;
+            if (entry.model == null)
+                entry.model = model;
+            if (entry.lifetime <= 0f)
+                entry.lifetime = lifetime;
+            EditorUtility.SetDirty(Library);
+        }
+
         public static void Save()
         {
             if (library != null)

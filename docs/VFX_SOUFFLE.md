@@ -281,7 +281,7 @@ Arrêt : `ParticleSystem.Stop()` sur la racine (*Stop Emitting*) laisse les part
 ## 5. Brancher dans le jeu
 
 1. ArtLibrary (`Resources/ArtLibrary`) → entrée **`VFX_FlameBreath`** → *Model* = ton prefab `FX_FlameBreath`.
-   Cette entrée n'existe pas encore : elle sera créée avec le code de la section 7.
+   Le builder la remplit avec `VX_FireBreath` s'il trouve ce prefab dans `Assets/_Project/Art`.
    - Ne mets **jamais** un prefab généré (`VFX_*`) comme *Model* : ArtSlot le refuse (récursion).
 2. *Rotation* / *Offset* de l'entrée : à ajuster si le jet ne part pas pile de la bouche ou ne pointe pas vers +Z.
 
@@ -294,15 +294,17 @@ Arrêt : `ParticleSystem.Stop()` sur la racine (*Stop Emitting*) laisse les part
 - [ ] La fumée est derrière les flammes (*Sorting Priority* −1).
 - [ ] Aucune sortie **HDRP**.
 
-## 7. Côté code (à valider, pas encore fait)
+## 7. Côté code (fait)
 
-Ce qu'il faudrait pour un jet continu :
-- un champ **`channelVfx`** sur `ConeChannelSkill` (prefab généré `VFX_FlameBreath`, remplaçable dans l'ArtLibrary) ;
-- au début de la canalisation, **chaque client** l'instancie localement, sans réseau (comme les effets de lancement) ;
-- il est **attaché** au lanceur :
-  - pour le joueur lui-même : sous la caméra, légèrement devant et en dessous ;
-  - pour les autres joueurs : à la tête du modèle ;
-- il suit la visée, puis reçoit `Stop()` à la fin des 2,5 s (ou si le druide tombe à terre), ce qui arrête aussi les
-  Particle Systems enfants ;
-- il est rendu au pool ~2 s plus tard ;
-- `tickVfx` devient optionnel : à vider pour ne garder que le jet, ou à garder pour de petites bouffées d'impact.
+- `ConeChannelSkill.channelVfx` = prefab généré **`VFX_FlameBreath`** (placeholder : un pavé orange de 9 m). Son entrée
+  de l'ArtLibrary reçoit `VX_FireBreath` comme *Model* au premier build (*Lifetime* 4,5 s) ; tu peux la changer.
+- Au début de la canalisation, **chaque client** fait apparaître le jet localement, sans réseau (composant
+  `ChannelEffect`, ajouté à l'exécution) :
+  - pour le joueur lui-même : il suit la caméra, visée verticale comprise, décalé de *First Person Offset*
+    (0,15 ; −0,35 ; 0,6) ;
+  - pour les autres joueurs : il suit la tête et l'orientation du corps, avec l'inclinaison de la visée au moment
+    du lancer (*Third Person Offset*).
+- Fin des 2,5 s, ou druide à terre : `Stop()` sur le *Visual Effect* (événement `OnStop`) et les Particle Systems
+  (arrêt de l'émission). Les particules finissent leur vie et l'effet retourne au pool 4,5 s après son apparition.
+- `tickVfx` est vidé : le jet remplace les bouffées par tick. Remets un effet si tu veux un petit impact en plus.
+- Le prefab de l'effet doit avoir sa racine et son *Visual Effect* à la position (0, 0, 0), jet vers +Z.

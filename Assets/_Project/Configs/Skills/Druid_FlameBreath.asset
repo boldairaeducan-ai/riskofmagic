@@ -40,5 +40,5 @@ MonoBehaviour:
   damageType: 1
   procCoefficient: 0.5
   dot: {fileID: 11400000, guid: d2affe91daf0ad448affd7d15bbe3c57, type: 2}
-  tickVfx: {fileID: 8004041733704343878, guid: 4cf8cc7f3f6d45f488e05c1cd227e4db, type: 3}
+  tickVfx: {fileID: 0}
   tickVfxScale: 0.35

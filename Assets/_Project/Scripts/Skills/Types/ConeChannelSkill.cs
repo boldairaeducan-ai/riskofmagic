@@ -25,10 +25,50 @@ namespace RiskOfMagic.Skills.Types
         [Header("Feedback")]
         [Tooltip("Spawned along the cone on each tick (VfxNetwork).")] public GameObject tickVfx;
         [Min(0.05f)] public float tickVfxScale = 0.35f;
+        [Tooltip("Continuous effect (jet) following the caster for the whole channel, local on every peer. +Z = jet direction.")]
+        public GameObject channelVfx;
+        [Tooltip("Jet start in the first-person camera space (owner).")] public Vector3 firstPersonOffset = new(0.15f, -0.35f, 0.6f);
+        [Tooltip("Jet start relative to the head pivot, along the body, for other players.")] public Vector3 thirdPersonOffset = new(0f, -0.15f, 0.45f);
 
         private static readonly List<Health> found = new();
 
         public override float MaxRange => range;
+
+        public override void OnOwnerExecute(SkillContext context, in SkillActivation activation)
+        {
+            base.OnOwnerExecute(context, activation);
+            StartChannelVfx(context, activation, firstPerson: true);
+        }
+
+        public override void OnRemoteExecute(SkillContext context, in SkillActivation activation)
+        {
+            base.OnRemoteExecute(context, activation);
+            StartChannelVfx(context, activation, firstPerson: false);
+        }
+
+        /// <summary>
+        /// Owner: follows the camera (aim pitch included). Others: the head pivot with the body yaw and the pitch of
+        /// the cast (the camera pitch isn't replicated).
+        /// </summary>
+        private void StartChannelVfx(SkillContext context, in SkillActivation activation, bool firstPerson)
+        {
+            if (channelVfx == null || context.Look == null || context.Look.CameraPivot == null)
+                return;
+            var avatar = context.Avatar;
+            var pivot = context.Look.CameraPivot;
+            var effect = VfxUtility.Spawn(channelVfx, pivot.position, pivot.rotation);
+            if (firstPerson)
+            {
+                ChannelEffect.Begin(effect, pivot, firstPersonOffset, null, () => avatar != null && avatar.IsStanding, duration);
+                return;
+            }
+            Vector3 aim = activation.Direction.sqrMagnitude > 0.001f ? activation.Direction.normalized : avatar.transform.forward;
+            float pitch = -Mathf.Asin(Mathf.Clamp(aim.y, -1f, 1f)) * Mathf.Rad2Deg;
+            var body = avatar.transform;
+            Vector3 offset = body.InverseTransformPoint(pivot.position) + thirdPersonOffset; // pivot height, body space
+            ChannelEffect.Begin(effect, body, offset, () => body != null ? body.rotation * Quaternion.Euler(pitch, 0f, 0f) : Quaternion.identity,
+                () => avatar != null && avatar.IsStanding, duration);
+        }
 
         public override void OnServerExecute(SkillContext context, in SkillActivation activation)
         {

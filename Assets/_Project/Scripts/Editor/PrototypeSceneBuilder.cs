@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm, FlameBreath;
         }
 
         private sealed class ProjectileSet
@@ -250,7 +250,7 @@ namespace RiskOfMagic.Editor
 
         private static VfxSet BuildVfx()
         {
-            return new VfxSet
+            var set = new VfxSet
             {
                 Impact = EffectPrefab("VFX_Impact", PrimitiveType.Sphere, Vector3.one * 0.5f, Vector3.zero, new Color(1f, 0.9f, 0.6f), 0.15f),
                 FrostBurst = EffectPrefab("VFX_FrostBurst", PrimitiveType.Sphere, Vector3.one * 6f, Vector3.zero, new Color(0.6f, 0.9f, 1f), 0.2f),
@@ -288,8 +288,13 @@ namespace RiskOfMagic.Editor
                 // Druid (nature): vine lash line, lightning column (scaled by the area radius), raven swarm (attached).
                 VineWhip = LinePrefab("VFX_VineWhip", new Color(0.35f, 0.75f, 0.25f), 0.12f, 0.18f),
                 LightningStrike = EffectPrefab("VFX_LightningStrike", PrimitiveType.Cylinder, new Vector3(0.08f, 2f, 0.08f), new Vector3(0f, 2f, 0f), new Color(0.85f, 0.9f, 1f), 0.3f),
-                RavenSwarm = AuraPrefab("VFX_RavenSwarm", 0.7f, new Color(0.12f, 0.1f, 0.18f))
+                RavenSwarm = AuraPrefab("VFX_RavenSwarm", 0.7f, new Color(0.12f, 0.1f, 0.18f)),
+                // Continuous flame jet (Souffle enflammé): follows the caster, +Z = jet; lifetime = channel + fade.
+                FlameBreath = EffectPrefab("VFX_FlameBreath", PrimitiveType.Cube, new Vector3(1.2f, 0.8f, 9f), new Vector3(0f, 0f, 4.5f), new Color(1f, 0.5f, 0.1f), 4.5f)
             };
+            ArtLibraryBuilder.SetDefaultModel(ArtLibraryBuilder.Category.Vfx, "VFX_FlameBreath",
+                AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/VX_FireBreath.prefab"), 4.5f);
+            return set;
         }
 
         private static ProjectileSet BuildProjectiles(VfxSet vfx)
@@ -607,7 +612,8 @@ namespace RiskOfMagic.Editor
             breath.damageCoefficientPerTick = 0.45f;
             breath.damageType = DamageType.Fire;
             breath.dot = natureBurn;
-            breath.tickVfx = vfx.FireBurst;
+            breath.tickVfx = null; // the continuous jet replaces the per-tick bursts
+            breath.channelVfx = vfx.FlameBreath;
             if (breath.icon == null)
                 breath.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_266.png");
 
