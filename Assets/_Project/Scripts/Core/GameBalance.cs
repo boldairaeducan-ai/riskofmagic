@@ -126,6 +126,7 @@ namespace RiskOfMagic.Core
             [Min(0.1f), Tooltip("Attack rate multiplier of regular enemies (cooldowns divided by it).")] public float regularAttackRateMultiplier = 1.3f;
             [Min(0.1f), Tooltip("Damage multiplier of bosses (teleporter, secret, final).")] public float bossDamageMultiplier = 1f;
             [Min(0.1f), Tooltip("Attack rate multiplier of bosses.")] public float bossAttackRateMultiplier = 1f;
+            [Min(0f), Tooltip("Boss max health bonus per player beyond the first (0.5 = x2.5 with 4 players).")] public float bossHealthPerExtraPlayer = 0.5f;
         }
 
         [Tooltip("Run difficulty: coefficient = (player factor × starting coefficient + minutes × scaling) × stage multiplier^stages.")] public DifficultyBalance difficulty = new();

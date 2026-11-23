@@ -189,6 +189,11 @@ namespace RiskOfMagic.Enemies
             Initialize(1);
         }
 
+        /// <summary>Bosses get more health per player beyond the first (coop).</summary>
+        private float BossPlayerHealthMultiplier => IsBoss
+            ? 1f + RiskOfMagic.Core.GameBalance.Instance.enemies.bossHealthPerExtraPlayer * (Mathf.Max(1, RiskOfMagic.Player.PlayerAvatar.All.Count) - 1)
+            : 1f;
+
         /// <summary>Server, before Spawn().</summary>
         public void Initialize(int enemyLevel)
         {
@@ -196,7 +201,7 @@ namespace RiskOfMagic.Enemies
             if (pendingIllusion)
                 Health.SetBaseMaxHealth(illusionMaxHealth);
             else if (definition != null)
-                Health.SetBaseMaxHealth(definition.maxHealth * (1f + definition.healthPerLevel * (pendingLevel - 1)) * EliteHealthMultiplier);
+                Health.SetBaseMaxHealth(definition.maxHealth * (1f + definition.healthPerLevel * (pendingLevel - 1)) * EliteHealthMultiplier * BossPlayerHealthMultiplier);
         }
 
         public override void OnNetworkSpawn()

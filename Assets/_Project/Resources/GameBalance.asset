@@ -60,3 +60,4 @@ MonoBehaviour:
     regularAttackRateMultiplier: 1.3
     bossDamageMultiplier: 1
     bossAttackRateMultiplier: 1
+    bossHealthPerExtraPlayer: 0.5

@@ -172,7 +172,7 @@ namespace RiskOfMagic.Editor
                 Card("SpawnCard_Assassin", assassin, 14, 0.4f, 1.45f),
                 Card("SpawnCard_Ogre", ogre, 28, 0.35f, 1.6f),
                 // Projectiles are hard to read in first person: archers stay rare and late.
-                Card("SpawnCard_SkeletonArcher", skeleton, 20, 0.15f, 1.9f)
+                Card("SpawnCard_SkeletonArcher", skeleton, 15, 0.3f, 1.9f)
             };
 
             // Teleporter: weighted pick among unlocked cards, never the previous boss; +1 boss from stage 4.
@@ -1981,7 +1981,7 @@ namespace RiskOfMagic.Editor
             def.detectionRange = detection;
             def.isBoss = false;
             def.movementStyle = EnemyMovementStyle.Direct;
-            def.healthPerLevel = 0.4f; // RoR2: 0.3; our levels are slower (see RunDifficulty)
+            def.healthPerLevel = 0.3f; // same as RoR2
             def.damagePerLevel = 0.2f;
             def.flankRadius = 6f;
             def.flankAngle = new Vector2(100f, 160f);

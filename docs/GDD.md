@@ -187,7 +187,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 
 ## Ennemis
 
-8 ennemis courants, 4 boss de téléporteur et 5 boss secrets. Les PV montent de 40 % et les dégâts de 20 % par niveau d'ennemi ; les ennemis courants frappent ×1,15 plus fort et ×1,3 plus souvent.
+8 ennemis courants, 4 boss de téléporteur et 5 boss secrets. Les PV montent de 30 % et les dégâts de 20 % par niveau d'ennemi ; les boss ont +50 % de PV par joueur au-delà du premier ; les ennemis courants frappent ×1,15 plus fort et ×1,3 plus souvent.
 
 ### Ennemis courants
 
@@ -198,7 +198,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | Loup spectral | 40 | 8 | Contourne | Bond | 12 | 8 |
 | Lame d'ombre | 50 | 8,6 | Contourne | Mêlée | 14 | 10 |
 | Pyromancien | 55 | 5,8 | Garde ses distances | Tir en cloche | 16 | 12 |
-| Squelette archer | 60 | 4,6 | Garde ses distances | Projectile | 20 | 14 |
+| Squelette archer | 60 | 4,6 | Garde ses distances | Projectile | 15 | 14 |
 | Ogre | 240 | 5,2 | Direct | Bond | 28 | 24 |
 | Racine épineuse | 140 | 0 (fixe) | Immobile | Mêlée | — | 0 |
 
