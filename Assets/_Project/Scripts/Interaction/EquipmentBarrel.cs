@@ -8,6 +8,8 @@ namespace RiskOfMagic.Interaction
     /// <summary>Bought with gold, drops a random equipment (picked up with E).</summary>
     public class EquipmentBarrel : PurchaseInteractable
     {
+        protected override bool SealedDuringBossFight => true;
+
         [SerializeField] private Vector3 dropOffset = new(0f, 0f, 1.6f);
         [SerializeField] private GameObject closedVisual;
 

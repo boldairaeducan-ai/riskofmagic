@@ -16,6 +16,8 @@ namespace RiskOfMagic.Interaction
         [Header("Visuals")]
         [SerializeField] private GameObject closedVisual;
 
+        protected override bool SealedDuringBossFight => true;
+
         protected override void OnPurchased(PlayerAvatar buyer)
         {
             var item = GameCatalog.Instance.RollItem(rarityWeights.Roll());

@@ -65,6 +65,10 @@ namespace RiskOfMagic.Run
 
         private readonly NetworkVariable<TeleporterState> state = new();
         private readonly NetworkVariable<float> charge = new();
+        private readonly NetworkVariable<bool> bossFight = new();
+
+        /// <summary>Every peer: teleporter event running with a boss alive (chests and barrels are sealed).</summary>
+        public static bool SealsChests => Instance != null && Instance.IsSpawned && Instance.bossFight.Value;
         private readonly List<EnemyActor> bosses = new();
         private bool bossRewardGiven;
         private RunEndSeal seal;
@@ -141,7 +145,10 @@ namespace RiskOfMagic.Run
             state.Value = TeleporterState.Charging;
             charge.Value = 0f;
             if (CombatDirector.Instance != null)
+            {
                 CombatDirector.Instance.EventCreditMultiplier = eventCreditMultiplier;
+                CombatDirector.Instance.EventActive = true;
+            }
             SpawnBosses();
         }
 
@@ -242,6 +249,9 @@ namespace RiskOfMagic.Run
             }
 
             bool eventRunning = state.Value == TeleporterState.Charging || state.Value == TeleporterState.Charged;
+            bool fight = eventRunning && AnyBossAlive();
+            if (bossFight.Value != fight)
+                bossFight.Value = fight;
             if (eventRunning && bosses.Count > 0 && !bossRewardGiven && !AnyBossAlive())
                 GiveBossRewards();
 
@@ -252,8 +262,13 @@ namespace RiskOfMagic.Run
         private void Complete()
         {
             state.Value = TeleporterState.Ready;
+            bossFight.Value = false;
             if (CombatDirector.Instance != null)
+            {
                 CombatDirector.Instance.EventCreditMultiplier = 1f;
+                CombatDirector.Instance.EventActive = false;
+                CombatDirector.Instance.StageCleared = true; // no more waves: move on
+            }
             if (IsFinalStage && runEndSealPrefab != null && seal == null)
             {
                 Vector3 position = transform.position + sealOffset;

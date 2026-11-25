@@ -40,6 +40,10 @@ namespace RiskOfMagic.Core
             [Header("Stage 1 (easier start)")]
             [Min(0f), Tooltip("Stage 1 (first loop): stage population and starting credits multiplier.")] public float firstStageCreditMultiplier = 0.8f;
             [Min(0.1f), Tooltip("Stage 1: wave interval multiplier (1.25 = waves 25% less often).")] public float firstStageWaveIntervalMultiplier = 1.25f;
+            [Header("Wave fade-out (pushes players to move on)")]
+            [Min(0f), Tooltip("Seconds into the stage before wave credits start to fade (teleporter event excluded).")] public float waveDecayStartSeconds = 240f;
+            [Min(0f), Tooltip("Seconds into the stage when the fade reaches its floor.")] public float waveDecayEndSeconds = 480f;
+            [Range(0f, 1f), Tooltip("Wave credit multiplier once faded.")] public float waveDecayFloor = 0.15f;
             [Header("Later stages: items held")]
             [Min(0f), Tooltip("From stage 2: stage population and starting credits +X per item held (average per player).")] public float creditsPerItem = 0.03f;
             [Min(1f), Tooltip("Cap of that multiplier.")] public float maxItemCreditMultiplier = 2f;
@@ -99,7 +103,7 @@ namespace RiskOfMagic.Core
         [Serializable]
         public class EconomyBalance
         {
-            [Min(0.01f), Tooltip("Enemy gold multiplier (experience is not affected).")] public float enemyGoldMultiplier = 0.75f;
+            [Min(0.01f), Tooltip("Enemy gold multiplier (experience is not affected).")] public float enemyGoldMultiplier = 0.5f;
             [Min(0f), Tooltip("Prices = base × difficulty coefficient ^ this (chests, shrines, merchant).")] public float costExponent = 1.4f;
 
             [Header("Interactables per stage: a credit budget spent at random")]

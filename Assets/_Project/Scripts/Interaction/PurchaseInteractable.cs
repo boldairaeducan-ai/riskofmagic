@@ -58,13 +58,20 @@ namespace RiskOfMagic.Interaction
             cost.Value = (uint)Mathf.Max(0, Mathf.RoundToInt(value));
         }
 
+        /// <summary>Chests and barrels: locked while the teleporter boss is alive (no farming during the event).</summary>
+        protected virtual bool SealedDuringBossFight => false;
+
+        protected bool IsSealed => SealedDuringBossFight && RiskOfMagic.Run.Teleporter.SealsChests;
+
         public virtual bool CanInteract(PlayerAvatar player)
-            => IsAvailable && player.IsAlive && player.Wallet.CanAfford(Cost);
+            => IsAvailable && !IsSealed && player.IsAlive && player.Wallet.CanAfford(Cost);
 
         public virtual string GetPrompt(PlayerAvatar player)
         {
             if (!IsAvailable)
                 return string.Empty;
+            if (IsSealed)
+                return $"{displayName} - scellé tant que le gardien vit";
             string costText = Cost == 0 ? "gratuit" : $"{Cost} or";
             return player.Wallet.CanAfford(Cost) ? $"[E] {displayName} ({costText})" : $"{displayName} ({costText}) - pas assez d'or";
         }

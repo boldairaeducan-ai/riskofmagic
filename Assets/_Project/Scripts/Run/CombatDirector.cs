@@ -52,6 +52,25 @@ namespace RiskOfMagic.Run
         private readonly List<SpawnCard> candidates = new();
         private readonly List<PlayerAvatar> alivePlayers = new();
         private float credits;
+        private float stageStartTime;
+
+        /// <summary>Server: teleporter event running (waves don't fade).</summary>
+        public bool EventActive { get; set; }
+        /// <summary>Server: teleporter charged and bosses dead: no more waves until the next stage.</summary>
+        public bool StageCleared { get; set; }
+
+        /// <summary>Wave credit multiplier: 1, then fades to the floor between the two times (outside the teleporter event).</summary>
+        public float WaveFade
+        {
+            get
+            {
+                if (EventActive)
+                    return 1f;
+                float elapsed = Time.time - stageStartTime;
+                float start = Balance.waveDecayStartSeconds, end = Mathf.Max(start + 1f, Balance.waveDecayEndSeconds);
+                return Mathf.Lerp(1f, Balance.waveDecayFloor, Mathf.InverseLerp(start, end, elapsed));
+            }
+        }
 
         private static RiskOfMagic.Core.GameBalance.DirectorBalance Balance => RiskOfMagic.Core.GameBalance.Instance.director;
         private static bool IsFirstStage => StageManager.Instance == null || StageManager.Instance.StageNumber <= 1;
@@ -111,6 +130,7 @@ namespace RiskOfMagic.Run
             }
             credits = startingCredits * StageCreditMultiplier;
             nextWaveTime = Time.time + 5f;
+            stageStartTime = Time.time;
 
             if (cards.Count == 0)
                 Debug.LogError("[CombatDirector] No spawn cards assigned.", this);
@@ -134,6 +154,9 @@ namespace RiskOfMagic.Run
             float multiplier = StageCreditMultiplier;
             credits = startingCredits * multiplier;
             nextWaveTime = Time.time + 5f;
+            stageStartTime = Time.time;
+            EventActive = false;
+            StageCleared = false;
             EventCreditMultiplier = 1f;
             Diagnose($"Stage {(StageManager.Instance != null ? StageManager.Instance.StageNumber : 1)}: stage credits x{multiplier:0.00}.");
             Paused = false;
@@ -198,12 +221,12 @@ namespace RiskOfMagic.Run
 
         private void Update()
         {
-            if (!IsSpawned || Paused || PlayerAvatar.All.Count == 0)
+            if (!IsSpawned || Paused || StageCleared || PlayerAvatar.All.Count == 0)
                 return;
 
             float coefficient = RunDifficulty.CurrentCoefficient;
             int players = PlayerAvatar.All.Count;
-            credits += creditMultiplier * EventCreditMultiplier * RunDifficulty.CurrentDirectorCreditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
+            credits += creditMultiplier * EventCreditMultiplier * WaveFade * RunDifficulty.CurrentDirectorCreditMultiplier * 0.75f * (1f + 0.4f * coefficient) * (players + 1) * 0.5f * Time.deltaTime;
 
             if (Time.time < nextWaveTime)
                 return;

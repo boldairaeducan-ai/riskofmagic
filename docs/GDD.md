@@ -44,6 +44,10 @@ Une run enchaîne 5 étapes : chaque carte se termine en chargeant un téléport
 - **Étape 1** (première boucle) : population et crédits de départ ×0,8, vagues 25 % moins fréquentes (10 à 19 s).
 - **Étapes suivantes** : population et crédits de départ +3 % par objet détenu (moyenne par joueur), plafonné à ×2
   (10 objets = ×1,3 ; 33 objets et plus = ×2). Les vagues au fil du temps ne changent pas.
+- **Essoufflement** : hors événement du téléporteur, les crédits des vagues baissent de 4 à 8 min de manche jusqu'à ×0,15.
+  Une fois le téléporteur chargé et le boss vaincu, plus aucune vague.
+- **Pendant l'événement**, tant qu'un boss est en vie : coffres (dont coffre à choix et coffre maudit) et tonneaux sont
+  scellés. Autel de soin et marchand restent utilisables.
 
 ## Personnages
 
@@ -293,7 +297,7 @@ L'or achète les objets et nourrit l'expérience ; les défis débloquent classe
 
 **Pendant la run**
 
-- Or des ennemis ×0,75, multiplié par le coefficient de difficulté ; prix = prix de base × coefficient^1,4.
+- Or des ennemis ×0,5, multiplié par le coefficient de difficulté ; prix = prix de base × coefficient^1,4.
 - Expérience = 0,6 par or gagné ; niveau 2 à 35 XP, puis ×1,65 par niveau ; +15 % de dégâts de base par niveau.
 - Budget d'objets par carte : 220 crédits en Normal (+25 %/étape), 140 en Difficile (+20 %/étape), +30 % par joueur supplémentaire.
 

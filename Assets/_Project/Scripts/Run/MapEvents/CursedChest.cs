@@ -33,10 +33,11 @@ namespace RiskOfMagic.Run.MapEvents
             opened.OnValueChanged -= OnOpenedChanged;
         }
 
-        public override bool CanInteract(PlayerAvatar player) => player.IsAlive && !opened.Value;
+        public override bool CanInteract(PlayerAvatar player) => player.IsAlive && !opened.Value && !Teleporter.SealsChests;
 
         public override string GetPrompt(PlayerAvatar player) => opened.Value
             ? string.Empty
+            : Teleporter.SealsChests ? "Coffre maudit - scellé tant que le gardien vit"
             : $"[E] Coffre maudit : coûte {Settings.maxHealthCostPercent}% de PV max jusqu'à la fin de l'étape";
 
         public override void Interact(PlayerAvatar player)

@@ -32,6 +32,9 @@ MonoBehaviour:
     waveInterval: {x: 8, y: 15}
     firstStageCreditMultiplier: 0.8
     firstStageWaveIntervalMultiplier: 1.25
+    waveDecayStartSeconds: 240
+    waveDecayEndSeconds: 480
+    waveDecayFloor: 0.15
     creditsPerItem: 0.03
     maxItemCreditMultiplier: 2
     maxSpawnsPerWave: 4
