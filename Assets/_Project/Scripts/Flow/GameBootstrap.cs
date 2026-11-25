@@ -109,6 +109,13 @@ namespace RiskOfMagic.Flow
         {
             if (playerPrefab == null || (manager.ConnectedClients.TryGetValue(clientId, out var client) && client.PlayerObject != null))
                 return;
+            var existing = RiskOfMagic.Player.PlayerAvatar.FindByClient(clientId);
+            if (existing != null && existing.IsSpawned)
+            {
+                Debug.LogWarning($"[GameBootstrap] Client {clientId} already has an avatar ({existing.name}, scene {existing.gameObject.scene.name}) " +
+                                 "but no PlayerObject: no second avatar spawned.", existing);
+                return;
+            }
             Instantiate(playerPrefab).SpawnAsPlayerObject(clientId, false); // inventory etc. kept across map scenes
         }
     }

@@ -118,6 +118,11 @@ namespace RiskOfMagic.Player
         public override void OnNetworkSpawn()
         {
             all.RemoveAll(p => p == null || p == this || (p.OwnerClientId == OwnerClientId && !p.IsSpawned)); // stale entries
+            foreach (var other in all)
+                if (other.OwnerClientId == OwnerClientId)
+                    Debug.LogError($"[PlayerAvatar] Two avatars for client {OwnerClientId}: {other.name} (id {other.NetworkObjectId}, scene " +
+                                   $"{other.gameObject.scene.name}) and {name} (id {NetworkObjectId}, scene {gameObject.scene.name}). " +
+                                   $"Spawned from:\n{System.Environment.StackTrace}", this);
             all.Add(this);
             Health.Died += OnDied;
             Health.Revived += OnRevived;
