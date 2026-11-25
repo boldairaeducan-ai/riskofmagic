@@ -52,6 +52,37 @@ namespace RiskOfMagic.Run
         private readonly List<SpawnCard> candidates = new();
         private readonly List<PlayerAvatar> alivePlayers = new();
         private float credits;
+
+        private static RiskOfMagic.Core.GameBalance.DirectorBalance Balance => RiskOfMagic.Core.GameBalance.Instance.director;
+        private static bool IsFirstStage => StageManager.Instance == null || StageManager.Instance.StageNumber <= 1;
+
+        /// <summary>
+        /// Stage-start budget multiplier (population + starting credits): lower on stage 1, then grows with the average
+        /// number of items held per player (capped). Waves over time are not affected.
+        /// </summary>
+        public static float StageCreditMultiplier
+        {
+            get
+            {
+                if (IsFirstStage)
+                    return Balance.firstStageCreditMultiplier;
+                return Mathf.Min(Balance.maxItemCreditMultiplier, 1f + Balance.creditsPerItem * AverageItemsPerPlayer());
+            }
+        }
+
+        private static float AverageItemsPerPlayer()
+        {
+            int players = 0, items = 0;
+            foreach (var player in PlayerAvatar.All)
+            {
+                if (player == null || player.Inventory == null)
+                    continue;
+                players++;
+                for (int i = 0; i < player.Inventory.SlotCount; i++)
+                    items += player.Inventory.GetCountAt(i);
+            }
+            return players > 0 ? (float)items / players : 0f;
+        }
         private float nextWaveTime;
         private string lastDiagnostic;
         private readonly List<Vector3> populationPoints = new();
@@ -78,7 +109,7 @@ namespace RiskOfMagic.Run
                 enabled = false;
                 return;
             }
-            credits = startingCredits;
+            credits = startingCredits * StageCreditMultiplier;
             nextWaveTime = Time.time + 5f;
 
             if (cards.Count == 0)
@@ -100,9 +131,11 @@ namespace RiskOfMagic.Run
         /// <summary>Server only. Called by the StageManager when a new stage begins.</summary>
         public void ResetForStage()
         {
-            credits = startingCredits;
+            float multiplier = StageCreditMultiplier;
+            credits = startingCredits * multiplier;
             nextWaveTime = Time.time + 5f;
             EventCreditMultiplier = 1f;
+            Diagnose($"Stage {(StageManager.Instance != null ? StageManager.Instance.StageNumber : 1)}: stage credits x{multiplier:0.00}.");
             Paused = false;
             PopulateStage();
         }
@@ -119,7 +152,7 @@ namespace RiskOfMagic.Run
             }
 
             float coefficient = RunDifficulty.CurrentCoefficient;
-            float budget = stagePopulationCredits * Mathf.Sqrt(coefficient);
+            float budget = stagePopulationCredits * Mathf.Sqrt(coefficient) * StageCreditMultiplier;
             int level = RunDifficulty.CurrentEnemyLevel;
             int spawned = 0;
             populationPoints.Clear();
@@ -174,7 +207,7 @@ namespace RiskOfMagic.Run
 
             if (Time.time < nextWaveTime)
                 return;
-            nextWaveTime = Time.time + Random.Range(waveInterval.x, waveInterval.y);
+            nextWaveTime = Time.time + Random.Range(waveInterval.x, waveInterval.y) * (IsFirstStage ? Balance.firstStageWaveIntervalMultiplier : 1f);
             SpawnWave(coefficient);
         }
 

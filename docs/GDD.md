@@ -41,6 +41,9 @@ Une run enchaîne 5 étapes : chaque carte se termine en chargeant un téléport
 | Difficile (débloqué après une victoire) | Montée 50 % plus rapide, budget du directeur ×1,3, détection des ennemis ×1,25, ennemis variés débloqués plus tôt (×1,2) |
 
 **Directeur d'ennemis** : 110 crédits de population par carte, puis une vague toutes les 8 à 15 s (4 ennemis max par vague, 22 vivants max). Élites possibles dès un coefficient de 1,5, 35 % des vagues.
+- **Étape 1** (première boucle) : population et crédits de départ ×0,8, vagues 25 % moins fréquentes (10 à 19 s).
+- **Étapes suivantes** : population et crédits de départ +3 % par objet détenu (moyenne par joueur), plafonné à ×2
+  (10 objets = ×1,3 ; 33 objets et plus = ×2). Les vagues au fil du temps ne changent pas.
 
 ## Personnages
 

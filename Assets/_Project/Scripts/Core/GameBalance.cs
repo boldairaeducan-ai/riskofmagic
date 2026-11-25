@@ -37,6 +37,12 @@ namespace RiskOfMagic.Core
             [Min(0f)] public float populationMinSpacing = 6f;
             [Tooltip("Outside events, wave enemies know a player immediately instead of waiting for detection.")] public bool wavesHuntPlayers;
             public Vector2 waveInterval = new(8f, 15f);
+            [Header("Stage 1 (easier start)")]
+            [Min(0f), Tooltip("Stage 1 (first loop): stage population and starting credits multiplier.")] public float firstStageCreditMultiplier = 0.8f;
+            [Min(0.1f), Tooltip("Stage 1: wave interval multiplier (1.25 = waves 25% less often).")] public float firstStageWaveIntervalMultiplier = 1.25f;
+            [Header("Later stages: items held")]
+            [Min(0f), Tooltip("From stage 2: stage population and starting credits +X per item held (average per player).")] public float creditsPerItem = 0.03f;
+            [Min(1f), Tooltip("Cap of that multiplier.")] public float maxItemCreditMultiplier = 2f;
             [Min(1)] public int maxSpawnsPerWave = 4;
             [Min(1)] public int maxAliveEnemies = 22;
             [Min(0f), Tooltip("Run progress (like SpawnCard.minCoefficient) from which waves can be elite.")] public float eliteMinProgress = 1.5f;

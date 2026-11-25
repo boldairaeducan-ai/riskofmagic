@@ -30,6 +30,10 @@ MonoBehaviour:
     populationMinSpacing: 6
     wavesHuntPlayers: 0
     waveInterval: {x: 8, y: 15}
+    firstStageCreditMultiplier: 0.8
+    firstStageWaveIntervalMultiplier: 1.25
+    creditsPerItem: 0.03
+    maxItemCreditMultiplier: 2
     maxSpawnsPerWave: 4
     maxAliveEnemies: 22
     eliteMinProgress: 1.5
