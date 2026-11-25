@@ -19,7 +19,7 @@ MonoBehaviour:
   maxHealth: 85
   healthRegen: 1
   baseDamage: 10
-  attackSpeed: 0.85
+  attackSpeed: 0.8
   critChance: 0.01
   movement: {fileID: 11400000, guid: 17e3260445a7d894aa78bff7cca03469, type: 2}
   damagePerLevel: 0.15

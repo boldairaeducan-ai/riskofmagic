@@ -48,12 +48,12 @@ Une run enchaîne 5 étapes : chaque carte se termine en chargeant un téléport
 
 | Classe | Rôle | PV | Vitesse (m/s) | Sauts | Vit. d'attaque |
 | --- | --- | --- | --- | --- | --- |
-| Archer | Distance agile | 80 | 6,4 | 2 | 0,85 |
-| Guerrier | Mêlée robuste | 130 | 5,95 | 1 | 0,68 |
-| Arcaniste | Projectiles chercheurs, contrôle | 90 | 5,95 | 1 | 0,85 |
-| Druide | Distance, seul à infliger des dégâts sur la durée | 100 | 6,1 | 1 | 0,68 |
-| Paladin | Soutien de première ligne, sceaux | 120 | 5,6 | 1 | 0,85 |
-| Ombre | Assassin, critiques dans le dos | 85 | 6,8 | 2 | 0,85 |
+| Archer | Distance agile | 80 | 6,4 | 2 | 0,8 |
+| Guerrier | Mêlée robuste | 130 | 5,95 | 1 | 0,64 |
+| Arcaniste | Projectiles chercheurs, contrôle | 90 | 5,95 | 1 | 0,8 |
+| Druide | Distance, seul à infliger des dégâts sur la durée | 100 | 6,1 | 1 | 0,64 |
+| Paladin | Soutien de première ligne, sceaux | 120 | 5,6 | 1 | 0,8 |
+| Ombre | Assassin, critiques dans le dos | 85 | 6,8 | 2 | 0,8 |
 
 Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire), R (spéciale). Rechargement entre crochets.
 
