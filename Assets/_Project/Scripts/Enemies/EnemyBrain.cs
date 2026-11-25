@@ -18,7 +18,8 @@ namespace RiskOfMagic.Enemies
         Stunned,
         Frozen,
         Leap,
-        Dead
+        Dead,
+        Confused
     }
 
     /// <summary>
@@ -92,6 +93,7 @@ namespace RiskOfMagic.Enemies
         private float nextPerception;
         private float nextRepath;
         private float nextWander = -1f;
+        private float nextStagger;
 
         public PlayerAvatar Target { get; private set; }
         public EnemyState State { get; private set; }
@@ -240,6 +242,12 @@ namespace RiskOfMagic.Enemies
             if (!agent.enabled || !agent.isOnNavMesh)
                 return;
 
+            if (!IsAttacking && actor.Status != null && actor.Status.Has(RiskOfMagic.Combat.StatusType.Confused))
+            {
+                Stagger();
+                return;
+            }
+
             if (Time.time >= nextPerception || (Target != null && !Target.IsStanding))
             {
                 nextPerception = Time.time + perceptionInterval;
@@ -334,6 +342,21 @@ namespace RiskOfMagic.Enemies
         }
 
         // ---------------------------------------------------------------- Behaviours
+
+        /// <summary>Confused (Crâne hurlant): staggers around at random, no attacks.</summary>
+        private void Stagger()
+        {
+            State = EnemyState.Confused;
+            agent.isStopped = false;
+            agent.stoppingDistance = 0.2f;
+            agent.speed = (Definition != null ? Definition.moveSpeed : 4f) * 0.6f * actor.MoveSpeedMultiplier;
+            if (Time.time < nextStagger || agent.pathPending)
+                return;
+            nextStagger = Time.time + Random.Range(0.5f, 1f);
+            Vector2 offset = Random.insideUnitCircle.normalized * Random.Range(2f, 4f);
+            if (NavMesh.SamplePosition(transform.position + new Vector3(offset.x, 0f, offset.y), out var hit, 2f, NavMesh.AllAreas))
+                agent.SetDestination(hit.position);
+        }
 
         private void Wander()
         {

@@ -48,7 +48,9 @@ namespace RiskOfMagic.Combat
         /// <summary>More damage taken per stack (Brise-armure).</summary>
         Shattered,
         /// <summary>More damage dealt, hits heal (Tome sombre).</summary>
-        DarkPact
+        DarkPact,
+        /// <summary>Enemies stagger at random and don't attack (Crâne hurlant).</summary>
+        Confused
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>

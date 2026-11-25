@@ -1345,11 +1345,15 @@ namespace RiskOfMagic.Editor
 
             var skull = Asset<CurseConeEquipment>($"{EquipmentFolder}/Equipment_HowlingSkull.asset");
             skull.displayName = "Crâne hurlant";
-            skull.description = "Maudit les ennemis devant soi (20 m) pendant 8 s : -50% dégâts infligés, -10% vitesse, +30% dégâts subis, -10% de PV max.";
+            skull.description = "Maudit les ennemis devant soi (20 m) pendant 8 s : -50% dégâts infligés, -10% vitesse, +30% dégâts subis, -10% de PV max. Les rend confus 3 s (1,5 s pour les boss et élites) : ils errent sans attaquer.";
             skull.cooldown = 35f;
             skull.range = 20f;
             skull.coneAngle = 35f;
             skull.curseDuration = 8f;
+            skull.confuseDuration = 3f;
+            skull.bossConfuseFactor = 0.5f;
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Confused, null, aboveEnemies: true,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_151.png"));
             skull.vfx = vfx.CursePulse;
             if (skull.icon == null)
                 skull.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_150.png");

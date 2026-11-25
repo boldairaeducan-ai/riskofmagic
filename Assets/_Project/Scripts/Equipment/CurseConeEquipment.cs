@@ -5,13 +5,15 @@ using UnityEngine;
 
 namespace RiskOfMagic.Equipment
 {
-    /// <summary>Curses every enemy in a cone in front of the user (Crâne hurlant).</summary>
+    /// <summary>Curses and confuses every enemy in a cone in front of the user (Crâne hurlant).</summary>
     [CreateAssetMenu(menuName = "Risk of Magic/Equipment/Curse Cone", fileName = "Equipment_CurseCone")]
     public class CurseConeEquipment : EquipmentDefinition
     {
         [Min(0f)] public float range = 20f;
         [Range(1f, 90f), Tooltip("Half-angle of the cone.")] public float coneAngle = 35f;
         [Min(0.1f)] public float curseDuration = 8f;
+        [Min(0f), Tooltip("Confusion: staggers at random, no attacks. 0 = none.")] public float confuseDuration = 3f;
+        [Range(0f, 1f), Tooltip("Confusion duration multiplier on bosses and elites.")] public float bossConfuseFactor = 0.5f;
         public GameObject vfx;
 
         private static readonly List<Health> targets = new();
@@ -31,8 +33,15 @@ namespace RiskOfMagic.Equipment
                 if (toTarget.sqrMagnitude > 0.01f && Vector3.Angle(flatAim, toTarget) > coneAngle)
                     continue;
                 var status = SealSystem.FindStatus(target);
-                if (status != null)
-                    status.Apply(StatusType.Curse, curseDuration);
+                if (status == null)
+                    continue;
+                status.Apply(StatusType.Curse, curseDuration);
+                if (confuseDuration > 0f)
+                {
+                    var enemy = target.GetComponentInParent<RiskOfMagic.Enemies.EnemyActor>();
+                    bool resistant = enemy != null && (enemy.IsBoss || enemy.IsElite);
+                    status.Apply(StatusType.Confused, confuseDuration * (resistant ? bossConfuseFactor : 1f));
+                }
             }
 
             VfxNetwork.Spawn(vfx, user.transform.position, Quaternion.LookRotation(flatAim), range);
