@@ -625,13 +625,13 @@ namespace RiskOfMagic.Editor
             var characters = new List<CharacterDefinition>
             {
                 Character("Character_Archer", "Archer", "Agile, double saut, dégâts à distance.", new Color(0.3f, 0.75f, 0.35f),
-                    80f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
+                    80f, Movement("Movement_Archer", 6.375f, 2), rapidShot, piercing, roll, rain),
                 Character("Character_Warrior", "Guerrier", "Robuste, combat au corps à corps.", new Color(0.8f, 0.3f, 0.25f),
-                    130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
+                    130f, Movement("Movement_Warrior", 5.95f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
-                    90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock),
+                    90f, Movement("Movement_Arcanist", 5.95f, 1), volley, burst, shield, timeLock),
                 Character("Character_Druid", "Druide", "Maître de la nature, à distance : saignements, foudre et flammes. Kit poison en alternative.",
-                    new Color(0.25f, 0.55f, 0.2f), 100f, Movement("Movement_Druid", 7.2f, 1), vineWhip, lightning, ravens, breath)
+                    new Color(0.25f, 0.55f, 0.2f), 100f, Movement("Movement_Druid", 6.12f, 1), vineWhip, lightning, ravens, breath)
             };
             BuildPaladinAndShadow(characters, p, vfx);
             BuildAlternativeSkills(characters, p, vfx);
@@ -724,9 +724,9 @@ namespace RiskOfMagic.Editor
                 EditorUtility.SetDirty(skill);
 
             characters.Add(Character("Character_Paladin", "Paladin", "Soutien de première ligne : soins, protection, dégâts sacrés.",
-                new Color(0.95f, 0.85f, 0.45f), 120f, Movement("Movement_Paladin", 6.6f, 1), hammer, judgment, aegis, consecration));
+                new Color(0.95f, 0.85f, 0.45f), 120f, Movement("Movement_Paladin", 5.61f, 1), hammer, judgment, aegis, consecration));
             characters.Add(Character("Character_Shadow", "Ombre", "Assassin furtif : invisibilité, critiques dans le dos, marque.",
-                new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 8f, 2), daggers, throwing, veil, mark));
+                new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 6.8f, 2), daggers, throwing, veil, mark));
         }
 
         /// <summary>One alternative per slot and character (locked by challenges, chosen in the lobby).</summary>
@@ -1142,6 +1142,51 @@ namespace RiskOfMagic.Editor
             dagger.dot = bleed;
             dagger.chanceFirstStack = 0.1f;
             dagger.chancePerExtraStack = 0.1f;
+            // Damage combo additions
+            var butcher = Item<DamageBonusItem>("Item_ButcherFang", "Croc de boucher", "+30% (+30%) de dégâts aux ennemis à moins de 4 m.", ItemRarity.Common);
+            butcher.condition = DamageBonusItem.Condition.CloseRange;
+            butcher.bonusFirstStack = 0.3f;
+            butcher.bonusPerExtraStack = 0.3f;
+            butcher.radius = 4f;
+            var flint = Item<DotOnHitItem>("Item_Flint", "Pierre à feu", "10% (+10%) de chances d'enflammer : brûlure de 150% en 3 s.", ItemRarity.Common);
+            flint.dot = burn;
+            flint.chanceFirstStack = 0.1f;
+            flint.chancePerExtraStack = 0.1f;
+            flint.baseDamageCoefficient = 1f;
+            var keenBlade = Item<DamageBonusItem>("Item_KeenBlade", "Lame affûtée", "+30% (+30%) de dégâts sur les coups critiques.", ItemRarity.Common);
+            keenBlade.condition = DamageBonusItem.Condition.Critical;
+            keenBlade.bonusFirstStack = 0.3f;
+            keenBlade.bonusPerExtraStack = 0.3f;
+            var venom = Item<DamageBonusItem>("Item_ViperVenom", "Venin de vipère",
+                "+20% (+20%) de dégâts contre un ennemi qui saigne, brûle ou est empoisonné.", ItemRarity.Uncommon);
+            venom.condition = DamageBonusItem.Condition.TargetHasDot;
+            venom.bonusFirstStack = 0.2f;
+            venom.bonusPerExtraStack = 0.2f;
+            var frenzy = Item<StatusOnHitItem>("Item_FrenzyTalisman", "Talisman de frénésie",
+                "Chaque coup critique : +10% de vitesse d'attaque pendant 3 s, jusqu'à 3 (+2) cumuls.", ItemRarity.Uncommon);
+            frenzy.status = StatusType.Frenzy;
+            frenzy.onOwner = true;
+            frenzy.criticalOnly = true;
+            frenzy.duration = 3f;
+            frenzy.maxStacksFirst = 3;
+            frenzy.maxStacksPerExtra = 2;
+            var armorBreaker = Item<StatusOnHitItem>("Item_ArmorBreaker", "Brise-armure",
+                "Chaque coup : la cible subit +3% de dégâts pendant 4 s, jusqu'à 5 (+5) cumuls.", ItemRarity.Uncommon);
+            armorBreaker.status = StatusType.Shattered;
+            armorBreaker.onOwner = false;
+            armorBreaker.criticalOnly = false;
+            armorBreaker.duration = 4f;
+            armorBreaker.maxStacksFirst = 5;
+            armorBreaker.maxStacksPerExtra = 5;
+            var amberHeart = Item<CooldownOnKillItem>("Item_AmberHeart", "Cœur d'ambre",
+                "Chaque kill réduit de 0,5 s (+0,5 s) la recharge restante des compétences, sauf la principale.", ItemRarity.Uncommon);
+            amberHeart.secondsFirstStack = 0.5f;
+            amberHeart.secondsPerExtraStack = 0.5f;
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Frenzy, null, aboveEnemies: false,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_202.png"));
+            ArtLibraryBuilder.ConfigureStatus(StatusType.Shattered, null, aboveEnemies: true,
+                AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_203.png"));
+
             var fireOrb = Item<DotAreaOnKillItem>("Item_FireOrb", "Orbe de feu", "Un ennemi tué brûle les ennemis à 4 m (+1,5 m) : 200% (+100%) en 3 s.", ItemRarity.Uncommon);
             fireOrb.dot = burn;
             fireOrb.radiusFirstStack = 4f;
@@ -1251,8 +1296,8 @@ namespace RiskOfMagic.Editor
             var items = new List<ItemDefinition>
             {
                 gauntlet, boots, hawkEye, meat, fang, oak, dagger, executioner, breaker, adrenaline, whetstone,
-                pendant, vigorRoot, courierDraught,
-                fireOrb, feather, hourglass, storm, oil, quiver, amber, resin, thorns, voodoo, cloak, resonance,
+                pendant, vigorRoot, courierDraught, butcher, flint, keenBlade,
+                fireOrb, feather, hourglass, storm, oil, quiver, amber, resin, venom, frenzy, armorBreaker, amberHeart, thorns, voodoo, cloak, resonance,
                 horn, grimoire, twinBlade, frostRing, banner,
                 chaosEye, phoenix, comet, crown,
                 scale, bone

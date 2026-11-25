@@ -35,6 +35,8 @@ namespace RiskOfMagic.Player
         public float ReviveProgress => reviveProgress.Value;
         public float BleedOutRemaining => IsDowned && IsSpawned ? Mathf.Max(0f, (float)(bleedOutAt.Value - NetworkManager.ServerTime.Time)) : 0f;
         public bool IsBeingRevived => IsDowned && reviveProgress.Value > 0f;
+        /// <summary>Server: true during the kill that ends a bleed-out (already counted as a knock-down).</summary>
+        public bool IsBleedingOut => bleedingOut;
 
         private void Awake() => avatar = GetComponent<PlayerAvatar>();
 

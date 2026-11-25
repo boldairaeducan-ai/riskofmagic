@@ -55,6 +55,8 @@ MonoBehaviour:
     runeBlessingDamageBonus: 0.3
     rallyBonus: 0.4
     warhornBonusPerStack: 0.15
+    frenzyAttackSpeedPerStack: 0.1
+    shatteredDamageTakenPerStack: 0.03
   enemies:
     regularDamageMultiplier: 1.15
     regularAttackRateMultiplier: 1.3

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7231ca1d44d944a4cbd6e8cd3b6ff7a6, type: 3}
   m_Name: Movement_Arcanist
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.MovementConfig
-  walkSpeed: 7
+  walkSpeed: 5.95
   sprintMultiplier: 1.45
   groundAcceleration: 80
   airAcceleration: 25
