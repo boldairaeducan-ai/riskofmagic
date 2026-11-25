@@ -85,7 +85,7 @@ Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire)
 | Clic gauche | Projectile magique : chargé, jusqu'à 6 cibles, 110 % chacune | Éclats arcaniques : 3 × 60 % |
 | Clic droit | Explosion arcanique [6 s] : 200 % autour, repousse | Orbe de givre [7 s] : 300 % dans 4 m, gèle 2 s |
 | Utilitaire | Bouclier arcanique [10 s] : bloque 95 % 3 s | Transfert [7 s] : téléportation 15 m |
-| Spéciale | Blocage temporel [14 s] : fige les ennemis devant soi 4 s | Rayon du néant [12 s] : 3 s, 8 × 45 %/s, traverse |
+| Spéciale | Blocage temporel [14 s] : fige les ennemis devant soi 4 s | Rayon du néant [12 s] : 3 s, 8 × 45 %/s (× vitesse d'attaque), +25 %/s de montée, traverse |
 
 ### Druide
 

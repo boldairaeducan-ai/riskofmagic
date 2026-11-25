@@ -845,13 +845,15 @@ namespace RiskOfMagic.Editor
             transfer.keepsSprint = true;
 
             var voidBeam = Skill<BeamSkill>("Arcanist_VoidBeam", "Rayon du néant",
-                "Rayon de 3 s qui traverse les ennemis : 45% 8 fois par seconde. Chaque tick déclenche les objets (coef. 0,5). Ralentit de 50%.",
+                "Rayon de 3 s qui traverse les ennemis : 45% 8 fois par seconde (plus avec la vitesse d'attaque), +25% de dégâts par seconde maintenue. Chaque tick déclenche les objets (coef. 0,6). Ralentit de 50%.",
                 SkillActivationMode.Press, cooldown: 12f, cast: 0.3f);
             voidBeam.range = 40f;
             voidBeam.duration = 3f;
             voidBeam.ticksPerSecond = 8f;
             voidBeam.damageCoefficientPerTick = 0.45f;
-            voidBeam.procCoefficient = 0.5f;
+            voidBeam.procCoefficient = 0.6f;
+            voidBeam.tickRateScalesWithAttackSpeed = true;
+            voidBeam.damageRampPerSecond = 0.25f;
             voidBeam.beamVfx = vfx.VoidBeam;
             voidBeam.impactVfx = vfx.ArcaneBurst;
 
