@@ -123,8 +123,9 @@ namespace RiskOfMagic.Player
         {
             if (victim.gameObject == gameObject)
             {
-                // A downed player bleeding out was already counted when knocked down.
-                if (avatar.Downed == null || !avatar.Downed.IsDowned)
+                // A downed player bleeding out was already counted when knocked down
+                // (BleedOut clears the downed flag before the killing damage, hence IsBleedingOut).
+                if (avatar.Downed == null || (!avatar.Downed.IsDowned && !avatar.Downed.IsBleedingOut))
                     deaths.Value++;
             }
             else if (IsFromMe(info))
