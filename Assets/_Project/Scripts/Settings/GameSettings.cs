@@ -41,6 +41,9 @@ namespace RiskOfMagic.Settings
         /// <summary>0 = no camera shake.</summary>
         public static float CameraShake { get; set; } = 1f;
 
+        // Debug
+        public static bool ShowFps { get; set; }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
@@ -71,6 +74,7 @@ namespace RiskOfMagic.Settings
             ShowDamageNumbers = PlayerPrefs.GetInt(Prefix + "damageNumbers", 1) == 1;
             ShowHitMarkers = PlayerPrefs.GetInt(Prefix + "hitMarkers", 1) == 1;
             CameraShake = PlayerPrefs.GetFloat(Prefix + "cameraShake", 1f);
+            ShowFps = PlayerPrefs.GetInt(Prefix + "showFps", 0) == 1;
         }
 
         public static void Save()
@@ -94,6 +98,7 @@ namespace RiskOfMagic.Settings
             PlayerPrefs.SetInt(Prefix + "damageNumbers", ShowDamageNumbers ? 1 : 0);
             PlayerPrefs.SetInt(Prefix + "hitMarkers", ShowHitMarkers ? 1 : 0);
             PlayerPrefs.SetFloat(Prefix + "cameraShake", CameraShake);
+            PlayerPrefs.SetInt(Prefix + "showFps", ShowFps ? 1 : 0);
             PlayerPrefs.Save();
         }
 
@@ -102,7 +107,7 @@ namespace RiskOfMagic.Settings
             foreach (var key in new[]
                      {
                          "width", "height", "displayMode", "quality", "vsync", "fpsLimit", "fov", "masterVolume", "musicVolume",
-                         "effectsVolume", "mouseSensitivity", "stickSensitivity", "invertY", "damageNumbers", "hitMarkers", "cameraShake"
+                         "effectsVolume", "mouseSensitivity", "stickSensitivity", "invertY", "damageNumbers", "hitMarkers", "cameraShake", "showFps"
                      })
                 PlayerPrefs.DeleteKey(Prefix + key);
             Load();

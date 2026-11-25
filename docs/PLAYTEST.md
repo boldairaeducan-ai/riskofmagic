@@ -23,6 +23,7 @@ Coche chaque point avant d'envoyer le build.
 
 ## 3. Performances
 
+- [ ] **Options → Debug → Afficher les FPS** pendant les tests (et le demander aux testeurs).
 - [ ] 60 FPS sur une machine moyenne avec 22 ennemis, élites et effets à l'écran (Profiler ou statistiques du Game View).
 - [ ] Pas de saccade au changement d'étape ni à l'apparition du boss.
 
@@ -43,8 +44,8 @@ Coche chaque point avant d'envoyer le build.
 ## 6. Progression
 
 - [ ] Le profil (défis, déblocages) se sauvegarde et se recharge.
-- [ ] Prévoir une façon de **tout débloquer** pour les testeurs (ou leur donner un profil complet), sinon ils ne
-      verront que l'Archer et le Guerrier.
+- [ ] Dire aux testeurs d'activer **Options → Debug → Tout débloquer (test)** (sinon ils ne verront que l'Archer et le
+      Guerrier), puis de repasser par le salon.
 
 ## 7. Retours
 

@@ -184,6 +184,13 @@ namespace RiskOfMagic.UI
                 () => GameSettings.ShowHitMarkers, v => GameSettings.ShowHitMarkers = v);
             AddSlider("Tremblements de caméra", "Intensité des secousses (explosions, coups reçus).", 0f, 1f, 0.1f,
                 () => GameSettings.CameraShake, v => GameSettings.CameraShake = v, Percent);
+
+            AddTab("Debug");
+            AddToggle("Afficher les FPS", "Images par seconde et durée d'une image, en haut à droite de l'écran.",
+                () => GameSettings.ShowFps, v => GameSettings.ShowFps = v);
+            AddToggle("Tout débloquer (test)", "Classes, compétences alternatives, objets et mode Difficile disponibles. " +
+                                               "Les défis continuent de progresser. Pris en compte au prochain passage par le salon.",
+                () => RiskOfMagic.Meta.MetaProgression.DebugUnlockAll, v => RiskOfMagic.Meta.MetaProgression.DebugUnlockAll = v);
         }
 
         private static string Percent(float value) => $"{Mathf.RoundToInt(value * 100f)}%";
