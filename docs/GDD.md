@@ -12,7 +12,7 @@ Roguelite coopératif à la première personne dans l'esprit de *Risk of Rain*, 
 | Joueurs | 1 à 4, coop en ligne (Steam, code de partie) |
 | Plateforme | PC (Unity 6, URP) |
 | Personnages | 6 classes jouables, 8 compétences chacune (4 de base + 4 alternatives) |
-| Contenu | 44 objets, 3 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
+| Contenu | 44 objets, 4 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
 
 **Piliers** : la difficulté monte avec le temps ; les objets se cumulent sans plafond ; chaque classe a deux styles de jeu ; la coop est au cœur du jeu (soins, relèves, buffs de zone).
 
@@ -126,7 +126,7 @@ Pas de régénération passive.
 
 ## Objets et équipements
 
-44 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 3 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
+44 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 4 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
 
 | Rareté | Nombre | Source principale |
 | --- | --- | --- |
@@ -202,6 +202,7 @@ Pas de régénération passive.
 | Tome sombre | 30 s | Pacte sombre : coûte 10 % PV (jamais mortel) ; 8 s : +40 % de dégâts, chaque coup rend 3 % des dégâts infligés |
 | Pierre de foudre | 30 s | 3 éclairs de 500 % sur la zone visée |
 | Corne de ralliement | 45 s | +40 % de vitesses 8 s, soi et alliés à 25 m |
+| Crâne hurlant | 35 s | Maudit les ennemis en cône (20 m) 8 s |
 
 ## Ennemis
 

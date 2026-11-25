@@ -1343,6 +1343,17 @@ namespace RiskOfMagic.Editor
             tome.duration = 8f;
             tome.vfx = vfx.CursePulse;
 
+            var skull = Asset<CurseConeEquipment>($"{EquipmentFolder}/Equipment_HowlingSkull.asset");
+            skull.displayName = "Crâne hurlant";
+            skull.description = "Maudit les ennemis devant soi (20 m) pendant 8 s : -50% dégâts infligés, -10% vitesse, +30% dégâts subis, -10% de PV max.";
+            skull.cooldown = 35f;
+            skull.range = 20f;
+            skull.coneAngle = 35f;
+            skull.curseDuration = 8f;
+            skull.vfx = vfx.CursePulse;
+            if (skull.icon == null)
+                skull.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_150.png");
+
             var stone = Asset<LightningStrikeEquipment>($"{EquipmentFolder}/Equipment_LightningStone.asset");
             stone.displayName = "Pierre de foudre";
             stone.description = "La foudre frappe 3 fois la zone visée : 500% chaque.";
@@ -1353,7 +1364,7 @@ namespace RiskOfMagic.Editor
             stone.boltVfx = vfx.Lightning;
             stone.impactVfx = vfx.Explosion;
 
-            var all = new List<EquipmentDefinition> { horn, tome, stone };
+            var all = new List<EquipmentDefinition> { horn, tome, stone, skull };
             foreach (var equipment in all)
                 EditorUtility.SetDirty(equipment);
             return all;
