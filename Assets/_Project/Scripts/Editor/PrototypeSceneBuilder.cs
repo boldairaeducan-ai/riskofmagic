@@ -1335,14 +1335,12 @@ namespace RiskOfMagic.Editor
             horn.duration = 8f;
             horn.vfx = vfx.RallyPulse;
 
-            var tome = Asset<CurseConeEquipment>($"{EquipmentFolder}/Equipment_DarkTome.asset");
+            var tome = Asset<DarkPactEquipment>($"{EquipmentFolder}/Equipment_DarkTome.asset");
             tome.displayName = "Tome sombre";
-            tome.description = "Coûte 25% des PV max. Maudit les ennemis devant soi (20 m) pendant 8 s : -50% dégâts infligés, -10% vitesse, +30% dégâts subis.";
+            tome.description = "Pacte sombre : coûte 10% des PV max (jamais mortel). Pendant 8 s : +40% de dégâts, chaque coup rend 3% des dégâts infligés en PV.";
             tome.cooldown = 30f;
-            tome.healthCost = 0.25f;
-            tome.range = 20f;
-            tome.coneAngle = 35f;
-            tome.curseDuration = 8f;
+            tome.healthCost = 0.1f;
+            tome.duration = 8f;
             tome.vfx = vfx.CursePulse;
 
             var stone = Asset<LightningStrikeEquipment>($"{EquipmentFolder}/Equipment_LightningStone.asset");

@@ -75,6 +75,9 @@ namespace RiskOfMagic.Core
             [Tooltip("Bolas (Ensnared): move speed multiplier.")] public float ensnareSpeedMultiplier = 0.5f;
             [Tooltip("Bolas on bosses and elites.")] public float ensnareReducedSpeedMultiplier = 0.75f;
             [Tooltip("Résine collante (Resin): move speed lost per stack.")] public float resinSlowPerStack = 0.1f;
+            [Range(0f, 0.9f), Tooltip("Curse on enemies: max health removed for the curse duration (current health too).")] public float curseMaxHealthReduction = 0.1f;
+            [Tooltip("Tome sombre (DarkPact): damage bonus.")] public float darkPactDamageBonus = 0.4f;
+            [Range(0f, 1f), Tooltip("Tome sombre (DarkPact): share of the damage dealt healed.")] public float darkPactLifesteal = 0.03f;
             [Tooltip("Talisman de frénésie (Frenzy): attack speed per stack.")] public float frenzyAttackSpeedPerStack = 0.1f;
             [Tooltip("Brise-armure (Shattered): damage taken per stack.")] public float shatteredDamageTakenPerStack = 0.03f;
             [Tooltip("Envol de corbeaux: move speed bonus.")] public float ravenFormSpeedBonus = 0.6f;

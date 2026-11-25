@@ -9,17 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3e72606da1dd4c4f978d2fa0052fb3c, type: 3}
+  m_Script: {fileID: 11500000, guid: aca99251643046d89ca370913a791ce0, type: 3}
   m_Name: Equipment_DarkTome
-  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Equipment.CurseConeEquipment
+  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Equipment.DarkPactEquipment
   displayName: Tome sombre
-  description: "Co\xFBte 25% des PV max. Maudit les ennemis devant soi (20 m) pendant
-    8 s : -50% d\xE9g\xE2ts inflig\xE9s, -10% vitesse, +30% d\xE9g\xE2ts subis."
+  description: "Pacte sombre : co\xFBte 10% des PV max (jamais mortel). Pendant 8
+    s : +40% de d\xE9g\xE2ts, chaque coup rend 3% des d\xE9g\xE2ts inflig\xE9s en PV."
   icon: {fileID: 21300000, guid: 19be8949aec831c42a29d0148f6edf5d, type: 3}
   cooldown: 30
   activateSound: {fileID: 11400000, guid: 88e5b0029248a884eab684fb2169d057, type: 2}
-  healthCost: 0.25
-  range: 20
-  coneAngle: 35
-  curseDuration: 8
+  healthCost: 0.1
+  duration: 8
   vfx: {fileID: 666047915649629285, guid: e28d37df24c893243a222bb9293b6972, type: 3}

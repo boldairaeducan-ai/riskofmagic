@@ -199,7 +199,7 @@ Pas de régénération passive.
 
 | Équipement | Rechargement | Effet |
 | --- | --- | --- |
-| Tome sombre | 30 s | Coûte 25 % PV ; maudit en cône (20 m) 8 s : −50 % de dégâts infligés, −10 % de vitesse, +30 % de dégâts subis |
+| Tome sombre | 30 s | Pacte sombre : coûte 10 % PV (jamais mortel) ; 8 s : +40 % de dégâts, chaque coup rend 3 % des dégâts infligés |
 | Pierre de foudre | 30 s | 3 éclairs de 500 % sur la zone visée |
 | Corne de ralliement | 45 s | +40 % de vitesses 8 s, soi et alliés à 25 m |
 
@@ -249,7 +249,8 @@ Pas de régénération passive.
 
 | Statut | Effet |
 | --- | --- |
-| Malédiction | −50 % de dégâts infligés, −10 % de vitesse, +30 % de dégâts subis |
+| Malédiction | −50 % de dégâts infligés, −10 % de vitesse, +30 % de dégâts subis ; ennemis : −10 % de PV max (et de PV) pendant la malédiction, section violette sur la barre des boss |
+| Pacte sombre | +40 % de dégâts, vol de vie 3 % (Tome sombre) |
 | Marqué | +50 % de dégâts subis, 30 % renvoyés aux ennemis à 8 m |
 | Entravé (bolas) | −50 % de vitesse (−25 % sur boss et élites) |
 | Gelé | −30 % de vitesse |

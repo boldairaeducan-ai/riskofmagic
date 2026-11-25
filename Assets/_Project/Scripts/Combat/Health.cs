@@ -21,6 +21,7 @@ namespace RiskOfMagic.Combat
         private readonly NetworkVariable<int> dotMask = new();
         private readonly NetworkVariable<ulong> dotStacks = new(); // 6 bits per DamageType (stack count, max 63)
         private readonly NetworkVariable<float> barrier = new();
+        private readonly NetworkVariable<float> maxHealthDebuff = new();
         private double barrierUntil;
         private IHealthHooks[] hooks = Array.Empty<IHealthHooks>();
 
@@ -91,6 +92,31 @@ namespace RiskOfMagic.Combat
             shieldReduction.Value = IsShielded ? Mathf.Max(shieldReduction.Value, reduction) : Mathf.Clamp01(reduction);
             if (until > shieldUntil.Value)
                 shieldUntil.Value = until;
+        }
+
+        /// <summary>Every peer: max health temporarily removed (curse), shown as a purple section on boss bars.</summary>
+        public float MaxHealthDebuff => maxHealthDebuff.Value;
+
+        /// <summary>Server: removes a fraction of max health (and as much current health, never lethal) until cleared.</summary>
+        public void ApplyMaxHealthDebuff(float fraction)
+        {
+            if (!AssertServer() || !IsAlive || maxHealthDebuff.Value > 0f || fraction <= 0f)
+                return;
+            float amount = Mathf.Min(max.Value - 1f, max.Value * fraction);
+            if (amount <= 0f)
+                return;
+            maxHealthDebuff.Value = amount;
+            max.Value -= amount;
+            current.Value = Mathf.Clamp(current.Value - amount, 1f, max.Value);
+        }
+
+        /// <summary>Server: gives the removed max health back (current health is not refilled).</summary>
+        public void ClearMaxHealthDebuff()
+        {
+            if (!IsServer || maxHealthDebuff.Value <= 0f)
+                return;
+            max.Value += maxHealthDebuff.Value;
+            maxHealthDebuff.Value = 0f;
         }
 
         /// <summary>Every peer: temporary health points absorbed before health (Carapace d'ambre).</summary>

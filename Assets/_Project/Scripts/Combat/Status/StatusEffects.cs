@@ -46,7 +46,9 @@ namespace RiskOfMagic.Combat
         /// <summary>Attack speed per stack after critical hits (Talisman de frénésie).</summary>
         Frenzy,
         /// <summary>More damage taken per stack (Brise-armure).</summary>
-        Shattered
+        Shattered,
+        /// <summary>More damage dealt, hits heal (Tome sombre).</summary>
+        DarkPact
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -95,7 +97,8 @@ namespace RiskOfMagic.Combat
         public float DamageDealtMultiplier => (Has(StatusType.Curse) ? curseDamageDealtMultiplier : 1f)
                                               * (Has(StatusType.Banner) ? 1f + bannerDamageBonus + bannerDamageBonusPerExtraStack * (GetStacks(StatusType.Banner) - 1) : 1f)
                                               * (1f + GetStacks(StatusType.SoulHarvest) / 100f)
-                                              * (Has(StatusType.RuneBlessing) ? 1f + runeBlessingDamageBonus : 1f);
+                                              * (Has(StatusType.RuneBlessing) ? 1f + runeBlessingDamageBonus : 1f)
+                                              * (Has(StatusType.DarkPact) ? 1f + RiskOfMagic.Core.GameBalance.Instance.statuses.darkPactDamageBonus : 1f);
         public float MoveSpeedMultiplier => Has(StatusType.Rooted) ? 0f
             : (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (Has(StatusType.Chilled) ? chillSpeedMultiplier : 1f)
               * (Has(StatusType.Channeling) ? channelingSpeedMultiplier : 1f) * (1f + SpeedBonus)
@@ -126,10 +129,14 @@ namespace RiskOfMagic.Combat
         {
             entries.OnListChanged += OnEntriesChanged;
             RefreshAttachedEffects();
+            if (IsServer && TryGetComponent(out RiskOfMagic.Player.PlayerAvatar _))
+                Health.ServerDamaged += OnServerDamaged; // Tome sombre lifesteal (players only)
         }
 
         public override void OnNetworkDespawn()
         {
+            if (IsServer)
+                Health.ServerDamaged -= OnServerDamaged;
             entries.OnListChanged -= OnEntriesChanged;
             foreach (var effect in attachedEffects.Values)
                 if (effect != null)
@@ -204,8 +211,30 @@ namespace RiskOfMagic.Combat
             return false;
         }
 
+        /// <summary>Server: Tome sombre lifesteal on the damage this character deals.</summary>
+        private void OnServerDamaged(Health victim, DamageInfo info)
+        {
+            if (!info.HasSource || info.SourceId != NetworkObjectId || victim.gameObject == gameObject || !Has(StatusType.DarkPact))
+                return;
+            if (TryGetComponent(out Health self) && self.IsAlive)
+                self.Heal(info.Amount * RiskOfMagic.Core.GameBalance.Instance.statuses.darkPactLifesteal);
+        }
+
+        /// <summary>Server: the curse removes a share of an enemy's max health while it lasts.</summary>
+        private void SyncCurseMaxHealth()
+        {
+            if (!IsServer || !TryGetComponent(out RiskOfMagic.Enemies.EnemyActor _) || !TryGetComponent(out Health health))
+                return;
+            bool cursed = Has(StatusType.Curse);
+            if (cursed && health.MaxHealthDebuff <= 0f)
+                health.ApplyMaxHealthDebuff(RiskOfMagic.Core.GameBalance.Instance.statuses.curseMaxHealthReduction);
+            else if (!cursed && health.MaxHealthDebuff > 0f)
+                health.ClearMaxHealthDebuff();
+        }
+
         private void OnEntriesChanged(NetworkListEvent<StatusEntry> change)
         {
+            SyncCurseMaxHealth();
             RefreshAttachedEffects();
             Changed?.Invoke();
         }

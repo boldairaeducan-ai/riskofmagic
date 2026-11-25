@@ -62,6 +62,9 @@ MonoBehaviour:
     runeBlessingDamageBonus: 0.3
     rallyBonus: 0.4
     warhornBonusPerStack: 0.15
+    curseMaxHealthReduction: 0.1
+    darkPactDamageBonus: 0.4
+    darkPactLifesteal: 0.03
     frenzyAttackSpeedPerStack: 0.1
     shatteredDamageTakenPerStack: 0.03
   enemies:

@@ -48,6 +48,7 @@ namespace RiskOfMagic.Editor
             { StatusType.Sealed, ("Sceau", true, true) },
             { StatusType.Frenzy, ("Frénésie", true, false) },
             { StatusType.Shattered, ("Armure brisée", true, true) },
+            { StatusType.DarkPact, ("Pacte sombre", true, false) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()
