@@ -625,13 +625,13 @@ namespace RiskOfMagic.Editor
             var characters = new List<CharacterDefinition>
             {
                 Character("Character_Archer", "Archer", "Agile, double saut, dégâts à distance.", new Color(0.3f, 0.75f, 0.35f),
-                    80f, Movement("Movement_Archer", 7.5f, 2), rapidShot, piercing, roll, rain),
+                    80f, Movement("Movement_Archer", 6.375f, 2), rapidShot, piercing, roll, rain),
                 Character("Character_Warrior", "Guerrier", "Robuste, combat au corps à corps.", new Color(0.8f, 0.3f, 0.25f),
-                    130f, Movement("Movement_Warrior", 7f, 1), combo, whirlwind, charge, slam),
+                    130f, Movement("Movement_Warrior", 5.95f, 1), combo, whirlwind, charge, slam),
                 Character("Character_Arcanist", "Arcaniste", "Projectiles chercheurs, contrôle et protection.", new Color(0.6f, 0.35f, 0.95f),
-                    90f, Movement("Movement_Arcanist", 7f, 1), volley, burst, shield, timeLock),
+                    90f, Movement("Movement_Arcanist", 5.95f, 1), volley, burst, shield, timeLock),
                 Character("Character_Druid", "Druide", "Maître de la nature, à distance : saignements, foudre et flammes. Kit poison en alternative.",
-                    new Color(0.25f, 0.55f, 0.2f), 100f, Movement("Movement_Druid", 7.2f, 1), vineWhip, lightning, ravens, breath)
+                    new Color(0.25f, 0.55f, 0.2f), 100f, Movement("Movement_Druid", 6.12f, 1), vineWhip, lightning, ravens, breath)
             };
             BuildPaladinAndShadow(characters, p, vfx);
             BuildAlternativeSkills(characters, p, vfx);
@@ -724,9 +724,9 @@ namespace RiskOfMagic.Editor
                 EditorUtility.SetDirty(skill);
 
             characters.Add(Character("Character_Paladin", "Paladin", "Soutien de première ligne : soins, protection, dégâts sacrés.",
-                new Color(0.95f, 0.85f, 0.45f), 120f, Movement("Movement_Paladin", 6.6f, 1), hammer, judgment, aegis, consecration));
+                new Color(0.95f, 0.85f, 0.45f), 120f, Movement("Movement_Paladin", 5.61f, 1), hammer, judgment, aegis, consecration));
             characters.Add(Character("Character_Shadow", "Ombre", "Assassin furtif : invisibilité, critiques dans le dos, marque.",
-                new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 8f, 2), daggers, throwing, veil, mark));
+                new Color(0.3f, 0.25f, 0.4f), 85f, Movement("Movement_Shadow", 6.8f, 2), daggers, throwing, veil, mark));
         }
 
         /// <summary>One alternative per slot and character (locked by challenges, chosen in the lobby).</summary>

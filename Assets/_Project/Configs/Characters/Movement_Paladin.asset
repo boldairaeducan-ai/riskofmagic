@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7231ca1d44d944a4cbd6e8cd3b6ff7a6, type: 3}
   m_Name: Movement_Paladin
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.MovementConfig
-  walkSpeed: 6.6
+  walkSpeed: 5.61
   sprintMultiplier: 1.45
   groundAcceleration: 80
   airAcceleration: 25
