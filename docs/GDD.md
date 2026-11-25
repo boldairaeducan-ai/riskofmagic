@@ -33,7 +33,7 @@ Une run enchaîne 5 étapes : chaque carte se termine en chargeant un téléport
 | 4 | (à définir) |
 | 5 | Sanctuaire du chaos (boss final) |
 
-**Difficulté** : un coefficient démarre à 1,25, monte de 0,1 par minute, est multiplié par 1,08 à chaque étape et par 1 + 0,3 par joueur supplémentaire. Il fixe le niveau des ennemis (1 niveau tous les 0,33) et le budget du directeur d'ennemis.
+**Difficulté** : un coefficient démarre à 1,25, monte de 0,1 par minute, est multiplié par 1,08 à chaque étape et par 1 + 0,3 par joueur supplémentaire. Il fixe le niveau des ennemis (1 niveau tous les 0,33) et le budget du directeur d'ennemis. Le HUD l'affiche en haut à gauche : une frise défilante de 9 paliers (Paisible, Agité, Hostile, Périlleux, Brutal, Funeste, Cauchemar, Apocalypse, Fin des temps), un palier par +1 de progression, soit environ 5 min en Normal.
 
 | Mode | Différences |
 | --- | --- |

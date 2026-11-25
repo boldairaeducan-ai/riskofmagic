@@ -89,6 +89,7 @@ namespace RiskOfMagic.Editor
             BuildEquipmentSlot(gameplay);
             BuildInventory(gameplay);
             BuildRunInfo(gameplay);
+            BuildDifficultyTimeline(gameplay);
             BuildObjective(gameplay);
             BuildBossBar(gameplay);
             BuildNotification(gameplay);
@@ -592,6 +593,27 @@ namespace RiskOfMagic.Editor
             {
                 so.FindProperty("theme").objectReferenceValue = theme;
                 so.FindProperty("timerLabel").objectReferenceValue = timer;
+                so.FindProperty("detailsLabel").objectReferenceValue = details;
+            });
+        }
+
+        private static void BuildDifficultyTimeline(RectTransform parent)
+        {
+            var panel = Rect("DifficultyTimeline", parent, TopLeft, TopLeft, new Vector2(30f, -30f), new Vector2(380f, 90f));
+            Themed(panel, HudSprite.Panel, HudColor.Panel);
+            var tier = Text(Rect("Tier", panel, TopLeft, TopLeft, new Vector2(12f, -6f), new Vector2(220f, 32f)), null,
+                "Paisible", 24f, HudFont.Title, HudColor.Text, TextAlignmentOptions.Left);
+            var details = Text(Rect("Details", panel, TopRight, TopRight, new Vector2(-12f, -10f), new Vector2(140f, 26f)), null,
+                "Niveau ennemis 1", 16f, HudFont.Body, HudColor.TextMuted, TextAlignmentOptions.Right);
+            var viewport = Rect("Timeline", panel, BottomCenter, BottomCenter, new Vector2(0f, 10f), new Vector2(356f, 30f));
+            Themed(viewport, HudSprite.BarBackground, HudColor.BarBackground);
+            viewport.gameObject.AddComponent<UnityEngine.UI.RectMask2D>();
+            var widget = panel.gameObject.AddComponent<DifficultyTimelineWidget>();
+            Props(widget, so =>
+            {
+                so.FindProperty("theme").objectReferenceValue = theme;
+                so.FindProperty("viewport").objectReferenceValue = viewport;
+                so.FindProperty("tierLabel").objectReferenceValue = tier;
                 so.FindProperty("detailsLabel").objectReferenceValue = details;
             });
         }
