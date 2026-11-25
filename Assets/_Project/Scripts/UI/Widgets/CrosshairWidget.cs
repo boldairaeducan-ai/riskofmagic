@@ -41,7 +41,7 @@ namespace RiskOfMagic.UI
             if (crosshair != null && theme != null)
                 crosshair.color = outOfRange ? theme.dangerColor : theme.textColor;
             if (outOfRangeLabel != null)
-                outOfRangeLabel.gameObject.SetActive(outOfRange);
+                outOfRangeLabel.gameObject.SetActive(false); // the "Hors de portée" text was removed: only the crosshair turns red
         }
     }
 }

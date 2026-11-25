@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm, FlameBreath;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm, FlameBreath, Grapple;
         }
 
         private sealed class ProjectileSet
@@ -290,6 +290,8 @@ namespace RiskOfMagic.Editor
                 LightningStrike = EffectPrefab("VFX_LightningStrike", PrimitiveType.Cylinder, new Vector3(0.08f, 2f, 0.08f), new Vector3(0f, 2f, 0f), new Color(0.85f, 0.9f, 1f), 0.3f),
                 RavenSwarm = AuraPrefab("VFX_RavenSwarm", 0.7f, new Color(0.12f, 0.1f, 0.18f)),
                 // Continuous flame jet (Souffle enflammé): follows the caster, +Z = jet; lifetime = channel + fade.
+                // Archer grapple rope (local line, every peer).
+                Grapple = LinePrefab("VFX_Grapple", new Color(0.55f, 0.42f, 0.28f), 0.05f, 0.45f),
                 FlameBreath = EffectPrefab("VFX_FlameBreath", PrimitiveType.Cube, new Vector3(1.2f, 0.8f, 9f), new Vector3(0f, 0f, 4.5f), new Color(1f, 0.5f, 0.1f), 4.5f)
             };
             ArtLibraryBuilder.SetDefaultModel(ArtLibraryBuilder.Category.Vfx, "VFX_FlameBreath",
@@ -764,19 +766,14 @@ namespace RiskOfMagic.Editor
             ArtLibraryBuilder.ConfigureStatus(StatusType.Ensnared, vfx.Bolas, aboveEnemies: true,
                 AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_093.png"));
 
-            var backHop = Skill<DashSkill>("Archer_BackHop", "Bond arrière", "Saut de 12 m vers l'arrière, repousse les ennemis proches.",
-                SkillActivationMode.Press, cooldown: 6f, cast: 0f);
-            backHop.direction = DashDirection.BackwardFlat;
-            backHop.speed = 30f;
-            backHop.duration = 0.4f;
-            backHop.ignoreGravity = false;
-            backHop.upwardVelocity = 6f;
-            backHop.startKnockbackRadius = 4f;
-            backHop.startKnockbackDistance = 6f;
-            backHop.canCastWhileBusy = true;
-            backHop.keepsSprint = true;
-            backHop.castVfx = vfx.DashBurst;
-            backHop.ownerFovKick = 8f;
+            var grapple = Skill<GrappleSkill>("Archer_Grapple", "Flèche-grappin",
+                "Tire un grappin (25 m) qui vous tire jusqu'au point visé et annule la chute. S'il n'accroche rien, vous propulse vers le haut.",
+                SkillActivationMode.Press, cooldown: 7f, cast: 0f);
+            grapple.range = 25f;
+            grapple.canCastWhileBusy = true;
+            grapple.keepsSprint = true;
+            grapple.ropeVfx = vfx.Grapple;
+            grapple.ownerFovKick = 6f;
 
             var explosiveVolley = Skill<ProjectileSkill>("Archer_ExplosiveVolley", "Volée explosive", "3 flèches qui explosent : 3 × 250% dans 4 m.",
                 SkillActivationMode.Press, cooldown: 12f, cast: 0.4f);
@@ -900,10 +897,10 @@ namespace RiskOfMagic.Editor
             bloom.damageMultiplier = 1.5f;
             bloom.burstVfx = vfx.PoisonBurst;
 
-            foreach (var skill in new SkillDefinition[] { fireArrows, bolas, backHop, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, cloud, venomRoots, bloom })
+            foreach (var skill in new SkillDefinition[] { fireArrows, bolas, grapple, explosiveVolley, hammer, axe, parry, warCry, shards, frostOrb, transfer, voidBeam, thorns, cloud, venomRoots, bloom })
                 EditorUtility.SetDirty(skill);
 
-            SetAlternatives(characters[0], fireArrows, bolas, backHop, explosiveVolley);
+            SetAlternatives(characters[0], fireArrows, bolas, grapple, explosiveVolley);
             SetAlternatives(characters[1], hammer, axe, parry, warCry);
             SetAlternatives(characters[2], shards, frostOrb, transfer, voidBeam);
             SetAlternatives(characters[3], thorns, cloud, venomRoots, bloom);

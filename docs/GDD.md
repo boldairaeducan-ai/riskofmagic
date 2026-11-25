@@ -70,7 +70,7 @@ Emplacements : clic gauche (principale), clic droit (secondaire), A (utilitaire)
 | --- | --- | --- |
 | Clic gauche | Tir rapide : 100 % en continu | Tir en éventail : 3 × 50 % |
 | Clic droit | Flèche perforante [6 s] : chargée, 150-500 %, traverse | Bolas [7 s] : chargés, 1 à 4 cibles en cône de 18 m, 150 %, −50 % de vitesse 3 s |
-| Utilitaire | Roulade [5 s] | Bond arrière [6 s] : 12 m, repousse |
+| Utilitaire | Roulade [5 s] | Flèche-grappin [7 s] : grappin de 25 m qui tire vers le point visé ; sans accroche, propulse vers le haut |
 | Spéciale | Pluie de flèches [15 s] : 8 × 75 % en zone | Volée explosive [12 s] : 3 × 250 % dans 4 m |
 
 ### Guerrier
