@@ -34,7 +34,6 @@ namespace RiskOfMagic.UI
 
         private static string DifficultyName(DifficultyLevel difficulty) => difficulty switch
         {
-            DifficultyLevel.Easy => "Facile",
             DifficultyLevel.Hard => "Difficile",
             _ => "Normal"
         };

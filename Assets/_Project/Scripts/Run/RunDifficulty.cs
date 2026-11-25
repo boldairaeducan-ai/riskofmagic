@@ -6,7 +6,7 @@ namespace RiskOfMagic.Run
 {
     public enum DifficultyLevel : byte
     {
-        Easy = 1,
+        // Values feed the time scaling (coefficient per minute x value): keep them.
         Normal = 2,
         Hard = 3
     }
