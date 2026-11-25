@@ -12,7 +12,7 @@ Roguelite coopératif à la première personne dans l'esprit de *Risk of Rain*, 
 | Joueurs | 1 à 4, coop en ligne (Steam, code de partie) |
 | Plateforme | PC (Unity 6, URP) |
 | Personnages | 6 classes jouables, 8 compétences chacune (4 de base + 4 alternatives) |
-| Contenu | 37 objets, 3 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
+| Contenu | 44 objets, 3 équipements, 17 ennemis dont 4 boss et 5 boss secrets |
 
 **Piliers** : la difficulté monte avec le temps ; les objets se cumulent sans plafond ; chaque classe a deux styles de jeu ; la coop est au cœur du jeu (soins, relèves, buffs de zone).
 
@@ -119,12 +119,12 @@ Pas de régénération passive.
 
 ## Objets et équipements
 
-37 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 3 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
+44 objets passifs qui se cumulent sans plafond (valeur entre parenthèses = gain par exemplaire supplémentaire), et 3 équipements actifs (touche F). Les dégâts d'objets et sur la durée ne redéclenchent jamais d'objets.
 
 | Rareté | Nombre | Source principale |
 | --- | --- | --- |
-| Commun | 14 | Petits coffres, marchand |
-| Inhabituel | 12 | Petits et grands coffres |
+| Commun | 17 | Petits coffres, marchand |
+| Inhabituel | 16 | Petits et grands coffres |
 | Rare | 5 | Grands coffres, coffres à choix |
 | Légendaire | 4 | Coffres rares, secrets |
 | Boss | 2 | Récompense de boss |
@@ -143,6 +143,9 @@ Pas de régénération passive.
 | Croc de loup | Chaque kill soigne 8 (+6) PV |
 | Bouclier de chêne | −5 (−5) dégâts par coup reçu, minimum 1 |
 | Pierre de première taille | 1er coup sur chaque ennemi : +60 % (+40 %) |
+| Croc de boucher | +30 % (+30 %) de dégâts aux ennemis à moins de 4 m |
+| Pierre à feu | 10 % (+10 %) de chances d'enflammer : brûlure de 150 % en 3 s |
+| Lame affûtée | +30 % (+30 %) de dégâts sur les coups critiques |
 | Lame du bourreau | +40 % (+40 %) contre les ennemis sous 30 % de PV |
 | Masse brise-garde | +40 % (+40 %) contre les ennemis au-dessus de 90 % de PV |
 | Dague barbelée | 10 % (+10 %) de chances de saignement, 240 % en 3 s |
@@ -157,6 +160,10 @@ Pas de régénération passive.
 | Orbe de tempête | 25 % : éclair sur 3 (+2) ennemis, 80 % |
 | Carapace d'ambre | Chaque kill : 5 (+5) points de bouclier, max 20 % des PV max, perdus après 5 s sans kill |
 | Résine collante | Chaque coup ralentit de 10 % (+10 %) pendant 2 s, max 50 % |
+| Venin de vipère | +20 % (+20 %) de dégâts contre un ennemi qui saigne, brûle ou est empoisonné |
+| Talisman de frénésie | Coup critique : +10 % de vitesse d'attaque 3 s, 3 (+2) cumuls max |
+| Brise-armure | Chaque coup : +3 % de dégâts subis par la cible 4 s, 5 (+5) cumuls max |
+| Cœur d'ambre | Chaque kill : −0,5 s (−0,5 s) sur les recharges restantes, sauf la principale |
 | Carquois enchanté | 10 % : missile chercheur, 300 % (+300 %) |
 | Pierre de résonance | Critiques : 50 % (+25 %) des dégâts dans 3 m |
 | Huile incendiaire | Ennemis tués explosent : 150 % (+75 %) dans 6 m (+1,5 m) |
@@ -241,6 +248,8 @@ Pas de régénération passive.
 | Gelé | −30 % de vitesse |
 | Enraciné | Immobile, peut attaquer |
 | Sceau | 1 à 3 cumuls posés par le Paladin, éclatés par le Jugement |
+| Frénésie | +10 % de vitesse d'attaque par cumul (Talisman de frénésie) |
+| Armure brisée | +3 % de dégâts subis par cumul (Brise-armure) |
 | Résine | −10 % de vitesse par exemplaire de Résine collante du joueur, max −50 % |
 | Figé / étourdi | Ni déplacement ni attaque |
 | Poison, saignement, brûlure | Dégâts sur la durée, voir ci-dessous |

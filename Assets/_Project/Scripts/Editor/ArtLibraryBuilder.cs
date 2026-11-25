@@ -46,6 +46,8 @@ namespace RiskOfMagic.Editor
             { StatusType.Ensnared, ("Entravé", true, true) },
             { StatusType.Resin, ("Résine", true, true) },
             { StatusType.Sealed, ("Sceau", true, true) },
+            { StatusType.Frenzy, ("Frénésie", true, false) },
+            { StatusType.Shattered, ("Armure brisée", true, true) },
         };
 
         private static readonly Dictionary<ItemRarity, string> RarityNames = new()

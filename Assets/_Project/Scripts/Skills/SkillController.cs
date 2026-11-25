@@ -253,6 +253,26 @@ namespace RiskOfMagic.Skills
             }
         }
 
+        /// <summary>Server: advances the recharge of every slot but the primary, on the server and on the owner.</summary>
+        public void ReduceCooldowns(float seconds)
+        {
+            if (!IsServer || seconds <= 0f)
+                return;
+            ApplyCooldownReduction(seconds);
+            if (!IsOwner)
+                ReduceCooldownsRpc(seconds);
+        }
+
+        [Rpc(SendTo.Owner)]
+        private void ReduceCooldownsRpc(float seconds) => ApplyCooldownReduction(seconds);
+
+        private void ApplyCooldownReduction(float seconds)
+        {
+            float multiplier = stats.CooldownMultiplier;
+            for (int i = 1; i < SlotCount; i++) // 0 = primary
+                slots[i]?.Tick(seconds, multiplier);
+        }
+
         [Rpc(SendTo.Owner)]
         private void RefillRpc(byte slotIndex)
         {

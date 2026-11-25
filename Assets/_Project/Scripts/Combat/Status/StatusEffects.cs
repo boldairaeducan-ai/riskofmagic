@@ -42,7 +42,11 @@ namespace RiskOfMagic.Combat
         /// <summary>Slowed by sticky resin (Résine collante): a fraction per stack.</summary>
         Resin,
         /// <summary>Paladin seals (1-3), detonated by Judgment / thrown shield (SealSystem).</summary>
-        Sealed
+        Sealed,
+        /// <summary>Attack speed per stack after critical hits (Talisman de frénésie).</summary>
+        Frenzy,
+        /// <summary>More damage taken per stack (Brise-armure).</summary>
+        Shattered
     }
 
     public struct StatusEntry : INetworkSerializeByMemcpy, IEquatable<StatusEntry>
@@ -109,7 +113,8 @@ namespace RiskOfMagic.Combat
             }
         }
         public float AttackSpeedMultiplier => (Has(StatusType.Curse) ? curseSpeedMultiplier : 1f) * (1f + SpeedBonus)
-                                              * (1f + GetStacks(StatusType.Adrenaline) / 100f);
+                                              * (1f + GetStacks(StatusType.Adrenaline) / 100f)
+                                              * (1f + GetStacks(StatusType.Frenzy) * RiskOfMagic.Core.GameBalance.Instance.statuses.frenzyAttackSpeedPerStack);
 
         private float SpeedBonus => (Has(StatusType.Rally) ? rallyBonus : 0f) + GetStacks(StatusType.Warhorn) * warhornBonusPerStack;
 
@@ -190,7 +195,8 @@ namespace RiskOfMagic.Combat
         }
 
         public float ModifyIncomingDamage(Health self, in DamageInfo info, float amount)
-            => amount * (Has(StatusType.Curse) ? curseDamageTakenMultiplier : 1f) * (Has(StatusType.Marked) ? markedDamageTakenMultiplier : 1f);
+            => amount * (Has(StatusType.Curse) ? curseDamageTakenMultiplier : 1f) * (Has(StatusType.Marked) ? markedDamageTakenMultiplier : 1f)
+               * (1f + GetStacks(StatusType.Shattered) * RiskOfMagic.Core.GameBalance.Instance.statuses.shatteredDamageTakenPerStack);
 
         public bool TryPreventDeath(Health self, in DamageInfo info, out float healthFraction)
         {
