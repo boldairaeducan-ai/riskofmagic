@@ -32,3 +32,8 @@ MonoBehaviour:
   freezeDuration: 1.5
   backstabCritical: 0
   criticalMultiplier: 2
+  detonateSeals: 0
+  sealDamageCoefficient: 0.8
+  sealHealFraction: 0.05
+  sealHealRadius: 8
+  sealVfx: {fileID: 0}
