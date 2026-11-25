@@ -39,6 +39,10 @@ namespace RiskOfMagic.Skills
         public GameObject castVfx;
         public VfxAnchor castVfxAnchor = VfxAnchor.Caster;
         [Min(0f)] public float castVfxScale = 1f;
+        [Tooltip("Caster anchor: the effect follows the caster (auras). Off: stays where it spawned (dash ghosts).")]
+        public bool castVfxFollowsCaster;
+        [Min(0f), Tooltip("> 0: the effect lasts this long (e.g. the buff duration) instead of its own lifetime.")]
+        public float castVfxDuration;
         [Tooltip("Played at the caster on every peer.")] public SoundEvent castSound;
         [Tooltip("Animator trigger set on cast (every peer), with the SkillSlot int parameter.")] public string animatorTrigger = "Cast";
 
@@ -81,7 +85,13 @@ namespace RiskOfMagic.Skills
                 VfxAnchor.Target => activation.Target,
                 _ => context.Transform.position
             };
-            VfxUtility.Spawn(castVfx, position, Quaternion.LookRotation(activation.Direction.sqrMagnitude > 0f ? activation.Direction : Vector3.forward), castVfxScale);
+            var effect = VfxUtility.Spawn(castVfx, position, Quaternion.LookRotation(activation.Direction.sqrMagnitude > 0f ? activation.Direction : Vector3.forward), castVfxScale);
+            if (effect == null)
+                return;
+            if (castVfxFollowsCaster && castVfxAnchor == VfxAnchor.Caster)
+                VfxFollow.Attach(effect, context.Transform, Vector3.zero);
+            if (castVfxDuration > 0f && effect.TryGetComponent(out TimedEffect timed))
+                timed.SetLifetimeForThisUse(castVfxDuration);
         }
     }
 }

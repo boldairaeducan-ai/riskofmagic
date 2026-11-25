@@ -27,6 +27,8 @@ MonoBehaviour:
   castVfx: {fileID: 8354516694192447443, guid: 2429eb8912a3b9745b72beaf1482da5b, type: 3}
   castVfxAnchor: 1
   castVfxScale: 1
+  castVfxFollowsCaster: 1
+  castVfxDuration: 1
   castSound: {fileID: 11400000, guid: c77a6edb1281b2c4a86f9235d6d91b4f, type: 2}
   animatorTrigger: Cast
   ownerFovKick: 0

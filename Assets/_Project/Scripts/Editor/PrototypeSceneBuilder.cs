@@ -548,6 +548,8 @@ namespace RiskOfMagic.Editor
             shield.keepsSprint = true;
             shield.castVfx = vfx.ShieldPulse;
             shield.castVfxAnchor = VfxAnchor.Caster;
+            shield.castVfxFollowsCaster = true;
+            shield.castVfxDuration = 3f; // = shield duration
             shield.ownerFovKick = -4f;
             shield.ownerFovKickDuration = 0.2f;
 
@@ -810,6 +812,8 @@ namespace RiskOfMagic.Editor
             parry.knockbackDistance = 3f;
             parry.counterVfx = vfx.Shockwave;
             parry.castVfx = vfx.ShieldPulse;
+            parry.castVfxFollowsCaster = true;
+            parry.castVfxDuration = 1f; // = parry window
             parry.canCastWhileBusy = true;
 
             var warCry = Skill<WarCrySkill>("Warrior_WarCry", "Cri de guerre",
