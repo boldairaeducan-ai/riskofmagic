@@ -176,10 +176,15 @@ namespace RiskOfMagic.Animation
 
         // ---------------------------------------------------------------- Pose
 
+        private Renderer[] visibilityRenderers;
+
         private void LateUpdate()
         {
             if (!ready || frozen)
                 return; // frozen: keep the last pose
+            visibilityRenderers ??= GetComponentsInChildren<Renderer>(true);
+            if (!RendererVisibility.AnyVisible(visibilityRenderers))
+                return; // off-screen: no bone work
             float dt = Time.deltaTime;
             time += dt;
 

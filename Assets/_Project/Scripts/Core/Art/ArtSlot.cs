@@ -47,6 +47,13 @@ namespace RiskOfMagic.Core
                     collider.enabled = false; // effects and projectiles must not block raycasts
             foreach (var behaviour in art.GetComponentsInChildren<Unity.Netcode.NetworkBehaviour>(true))
                 behaviour.enabled = false; // a model is visual only
+            if (category != ArtLibrary.Category.Interactable)
+                foreach (var renderer in art.GetComponentsInChildren<Renderer>(true))
+                {
+                    // Effects and projectiles: no shadows (many of them, short-lived, mostly glowing).
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                }
             if (category == ArtLibrary.Category.Vfx && TryGetComponent(out RiskOfMagic.Vfx.TimedEffect timed))
             {
                 FitParticlesToLifetime(art, timed);

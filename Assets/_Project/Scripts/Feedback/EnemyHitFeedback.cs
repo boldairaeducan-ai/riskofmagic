@@ -172,6 +172,8 @@ namespace RiskOfMagic.Feedback
         {
             if (parts.Count == 0)
                 return;
+            if (!dead && actor != null && actor.Renderers != null && !RiskOfMagic.Animation.RendererVisibility.AnyVisible(actor.Renderers))
+                return; // off-screen: no visual work (the death recoil always plays)
             var config = HitFeedbackConfig.Instance;
             bool frozen = Time.time < hitStopUntil;
             PauseAnimators(frozen);

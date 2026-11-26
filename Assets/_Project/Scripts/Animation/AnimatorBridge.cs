@@ -110,6 +110,15 @@ namespace RiskOfMagic.Animation
 
         public void Clear() => bridges.Clear();
 
+        /// <summary>Animators of models only (cosmetic): CullUpdateTransforms skips the bones of off-screen characters.</summary>
+        public static void SetCulling(GameObject root, AnimatorCullingMode mode)
+        {
+            if (root == null)
+                return;
+            foreach (var animator in root.GetComponentsInChildren<Animator>(true))
+                animator.cullingMode = mode;
+        }
+
         public void AddFrom(GameObject root)
         {
             if (root == null)

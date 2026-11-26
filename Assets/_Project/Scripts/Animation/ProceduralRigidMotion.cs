@@ -42,13 +42,14 @@ namespace RiskOfMagic.Animation
         private float hitTime = -100f;
         private float hopTime = -100f;
         private float sideSign = 1f;
+        private Renderer[] renderers;
 
         private void Awake()
         {
             basePosition = transform.localPosition;
             baseRotation = transform.localRotation;
             baseScale = transform.localScale;
-            var renderers = GetComponentsInChildren<Renderer>(true);
+            renderers = GetComponentsInChildren<Renderer>(true);
             if (renderers.Length > 0)
             {
                 var bounds = renderers[0].bounds;
@@ -86,6 +87,8 @@ namespace RiskOfMagic.Animation
 
         private void LateUpdate()
         {
+            if (!dead && !RendererVisibility.AnyVisible(renderers))
+                return; // off-screen: keep the last pose
             if (!frozen)
                 time += Time.deltaTime;
 

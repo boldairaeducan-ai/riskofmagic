@@ -56,7 +56,10 @@ namespace RiskOfMagic.Animation
                 else if (!HasController(model))
                     rigid = model.AddComponent<ProceduralRigidMotion>();
                 else
+                {
                     animators.AddFrom(model);
+                    AnimatorGroup.SetCulling(model, AnimatorCullingMode.CullUpdateTransforms); // off-screen: no bones
+                }
             }
             // Animators placed directly in the prefab by hand also work.
             if (animators.Count == 0)

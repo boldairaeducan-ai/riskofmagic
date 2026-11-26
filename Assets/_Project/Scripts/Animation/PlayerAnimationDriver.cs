@@ -119,6 +119,8 @@ namespace RiskOfMagic.Animation
                 else
                 {
                     animators.AddFrom(model);
+                    if (!avatar.IsOwner) // the owner's body only casts a shadow: keep it animated
+                        AnimatorGroup.SetCulling(model, AnimatorCullingMode.CullUpdateTransforms);
                     var animator = model.GetComponentInChildren<Animator>();
                     controllerHasFall = animator != null && animator.runtimeAnimatorController != null
                                         && (animator.HasState(0, Animator.StringToHash("Death")) || animator.HasState(0, Animator.StringToHash("Downed")));
