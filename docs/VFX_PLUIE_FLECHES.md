@@ -130,16 +130,12 @@ Un troisième *GPU Event* relié au même port (*Count* 1).
 
 - *Initialize* : *Inherit Source Position* ; *Inherit Source Velocity* (pour garder l'inclinaison de la chute) ;
   *Set Lifetime* **1,5** ; *Set Size* 0,6 ; *Set Scale* X = 0,25 (flèche fine).
-- *Update* : bloc *Set Velocity* = (0, 0, 0) **après** l'héritage (la flèche ne bouge plus, mais son orientation a été
-  calculée à partir de la vitesse héritée : place l'*Orient* en mode **Along Velocity** avant… ou utilise le mode
-  **Advanced** avec *Up* = vitesse héritée stockée dans un attribut personnalisé, voir l'astuce ci-dessous).
-- Sortie `SG_VFX_Alpha`, `MainTex` = `Arrow1.png`, *Set Angle* Z = **90** (la flèche de l'image pointe vers la gauche :
+- *Update* : *Linear Drag*, *Drag Coefficient* **1000** : la flèche s'arrête en une image mais garde la direction de
+  sa chute, utilisée par l'*Orient*. (Ne remets pas la vitesse à 0 : l'orientation serait perdue.)
+- Enfonce-la un peu : *Add Position* (0 ; −0,2 ; 0) dans l'*Initialize*.
+- Sortie `SG_VFX_Alpha`, `MainTex` = `Arrow1.png`, *Orient* **Along Velocity**, *Set Angle* Z = **90** (la flèche de l'image pointe vers la gauche :
   on la tourne pour qu'elle pointe vers le sol ; essaie −90 si elle est à l'envers) ;
   *Set Alpha over Life* : 1 (0 %) → 1 (70 %) → 0 (100 %) ; *Set Color* gris-brun.
-
-> **Astuce orientation** : le plus simple est de ne pas annuler la vitesse mais de la réduire énormément
-> (*Linear Drag* très fort, *Drag Coefficient* 1000) : la flèche s'arrête en une image mais garde sa direction pour
-> l'*Orient Along Velocity*. Enfonce-la un peu dans le sol avec *Add Position* (0 ; −0,2 ; 0) dans l'*Initialize*.
 
 ### 3.6 Lumière (facultatif)
 
