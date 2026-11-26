@@ -1544,7 +1544,10 @@ namespace RiskOfMagic.Editor
             var shieldVisual = root.AddComponent<HealthShieldVisual>();
             SetProperties(shieldVisual, so => so.FindProperty("visual").objectReferenceValue = bubble);
 
-            var avatar = root.AddComponent<PlayerAvatar>();
+            // PlayerRunStats / FallRecovery / PlayerExperience [RequireComponent] it and may already have added it:
+            // a second PlayerAvatar would register the player twice.
+            if (!root.TryGetComponent(out PlayerAvatar avatar))
+                avatar = root.AddComponent<PlayerAvatar>();
             SetProperties(avatar, so =>
             {
                 var renderers = so.FindProperty("bodyRenderers");
