@@ -183,6 +183,10 @@ namespace RiskOfMagic.Meta
 
         private void OpenStage(int number)
         {
+            // The stage number changes a moment before the next map is loaded: that in-between record (old map, new
+            // number, a fraction of a second) is noise, the next one replaces it.
+            if (stage != null && stage.duration < 1f && session.stages.Count > 0 && session.stages[^1] == stage)
+                session.stages.RemoveAt(session.stages.Count - 1);
             stage = new StageRecord { number = number, scene = SceneManager.GetActiveScene().name, startTime = Time.time - sessionStart };
             session.stages.Add(stage);
             session.stageReached = Mathf.Max(session.stageReached, number);
