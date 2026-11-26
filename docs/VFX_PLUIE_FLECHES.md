@@ -67,7 +67,8 @@ par défaut. *Blackboard* (**+**), *Exposed* coché, **valeur par défaut rensei
 - **Initialize** : *Set Lifetime* **2,4** ; *Set Position* (0 ; 0,05 ; 0) ; *Set Size* = `Radius` × 2 ;
   *Set Color* = `ZoneColor`.
 - **Output** :
-  - *Orient* : **Fixed Axis**, *Axis* (0, 1, 0) → à plat au sol ;
+  - *Orient* : **Advanced**, *Front* (0, 1, 0), *Up* (0, 0, 1) → à plat au sol (*Fixed Axis* ne convient pas : il
+    garde le quad face à la caméra) ;
   - *Set Alpha over Life* : 0 (0 %) → 0,9 (15 %) → 0,5 (30 %) → 0,5 (85 %) → 0 (100 %) : il apparaît vite, reste
     discret pendant la pluie, s'efface à la fin ;
   - *Set Size over Life* : 0,6 (0 %) → 1 (15 %) → 1 (100 %) : il « s'ouvre » au tir.
@@ -128,14 +129,14 @@ par défaut. *Blackboard* (**+**), *Exposed* coché, **valeur par défaut rensei
 
 Un troisième *GPU Event* relié au même port (*Count* 1).
 
-- *Initialize* : *Inherit Source Position* ; *Inherit Source Velocity* (pour garder l'inclinaison de la chute) ;
-  *Set Lifetime* **1,5** ; *Set Size* 0,6 ; *Set Scale* X = 0,25 (flèche fine).
-- *Update* : *Linear Drag*, *Drag Coefficient* **1000** : la flèche s'arrête en une image mais garde la direction de
-  sa chute, utilisée par l'*Orient*. (Ne remets pas la vitesse à 0 : l'orientation serait perdue.)
-- Enfonce-la un peu : *Add Position* (0 ; −0,2 ; 0) dans l'*Initialize*.
-- Sortie `SG_VFX_Alpha`, `MainTex` = `Arrow1.png`, *Orient* **Along Velocity**, *Set Angle* Z = **90** (la flèche de l'image pointe vers la gauche :
-  on la tourne pour qu'elle pointe vers le sol ; essaie −90 si elle est à l'envers) ;
-  *Set Alpha over Life* : 1 (0 %) → 1 (70 %) → 0 (100 %) ; *Set Color* gris-brun.
+- *Initialize* : *Inherit Source Position* ; *Add Position* (0 ; −0,2 ; 0) pour l'enfoncer un peu dans le sol ;
+  *Set Lifetime* **1,5** ; *Set Size* 0,6 ; *Set Scale* X = 0,25 (flèche fine). Pas de vitesse : elle est immobile.
+- Sortie `SG_VFX_Alpha`, `MainTex` = `Arrow1.png` :
+  - *Orient* : **Fixed Axis**, *Axis* (0, 1, 0) : la flèche reste verticale et tourne seulement autour de cet axe pour
+    faire face à la caméra ;
+  - *Set Angle* Z = **90** (la flèche de l'image pointe vers la gauche : on la tourne pour qu'elle pointe vers le sol ;
+    essaie −90 si elle est à l'envers) ;
+  - *Set Alpha over Life* : 1 (0 %) → 1 (70 %) → 0 (100 %) ; *Set Color* gris-brun.
 
 ### 3.6 Lumière (facultatif)
 
