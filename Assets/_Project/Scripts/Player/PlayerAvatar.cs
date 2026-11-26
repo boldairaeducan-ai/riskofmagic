@@ -148,6 +148,7 @@ namespace RiskOfMagic.Player
                 return;
 
             Local = this;
+            Motor.Landed += OnOwnerLanded;
             if (PlayerSpawnPoint.TryGet((int)OwnerClientId, out var pose))
                 Motor.Teleport(pose.position, pose.rotation);
             RequestCharacter(PreferredCharacterIndex);
@@ -165,6 +166,8 @@ namespace RiskOfMagic.Player
 
         public override void OnNetworkDespawn()
         {
+            if (IsOwner && Motor != null)
+                Motor.Landed -= OnOwnerLanded;
             all.Remove(this);
             Health.Died -= OnDied;
             Health.Revived -= OnRevived;
@@ -226,6 +229,37 @@ namespace RiskOfMagic.Player
 
         [Rpc(SendTo.Server)]
         private void RequestLoadoutRpc(byte mask) => loadout.Value = mask;
+
+        // ---------------------------------------------------------------- Fall damage
+
+        /// <summary>Owner: movement is owner-authoritative, so the owner reports hard landings to the server.</summary>
+        private void OnOwnerLanded()
+        {
+            var balance = RiskOfMagic.Core.GameBalance.Instance.player;
+            if (IsStanding && Motor.LastLandingSpeed >= balance.fallDamageMinSpeed)
+                FallDamageRpc(Motor.LastLandingSpeed);
+        }
+
+        [Rpc(SendTo.Server)]
+        private void FallDamageRpc(float speed)
+        {
+            var balance = RiskOfMagic.Core.GameBalance.Instance.player;
+            if (!IsStanding || Health.IsShielded || NetworkManager.ServerTime.Time < Health.ServerInvulnerableUntil)
+                return; // invulnerable (Envol de corbeaux, shields...)
+            speed = Mathf.Min(speed, 60f); // sanity cap (the client reports it)
+            float fraction = Mathf.Min(balance.fallDamageMax, (speed - balance.fallDamageMinSpeed) * balance.fallDamagePerSpeed);
+            float amount = Mathf.Min(Health.Max * fraction, Health.Current - 1f); // never lethal
+            if (amount < 1f)
+                return;
+            Health.ApplyDamage(new DamageInfo
+            {
+                Amount = amount,
+                Type = DamageType.Physical,
+                SourceTeam = Team.Neutral,
+                IgnoreModifiers = true,
+                Point = transform.position + Vector3.up * 0.2f
+            });
+        }
 
         private void ApplyCharacter(int index)
         {

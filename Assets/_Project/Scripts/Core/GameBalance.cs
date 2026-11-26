@@ -57,6 +57,14 @@ namespace RiskOfMagic.Core
         }
 
         [Serializable]
+        public class PlayerBalance
+        {
+            [Min(0f), Tooltip("Landing speed (m/s) from which falls hurt. Gravity 30: 22 m/s = a fall of about 8 m.")] public float fallDamageMinSpeed = 22f;
+            [Min(0f), Tooltip("Max health lost per m/s above the threshold (0.025 = 2.5%).")] public float fallDamagePerSpeed = 0.025f;
+            [Range(0f, 1f), Tooltip("Cap, fraction of max health. Fall damage never kills (at least 1 HP left).")] public float fallDamageMax = 0.5f;
+        }
+
+        [Serializable]
         public class ExperienceBalance
         {
             [Min(0f), Tooltip("Experience per point of gold reward.")] public float experiencePerGold = 0.6f;
@@ -147,6 +155,7 @@ namespace RiskOfMagic.Core
         [Tooltip("Run difficulty: coefficient = (player factor × starting coefficient + minutes × scaling) × stage multiplier^stages.")] public DifficultyBalance difficulty = new();
         [Tooltip("Combat director: credits, stage population, waves, elites, placement.")] public DirectorBalance director = new();
         [Tooltip("Player levels (experience = gold reward × experiencePerGold).")] public ExperienceBalance experience = new();
+        [Tooltip("Players: fall damage.")] public PlayerBalance player = new();
         [Tooltip("Status effect strengths (players and enemies).")] public StatusBalance statuses = new();
         [Tooltip("Global multipliers on top of each enemy's attack data.")] public EnemyBalance enemies = new();
         [Tooltip("Gold, prices and the number of chests per stage.")] public EconomyBalance economy = new();

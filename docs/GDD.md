@@ -344,6 +344,8 @@ Le journal (menu principal) suit les statistiques, les défis, les objets décou
 | Tombe à purifier | Progresse si un joueur debout reste dans la zone, sous la pression des monstres | Zone de soin + 1 objet par joueur |
 | Secret | Rapporter tous les fragments cachés à l'autel de la carte | Bonus d'étape (+30 % de dégâts) ou boss secret |
 
+**Dégâts de chute** : à partir d'environ 8 m de chute (atterrissage à 22 m/s), 2,5 % des PV max par m/s au-delà, plafonnés à 50 % ; ne tuent jamais (au moins 1 PV) et ne touchent pas un joueur invulnérable (Envol de corbeaux, boucliers).
+
 **Coopération** :
 
 - 1 à 4 joueurs en hôte/client, via Steam (invitation d'amis) ou un code de partie ;
