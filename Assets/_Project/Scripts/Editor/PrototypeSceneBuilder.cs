@@ -1530,7 +1530,8 @@ namespace RiskOfMagic.Editor
             camGo.AddComponent<AudioListener>().enabled = false;
             camGo.AddComponent<CameraEffects>();
 
-            var look = root.AddComponent<PlayerLook>();
+            if (!root.TryGetComponent(out PlayerLook look)) // may already be added through PlayerAvatar's [RequireComponent]
+                look = root.AddComponent<PlayerLook>();
             SetProperties(look, so =>
             {
                 so.FindProperty("cameraPivot").objectReferenceValue = pivot;
