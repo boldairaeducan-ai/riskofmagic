@@ -62,11 +62,14 @@ namespace RiskOfMagic.Player
 
         public bool IsHovering => Time.time < hoverEndTime;
         private float hoverEndTime = float.NegativeInfinity;
+        private float hoverClimbSpeed;
 
         /// <summary>Owner: no gravity for <paramref name="duration"/> seconds, the altitude is kept (Envol de corbeaux).</summary>
-        public void Hover(float duration, float liftVelocity = 0f)
+        /// <param name="climbSpeed">Holding Jump while hovering rises at this speed (m/s); 0 = no climb.</param>
+        public void Hover(float duration, float liftVelocity = 0f, float climbSpeed = 0f)
         {
             hoverEndTime = Time.time + duration;
+            hoverClimbSpeed = climbSpeed;
             velocity.y = Mathf.Max(velocity.y, liftVelocity);
         }
 
@@ -142,7 +145,8 @@ namespace RiskOfMagic.Player
             if (jumpPressed)
                 lastJumpPressedTime = Time.time;
 
-            if (Time.time - lastJumpPressedTime <= config.jumpBufferTime && jumpsUsed < config.maxJumps + ExtraJumps)
+            bool climbing = IsHovering && hoverClimbSpeed > 0f && ControlEnabled && input.JumpHeld;
+            if (!climbing && Time.time - lastJumpPressedTime <= config.jumpBufferTime && jumpsUsed < config.maxJumps + ExtraJumps)
             {
                 velocity.y = Mathf.Sqrt(2f * config.gravity * config.jumpHeight);
                 jumpsUsed++;
@@ -151,7 +155,9 @@ namespace RiskOfMagic.Player
                 Jumped?.Invoke();
             }
 
-            if (IsHovering)
+            if (climbing)
+                velocity.y = Mathf.MoveTowards(velocity.y, hoverClimbSpeed, config.gravity * dt); // Jump held: rises
+            else if (IsHovering)
                 velocity.y = Mathf.MoveTowards(velocity.y, 0f, config.gravity * 0.5f * dt); // floats: rises a little, then holds
             else
                 velocity.y = Mathf.Max(velocity.y - config.gravity * dt, -config.maxFallSpeed);

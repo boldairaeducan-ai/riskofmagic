@@ -12,11 +12,12 @@ namespace RiskOfMagic.Skills.Types
     {
         [Min(0.1f)] public float duration = 1.5f;
         [Tooltip("Small lift at the start (m/s), 0 = keeps the current height.")] public float liftVelocity = 3f;
+        [Min(0f), Tooltip("Holding Jump during the flight rises at this speed (m/s).")] public float climbSpeed = 7f;
 
         public override void OnOwnerExecute(SkillContext context, in SkillActivation activation)
         {
             if (context.Motor != null)
-                context.Motor.Hover(duration, liftVelocity);
+                context.Motor.Hover(duration, liftVelocity, climbSpeed);
         }
 
         public override void OnServerExecute(SkillContext context, in SkillActivation activation)

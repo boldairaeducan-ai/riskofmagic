@@ -99,7 +99,7 @@ Kit Nature en base (saignement, foudre, flammes), kit Poison en alternative.
 | --- | --- | --- |
 | Clic gauche | Fouet de liane : 14 m, 80 % + saignement | Épines : 70 % + poison |
 | Clic droit | Appel de la foudre [7 s] : 320 % dans 5 m, étourdit 0,8 s | Nuage toxique [8 s] : 5 s, 30 %/tick + poison |
-| Utilitaire | Envol de corbeaux [9 s] : 1,5 s invulnérable, +60 % de vitesse, flotte | Racines vénéneuses [10 s] : enracine 2 s à 8 m, 50 % + poison |
+| Utilitaire | Envol de corbeaux [9 s] : 1,5 s invulnérable, +60 % de vitesse, flotte (Saut maintenu : monte) | Racines vénéneuses [10 s] : enracine 2 s à 8 m, 50 % + poison |
 | Spéciale | Souffle enflammé [12 s] : 2,5 s, cône 10 m, 10 × 45 % + brûlure | Floraison fatale [10 s] : fait éclater les poisons à 25 m, 150 % du reste |
 
 ### Paladin

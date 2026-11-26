@@ -20,6 +20,7 @@ namespace RiskOfMagic.Player
         /// <summary>Normalized stick, to be scaled by deltaTime.</summary>
         public Vector2 LookStick => map.enabled ? GameInput.LookStick.ReadValue<Vector2>() : Vector2.zero;
         public bool JumpPressed => enabled && GameInput.Jump.WasPressedThisFrame();
+        public bool JumpHeld => enabled && GameInput.Jump.IsPressed();
         public bool SprintPressed => enabled && GameInput.Sprint.WasPressedThisFrame();
         public bool ToggleCursorPressed => enabled && !GameInput.MenuKeysBlocked && GameInput.ToggleCursor.WasPressedThisFrame();
         public bool InteractPressed => enabled && GameInput.Interact.WasPressedThisFrame();

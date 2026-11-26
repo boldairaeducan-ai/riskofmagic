@@ -596,9 +596,10 @@ namespace RiskOfMagic.Editor
                 lightning.icon = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/500FreeSkillIcons/Icons/skill_027.png");
 
             var ravens = Skill<RavenFlightSkill>("Druid_RavenFlight", "Envol de corbeaux",
-                "Se change en nuée 1,5 s : invulnérable, +60% de vitesse, flotte dans les airs.",
+                "Se change en nuée 1,5 s : invulnérable, +60% de vitesse, flotte dans les airs (maintenir Saut pour monter).",
                 SkillActivationMode.Press, cooldown: 9f, cast: 0f);
             ravens.duration = 1.5f;
+            ravens.climbSpeed = 7f;
             ravens.liftVelocity = 3f;
             ravens.canCastWhileBusy = true;
             ravens.keepsSprint = true;
