@@ -60,7 +60,7 @@ namespace RiskOfMagic.Editor
 
         private sealed class VfxSet
         {
-            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm, FlameBreath, Grapple;
+            public GameObject Impact, FrostBurst, Area, Swing, Lightning, Blink, Explosion, FireBurst, Telegraph, ArcaneBurst, TimePulse, PoisonCloud, PoisonBurst, CursePulse, RallyPulse, Shockwave, DashBurst, ShieldPulse, GroundWave, VoidBeam, FirePatch, AuraBurning, AuraBlizzard, AuraStorm, AuraSpectral, Bolas, AuraCurse, VineWhip, LightningStrike, RavenSwarm, FlameBreath, Grapple, ArrowRain;
         }
 
         private sealed class ProjectileSet
@@ -291,6 +291,8 @@ namespace RiskOfMagic.Editor
                 RavenSwarm = AuraPrefab("VFX_RavenSwarm", 0.7f, new Color(0.12f, 0.1f, 0.18f)),
                 // Continuous flame jet (Souffle enflammé): follows the caster, +Z = jet; lifetime = channel + fade.
                 // Archer grapple rope (local line, every peer).
+                // Archer arrow rain: one effect for the whole volley at the aimed point (5 m radius, 2.8 s).
+                ArrowRain = EffectPrefab("VFX_ArrowRain", PrimitiveType.Cylinder, new Vector3(10f, 0.02f, 10f), new Vector3(0f, 0.05f, 0f), new Color(1f, 0.8f, 0.4f), 2.8f),
                 Grapple = LinePrefab("VFX_Grapple", new Color(0.55f, 0.42f, 0.28f), 0.05f, 0.45f),
                 FlameBreath = EffectPrefab("VFX_FlameBreath", PrimitiveType.Cube, new Vector3(1.2f, 0.8f, 9f), new Vector3(0f, 0f, 4.5f), new Color(1f, 0.5f, 0.1f), 4.5f)
             };
@@ -476,6 +478,9 @@ namespace RiskOfMagic.Editor
             rain.tickInterval = 0.25f;
             rain.initialDelay = 0.4f;
             rain.tickVfx = vfx.Area;
+            rain.castVfx = vfx.ArrowRain;
+            rain.castVfxAnchor = VfxAnchor.Target;
+            rain.castVfxDuration = 2.8f;
 
             // Warrior
             var combo = Skill<MeleeComboSkill>("Warrior_SwordCombo", "Combo d'épée", "Trois coups (100/100/200%), le dernier frappe fort.",
