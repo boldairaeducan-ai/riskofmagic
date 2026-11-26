@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using RiskOfMagic.Combat;
+using RiskOfMagic.Core;
 using RiskOfMagic.Enemies;
 using RiskOfMagic.Player;
 using UnityEngine;
@@ -21,6 +23,16 @@ namespace RiskOfMagic.Feedback
         private ParticleSystem system;
         private ParticleSystem.Particle[] particles = new ParticleSystem.Particle[256];
 
+        /// <summary>Orbs made of ArtLibrary prefabs (pooled), moved like the particles.</summary>
+        private struct PrefabOrb
+        {
+            public GameObject Instance;
+            public Vector3 Velocity;
+            public float Age;
+        }
+
+        private readonly List<PrefabOrb> prefabOrbs = new();
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Create()
         {
@@ -41,12 +53,23 @@ namespace RiskOfMagic.Feedback
                 return;
             int gold = enemy.Definition != null ? enemy.Definition.goldReward : 5;
             Vector3 center = victim.transform.position + Vector3.up * 1.1f;
-            Burst(center, GoldColor, Mathf.Clamp(gold / 3, 2, enemy.IsBoss ? 24 : 8), 0.22f);
-            Burst(center, ExperienceColor, enemy.IsBoss ? 12 : Mathf.Clamp(gold / 6, 1, 4), 0.16f);
+            var juice = ArtLibrary.Juice;
+            Burst(center, GoldColor, Mathf.Clamp(gold / 3, 2, enemy.IsBoss ? 24 : 8), 0.22f, juice?.goldOrb);
+            Burst(center, ExperienceColor, enemy.IsBoss ? 12 : Mathf.Clamp(gold / 6, 1, 4), 0.16f, juice?.experienceOrb);
         }
 
-        private void Burst(Vector3 point, Color color, int count, float size)
+        private void Burst(Vector3 point, Color color, int count, float size, ArtLibrary.EffectSlot slot)
         {
+            if (slot != null && slot.IsSet)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    var orb = GameObjectPool.Spawn(slot.prefab, point, Quaternion.identity);
+                    orb.transform.localScale = slot.prefab.transform.localScale * slot.scale;
+                    prefabOrbs.Add(new PrefabOrb { Instance = orb, Velocity = (Random.onUnitSphere + Vector3.up * 1.4f).normalized * Random.Range(3f, 6.5f) });
+                }
+                return;
+            }
             if (!Ensure())
                 return;
             var emit = new ParticleSystem.EmitParams { applyShapeToPosition = false };
@@ -96,8 +119,54 @@ namespace RiskOfMagic.Feedback
             return true;
         }
 
+        /// <summary>Same motion as the particles: pop out, hang, then home into the player faster and faster.</summary>
+        private Vector3 Steer(Vector3 position, Vector3 velocity, float age, Vector3 target, out bool arrived)
+        {
+            arrived = false;
+            float dt = Time.deltaTime;
+            if (age < HangTime)
+                return velocity * (1f - Mathf.Clamp01(5f * dt));
+            Vector3 toTarget = target - position;
+            float distance = toTarget.magnitude;
+            if (distance < 0.7f)
+            {
+                arrived = true;
+                return velocity;
+            }
+            float speed = Mathf.Min(MaxSpeed, 6f + (age - HangTime) * 45f);
+            return Vector3.Lerp(velocity, toTarget / distance * speed, Mathf.Clamp01(8f * dt));
+        }
+
+        private void UpdatePrefabOrbs()
+        {
+            var local = PlayerAvatar.Local;
+            Vector3 target = local != null ? local.transform.position + Vector3.up * 1.1f : Vector3.zero;
+            for (int i = prefabOrbs.Count - 1; i >= 0; i--)
+            {
+                var orb = prefabOrbs[i];
+                if (orb.Instance == null)
+                {
+                    prefabOrbs.RemoveAt(i);
+                    continue;
+                }
+                orb.Age += Time.deltaTime;
+                var orbTransform = orb.Instance.transform;
+                orb.Velocity = Steer(orbTransform.position, orb.Velocity, orb.Age, target, out bool arrived);
+                if (local == null || arrived || orb.Age > 4f)
+                {
+                    GameObjectPool.Release(orb.Instance);
+                    prefabOrbs.RemoveAt(i);
+                    continue;
+                }
+                orbTransform.position += orb.Velocity * Time.deltaTime;
+                prefabOrbs[i] = orb;
+            }
+        }
+
         private void LateUpdate()
         {
+            if (prefabOrbs.Count > 0)
+                UpdatePrefabOrbs();
             if (system == null || system.particleCount == 0)
                 return;
             var local = PlayerAvatar.Local;

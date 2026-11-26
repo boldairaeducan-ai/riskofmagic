@@ -50,6 +50,46 @@ namespace RiskOfMagic.Core
             [Tooltip("Do not edit.")] public string name;
             public ItemRarity rarity;
             [Tooltip("Fallback icon of items of this rarity without their own icon.")] public Sprite icon;
+            [Tooltip("Optional light beam above dropped items of this rarity (child of the pickup, feet at its pivot). Empty = generated beam.")]
+            public GameObject beam;
+        }
+
+        /// <summary>One-shot effect played by code (juice). Empty prefab = the generated placeholder effect.</summary>
+        [Serializable]
+        public class EffectSlot
+        {
+            public GameObject prefab;
+            [Min(0.01f)] public float scale = 1f;
+            [Min(0.1f), Tooltip("Destroyed after this many seconds (orbs: ignored, they live until they reach the player).")] public float lifetime = 2f;
+
+            public bool IsSet => prefab != null;
+
+            /// <summary>Instantiates the prefab (local, not networked) and destroys it after its lifetime. Null if unset.</summary>
+            public GameObject Spawn(Vector3 position, Quaternion rotation, float scaleMultiplier = 1f)
+            {
+                if (prefab == null)
+                    return null;
+                var go = UnityEngine.Object.Instantiate(prefab, position, rotation);
+                go.transform.localScale = prefab.transform.localScale * (scale * scaleMultiplier);
+                UnityEngine.Object.Destroy(go, lifetime);
+                return go;
+            }
+        }
+
+        /// <summary>Juice effects driven by code (RewardOrbs, ItemPickup, chests, landing, teleporter).</summary>
+        [Serializable]
+        public class JuiceArt
+        {
+            [Tooltip("One orb (pooled, moved by code towards the player).")] public EffectSlot goldOrb = new();
+            public EffectSlot experienceOrb = new();
+            [Tooltip("Item picked up, at the item.")] public EffectSlot itemPickup = new();
+            [Tooltip("Item landing after flying out of a chest.")] public EffectSlot itemLanding = new();
+            [Tooltip("Chest opened, at the chest.")] public EffectSlot chestOpen = new();
+            [Tooltip("Local player landing from a fall, at the feet (scaled up to x1.5 with the fall speed).")] public EffectSlot landingDust = new();
+            [Tooltip("Teleporter fully charged, at the teleporter.")] public EffectSlot teleporterCharged = new();
+            [Tooltip("Teleporter event completed, at the teleporter.")] public EffectSlot teleporterReady = new();
+            [Tooltip("Charge column (child of the teleporter): authored 1 m tall and 1 m wide, feet at the pivot; scaled with the charge.")]
+            public GameObject teleporterPillar;
         }
 
         [Serializable]
@@ -80,6 +120,23 @@ namespace RiskOfMagic.Core
         public List<RarityArt> rarities = new();
         public List<EliteArt> elites = new();
         public List<DotArt> dots = new();
+
+        [Header("Juice (effects played by code; empty = generated effect)")]
+        public JuiceArt juice = new();
+
+        /// <summary>Juice slots, or null without an ArtLibrary.</summary>
+        public static JuiceArt Juice => Instance != null ? Instance.juice : null;
+
+        public static RarityArt FindRarity(ItemRarity rarity)
+        {
+            var library = Instance;
+            if (library == null)
+                return null;
+            foreach (var entry in library.rarities)
+                if (entry != null && entry.rarity == rarity)
+                    return entry;
+            return null;
+        }
 
         [Header("Prefabs (applied at runtime by ArtSlot: no rebuild needed)")]
         public List<PrefabArt> vfx = new();

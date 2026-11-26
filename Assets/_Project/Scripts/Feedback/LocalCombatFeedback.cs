@@ -59,7 +59,11 @@ namespace RiskOfMagic.Feedback
             avatar.Look.Effects.Dip(Mathf.Lerp(0.05f, 0.22f, k));
             if (k > 0.5f)
                 avatar.Look.Effects.AddTrauma(Mathf.Lerp(0.05f, 0.2f, k));
-            HitSparks.Burst(transform.position + Vector3.up * 0.1f, Vector3.up, new Color(0.75f, 0.7f, 0.62f), Mathf.RoundToInt(Mathf.Lerp(6f, 18f, k)), 0.6f, 1.4f);
+            var slot = RiskOfMagic.Core.ArtLibrary.Juice?.landingDust;
+            if (slot != null && slot.IsSet)
+                slot.Spawn(transform.position, Quaternion.identity, Mathf.Lerp(1f, 1.5f, k));
+            else
+                HitSparks.Burst(transform.position + Vector3.up * 0.1f, Vector3.up, new Color(0.75f, 0.7f, 0.62f), Mathf.RoundToInt(Mathf.Lerp(6f, 18f, k)), 0.6f, 1.4f);
         }
 
         private void OnDamaged(DamageInfo info)

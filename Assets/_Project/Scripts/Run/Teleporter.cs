@@ -314,17 +314,24 @@ namespace RiskOfMagic.Run
         {
             ApplyVisuals();
             StateChanged?.Invoke(current);
-            // Fully charged / completed: shockwave (sparks + camera kick for nearby players).
+            // Fully charged / completed: shockwave (sparks or the ArtLibrary effect + camera kick for nearby players).
             if (current == TeleporterState.Charged || (current == TeleporterState.Ready && previous != TeleporterState.Idle))
             {
                 var color = current == TeleporterState.Ready ? readyColor : chargingColor;
-                for (int i = 0; i < 12; i++)
+                var juice = ArtLibrary.Juice;
+                var slot = juice == null ? null : current == TeleporterState.Ready ? juice.teleporterReady : juice.teleporterCharged;
+                if (slot != null && slot.IsSet)
+                    slot.Spawn(transform.position, transform.rotation);
+                else
                 {
-                    float angle = i * Mathf.PI * 2f / 12f;
-                    var point = transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius * 0.5f + Vector3.up * 0.3f;
-                    RiskOfMagic.Feedback.HitSparks.Burst(point, Vector3.up, color, 6, 1.4f, 1.5f);
+                    for (int i = 0; i < 12; i++)
+                    {
+                        float angle = i * Mathf.PI * 2f / 12f;
+                        var point = transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius * 0.5f + Vector3.up * 0.3f;
+                        RiskOfMagic.Feedback.HitSparks.Burst(point, Vector3.up, color, 6, 1.4f, 1.5f);
+                    }
+                    RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 2f, Vector3.up, color, 40, 2f, 2f);
                 }
-                RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 2f, Vector3.up, color, 40, 2f, 2f);
                 var local = PlayerAvatar.Local;
                 if (local != null && local.Look != null && local.Look.Effects != null
                     && (local.transform.position - transform.position).sqrMagnitude < 40f * 40f)
@@ -335,6 +342,7 @@ namespace RiskOfMagic.Run
         // ---------------------------------------------------------------- Charge pillar + rumble (every peer)
 
         private Transform pillar;
+        private bool pillarIsArt;
         private MaterialPropertyBlock pillarBlock;
 
         private void LateUpdate()
@@ -355,6 +363,12 @@ namespace RiskOfMagic.Run
         private void UpdatePillar(bool visible)
         {
             var config = RiskOfMagic.Feedback.HitFeedbackConfig.Instance;
+            var pillarArt = ArtLibrary.Juice?.teleporterPillar;
+            if (pillar == null && visible && pillarArt != null)
+            {
+                pillar = Instantiate(pillarArt, transform, false).transform;
+                pillarIsArt = true;
+            }
             if (pillar == null)
             {
                 if (!visible || config == null || config.sparkMaterial == null)
@@ -376,6 +390,12 @@ namespace RiskOfMagic.Run
             float c = state.Value == TeleporterState.Charged ? 1f : charge.Value;
             float height = Mathf.Lerp(1f, 30f, c);
             float width = Mathf.Lerp(0.4f, 1.6f, c) * (1f + Mathf.Sin(Time.time * 9f) * 0.08f);
+            if (pillarIsArt)
+            {
+                pillar.localPosition = Vector3.zero;
+                pillar.localScale = new Vector3(width, height, width); // authored 1 m tall, feet at the pivot
+                return;
+            }
             pillar.localPosition = Vector3.up * height * 0.5f;
             pillar.localScale = new Vector3(width, height * 0.5f, width); // cylinder = 2 m tall at scale 1
             float glow = config != null ? config.sparkGlow : 2f;

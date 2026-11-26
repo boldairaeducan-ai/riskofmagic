@@ -31,6 +31,7 @@ namespace RiskOfMagic.Items
         private MaterialPropertyBlock propertyBlock;
         private float spawnTime;
         private Transform beam;
+        private bool beamIsArt;
         private bool landed = true;
         private Vector3 visualScale = Vector3.one;
         private const float LaunchDuration = 0.55f;
@@ -91,7 +92,13 @@ namespace RiskOfMagic.Items
         {
             // Picked up (or cleared): a flash in the rarity color.
             if (Item != null || Equipment != null)
-                RiskOfMagic.Feedback.HitSparks.Burst(VisualPosition, Vector3.up, DisplayColor, 22, 1.1f, 1.3f);
+            {
+                var slot = ArtLibrary.Juice?.itemPickup;
+                if (slot != null && slot.IsSet)
+                    slot.Spawn(VisualPosition, Quaternion.identity);
+                else
+                    RiskOfMagic.Feedback.HitSparks.Burst(VisualPosition, Vector3.up, DisplayColor, 22, 1.1f, 1.3f);
+            }
             active.Remove(this);
             itemIndex.OnValueChanged -= OnContentChanged;
             equipmentIndex.OnValueChanged -= OnContentChanged;
@@ -137,6 +144,17 @@ namespace RiskOfMagic.Items
         private void EnsureBeam(Color color)
         {
             var config = RiskOfMagic.Feedback.HitFeedbackConfig.Instance;
+            var art = Item != null ? ArtLibrary.FindRarity(Item.rarity) : null;
+            if (art != null && art.beam != null)
+            {
+                // Plugged beam for this rarity: used as is (child of the pickup, not scaled or tinted).
+                if (beam == null)
+                {
+                    beam = Instantiate(art.beam, transform, false).transform;
+                    beamIsArt = true;
+                }
+                return;
+            }
             if (config == null || config.sparkMaterial == null)
                 return;
             if (beam == null)
@@ -174,7 +192,11 @@ namespace RiskOfMagic.Items
             {
                 landed = true;
                 floatingVisual.localScale = visualScale;
-                RiskOfMagic.Feedback.HitSparks.Burst(VisualPosition, Vector3.up, DisplayColor, 16, 0.8f, 1.2f);
+                var slot = ArtLibrary.Juice?.itemLanding;
+                if (slot != null && slot.IsSet)
+                    slot.Spawn(VisualPosition, Quaternion.identity);
+                else
+                    RiskOfMagic.Feedback.HitSparks.Burst(VisualPosition, Vector3.up, DisplayColor, 16, 0.8f, 1.2f);
                 return;
             }
             Vector3 from = launchFrom.Value;
@@ -193,7 +215,7 @@ namespace RiskOfMagic.Items
                 if (!landed)
                     AnimateLaunch();
             }
-            if (beam != null)
+            if (beam != null && !beamIsArt)
             {
                 float pulse = 1f + Mathf.Sin(Time.time * 3f) * 0.25f;
                 var scale = beam.localScale;

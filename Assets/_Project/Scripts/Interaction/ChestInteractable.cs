@@ -53,7 +53,11 @@ namespace RiskOfMagic.Interaction
             {
                 // Opening juice: a jolt and a golden burst (every peer).
                 RiskOfMagic.Feedback.Punch.Play(transform, 0.25f, 0.35f);
-                RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 1f, Vector3.up, new Color(1f, 0.8f, 0.3f), 26, 1.1f, 1.2f);
+                var slot = ArtLibrary.Juice?.chestOpen;
+                if (slot != null && slot.IsSet)
+                    slot.Spawn(transform.position, transform.rotation);
+                else
+                    RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 1f, Vector3.up, new Color(1f, 0.8f, 0.3f), 26, 1.1f, 1.2f);
             }
         }
     }
