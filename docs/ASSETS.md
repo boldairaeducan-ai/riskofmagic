@@ -179,3 +179,20 @@ matériau de lave, eau/brume, effets d'invisibilité et de bouclier, matériaux 
 ## 7. Textes & divers
 Textes FR déjà en place (noms et descriptions). À prévoir : traduction EN (si sortie internationale), crédits,
 textes de tutoriel / premier lancement, page Steam (capsules, captures, trailer).
+
+## Effets de « juice » (ArtLibrary → Juice, Rarities → Beam)
+
+Effets joués par le code. Emplacement vide = effet généré actuel. Prefabs locaux (pas réseau), Particle System ou VFX Graph.
+
+| Emplacement | Joué | Conseils |
+| --- | --- | --- |
+| `Juice → Gold Orb`, `Experience Orb` | Une instance par orbe à la mort d'un ennemi, déplacée par le code vers le joueur | Petit effet en boucle (lueur + traînée en espace *World*), mis en pool |
+| `Juice → Item Pickup` | Objet ramassé | `Lifetime` = durée de l'effet |
+| `Juice → Item Landing` | Objet qui atterrit après être sorti d'un coffre | |
+| `Juice → Chest Open` | Ouverture d'un coffre, au pied du coffre | |
+| `Juice → Landing Dust` | Atterrissage après une chute (joueur local), aux pieds | Agrandi jusqu'à ×1,5 selon la hauteur de chute |
+| `Juice → Teleporter Charged` / `Teleporter Ready` | Téléporteur chargé à 100 % / événement terminé | Onde au sol de ~10 m |
+| `Juice → Teleporter Pillar` | Colonne pendant la charge (enfant du téléporteur) | Modélisée 1 m de haut et 1 m de large, pieds au pivot : le jeu l'étire jusqu'à 30 m |
+| `Rarities → Beam` (une par rareté) | Faisceau au-dessus des objets au sol | Utilisé tel quel (pas étiré ni teinté), pieds au pivot |
+
+`Scale` multiplie la taille du prefab ; `Lifetime` = destruction après N secondes (ignoré pour les orbes).
