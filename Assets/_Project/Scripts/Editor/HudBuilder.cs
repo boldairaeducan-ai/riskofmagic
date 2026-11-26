@@ -611,6 +611,7 @@ namespace RiskOfMagic.Editor
                 so.FindProperty("viewport").objectReferenceValue = viewport;
                 so.FindProperty("tierLabel").objectReferenceValue = tier;
                 so.FindProperty("detailsLabel").objectReferenceValue = details;
+                so.FindProperty("tierStep").floatValue = 0.5f;
             });
         }
 

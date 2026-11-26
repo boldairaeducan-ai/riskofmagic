@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: GameBalance
   m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Core.GameBalance
   difficulty:
-    scalingPerMinute: 0.1
+    scalingPerMinute: 0.05
     playerFactorPerPlayer: 0.3
     stageMultiplier: 1.08
-    startingCoefficient: 1.25
+    startingCoefficient: 1
     levelStep: 0.33
     maxEnemyLevel: 99
     hardDirectorCreditMultiplier: 1.3

@@ -16,10 +16,10 @@ namespace RiskOfMagic.Core
         [Serializable]
         public class DifficultyBalance
         {
-            public float scalingPerMinute = 0.1f;
+            public float scalingPerMinute = 0.05f; // x difficulty value (Normal 2, Hard 3): 0.1 / 0.15 per minute, like RoR2
             public float playerFactorPerPlayer = 0.3f;
             public float stageMultiplier = 1.08f;
-            [Min(1f), Tooltip("Coefficient at the very start of a run (×player factor): stage 1 starts busy.")] public float startingCoefficient = 1.25f;
+            [Min(1f), Tooltip("Coefficient at the very start of a run (×player factor): stage 1 starts busy.")] public float startingCoefficient = 1f;
             public float levelStep = 0.33f;
             public int maxEnemyLevel = 99;
             public float hardDirectorCreditMultiplier = 1.3f;

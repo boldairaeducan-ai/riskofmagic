@@ -16,7 +16,7 @@ namespace RiskOfMagic.UI
         [SerializeField] private TMP_Text tierLabel;
         [SerializeField] private TMP_Text detailsLabel;
         [SerializeField, Min(20f)] private float segmentWidth = 120f;
-        [SerializeField, Min(0.05f), Tooltip("Run progress per tier (Normal: +0.2 per minute, so 1 = ~5 min).")] private float tierStep = 1f;
+        [SerializeField, Min(0.05f), Tooltip("Run progress per tier (Normal: +0.1 per minute, so 0.5 = ~5 min).")] private float tierStep = 0.5f;
         [SerializeField, Range(0f, 1f), Tooltip("Marker position in the viewport.")] private float markerAnchor = 0.3f;
 
         private static readonly string[] TierNames =
