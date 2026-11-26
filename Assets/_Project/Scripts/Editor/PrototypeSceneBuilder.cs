@@ -1530,7 +1530,8 @@ namespace RiskOfMagic.Editor
             camGo.AddComponent<AudioListener>().enabled = false;
             camGo.AddComponent<CameraEffects>();
 
-            var look = root.AddComponent<PlayerLook>();
+            if (!root.TryGetComponent(out PlayerLook look)) // may already be added through PlayerAvatar's [RequireComponent]
+                look = root.AddComponent<PlayerLook>();
             SetProperties(look, so =>
             {
                 so.FindProperty("cameraPivot").objectReferenceValue = pivot;
@@ -1544,7 +1545,10 @@ namespace RiskOfMagic.Editor
             var shieldVisual = root.AddComponent<HealthShieldVisual>();
             SetProperties(shieldVisual, so => so.FindProperty("visual").objectReferenceValue = bubble);
 
-            var avatar = root.AddComponent<PlayerAvatar>();
+            // PlayerRunStats / FallRecovery / PlayerExperience [RequireComponent] it and may already have added it:
+            // a second PlayerAvatar would register the player twice.
+            if (!root.TryGetComponent(out PlayerAvatar avatar))
+                avatar = root.AddComponent<PlayerAvatar>();
             SetProperties(avatar, so =>
             {
                 var renderers = so.FindProperty("bodyRenderers");

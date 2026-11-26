@@ -67,8 +67,8 @@ par défaut. *Blackboard* (**+**), *Exposed* coché, **valeur par défaut rensei
 - **Initialize** : *Set Lifetime* **2,4** ; *Set Position* (0 ; 0,05 ; 0) ; *Set Size* = `Radius` × 2 ;
   *Set Color* = `ZoneColor`.
 - **Output** :
-  - *Orient* : **Advanced**, *Front* (0, 1, 0), *Up* (0, 0, 1) → à plat au sol (*Fixed Axis* ne convient pas : il
-    garde le quad face à la caméra) ;
+  - *Orient* : **Advanced**, *Axes* **ZY**, *Axis Z* (0, 1, 0), *Axis Y* (0, 0, 1) → à plat au sol (*Fixed Axis* ne
+    convient pas : il garde le quad face à la caméra) ;
   - *Set Alpha over Life* : 0 (0 %) → 0,9 (15 %) → 0,5 (30 %) → 0,5 (85 %) → 0 (100 %) : il apparaît vite, reste
     discret pendant la pluie, s'efface à la fin ;
   - *Set Size over Life* : 0,6 (0 %) → 1 (15 %) → 1 (100 %) : il « s'ouvre » au tir.

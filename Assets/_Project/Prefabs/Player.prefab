@@ -344,8 +344,6 @@ GameObject:
   - component: {fileID: 5999801138183389886}
   - component: {fileID: 723171588394201725}
   - component: {fileID: 7369269459454292258}
-  - component: {fileID: 1106089992932867080}
-  - component: {fileID: 2452467874262546346}
   - component: {fileID: 4892955854746476726}
   - component: {fileID: 5074790506438811546}
   - component: {fileID: 7843214900399712355}
@@ -619,41 +617,6 @@ MonoBehaviour:
   traumaPerMaxHealth: 2
   minTrauma: 0.12
   maxTraumaPerHit: 0.6
---- !u!114 &1106089992932867080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6260213830726793856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b78ee3702cb751c4a99cb762f68f384c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.PlayerLook
-  input: {fileID: 0}
-  cameraPivot: {fileID: 0}
-  playerCamera: {fileID: 0}
-  mouseSensitivity: 0.1
-  stickSensitivity: 200
-  invertY: 0
-  minPitch: -85
-  maxPitch: 85
---- !u!114 &2452467874262546346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6260213830726793856}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e043690fde7551a48af179a35de0ef28, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: RiskOfMagic.Runtime::RiskOfMagic.Player.PlayerAvatar
-  ShowTopMostFoldoutHeaderGroup: 1
-  bodyRenderers: []
-  regenTickInterval: 0.25
 --- !u!114 &4892955854746476726
 MonoBehaviour:
   m_ObjectHideFlags: 0

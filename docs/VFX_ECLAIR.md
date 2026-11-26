@@ -268,7 +268,7 @@ Système classique : *Spawn* → *Initialize Particle* → *Update Particle* →
 
 ### 4.6 Onde au sol et brûlure
 Deux petits systèmes (sortie *Output Particle Shader Graph Quad*, `SG_VFX_Additive`), un *Single Burst* de 1 chacun. Pour les poser **à plat** au sol :
-bloc *Orient*, mode **Advanced** avec *Front* = (0, 1, 0) et *Up* = (0, 0, 1) (*Fixed Axis* garde le quad face à la caméra : il ne le couche pas).
+bloc *Orient*, mode **Advanced**, *Axes* **ZY**, *Axis Z* = (0, 1, 0) et *Axis Y* = (0, 0, 1) (*Fixed Axis* garde le quad face à la caméra : il ne le couche pas).
 
 - **Onde** :
   - *Set Lifetime* 0,35 ;
