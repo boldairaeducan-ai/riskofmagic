@@ -24,6 +24,13 @@ namespace RiskOfMagic.Feedback
         public float squashFrequency = 28f;
         public float squashDamping = 11f;
 
+        [Header("Flinch (the body is knocked back by each hit)")]
+        [Tooltip("Tilt away from the hit in degrees, light hit / heavy hit (25%+ of max health).")] public Vector2 flinchAngle = new(7f, 18f);
+        [Tooltip("Push away from the hit in meters, light / heavy.")] public Vector2 flinchPush = new(0.06f, 0.22f);
+        [Tooltip("Recovery speed (higher = snaps back faster).")] public float flinchRecovery = 9f;
+        public float criticalFlinchMultiplier = 1.4f;
+        [Tooltip("Bosses flinch this much (they're heavy).")] public float bossFlinchMultiplier = 0.35f;
+
         [Header("Hit-stop (visual freeze of the enemy)")]
         [Tooltip("Seconds, light hit / heavy hit (25%+ of max health).")] public Vector2 hitStop = new(0.04f, 0.09f);
         public float criticalHitStopBonus = 0.02f;

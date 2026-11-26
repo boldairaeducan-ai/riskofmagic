@@ -27,13 +27,20 @@ namespace RiskOfMagic.Interaction
                 return;
             }
 
+            Vector3 launch = transform.position + Vector3.up * 1.2f; // the item pops out of the chest
             if (pickupPrefab == null)
             {
-                ItemPickup.SpawnItem(item, transform.TransformPoint(dropOffset));
-                return;
+                var prefab = GameCatalog.Instance != null ? GameCatalog.Instance.PickupPrefab : null;
+                if (prefab == null)
+                {
+                    ItemPickup.SpawnItem(item, transform.TransformPoint(dropOffset));
+                    return;
+                }
+                pickupPrefab = prefab;
             }
             var pickup = Instantiate(pickupPrefab, transform.TransformPoint(dropOffset), Quaternion.identity);
             pickup.Initialize(item);
+            pickup.SetLaunchOrigin(launch);
             pickup.NetworkObject.Spawn(true);
         }
 
@@ -42,6 +49,12 @@ namespace RiskOfMagic.Interaction
             if (closedVisual != null)
                 closedVisual.SetActive(available);
             OpenAnimation.Apply(this, available); // imported animated model: opens only when bought
+            if (!available && IsSpawned && Time.timeSinceLevelLoad > 1f)
+            {
+                // Opening juice: a jolt and a golden burst (every peer).
+                RiskOfMagic.Feedback.Punch.Play(transform, 0.25f, 0.35f);
+                RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 1f, Vector3.up, new Color(1f, 0.8f, 0.3f), 26, 1.1f, 1.2f);
+            }
         }
     }
 }

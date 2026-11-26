@@ -16,11 +16,11 @@ MonoBehaviour:
   criticalFlashColor: {r: 1, g: 0.78, b: 0.25, a: 1}
   flashDuration: 0.09
   killFlashDuration: 0.22
-  squash: {x: 0.08, y: 0.22}
+  squash: {x: 0.12, y: 0.28}
   criticalSquashMultiplier: 1.4
   squashFrequency: 28
   squashDamping: 11
-  hitStop: {x: 0.04, y: 0.09}
+  hitStop: {x: 0.05, y: 0.11}
   criticalHitStopBonus: 0.02
   killHitStop: 0.11
   hitStopJitter: 0.04
@@ -28,7 +28,7 @@ MonoBehaviour:
   killTrauma: 0.14
   bossKillTrauma: 0.45
   sparkMaterial: {fileID: 2100000, guid: d18c3da69e8a7dd42898b0401b0b11e8, type: 2}
-  sparkCount: {x: 6, y: 14}
+  sparkCount: {x: 8, y: 18}
   criticalSparkBonus: 8
   killSparkCount: 34
   sparkGlow: 2.2

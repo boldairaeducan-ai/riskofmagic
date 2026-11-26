@@ -171,6 +171,10 @@ namespace RiskOfMagic.Skills
                     effects.KickFov(definition.ownerFovKick, definition.ownerFovKickDuration);
                 if (definition.ownerCameraTrauma > 0f)
                     effects.AddTrauma(definition.ownerCameraTrauma);
+                // Generic weapon kick and a light at the hands: small for the primary, bigger for the others.
+                bool primary = slot == SkillSlot.Primary;
+                effects.Recoil(primary ? 0.9f : 2.2f);
+                effects.Flash(primary ? 1.6f : 3f);
             }
             SkillActivated?.Invoke(slot);
             SkillExecuted?.Invoke(slot, definition);

@@ -29,6 +29,8 @@ namespace RiskOfMagic.Player
 
         public event Action Jumped;
         public event Action Landed;
+        /// <summary>Downward speed (m/s, positive) when the last landing happened.</summary>
+        public float LastLandingSpeed { get; private set; }
 
         public MovementConfig Config => config;
         public bool ControlEnabled { get; set; } = true;
@@ -120,7 +122,10 @@ namespace RiskOfMagic.Player
             bool wasGrounded = IsGrounded;
             IsGrounded = controller.isGrounded;
             if (IsGrounded && !wasGrounded)
+            {
+                LastLandingSpeed = Mathf.Max(0f, -velocity.y);
                 Landed?.Invoke();
+            }
 
             // Horizontal
             float speed = config.walkSpeed * SpeedMultiplier * (IsSprinting ? config.sprintMultiplier + SprintBonus : 1f);

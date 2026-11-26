@@ -314,6 +314,75 @@ namespace RiskOfMagic.Run
         {
             ApplyVisuals();
             StateChanged?.Invoke(current);
+            // Fully charged / completed: shockwave (sparks + camera kick for nearby players).
+            if (current == TeleporterState.Charged || (current == TeleporterState.Ready && previous != TeleporterState.Idle))
+            {
+                var color = current == TeleporterState.Ready ? readyColor : chargingColor;
+                for (int i = 0; i < 12; i++)
+                {
+                    float angle = i * Mathf.PI * 2f / 12f;
+                    var point = transform.position + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * radius * 0.5f + Vector3.up * 0.3f;
+                    RiskOfMagic.Feedback.HitSparks.Burst(point, Vector3.up, color, 6, 1.4f, 1.5f);
+                }
+                RiskOfMagic.Feedback.HitSparks.Burst(transform.position + Vector3.up * 2f, Vector3.up, color, 40, 2f, 2f);
+                var local = PlayerAvatar.Local;
+                if (local != null && local.Look != null && local.Look.Effects != null
+                    && (local.transform.position - transform.position).sqrMagnitude < 40f * 40f)
+                    local.Look.Effects.AddTrauma(0.35f);
+            }
+        }
+
+        // ---------------------------------------------------------------- Charge pillar + rumble (every peer)
+
+        private Transform pillar;
+        private MaterialPropertyBlock pillarBlock;
+
+        private void LateUpdate()
+        {
+            if (!IsSpawned)
+                return;
+            bool charging = state.Value == TeleporterState.Charging || state.Value == TeleporterState.Charged;
+            UpdatePillar(charging);
+            if (state.Value != TeleporterState.Charging)
+                return;
+            // Low rumble for the local player inside the zone, growing with the charge.
+            var local = PlayerAvatar.Local;
+            if (local != null && local.Look != null && local.Look.Effects != null && IsInside(local.transform.position))
+                local.Look.Effects.AddTrauma(Time.deltaTime * Mathf.Lerp(0.05f, 0.35f, charge.Value));
+        }
+
+        /// <summary>Energy column that grows with the charge (additive, chargingColor).</summary>
+        private void UpdatePillar(bool visible)
+        {
+            var config = RiskOfMagic.Feedback.HitFeedbackConfig.Instance;
+            if (pillar == null)
+            {
+                if (!visible || config == null || config.sparkMaterial == null)
+                    return;
+                var go = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                go.name = "ChargePillar";
+                Destroy(go.GetComponent<Collider>());
+                go.transform.SetParent(transform, false);
+                var renderer = go.GetComponent<Renderer>();
+                renderer.sharedMaterial = config.sparkMaterial;
+                renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                renderer.receiveShadows = false;
+                pillar = go.transform;
+                pillarBlock = new MaterialPropertyBlock();
+            }
+            pillar.gameObject.SetActive(visible);
+            if (!visible)
+                return;
+            float c = state.Value == TeleporterState.Charged ? 1f : charge.Value;
+            float height = Mathf.Lerp(1f, 30f, c);
+            float width = Mathf.Lerp(0.4f, 1.6f, c) * (1f + Mathf.Sin(Time.time * 9f) * 0.08f);
+            pillar.localPosition = Vector3.up * height * 0.5f;
+            pillar.localScale = new Vector3(width, height * 0.5f, width); // cylinder = 2 m tall at scale 1
+            float glow = config != null ? config.sparkGlow : 2f;
+            var color = new Color(chargingColor.r * glow, chargingColor.g * glow, chargingColor.b * glow, Mathf.Lerp(0.15f, 0.45f, c));
+            pillarBlock.SetColor(ColorId, color);
+            pillarBlock.SetColor(BaseColorId, color);
+            pillar.GetComponent<Renderer>().SetPropertyBlock(pillarBlock);
         }
 
         private void BuildRing()

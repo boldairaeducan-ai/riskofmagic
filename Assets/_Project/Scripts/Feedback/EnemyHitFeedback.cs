@@ -41,6 +41,9 @@ namespace RiskOfMagic.Feedback
         private float despawnAt;
         private Vector3 recoilDirection;
         private bool topple;
+        private Vector3 flinchDirection; // world, flat
+        private float flinchAmount;      // 0..1 (light..heavy, crit bonus)
+        private float flinchTime = 999f;
 
         private void Awake()
         {
@@ -87,6 +90,18 @@ namespace RiskOfMagic.Feedback
             squashAmount = Mathf.Lerp(config.squash.x, config.squash.y, heavy) * (info.IsCritical ? config.criticalSquashMultiplier : 1f);
             squashTime = 0f;
             float stop = Mathf.Lerp(config.hitStop.x, config.hitStop.y, heavy) + (info.IsCritical ? config.criticalHitStopBonus : 0f);
+
+            Vector3 flinch = HitDirection(info);
+            flinch.y = 0f;
+            if (flinch.sqrMagnitude > 0.0001f)
+            {
+                flinchDirection = flinch.normalized;
+                flinchAmount = Mathf.Max(flinchTime < 0.15f ? flinchAmount : 0f, heavy)
+                               * (info.IsCritical ? config.criticalFlinchMultiplier : 1f)
+                               * (actor != null && actor.IsBoss ? config.bossFlinchMultiplier : 1f);
+                flinchAmount = Mathf.Max(flinchAmount, actor != null && actor.IsBoss ? 0.1f : 0.25f); // even light hits show
+                flinchTime = 0f;
+            }
             hitStopUntil = Mathf.Max(hitStopUntil, Time.time + stop);
 
             Vector3 point = HitPoint(info);
@@ -162,7 +177,10 @@ namespace RiskOfMagic.Feedback
             PauseAnimators(frozen);
 
             if (!frozen)
+            {
                 squashTime += Time.deltaTime;
+                flinchTime += Time.deltaTime;
+            }
             float punch = squashAmount * Mathf.Sin(squashTime * config.squashFrequency) * Mathf.Exp(-squashTime * config.squashDamping);
             if (squashTime * config.squashDamping > 8f)
                 punch = 0f;
@@ -173,6 +191,16 @@ namespace RiskOfMagic.Feedback
             Quaternion recoilRotation = Quaternion.identity;
             Vector3 recoilOffset = Vector3.zero;
             float shrink = 1f;
+            if (!dead && flinchTime < 2f)
+            {
+                // Knocked back: a fast tilt away from the hit, then a springy return.
+                float k = flinchAmount * Mathf.Exp(-flinchTime * config.flinchRecovery) * Mathf.Min(1f, flinchTime * 40f + 0.4f);
+                Vector3 localDirection = transform.InverseTransformDirection(flinchDirection);
+                Vector3 axis = Vector3.Cross(Vector3.up, localDirection);
+                if (axis.sqrMagnitude > 0.0001f)
+                    recoilRotation = Quaternion.AngleAxis(Mathf.Lerp(config.flinchAngle.x, config.flinchAngle.y, flinchAmount) * k / Mathf.Max(0.01f, flinchAmount), axis.normalized);
+                recoilOffset = localDirection * (Mathf.Lerp(config.flinchPush.x, config.flinchPush.y, flinchAmount) * k / Mathf.Max(0.01f, flinchAmount));
+            }
             if (dead)
             {
                 float t = Mathf.Clamp01((Time.time - deathTime) / Mathf.Max(0.01f, config.killRecoilDuration));
